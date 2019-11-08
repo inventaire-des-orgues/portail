@@ -1,7 +1,7 @@
 {% load static %}
 <section class="sectionheader" style="height:110px;position:relative;">
   <h4 class="text-center text-white" style="z-index:5;position:absolute;left:50%;top:50%;transform: translate(-50%,-50%)">
-    {{ orgue.designation }}
+    {{ orgue.get_designation_display }}
     <br>
     <small>
       {{ orgue.edifice }} - {{ orgue.commune }}
