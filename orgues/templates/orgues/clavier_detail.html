@@ -1,0 +1,27 @@
+<div class="col-3 clavier">
+  <div class="card">
+    <div class="card-header">
+      <h6>{{ clavier.type }} {% if clavier.is_expressif %}expressif {% endif %}</h6>
+    </div>
+    <div class="card-body">
+      <p class="card-text">
+        {% for jeu in clavier.jeux.all %}
+          <span {% if jeu.commentaire %}data-toggle="tooltip" title="{{ jeu.commentaire }}" data-placement="right"{% endif %}>{{ jeu }}</span>
+          {% if jeu.commentaire %}*{% endif %}
+          <br>
+        {% endfor %}
+      </p>
+
+      {% if clavier.facteur %}
+        <small>Fabriqué par {{ clavier.facteur }}</small>
+      {% endif %}
+    </div>
+
+    {% if form %}
+      <div class="card-footer bg-transparent">
+        <a href="{% url 'orgues:clavier-update' clavier.pk %}" class="btn btn-xs btn-outline-secondary editer_clavier">Editer</a>
+        <a href="{% url 'orgues:clavier-delete' clavier.pk %}" class="btn btn-xs btn-outline-danger supprimer_clavier">Supprimer</a>
+      </div>
+    {% endif %}
+  </div>
+</div>

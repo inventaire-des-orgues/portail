@@ -1,0 +1,59 @@
+{% extends 'orgues/base_edition.html' %}
+{% load static %}
+
+{% block tuyauterie_active %}active{% endblock %}
+
+{% block card-body %}
+  <h5 class="card-title mb-4">
+    {% if clavier_form.instance.pk %}
+      {{ clavier_form.instance.type }}
+    {% else %}
+      Nouveau clavier
+    {% endif %}
+  </h5>
+  <form method="post"> {% csrf_token %}
+
+
+    {% for field in clavier_form %}
+
+      {% include 'stack_field.html' with with_helptext='true' %}
+
+    {% endfor %}
+    <h5 class="card-title">
+      Jeux
+    </h5>
+    {{ jeux_formset.management_form }}
+    {% for form in jeux_formset %}
+      <div class="row">
+        {{ form.id }}
+        <div class="{% if form.DELETE %}col-5{% else %}col-6{% endif %}">
+          {% include 'stack_field.html' with field=form.type %}
+        </div>
+        <div class="{% if form.DELETE %}col-5{% else %}col-6{% endif %}">
+          {% include 'stack_field.html' with field=form.commentaire %}
+        </div>
+        {% if form.DELETE %}
+          <div class="col-2">
+            {% include 'stack_field.html' with field=form.DELETE %}
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+    <div class="form-group text-right">
+      <a href="{% url 'orgues:orgue-update-tuyauterie' orgue.uuid %}" class="btn btn-outline-secondary">Annuler</a>
+      <button type="submit" class="btn btn-primary">Enregistrer</button>
+    </div>
+  </form>
+
+
+
+
+{% endblock %}
+
+
+{% block js_extra %}
+  {% include 'orgues/facteur_create_modal.html' %}
+  {% include 'orgues/typejeu_create_modal.html' %}
+
+{% endblock %}
+

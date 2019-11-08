@@ -1,0 +1,40 @@
+{% extends 'administration/base.html' %}
+{% load static %}
+{% block content %}
+
+  <div class="my-50 text-center">
+    <h2 class="font-w700 text-black mb-10">Nouvel orgue</h2>
+      <h3 class="h5 text-muted mb-0">Commencez par renseigner les informations basiques</h3>
+
+  </div>
+  <div class="block ">
+    <div class="block-content tab-content">
+      {% if form.errors %}
+        {% for error in user_form.non_field_errors %}
+          <div class="alert alert-danger">
+            <strong>{{ error|escape }}</strong>
+          </div>
+        {% endfor %}
+      {% endif %}
+      <form action="" method="post" id="mainform" enctype="multipart/form-data">{% csrf_token %}
+        {% for field in form %}
+          {% include 'stack_field.html' with with_helptext='true' %}
+        {% endfor %}
+        <hr>
+        <div class="form-group text-right">
+          <a href="{% url 'orgues:orgue-list' %}" class="btn btn-secondary" id="create">Annuler</a>
+          <button type="submit" class="btn btn-primary" id="create">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+
+{% endblock %}
+{% block js_extra %}
+
+
+
+
+{% endblock %}

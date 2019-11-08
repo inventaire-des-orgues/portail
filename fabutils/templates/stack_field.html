@@ -1,0 +1,39 @@
+{% load fabform %}
+<div class="form-group{% if field.errors %} has-danger{% endif %}
+{% if field.field.widget.attrs.columns %}
+col-{{ field.field.widget.attrs.columns }}
+{% endif %}
+
+" id="group_{{ field.id_for_label }} ">
+  {% if field|is_hidden %}
+    {{ field }}
+  {% elif field|is_checkbox %}
+    {{ field|addcssclass:"filled-in" }}
+    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+  {% else %}
+    {% if field.label %}
+      <label class="" for="{{ field.id_for_label }}">
+        {{ field.label }}
+        {% if field.field.required %}
+          <span class="required">*</span>
+        {% endif %}
+      </label>
+    {% endif %}
+    {% if field|is_date_field %}
+      <div class="input-group date">
+        <span class="input-group-addon"><i class="fa fa-calendar"></i></span> {{ field }}
+      </div>
+    {% elif field|is_file %}
+      {{ field|addcssclass:"form-control-file" }}
+    {% else %}
+      {{ field|addcssclass:"form-control" }}
+    {% endif %}
+  {% endif %}
+  {% for error in field.errors %}
+    <div class="help-block text-danger">{{ error }}</div>
+  {% endfor %}
+  <small class="help-block">
+    {% if field.help_text %}
+     <i class="fa fa-info-circle"></i> {{ field.help_text | safe }}
+    {% endif %}</small>
+</div>

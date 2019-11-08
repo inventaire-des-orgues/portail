@@ -1,0 +1,70 @@
+<div class="modal fade" id="nouveauJeuModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Nouveau jeu</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="{% url 'orgues:typejeu-create-js' %}" id="nouveauJeuForm">{% csrf_token %}
+        <div class="modal-body">
+          <div class="form-group row">
+            <div class="col-7">
+              <label for="">Nom</label>
+              <input type="text" name="nom" class="form-control"  required placeholder="Ex: Bombarde">
+            </div>
+            <div class="col-5">
+              <label for="">Hauteur</label>
+              <input type="text" name="hauteur" class="form-control" placeholder="Ex : 8">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
+          <button type="submit" class="btn btn-primary">Enregister</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+  var openjeumodal = function () {
+    $("select[id$=-type]").select2('close');
+    $('#nouveauJeuModal').modal('show');
+  }
+
+  $("#nouveauJeuForm").submit(function (e) {
+    e.preventDefault(); // avoid to execute the actual submit of the form.
+    var form = $(this);
+    var url = form.attr('action');
+
+    $.ajax({
+      type: "POST",
+      url: url,
+      data: form.serialize(), // serializes the form's elements.
+      success: function (data) {
+        toastr.success(data.message);
+
+        $('#nouveauJeuModal').modal('hide');
+      },
+    });
+  })
+
+  $("select[id$=-type]").select2({
+    placeholder: 'Sélectionner un jeu',
+    ajax: {
+      url: '{% url 'orgues:typejeu-list-js' %}',
+      dataType: 'json'
+    },
+    escapeMarkup: function (markup) {
+      return markup;
+    },
+    language: {
+      noResults: function () {
+        return "Aucun jeu trouvé ...  <a href='javascript:openjeumodal()'>cliquez ici</a> pour en créer un nouveau";
+      }
+    },
+    width: '100%'
+  });
+</script>

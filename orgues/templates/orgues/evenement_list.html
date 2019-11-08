@@ -1,0 +1,55 @@
+{% extends 'orgues/base_edition.html' %}
+{% load static %}
+
+{% block evenement_active %}active{% endblock %}
+
+{% block card-body %}
+  {% if object_list %}
+    <table class="table table-striped table-bordered table-hover table-vcenter">
+      <thead>
+      <tr>
+        <th>Année</th>
+        <th>Type d'événement</th>
+        <th>Facteur(s)</th>
+        <th>Description</th>
+        <th class="text-right">Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for evenement in object_list %}
+        <tr>
+          <td class="d-lg-table-cell font-size-xl font-w600">{{ evenement.annee }}</td>
+          <td class="d-lg-table-cell">
+            <b>{{ evenement.type }}</b>
+          </td>
+          <td class="d-none d-lg-table-cell">{% for facteur in evenement.facteurs.all %}{{ facteur }}
+
+          {% if not forloop.last %},{% endif %}
+          {% endfor %}</td>
+          <td width="40%"><span class="text-muted">{{ evenement.description|truncatechars:150 }}</span></td>
+          <td width="140px" class="text-right">
+            <a href="{% url 'orgues:evenement-update' evenement.pk %}" class="btn btn-xs btn-outline-secondary">Editer</a>
+            <a href="{% url 'orgues:evenement-delete' evenement.pk %}" class="btn btn-xs btn-outline-danger supprimer_evenement" data-pk="{{ evenement.pk }}">Supprimer</a>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="py-50 text-center">
+      Aucun événement
+    </p>
+  {% endif %}
+  <p class="text-right">
+    <a href="{% url 'orgues:evenement-create' orgue.uuid %}" class="btn btn-outline-primary">
+    <i class="fa fa-plus"></i>  Ajouter un événement
+    </a>
+  </p>
+
+{% endblock %}
+
+
+
+
+
+

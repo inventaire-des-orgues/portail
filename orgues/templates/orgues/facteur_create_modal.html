@@ -1,0 +1,84 @@
+<div class="modal fade" id="nouveauFacteurModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Nouveau facteur</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="{% url 'orgues:facteur-create-js' %}" id="nouveauFacteurForm">{% csrf_token %}
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="">Nom</label>
+            <input type="text" name="nom" class="form-control" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
+          <button type="submit" class="btn btn-primary">Enregister</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+  var openfacteurmodal = function () {
+    $('#id_facteurs, #id_facteur').select2('close');
+    $('#nouveauFacteurModal').modal('show');
+  }
+  $(function () {
+
+
+    $("#nouveauFacteurForm").submit(function (e) {
+      e.preventDefault(); // avoid to execute the actual submit of the form.
+      var form = $(this);
+      var url = form.attr('action');
+
+      $.ajax({
+        type: "POST",
+        url: url,
+        data: form.serialize(), // serializes the form's elements.
+        success: function (data) {
+
+          var facteur = data.facteur;
+
+          if ($('#id_facteurs,#id_facteur').find("option[value='" + facteur.id + "']").length) {
+            $('#id_facteurs').val(facteur.id).trigger('change');
+          } else {
+            // Create a DOM Option and pre-select by default
+            var newOption = new Option(facteur.nom, facteur.id, true, true);
+            // Append it to the select
+            $('#id_facteurs,#id_facteur').append(newOption).trigger('change');
+          }
+          $('#nouveauFacteurModal').modal('hide');
+
+        },
+      });
+    })
+
+
+    $("#id_facteurs,#id_facteur").select2({
+      placeholder: 'Choisir un facteur',
+      ajax: {
+        url: '{% url 'orgues:facteur-list-js' %}',
+        data: function (params) {
+          var query = {
+            search: params.term,
+            page: params.page || 1
+          }
+          return query;
+        }
+      },
+      escapeMarkup: function (markup) {
+        return markup;
+      },
+      language: {
+        noResults: function () {
+          return "Aucun facteur trouvé ...  <a href='javascript:openfacteurmodal()'>cliquez ici</a> pour en créer un nouveau";
+        }
+      },
+      width: '100%'
+    });
+  })
+</script>

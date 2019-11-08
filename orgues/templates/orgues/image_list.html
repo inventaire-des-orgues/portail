@@ -1,0 +1,93 @@
+{% extends 'orgues/base_edition.html' %}
+{% load static %}
+
+{% block image_active %}active{% endblock %}
+
+{% block card-body %}
+  <h5 class="card-title mb-4">
+    Images
+  </h5>
+  {% if form.errors %}
+    {% for field in form %}
+      {% for error in field.errors %}
+        <div class="alert alert-danger">
+          <strong>{{ field.label }} : {{ error|escape }}</strong>
+        </div>
+      {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+      <div class="alert alert-danger">
+        <strong>{{ error|escape }}</strong>
+      </div>
+    {% endfor %}
+  {% endif %}
+  <table class="table table-bordered">
+    <thead>
+    <tr>
+      <th>Image</th>
+      <th>Image principale ?
+        <i class="fa fa-info-circle" data-toggle="tooltip"
+            title="L'image principale est utilisée dans les vignettes de la page d'accueil et en haut de la page de présentation d'un orgue"></i></th>
+      <th>Crédit</th>
+      <th width="30px">Supprimer</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for image in object_list %}
+      <tr>
+        <td><a href="{{ image.image.url }}" target="_blank"><img src="{{ image.vignette.url }}" alt="" width="70px;"></a></td>
+        <td>
+          {% if image.is_principale %}
+            Oui
+          {% else %}
+            Non (<a href="{% url 'orgues:image-principale' image.pk %}">définir</a>)
+          {% endif %}</td>
+        <td>{{ image.credit|default_if_none:"Aucun" }}</td>
+        <td>
+          <form action="{% url 'orgues:image-delete' image.pk %}" method="post">{% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger btn-xs">Supprimer</button>
+          </form>
+        </td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td colspan="10">Aucune image</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <p class="text-right">
+    <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#exampleModal">
+      <i class="fa fa-plus"></i> Ajouter une image
+    </button>
+  </p>
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Nouvelle image</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="{% url 'orgues:image-create' orgue.uuid %}" method="post" enctype="multipart/form-data"> {% csrf_token %}
+          <div class="modal-body">
+            {% for field in form %}
+              {% include 'stack_field.html'  with with_helptext='true' %}
+            {% endfor %}
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+
+{% block js_extra %}
+{% endblock %}
+

@@ -1,0 +1,12 @@
+{% load static %}
+<section class="sectionheader" style="height:110px;position:relative;">
+  <h4 class="text-center text-white" style="z-index:5;position:absolute;left:50%;top:50%;transform: translate(-50%,-50%)">
+    {{ orgue.designation }}
+    <br>
+    <small>
+      {{ orgue.edifice }} - {{ orgue.commune }}
+    </small>
+  </h4>
+  <div style="background:#183564;position:absolute;top:0;bottom:0;left:0;right:0;z-index:3;opacity:0.4;"></div>
+  <div style="background:url('{% static 'img/papyrus.png' %}');z-index:2;filter: grayscale(100%);position:absolute;top:0;bottom:0;left:0;right:0;"></div>
+</section>

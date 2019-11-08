@@ -1,0 +1,1592 @@
+{
+  "types_claviers": [
+    "Grand-Orgue",
+    "Récit",
+    "Pédalier",
+    "Positif",
+    "Positif de dos",
+    "Manuel",
+    "Echo",
+    "Solo",
+    "Résonnance",
+    "Grand-Chœur",
+    "Hauptwerk",
+    "Pedalwerk",
+    "Brustwerk",
+    "Mittelwerk",
+    "Oberwerk",
+    "Rückpositiv",
+    "Positiv",
+    "Echowerk",
+    "Fernwerk"
+  ],
+  "type_accessoire": [
+    "accouplement",
+    "tirasse",
+    "trémolo",
+    "appel",
+    "renvoi"
+  ],
+  "transposition": [
+    "16",
+    "8",
+    "4"
+  ],
+  "facteurs": [
+    "Abbey Alfred",
+    "Abbey Eugène",
+    "Abbey John I",
+    "Abbey John II",
+    "Abbey John-Albert",
+    "Adam François",
+    "Adam Jean",
+    "Adam Paul",
+    "Agati Ditta Nicodème",
+    "Agati Joannes",
+    "Agati Josué",
+    "Agati Nicodème",
+    "Alavoine Jean Jacques",
+    "Alavoine Robert",
+    "Alffermann Johann Friedrich",
+    "Alfred Kern Et Fils ( Daniel Kern )",
+    "Alizant Auguste",
+    "Amot Amédé Clément d'",
+    "Anneessens Charles",
+    "Antoine Jean",
+    "Arel",
+    "Argillières Jean",
+    "Atelier de facture d’orgues Bruno Dillenseger",
+    "Aubertin Bernard",
+    "Austruy",
+    "Baker",
+    "Baldner Johann Jacob",
+    "Baldner",
+    "Bancells Gerard",
+    "Baptiste Puget aîné",
+    "Baril Nicolas",
+    "Barker Charles",
+    "Barker",
+    "Baron Dominique",
+    "Basiliens frères",
+    "Bauer Freddy",
+    "Baumann Carl Johann",
+    "Baërd Bernard",
+    "Beaucourt César Hippolyte",
+    "Beaucourt Hippolyte César",
+    "Beaucourt Hugues",
+    "Beaucourt et Voegeli",
+    "Beaurain Charles",
+    "Beauruin",
+    "Bedos de Celles dom François",
+    "Bellet Patrice",
+    "Benoist",
+    "Benoit Charles",
+    "Berger Alfred",
+    "Berger Claude",
+    "Berger François",
+    "Berger Joseph-Antoine",
+    "Bergäntzel Joseph",
+    "Bergäntzel Martin",
+    "Bernauer Blasius",
+    "Bertrand Guillaume",
+    "Besançon Jacques",
+    "Bessades",
+    "Bessart Louis",
+    "Beuchet Joseph",
+    "Beuchet-Debierre",
+    "Bevington",
+    "Birouste Daniel",
+    "Bistocchi Franck",
+    "Blanarsch Adolphe",
+    "Blanchard",
+    "Blési Jean",
+    "Boillot Bénigne",
+    "Bois Antoine",
+    "Boisseau Jean-Loup",
+    "Boisseau Robert",
+    "Boisselin Charles",
+    "Boizard Jean",
+    "Boizard Nicolas",
+    "Bonn Louis",
+    "Bonneau & Béasse",
+    "Bonneau et Béasse Ets",
+    "Borme François",
+    "Borme Jean François",
+    "Borme Thomas Laurent",
+    "Bossier Jules",
+    "Boudos François",
+    "Bouffard Henri",
+    "Bouillou",
+    "Boulay Bernard",
+    "Bourgarel Jean",
+    "Bouvet Raymond",
+    "Boyvaux du Mesnil J.",
+    "Bridel",
+    "Brisset Augustin",
+    "Brière Henri",
+    "Brière Louis",
+    "Brocard Jean",
+    "Broquier",
+    "Brunel Gérard",
+    "Brunel, ou : Bunel Toussaint",
+    "Burat Michel",
+    "Burger Meinrad",
+    "Burger Stanislas",
+    "Bédeville",
+    "Cabourdin Yves",
+    "Cachet Charles",
+    "Caill Herve",
+    "Cailly Gratien de",
+    "Callinet Claude-Ignace",
+    "Callinet Fils",
+    "Callinet François",
+    "Callinet Joseph",
+    "Callinet Louis François",
+    "Callinet Louis",
+    "Callinet frères",
+    "Carlier Crespin",
+    "Carlier François-Joseph",
+    "Carlier Philippe",
+    "Carlier",
+    "Carouge Jacques",
+    "Carouge Marin",
+    "Carpentier Adrien",
+    "Catiaux Bernard",
+    "Cattiaux Bertrand",
+    "Cauchoix Pierre",
+    "Caulier",
+    "Cavaillé Jean-Pierre",
+    "Cavaillé Joseph",
+    "Cavaillé-Coll Aristide ",
+    "Cavaillé-Coll Dominique Hyacinthe",
+    "Cavaillé-Coll Dominique",
+    "Cavaillé-Coll Gabriel",
+    "Cavaillé-Coll Vincent",
+    "Cavaillé-Coll père et fils",
+    "Cavaillé-Coll",
+    "Cavalier",
+    "Cervello Pascal",
+    "Chalgrin Jean François",
+    "Chambry Nicolas",
+    "Chanon Didier",
+    "Charles Michel",
+    "Chauvin Robert",
+    "Chauvin Robert",
+    "Chavant François",
+    "Chavant Louis",
+    "Chaxel Augustin",
+    "Chazelle Paul",
+    "Chenet",
+    "Chéron Pierre",
+    "Chevallier",
+    "Chevreux Barthélémy",
+    "Cicchero Jean-Marc",
+    "Cicchéro Jean-Marc",
+    "Claude Timothée",
+    "Claude frères",
+    "Claus Georges",
+    "Claus Jean-Baptiste",
+    "Clergeau Abbé Emile",
+    "Clicquot François fils",
+    "Clicquot François-Henri",
+    "Clicquot Jean Baptiste",
+    "Clicquot Louis Alexandre",
+    "Clicquot Robert",
+    "Cliquot François-Henri",
+    "Clément Frédéric",
+    "Cochu Jacques",
+    "Cochu René",
+    "Cogez Bernard",
+    "Collard Nicolas",
+    "Collet A.",
+    "Collet Denys",
+    "Collin abbé",
+    "Conan Jean-Pierre",
+    "Concini",
+    "Coquerel Gilbert",
+    "Cottereau Pierre",
+    "Coëffard de Mazerolles",
+    "Crudeli Frederico",
+    "Crudeli Giovanni",
+    "Crudeli frères",
+    "Cuvillier Joseph",
+    "Cuvillier",
+    "DIDIER Charles",
+    "Dabernet Nicolas",
+    "Daldosso Jean",
+    "Dallam Robert",
+    "Dallam Thomas",
+    "Dallam Toussaint",
+    "Dallery Charles",
+    "Dallery Louis Paul",
+    "Dallery Pierre François",
+    "Dallery Pierre",
+    "Dalstein & Haerpfer",
+    "Dalstein Nicolas",
+    "Damiens frères",
+    "Damiens",
+    "Danion Georges",
+    "Danion-Gonzalez",
+    "Dargassies Bernard",
+    "Daublaine & Callinet",
+    "Daublaine André Marie",
+    "Daublaine E.",
+    "Daublaine François",
+    "Daublaine",
+    "De Volder Henri",
+    "De Volder Pierre Jean",
+    "Debierre Louis",
+    "Decavel Daniel",
+    "Dejardin Emile",
+    "Del Médico Louis",
+    "Delacour-Wauthier",
+    "Delafarge Jean Baptiste",
+    "Delangue Francois",
+    "Delanoue Barnabé",
+    "Delaunay Robert",
+    "Delhumeau Francois",
+    "Deliancourt A.",
+    "Delmotte Constantin",
+    "Delmotte Edouard",
+    "Delmotte Frères",
+    "Delmotte Théophile",
+    "Delorme Pierre",
+    "Deloye Jean",
+    "Deloye Jean",
+    "Denis Lacorre Sarl Dlfo",
+    "Des Fontaines Jean Jacques",
+    "Des Fontaines Thomas",
+    "Deschamps",
+    "Deslandes François",
+    "Dessenne abbé",
+    "Didelot Antoine François Brice",
+    "Didier Charles",
+    "Didier Henri",
+    "Didier Henry",
+    "Didier-Van Caster & Kuhn",
+    "Didier-Van Caster Charles",
+    "Didier-Van Caster Didier",
+    "Dingler Jean Adam",
+    "Dognon Chrétien",
+    "Dom Bedos de Celles François",
+    "Domini Gaspard",
+    "Dott Richard",
+    "Dott Richard",
+    "Dreyman Bernard",
+    "Du Prey Simon",
+    "Dubois Jean",
+    "Dubois Louis",
+    "Ducastel François",
+    "Ducastel Hippolyte",
+    "Ducrocquet Pierre Alexandre",
+    "Ducroquet & Jaquot-Jeanpierre",
+    "Ducroquet Pierre-Alexandre",
+    "Ducroquet",
+    "Dufaye François",
+    "Duhaut Jean",
+    "Dujardin",
+    "Dumont Clément",
+    "Dumont François-Goëry",
+    "Dumont Jean",
+    "Dumont-Clément",
+    "Dumont-Lelièvre et Cie",
+    "Dumont-Parizot Louis",
+    "Dunand",
+    "Dupont François",
+    "Dupont Jean-Francois",
+    "Dupont Jean-François",
+    "Dupont Joseph",
+    "Dupont Nicolas",
+    "Duputel Narcisse",
+    "Duputel Nicolas",
+    "Duputel",
+    "Duran Pierre",
+    "Duvivier Jean",
+    "Déjardin Emile",
+    "Désenclos Pierre",
+    "Edegem",
+    "Egers Heinrich",
+    "Emeriau Philippe",
+    "Enault-Beauté Emile",
+    "Erman Pierre",
+    "Estrada Pedro de",
+    "Eustache André",
+    "Eustache Gaspard",
+    "Eustache Jean",
+    "Faye Alain",
+    "Fenon Victor",
+    "Fermis",
+    "Ferrari Antonio de",
+    "Ferrari Giovanni de",
+    "Ferrari Luigi de",
+    "Ferrari frères",
+    "Feuga",
+    "Fickinger Jean",
+    "Filipowicz Antoine",
+    "Filipowicz Antonin",
+    "Fils Frères",
+    "Fiquémont René",
+    "Firmin Henri",
+    "Fischer Joseph",
+    "Flight",
+    "Flum Stephan",
+    "Fohrer Sebastien",
+    "Forrest Philippe",
+    "Fortin",
+    "Fossaert Yves",
+    "Fossaert Yves",
+    "Foucher-Gasparini",
+    "Fournier Marc",
+    "Fourrier Jacques",
+    "Fouss Etienne",
+    "Franzetti",
+    "Frechet Baptiste",
+    "Fremat Jean François",
+    "Fribourg Michel de",
+    "Frimin Henri",
+    "Frémat Jean Baptiste",
+    "Férat Paul",
+    "Gadault Charles",
+    "Galeran Pierre",
+    "Garnier Marc",
+    "Garnier Michel",
+    "Gaupillat Jean-Baptiste",
+    "Gauziède",
+    "Gavot Jean-Baptiste père",
+    "Gavot Jean-Baptiste",
+    "Gavot frères",
+    "Gazeau Charles",
+    "Gazot Charles",
+    "Geib Johann Georg",
+    "Geib Louis",
+    "Geiger",
+    "Genoyer Jacques",
+    "Georgel Louis",
+    "Georges Danion et Charles Sarelot (Manufacture languedocienne de grandes orgues)",
+    "Georges Wenner - Gaston Maillé",
+    "Georges",
+    "Gervais",
+    "Ghys Jean-Baptiste",
+    "Gibert",
+    "Girardet Jacques",
+    "Glandaz Olivier",
+    "Gloton Georges",
+    "Gobert Antoine",
+    "Godefroy François",
+    "Godefroy Louis",
+    "Goll Friedrich",
+    "Gonzalez Victor",
+    "Gorlidot Louis",
+    "Gotty Jacques",
+    "Gouet Robert",
+    "Goussu Michel",
+    "Goyadin",
+    "Granier Marc",
+    "Grimont Florentin",
+    "Grinda Antoine",
+    "Grinda Honoré",
+    "Grossir Antoine",
+    "Guerrier Christian",
+    "Guillain Dupont Antoine",
+    "Guilmant Jean-Baptiste",
+    "Guilmant Jean-François II",
+    "Gutschenritter Joseph",
+    "Géant Joseph",
+    "Géhin Etienne",
+    "Géhin Frères",
+    "Géhin Jean-Baptiste",
+    "Haberthür Ferdinand",
+    "Haerpfer Frédéric",
+    "Haerpfer Johann Karl",
+    "Haerpfer Théo",
+    "Haerpfer-Erman",
+    "Haon",
+    "Hartmann Philippe",
+    "Hedelin Marc",
+    "Heidenreich Arnold",
+    "Helbig Gustave",
+    "Henn Jacques",
+    "Henri",
+    "Henry E.",
+    "Henry J.",
+    "Henry Père et Fils",
+    "Herbuté Antoine",
+    "Herland",
+    "Hermelin Claude",
+    "Herve De Bonnault",
+    "Herville Jean d'",
+    "Hesse Jean Nicolas",
+    "Heyer Henrich",
+    "Heyer Jules",
+    "Heystre Oudin",
+    "Hladky Georg",
+    "Hoch Robert",
+    "Hubert Nicolas-Augustin",
+    "Huet Dominique",
+    "Humblot",
+    "Hurvy Bernard",
+    "Héman Jehan de",
+    "Héman Louis de",
+    "Héman Valéran de",
+    "Ingoult Robert",
+    "Ingram Gustave",
+    "Isambert Jules",
+    "Isnard Jean Claude",
+    "Isnard Jean-Esprit",
+    "Isnard Joseph",
+    "Isoré Louys",
+    "Jaccard Claude",
+    "Jacquet Alexandre",
+    "Jacquet Henri",
+    "Jacquot Nicolas-Théodore",
+    "Jacquot Thierry & Fils",
+    "Jacquot Théodore",
+    "Jacquot-Lavergne",
+    "Jan Van Belle",
+    "Jaquet Alexandre",
+    "Jaquet Henri",
+    "Jaquot Ernest Théodore",
+    "Jaquot Nicolas Théodore",
+    "Jaquot Pierre",
+    "Jaquot Théodore",
+    "Jaquot-Jeanpierre & Cie",
+    "Jaquot-Jeanpierre et Fils",
+    "Jaquot-Jeanpierre fils",
+    "Jeanpierre Jean-Nicolas",
+    "Jolly Guy",
+    "Jonet",
+    "Joseph Merklin & Cie",
+    "Josselin Antoine",
+    "Jouve Michel",
+    "Joyeuse Jean de",
+    "Julien Barthélémy",
+    "Julien Honoré",
+    "Junck Frédéric",
+    "Jungk Frédéric",
+    "Junk",
+    "Jurine Michel",
+    "Kastner Albert",
+    "Kempf Jean Georges",
+    "Kempf",
+    "Kerkhoff Emile",
+    "Kern Alfred",
+    "Kern Daniel",
+    "Kern Gaston",
+    "Kern Gaston",
+    "Kernst Michel",
+    "Kieffer Félix",
+    "Klais Johannes",
+    "Koenig Jean-Georges",
+    "Koenig Joseph",
+    "Koenig K.M.",
+    "Koenig Paul-Marie",
+    "Koenig Pierre-Marie",
+    "Koenig Yves",
+    "Kohr",
+    "Koulen Heinrich Johann",
+    "Kraemer Sébastien",
+    "Krebs Friedrich",
+    "Kriess Franz",
+    "Kriess François",
+    "Krischer Georges",
+    "Kriss Martin",
+    "Krämer Sébastien",
+    "Kuhn Théodore",
+    "Kuttinger Georges",
+    "Labruguière",
+    "Lair Louis",
+    "Lalmand Dominique",
+    "Lancelot Pascals",
+    "Langes Christian",
+    "Lannes Jean Baptiste",
+    "Lapreste Jean",
+    "Larroque abbé",
+    "Laval-Thivolle",
+    "Lavergne René",
+    "Lavigne Victor",
+    "Lazzari Guiseppe",
+    "Le Breton",
+    "Le Bé Louis",
+    "Le Bé Nicolas",
+    "Le Faou Georges Daniel",
+    "Le Helloco Pierre",
+    "Le Hellocq",
+    "Le Logeais",
+    "Le Ludion Philippe Grasse",
+    "Le Picard Joseph",
+    "Le Roux Yves",
+    "Le Royer Charles",
+    "Le Texier",
+    "Le Vasseur Simon",
+    "Leboucher Dominique",
+    "Lefebvre Charles",
+    "Lefebvre Clément",
+    "Lefebvre Germain",
+    "Lefebvre Jean-Baptiste-Martin",
+    "Lefebvre Jean-Baptiste-Nicolas",
+    "Lefebvre Léonard",
+    "Lefebvre Victor",
+    "Lefèbvre Jacques",
+    "Lefébure Antoine",
+    "Legros Claude",
+    "Lequien Frères",
+    "Lesselier Guillaume",
+    "Levasseur Antoine",
+    "Leymarie & Trouillet",
+    "Lieberknecht Nicolas",
+    "Liebernecht",
+    "Lingiardi Giacomo",
+    "Lingiardi Luigi",
+    "Link Johannes",
+    "Link Paul",
+    "Loiselot",
+    "Loncke François Frédéric",
+    "Londe Denis",
+    "Lorentz Aloïse",
+    "Loret François",
+    "Loret Hippolyte",
+    "Loriaut Jean-Louis",
+    "Lorin Emiland",
+    "Louis-Debierre & Cie",
+    "Luce Georges",
+    "Luce",
+    "Lépine Adrien de",
+    "Lépine François",
+    "Lépine Jean-François",
+    "Lépine",
+    "Lété Nicolas-Antoine",
+    "Maciet Adrien",
+    "Maciet Pierre",
+    "Mack frères",
+    "Made Michel",
+    "Mader & Cie",
+    "Mader François",
+    "Madigout Claude",
+    "Magen & Fils Frères",
+    "Magen Jules",
+    "Mahler Remy",
+    "Maillard Paul",
+    "Mangeot",
+    "Mangin François",
+    "Manufacture d'orgues Blumenroeder",
+    "Manufacture d'orgues Hugo Mayer",
+    "Manufacture d'orgues Jean-Christian Guerrier",
+    "Manufacture d'orgues Jean-Jacques Mounier",
+    "Manufacture d'orgues Muhleisen",
+    "Manufacture d'orgues Robert Freres",
+    "Manufacture de grandes orgues Dalsbaek-Merklin",
+    "Manufacture de grandes orgues Wenner",
+    "Marchal Joseph",
+    "Marchand Pierre",
+    "Maret",
+    "Marraci Benedetto",
+    "Martin J.",
+    "Martin Narcisse",
+    "Mary, dit : Dubois",
+    "Mascard Jacques",
+    "Maucourt Thiébaut",
+    "Mauroumec François",
+    "Mayer Frédéric",
+    "Mea Jacques",
+    "Meklin",
+    "Menard Pierre",
+    "Menard",
+    "Mendez Jean-Philippe",
+    "Mentasti Giovanni",
+    "Merckel Georg Friedrich",
+    "Merklin & Cie",
+    "Merklin & Kühn ",
+    "Merklin & Kühn",
+    "Merklin Bernard",
+    "Merklin Joseph & Cie-Gutschenritter & Decock, société",
+    "Merklin Joseph",
+    "Merklin-Schutze",
+    "Merklin-Schütze Ets",
+    "Meyer Antoine",
+    "Meyssonnier",
+    "Michel Charles",
+    "Michel et Gilbert Pesce",
+    "Michel-Merklin Charles",
+    "Michel-Merklin et Kuhn Ets",
+    "Michiels François Louis",
+    "Michiels Joseph Napoléon",
+    "Micot Jean Baptiste",
+    "Migne",
+    "Millani Antoine",
+    "Miocque Simon Pierre",
+    "Mockers Félix",
+    "Mockers Joseph",
+    "Mockers Louis",
+    "Mockers Théodore",
+    "Mockers Xavier",
+    "Moeller Jean Jacques",
+    "Moeller Johann Jacob",
+    "Moeller Nicolas Martin",
+    "Moitessier Prosper Antoine",
+    "Montbrun Pierre de",
+    "Monturus Guillaume",
+    "Mooser Aloyse",
+    "Morain du Coudray",
+    "Morlet Laurent",
+    "Morlet Thomas",
+    "Moucherel Christophe",
+    "Moucherel Claude",
+    "Mounier Jean-Jacques",
+    "Mourez Guillaume",
+    "Muhleisen Ernest",
+    "Muller Andreas",
+    "Mutin & Koenig",
+    "Mutin Charles",
+    "Mutin-Cavaillé-Coll",
+    "Ménard Pierre",
+    "Müller Erwin",
+    "Neuville Alfred",
+    "Neuville Charles Louis",
+    "Neuville Emile",
+    "Neuville Louis",
+    "Neuville frères",
+    "Nicolas",
+    "Nollet Jean",
+    "Nollet Romain Benedikt",
+    "Négrel Jean Albert",
+    "Oberthur Dominique",
+    "Oldknow Alfred",
+    "Orange Emile",
+    "Orgues Giroud Successeurs",
+    "Ourry Jean",
+    "Parisot Claude",
+    "Parisot Henri",
+    "Parizot Claude",
+    "Parizot Henry",
+    "Parizot Nicolas",
+    "Pascal Antoine",
+    "Paul Domique Gagnaire",
+    "Pellerin et Uys",
+    "Perny Jean Louis",
+    "Pesce",
+    "Pescheur Henry",
+    "Pescheur Pierre",
+    "Petit-Falaize Jacques",
+    "Petrique Joel",
+    "Philippe Maurice",
+    "Phébade Auguste",
+    "Piantanida",
+    "Pirani Pietro",
+    "Plet Laurent",
+    "Poirier Emile",
+    "Pomposi Giovanni Battista",
+    "Poncher Guillaume",
+    "Pons Jean",
+    "Porte Jean-Marc",
+    "Posalgues Jean Jacques",
+    "Promonet Dominique",
+    "Provost Albert",
+    "Puget Baptiste",
+    "Puget Eugène",
+    "Puget Jean-Baptiste",
+    "Puget Maurice",
+    "Puget Théodore",
+    "Puval Nicolas",
+    "Péronard Louis",
+    "Quesnel Philippe",
+    "Quoirin Pascal",
+    "Quoirin Pascal",
+    "Rabiny Grégoire",
+    "Rabiny Joseph",
+    "Rabiny, ou :  Rabigny Joseph",
+    "Ramasco Sagliani Giuseppe",
+    "Raupp Bernard",
+    "Reinburg",
+    "Renard Auguste",
+    "Renard Marcellin",
+    "Renaud Jean",
+    "Renault Clovis",
+    "Renault Pol",
+    "Renoyer François",
+    "Richard Jean",
+    "Riepp Karl Joseph",
+    "Riepp Robert",
+    "Rierp Charles",
+    "Rinckenbach Charles",
+    "Rinckenbach Joseph",
+    "Rinckenbach Martin",
+    "Rinckenbach Théophile",
+    "Rinckenbach Valentin II",
+    "Rinckenbach Valentin",
+    "Ring Friedrich",
+    "Rinkenbach Valentin",
+    "Rivinach Pierre",
+    "Robert",
+    "Robson",
+    "Rochesson Eugène",
+    "Roethinger Alexandre-Edmond",
+    "Roethinger Edmond-Alexandre",
+    "Roethinger Max",
+    "Roger Michel",
+    "Rohrer Jean-Georges",
+    "Rohrer Johann Georg",
+    "Rohrer",
+    "Rolin Charles fils",
+    "Rolin Charles",
+    "Rolin Frédéric",
+    "Rolin Thomassin Jean Baptiste François",
+    "Rolin frères",
+    "Roques",
+    "Rossich Barthélémy",
+    "Rouby",
+    "Royer Charles",
+    "Saby Pierre",
+    "Saint-Martin Joseph de",
+    "Saladini Anton-Pietro",
+    "Saladini Antonius Joseph",
+    "Saladini Pietro",
+    "Salmon Jean-Baptiste",
+    "Salmon Jean-Jacques",
+    "Sals Alain",
+    "Sals Alain",
+    "Sarélot Charles-Emmanuel",
+    "Sarélot Pierre",
+    "Sauer Conrad",
+    "Sauer Johann Conrad",
+    "Saumet Claude",
+    "Sauvage Antoine",
+    "Schaff",
+    "Scherrer Louis",
+    "Scherrer Samson",
+    "Schmidt Godefroy",
+    "Schott Thomas",
+    "Schutze",
+    "Schwaerdt",
+    "Schwartz René",
+    "Schwenkedel Curt",
+    "Schwenkedel Georges",
+    "Schyven Pierre",
+    "Schütze Friedrich",
+    "Serassi Carlo",
+    "Serassi Giuseppe",
+    "Silbermann André",
+    "Silbermann Gottfried",
+    "Silbermann Jean André",
+    "Silbermann Jean Daniel",
+    "Silbermann Johann-Josias",
+    "Simon Lucien",
+    "Simon Lucien",
+    "Skinner Ernst",
+    "Skinner, Organ Company",
+    "Somer N.",
+    "Soutoul Bertyl",
+    "Spamann Adrian",
+    "Spinola Giorgio",
+    "Staudt Franz",
+    "Stein Jean-Joseph",
+    "Steinmann Patrick",
+    "Steinmetz Laurent",
+    "Stezle Joseph",
+    "Stieffell Ferdinand",
+    "Stiehr Auguste",
+    "Stiehr Joseph",
+    "Stiehr Michel",
+    "Stiehr Théodore",
+    "Stiehr Xavier",
+    "Stiehr frères",
+    "Stiehr-Mockers",
+    "Stiernemann",
+    "Stoltz Edouard",
+    "Stoltz Eugène",
+    "Stoltz Frères",
+    "Stoltz Jean-Baptiste",
+    "Stoltz frères",
+    "Sturm Olivier",
+    "Suret Antoine Louis",
+    "Suret Louis Antoine",
+    "Séquiès Antoine",
+    "Söhne",
+    "Texier Guillaume",
+    "Thibaut Claude",
+    "Thiérry Alexandre",
+    "Thiérry Pierre",
+    "Thourel Bernard",
+    "Thuau Pierre",
+    "Thébault Henri",
+    "Théodore Eugène",
+    "Théodore Puget & Fils",
+    "Tiehr",
+    "Tourneur Etienne",
+    "Toussaint Jean Nicolas",
+    "Toussaint Jean-Pierre",
+    "Toussaint Nicolas",
+    "Toussaint Nicolas",
+    "Treuillot Jean",
+    "Tribuot Julien",
+    "Tribuot Marcellin",
+    "Tricoteaux",
+    "Tronchet Victor, abbé",
+    "Tronci Filippo",
+    "Tronci Guiseppe",
+    "Troseille",
+    "Trouillet",
+    "Trèves Jehan de",
+    "Tschanoun Bernard",
+    "Tuau",
+    "Unfer Albin",
+    "Vaignon Henri",
+    "Valentin Claude",
+    "Valentin Georges",
+    "Vallin Eugène",
+    "Valoncini Frederico",
+    "Valtrin",
+    "Van Belle Guillaume",
+    "Van Belle Jan",
+    "Van Bever Adrien",
+    "Van Bever Frères",
+    "Van Bever Salomon",
+    "Van Peteghem Pierre Charles",
+    "Van den Brande Félix",
+    "Van der Haeghen Jean Joseph",
+    "Vandoren-Loncke",
+    "Vautrin Jean François",
+    "Vegezzi Carlo",
+    "Verchneider Jean-Frédéric",
+    "Verniole Crespin",
+    "Verschneider Charles",
+    "Verschneider Jean Georges",
+    "Verschneider Jean-Frédéric I",
+    "Verschneider Jean-Frédéric II",
+    "Verschneider Nicolas",
+    "Verschneider frères",
+    "Verschneider-Kempf",
+    "Vilcoq",
+    "Villard Jean-Pascal",
+    "Villers Claude de",
+    "Villers Jehan de",
+    "Villers Thomas de",
+    "Vincent Antoine",
+    "Voegeli Jean Melchior",
+    "Voiriot Aîné",
+    "Voit & Söhne",
+    "Voit",
+    "Von Esch",
+    "Vonesche Jean Jodoc",
+    "Vool J. J.",
+    "Vuisbecq Jean",
+    "Walcker Eberhard-Friedrich",
+    "Waltrin Hubert",
+    "Waltrin Joseph",
+    "Waltrin fils",
+    "Weber J.",
+    "Wegmann Georges",
+    "Weigle Friedrich",
+    "Wenner & Gotty",
+    "Wenner Georges",
+    "Werle Johann-Conrad",
+    "Wetzel Charles",
+    "Wetzel Edgard",
+    "Wetzel Emile",
+    "Wetzel Jacques",
+    "Wetzel Martin",
+    "Wetzel frères",
+    "Wild Alfred",
+    "Wolf Othon",
+    "Wyskirclum Matthieu",
+    "Zeiger Aimé",
+    "Zeiger Augustin",
+    "Zimmermann",
+    "Zipfell François Joseph",
+    "d'Oc Orgues"
+  ],
+  "types_jeux": [
+    {
+      "nom": "Baryton",
+      "hauteur": "4"
+    },
+    {
+      "nom": "Basse",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Basson",
+      "hauteur": "16"
+    },
+    {
+      "nom": "Basson",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Basson-hautbois",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Basson-Musette",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Bombarde",
+      "hauteur": "32"
+    },
+    {
+      "nom": "Bombarde",
+      "hauteur": "16"
+    },
+    {
+      "nom": "Bourdon",
+      "hauteur": "32"
+    },
+    {
+      "nom": "Bourdon",
+      "hauteur": "16"
+    },
+    {
+      "nom": "Bourdon",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Bourdon",
+      "hauteur": "4"
+    },
+    {
+      "nom": "Bourdon à cheminée",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Bourdon-flûte",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Carillon",
+      "hauteur": "III"
+    },
+    {
+      "nom": "Chalumeau",
+      "hauteur": "4"
+    },
+    {
+      "nom": "Clairon",
+      "hauteur": "4"
+    },
+    {
+      "nom": "Clarinette",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Contrebasse",
+      "hauteur": "32"
+    },
+    {
+      "nom": "Contrebasse",
+      "hauteur": "16"
+    },
+    {
+      "nom": "Cor de nuit",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Cornet",
+      "hauteur": "III"
+    },
+    {
+      "nom": "Cornet",
+      "hauteur": "V"
+    },
+    {
+      "nom": "Corno-dolce",
+      "hauteur": " 4"
+    },
+    {
+      "nom": "Cromorne",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Cymbale",
+      "hauteur": "III"
+    },
+    {
+      "nom": "Diapason",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Doublette",
+      "hauteur": "2"
+    },
+    {
+      "nom": "​Dulciana",
+      "hauteur": "8"
+    },
+    {
+      "nom": "​Dulciane",
+      "hauteur": "8"
+    },
+    {
+      "nom": "​Dulciana",
+      "hauteur": "4"
+    },
+    {
+      "nom": "Flageolet",
+      "hauteur": "2"
+    },
+    {
+      "nom": "Flageolet",
+      "hauteur": "1"
+    },
+    {
+      "nom": "Flûte",
+      "hauteur": "16"
+    },
+    {
+      "nom": "Flûte",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Flûte",
+      "hauteur": "4"
+    },
+    {
+      "nom": "​Flûte",
+      "hauteur": "2"
+    },
+    {
+      "nom": "Flûte à cheminée",
+      "hauteur": "4"
+    },
+    {
+      "nom": "Flûte à fuseau",
+      "hauteur": "4"
+    },
+    {
+      "nom": "Flûte à pavillon",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Flûte chalumeau",
+      "hauteur": "4"
+    },
+    {
+      "nom": "Flûte conique",
+      "hauteur": "4"
+    },
+    {
+      "nom": "Flûte creuse",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Flûte douce",
+      "hauteur": "4"
+    },
+    {
+      "nom": "Flûte harmonique",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Flûte harmonique",
+      "hauteur": "4"
+    },
+    {
+      "nom": "Flûte majeure",
+      "hauteur": "8"
+    },
+    {
+      "nom": "​Flûte octaviante",
+      "hauteur": "4"
+    },
+    {
+      "nom": "Flûte pyramidale",
+      "hauteur": "4"
+    },
+    {
+      "nom": "Flûte sylvestre",
+      "hauteur": "2"
+    },
+    {
+      "nom": "Flûte traversière",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Fourniture",
+      "hauteur": "III"
+    },
+    {
+      "nom": "Fourniture",
+      "hauteur": "IV"
+    },
+    {
+      "nom": "Fourniture",
+      "hauteur": "V"
+    },
+    {
+      "nom": "Fugara",
+      "hauteur": "4"
+    },
+    {
+      "nom": "Gambe",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Gambe",
+      "hauteur": "4"
+    },
+    {
+      "nom": "Gambe conique",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Gemshorn",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Gemshorn",
+      "hauteur": "4"
+    },
+    {
+      "nom": "Grande tierce",
+      "hauteur": "3 1/5"
+    },
+    {
+      "nom": "Grande tierce",
+      "hauteur": "6 2/5"
+    },
+    {
+      "nom": "Grosse tierce",
+      "hauteur": "3 1/5"
+    },
+    {
+      "nom": "Grosse tierce",
+      "hauteur": "6 2/5"
+    },
+    {
+      "nom": "Gros Bourdon",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Hautbois",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Kéraulophone",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Larigot",
+      "hauteur": "1 1/3"
+    },
+    {
+      "nom": "Montre",
+      "hauteur": "32"
+    },
+    {
+      "nom": "Montre",
+      "hauteur": "16"
+    },
+    {
+      "nom": "Montre",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Montre",
+      "hauteur": "4"
+    },
+    {
+      "nom": "Montre",
+      "hauteur": "2"
+    },
+    {
+      "nom": "Musette",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Musette",
+      "hauteur": "4"
+    },
+    {
+      "nom": "Musette",
+      "hauteur": "2"
+    },
+    {
+      "nom": "Nasard",
+      "hauteur": "2 2/3"
+    },
+    {
+      "nom": "Nazard",
+      "hauteur": "2 2/3"
+    },
+    {
+      "nom": "Octavebasse",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Octave",
+      "hauteur": "4"
+    },
+    {
+      "nom": "Octavin",
+      "hauteur": "2"
+    },
+    {
+      "nom": "Piccolo",
+      "hauteur": "1"
+    },
+    {
+      "nom": "Plein-jeu",
+      "hauteur": "III"
+    },
+    {
+      "nom": "Plein-jeu",
+      "hauteur": "IV"
+    },
+    {
+      "nom": "Plein-jeu",
+      "hauteur": "V"
+    },
+    {
+      "nom": "Prestant",
+      "hauteur": "4"
+    },
+    {
+      "nom": "Principal",
+      "hauteur": "16"
+    },
+    {
+      "nom": "Principal",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Principal",
+      "hauteur": "4"
+    },
+    {
+      "nom": "Quarte",
+      "hauteur": "2"
+    },
+    {
+      "nom": "Quarte de Nazard",
+      "hauteur": "2"
+    },
+    {
+      "nom": "Quintadena",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Quintaton",
+      "hauteur": "16"
+    },
+    {
+      "nom": "Quintaton",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Quinte",
+      "hauteur": "2 1/3"
+    },
+    {
+      "nom": "Quinte",
+      "hauteur": "5 1/3"
+    },
+    {
+      "nom": "Quinte",
+      "hauteur": "10 2/3"
+    },
+    {
+      "nom": "Quinte",
+      "hauteur": "12"
+    },
+    {
+      "nom": "Ranquette",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Ranquette",
+      "hauteur": "4"
+    },
+    {
+      "nom": "Ranquette",
+      "hauteur": "2"
+    },
+    {
+      "nom": "Régale",
+      "hauteur": "16"
+    },
+    {
+      "nom": "Régale",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Régale",
+      "hauteur": "4"
+    },
+    {
+      "nom": "Salicional",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Septième",
+      "hauteur": "1 1/7"
+    },
+    {
+      "nom": "Septième",
+      "hauteur": "2 2/7"
+    },
+    {
+      "nom": "Grande Septième",
+      "hauteur": "4 4/7"
+    },
+    {
+      "nom": "Septième",
+      "hauteur": "4 4/7"
+    },
+    {
+      "nom": "Sesquialtera",
+      "hauteur": "II"
+    },
+    {
+      "nom": "Sifflet",
+      "hauteur": "1"
+    },
+    {
+      "nom": "​Soubasse",
+      "hauteur": "32"
+    },
+    {
+      "nom": "​Soubasse",
+      "hauteur": "16"
+    },
+    {
+      "nom": "Tierce",
+      "hauteur": "1 3/5"
+    },
+    {
+      "nom": "Trombone",
+      "hauteur": "16"
+    },
+    {
+      "nom": "Trompette",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Trompette",
+      "hauteur": "solo 8"
+    },
+    {
+      "nom": "Unda Maris",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Viole de gambe",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Viole d'amour",
+      "hauteur": "4"
+    },
+    {
+      "nom": "Violon",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Violoncelle",
+      "hauteur": "16"
+    },
+    {
+      "nom": "Violoncelle",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Voix céleste",
+      "hauteur": "8"
+    },
+    {
+      "nom": "Voix humaine",
+      "hauteur": "8"
+    }
+  ]
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
