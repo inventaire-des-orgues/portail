@@ -10,10 +10,10 @@
   <div class="album">
     <div class="container-fluid">
       <div class="row">
-        <div class="col-md-3">
-          <form action="" method="get">
-            <div class="card sticky-top" id="filtercard">
-              <div class="card-body">
+        <div class="col-md-3 ">
+          <div class="card sticky-top" id="filtercard">
+            <div class="card-body">
+              <form action="" class="" method="get">
                 <h3 class="mb-3">Rechercher</h3>
                 <div class="form-group">
                   <label for="">Commune</label>
@@ -26,9 +26,9 @@
                 <div class="form-group">
                   <button type="submit" class="btn btn-sm btn-outline-primary">Chercher</button>
                 </div>
-              </div>
+              </form>
             </div>
-          </form>
+          </div>
         </div>
         <div class="col-md-9">
           <div class="row">
@@ -41,17 +41,16 @@
                     <img class="card-img-top" src="{% static 'img/default.jpg' %}" alt="Image par défaut">
                   {% endif %}
                   <div class="card-body">
-                    <span class="text-muted">{{ orgue.designation }}</span> <br>
+                    <span class="text-muted">{{ orgue.get_designation_display }}</span> <br>
                     <small class="text-muted">{{ orgue.edifice }}</small>
                     <br>
                     <small class="text-muted">{{ orgue.commune }}</small>
-
                   </div>
                   {% if user.is_authenticated %}
                     <div class="card-footer">
-                        <small class="text-muted">{{ orgue.completion }}%</small>
+                      <small class="text-muted">{{ orgue.completion }}%</small>
                       <div class="progress" style="height:5px">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ orgue.completion }}%;" aria-valuenow="{{ orgue.completion }}" aria-valuemin="0" aria-valuemax="100"> </div>
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ orgue.completion }}%;" aria-valuenow="{{ orgue.completion }}" aria-valuemin="0" aria-valuemax="100"></div>
                       </div>
                     </div>
 
