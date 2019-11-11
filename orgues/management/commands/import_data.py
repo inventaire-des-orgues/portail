@@ -20,12 +20,12 @@ class Command(BaseCommand):
                     codification=row["Codification_instrument"],
                 )
                 try:
-                    orgue.slug = "orgue-{}-{}-{}".format(slugify(orgue.commune),slugify(orgue.edifice),orgue.pk)
                     orgue.commune = row["Commune"]
                     orgue.code_insee = row["Code_insee"]
                     orgue.edifice = row["Edifice"]
                     orgue.departement = row["Nom_departement"]
                     orgue.region = row["Nom_region"]
+                    orgue.slug = "orgue-{}-{}-{}".format(slugify(orgue.commune),slugify(orgue.edifice),orgue.pk)
                     if row["Latitude"]:
                         orgue.latitude = float(row["Latitude"])
                     if row["Longitude"]:

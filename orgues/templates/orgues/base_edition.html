@@ -14,7 +14,8 @@
             <a class="list-group-item" href="{% url 'orgues:orgue-detail' orgue.slug %}">
               <i class="fa fa-arrow-left"></i> Retour</a>
             <a class="list-group-item d-flex justify-content-between align-items-center
-              {% block information_active %}{% endblock %}" href="{% url 'orgues:orgue-update' orgue.uuid %}">Informations
+              {% block information_active %}{% endblock %}" href="{% url 'orgues:orgue-update' orgue.uuid %}">
+              Informations
             </a>
             <a class="list-group-item d-flex justify-content-between align-items-center
               {% block geographie_active %}{% endblock %}" href="{% url 'orgues:orgue-update-geographie' orgue.uuid %}">Géographie

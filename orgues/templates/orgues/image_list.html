@@ -22,6 +22,7 @@
     {% endfor %}
   {% endif %}
   <table class="table table-bordered">
+  {% if object_list %}
     <thead>
     <tr>
       <th>Image</th>
@@ -32,6 +33,7 @@
       <th width="30px">Supprimer</th>
     </tr>
     </thead>
+  {% endif %}
     <tbody>
     {% for image in object_list %}
       <tr>
