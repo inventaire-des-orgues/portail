@@ -16,6 +16,6 @@ jobs:
           cd /var/www/portail
           source /var/www/pythonenv/bin/activate
           pip3 install -r requirements.txt
-          python manage.py collectstatic
+          python manage.py collectstatic --noinput
           python manage.py migrate
           sudo systemctl restart nginx
