@@ -113,3 +113,11 @@ db.sqlite3
 static/media/
 
 dev.py
+production.py
+
+
+
+
+
+
+
