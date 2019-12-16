@@ -111,3 +111,5 @@ db.sqlite3
 
 # User uploaded files
 static/media/
+
+dev.py
