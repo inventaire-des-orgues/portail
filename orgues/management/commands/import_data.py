@@ -15,7 +15,9 @@ class Command(BaseCommand):
 
         with open(os.path.join(settings.BASE_DIR, "orgues", "management", "commands","data.csv"), "r") as f:
             reader = csv.DictReader(f, delimiter=";")
-            for row in reader:
+            for index,row in enumerate(reader):
+                if index % 100 == 0:
+                    print(index,"lignes traitées")
                 orgue,  created = Orgue.objects.get_or_create(
                     codification=row["Codification_instrument"],
                 )
