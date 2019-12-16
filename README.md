@@ -20,15 +20,19 @@ python manage.py runserver
 
 
 
-# Faire un import de données : 
+# Faire un import de données sur le serveur : 
 
 
-Remplacer le fichier `/var/www/portail/orgues/management/commands/data.csv` 
+Remplacer le fichier `/var/www/portail/orgues/management/commands/data.csv`.  
+A noter : la colonne `Codification_instrument` est utilisée comme pivot pour retrouver des orgues potentiellement déjà existants dans la base de données avant
+de les mettre à jour.  
 
-Puis lancer :
+Lancer :
 
 ```
 source /var/www/pythonenv/bin/activate
 cd /var/www/portail
 python manage.py import_data
 ```
+
+
