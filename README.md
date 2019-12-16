@@ -17,3 +17,18 @@ python manage.py import_data
 python manage.py createsuperuser
 python manage.py runserver
 ```
+
+
+
+# Faire un import de données : 
+
+
+Remplacer le fichier `/var/www/portail/orgues/management/commands/data.csv` 
+
+Puis lancer :
+
+```
+source /var/www/pythonenv/bin/activate
+cd /var/www/portail
+python manage.py import_data
+```
