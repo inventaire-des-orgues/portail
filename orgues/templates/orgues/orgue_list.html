@@ -1,72 +1,63 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-
-  <section class="sectionheader" style="height:110px;position:relative;">
-    <h2 class="text-center text-white" style="z-index:5;position:absolute;left:50%;top:50%;transform: translate(-50%,-50%)">Les orgues</h2>
-    <div style="background:#183564;position:absolute;top:0;bottom:0;left:0;right:0;z-index:3;opacity:0.5;"></div>
-    <div style="background:url('{% static 'img/papyrus.png' %}');z-index:2;filter: grayscale(100%);position:absolute;top:0;bottom:0;left:0;right:0;"></div>
-  </section>
-  <div class="album">
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-md-3 ">
-          <div class="card sticky-top" id="filtercard">
-            <div class="card-body">
-              <form action="" class="" method="get">
-                <h3 class="mb-3">Rechercher</h3>
-                <div class="form-group">
-                  <label for="">Commune</label>
-                  <input type="text" name="commune" placeholder="Rechercher une commune" class="form-control" value="{{ request.GET.commune }}">
-                </div>
-                <div class="form-group">
-                  <label for="">Edifice</label>
-                  <input type="text" name="edifice" placeholder="Rechercher un édifice" class="form-control" value="{{ request.GET.edifice }}">
-                </div>
-                <div class="form-group">
-                  <button type="submit" class="btn btn-sm btn-outline-primary">Chercher</button>
-                </div>
-              </form>
+<section class="sectionheader" style="height:110px;position:relative;">
+  <h2 class="text-center text-white" style="z-index:5;position:absolute;left:50%;top:50%;transform: translate(-50%,-50%)">Les orgues</h2>
+  <div style="background:#183564;position:absolute;top:0;bottom:0;left:0;right:0;z-index:3;opacity:0.5;"></div>
+  <div style="background:url('{% static 'img/papyrus.png' %}');z-index:2;filter: grayscale(100%);position:absolute;top:0;bottom:0;left:0;right:0;"></div>
+</section>
+<div class="album">
+  <div class="container-fluid">
+    <div class="card mb-3">
+      <div class="card-body">
+        <form action="" class="" method="get">
+          <div class="row">
+            <div class="form-group col-5">
+              <label for="">Commune</label>
+              <input type="text" name="commune" placeholder="Rechercher une commune" class="form-control" value="{{ request.GET.commune }}">
+            </div>
+            <div class="form-group col-5">
+              <label for="">Edifice</label>
+              <input type="text" name="edifice" placeholder="Rechercher un édifice" class="form-control" value="{{ request.GET.edifice }}">
+            </div>
+            <div class="form-group col-2">
+              <label for="">&nbsp;</label> <br>
+              <button type="submit" class="btn btn-sm btn-outline-primary">Chercher</button>
             </div>
           </div>
-        </div>
-        <div class="col-md-9">
-          <div class="row">
-            {% for orgue in object_list %}
-              <div class="col-md-4">
-                <div class="card mb-4 box-shadow vignette" onclick="window.location = '{% url 'orgues:orgue-detail' orgue.slug %}'">
-                  {% if orgue.image_principale %}
-                    <img class="card-img-top" src="{{ orgue.image_principale.thumbnail.url }}" alt="Photo orgue {{ orgue }}">
-                  {% else %}
-                    <img class="card-img-top" src="{% static 'img/default.jpg' %}" alt="Image par défaut">
-                  {% endif %}
-                  <div class="card-body">
-                    <span class="text-muted">{{ orgue.get_designation_display }}</span> <br>
-                    <small class="text-muted">{{ orgue.edifice }}</small>
-                    <br>
-                    <small class="text-muted">{{ orgue.commune }}</small>
-                  </div>
-                  {% if user.is_authenticated %}
-                    <div class="card-footer">
-                      <small class="text-muted">{{ orgue.completion }}%</small>
-                      <div class="progress" style="height:5px">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ orgue.completion }}%;" aria-valuenow="{{ orgue.completion }}" aria-valuemin="0" aria-valuemax="100"></div>
-                      </div>
-                    </div>
-
-                  {% endif %}
-                </div>
-              </div>
-            {% endfor %}
-          </div>
-          {% include 'paginator.html' %}
-        </div>
+        </form>
       </div>
     </div>
+    <div class="row">
+      {% for orgue in object_list %}
+      <div class="col-md-4">
+        <div class="card mb-4 box-shadow vignette" onclick="window.location = '{% url 'orgues:orgue-detail' orgue.slug %}'">
+          {% if orgue.image_principale %}
+          <img class="card-img-top" src="{{ orgue.image_principale.thumbnail.url }}" alt="Photo orgue {{ orgue }}">
+          {% else %}
+          <img class="card-img-top" src="{% static 'img/default.jpg' %}" alt="Image par défaut">
+          {% endif %}
+          <div class="card-body">
+            <span class="text-muted">{{ orgue.get_designation_display }}</span> <br>
+            <small class="text-muted">{{ orgue.edifice }}</small>
+            <br>
+            <small class="text-muted">{{ orgue.commune }}</small>
+          </div>
+          {% if user.is_authenticated %}
+          <div class="card-footer">
+            <small class="text-muted">{{ orgue.completion }}%</small>
+            <div class="progress" style="height:5px">
+              <div class="progress-bar bg-success" role="progressbar" style="width: {{ orgue.completion }}%;" aria-valuenow="{{ orgue.completion }}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% include 'paginator.html' %}
   </div>
+</div>
 {% endblock %}
-
 {% block js_extra %}
-
-
 {% endblock %}
