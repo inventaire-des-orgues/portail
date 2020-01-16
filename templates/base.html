@@ -26,6 +26,7 @@
     <p class="text-center my-3" id="menu">
       <a class="p-3 text-muted" href="{% url 'orgues:orgue-list' %}">Les orgues</a>
       <a class="p-3 text-muted" href="{% url 'orgues:orgue-carte' %}">La carte</a>
+      <a class="p-3 text-muted" href="https://docs.inventaire-des-orgues.fr">Aide</a>
       {% if user.is_authenticated %}
         <a class="p-3 text-muted" href="{% url 'logout' %}">Déconnexion</a>
       {% else %}
@@ -44,7 +45,7 @@
     <p class="float-right">
       <a href="#">Retour en haut</a>
     </p>
-    <p>Inventaire des orgues de France réalisé par <a href="https://fabdev.fr">Fabdev</a> V.0.0.1</p>
+    <p>Inventaire des orgues de France réalisé par <a href="https://fabdev.fr">Fabdev</a>V0.0.2</p>
   </div>
 </footer>
 <!-- Bootstrap core JavaScript
