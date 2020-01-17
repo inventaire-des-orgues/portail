@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
 from django.forms import modelformset_factory
 from django.http import JsonResponse
@@ -13,7 +14,7 @@ from .forms import OrgueCreateForm, EvenementForm, ClavierForm, OrgueGeneralInfo
 from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeClavier, TypeJeu, Fichier, Image
 
 
-class OrgueList(ListView):
+class OrgueList(LoginRequiredMixin, ListView):
     """
     Listing des orgues
     """
@@ -36,7 +37,7 @@ class OrgueList(ListView):
         return context
 
 
-class OrgueCarte(TemplateView):
+class OrgueCarte(LoginRequiredMixin,TemplateView):
     """
     Cartographie des orgues (gérée par Leaflet)
     """
@@ -49,10 +50,12 @@ class OrgueListJS(View):
     """
     def get(self, request, *args, **kwargs):
         data = Orgue.objects.filter(latitude__isnull=False).values("pk", "slug", "edifice", "latitude", "longitude")
+
+
         return JsonResponse(list(data), safe=False)
 
 
-class OrgueDetail(DetailView):
+class OrgueDetail(LoginRequiredMixin, DetailView):
     """
     Vue de détail (lecture seule) d'un orgue
     """
