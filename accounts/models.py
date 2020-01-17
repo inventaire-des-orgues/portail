@@ -26,7 +26,6 @@ class User(AbstractUser):
         editable=False
     )
 
-
     class Meta:
         ordering = ["last_name"]
 
