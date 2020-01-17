@@ -13,6 +13,7 @@ from .forms import OrgueCreateForm, EvenementForm, ClavierForm, OrgueGeneralInfo
     FichierForm, ImageForm, OrgueGeographieForm
 from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeClavier, TypeJeu, Fichier, Image
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 class OrgueList(LoginRequiredMixin, ListView):
     """
@@ -49,9 +50,7 @@ class OrgueListJS(View):
     Cette vue est requêtée par Leaflet lors de l'affichage de la carte de France
     """
     def get(self, request, *args, **kwargs):
-        data = Orgue.objects.filter(latitude__isnull=False).values("pk", "slug", "edifice", "latitude", "longitude")
-
-
+        data = Orgue.objects.filter(latitude__isnull=False).values("pk", "slug", "commune", "edifice", "latitude", "longitude")
         return JsonResponse(list(data), safe=False)
 
 
