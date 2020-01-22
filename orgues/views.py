@@ -31,7 +31,6 @@ class OrgueList(LoginRequiredMixin, ListView):
         if facteur_pk:
             self.facteur = get_object_or_404(Facteur,pk=facteur_pk)
             orgue_ids = Evenement.objects.filter(facteurs=self.facteur).values_list("orgue_id", flat=True)
-            print(orgue_ids)
             queryset = queryset.filter(id__in=orgue_ids)
         else:
             self.facteur = None

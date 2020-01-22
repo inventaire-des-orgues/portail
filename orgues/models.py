@@ -142,6 +142,13 @@ class Orgue(models.Model):
         return self.evenements.filter(type="construction").first()
 
     @property
+    def evenements_facteurs(self):
+        """
+        Liste des évènements qui ont au moins un facteur
+        """
+        return self.evenements.filter(facteurs__isnull=False).prefetch_related("facteurs")
+
+    @property
     def jeux_count(self):
         """
         Nombre de jeux de l'instrument
@@ -290,7 +297,7 @@ class Evenement(models.Model):
 
     @property
     def facteurs_str(self):
-        return ",".join(self.facteurs.values_list("nom", flat=True))
+        return ", ".join(self.facteurs.values_list("nom", flat=True))
 
 
 class TypeJeu(models.Model):
