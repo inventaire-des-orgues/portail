@@ -115,33 +115,32 @@
           <div class="card mb-4 box-shadow">
             <div class="card-body">
               <dl>
-                {% if orgue.classements %}
-                  <dt>Classement <span data-toggle="tooltip" data-title="Monuments historiques">MH*</span></dt>
-                  <dd>
-                    {% for evenement in orgue.classements %}
-                      <strong>{{ evenement.annee }} :</strong>
-                      {% if evenement.type == "classement_buffet" %}
-                        Buffet ({{ evenement.facteur }})
-                      {% elif evenement.type == "classement_instrument" %}
-                        Partie instrumentale ({{ evenement.facteur }})
-                      {% endif %} <br>
-                    {% endfor %}
-                  </dd>
-                {% endif %}
+                <dt>Construction</dt>
+                <dd>
+                  {% if orgue.construction %}
+                    {{ orgue.construction.facteurs.all|join:", " }} ({{ orgue.construction.annee }})
+                  {% else %}
+                    Pas d'information
+                  {% endif %}
+                </dd>
+                <dt>Elévation</dt>
+                <dd>{{ orgue.get_elevation_display|default_if_none:"Non définie" }}</dd>
+                <dt>Etat</dt>
+                <dd>{{ orgue.get_etat_display|default_if_none:"Non défini" }}</dd>
+                <hr>
                 <dt>Claviers</dt>
                 <dd>{{ orgue.claviers.count }}</dd>
                 <dt>Jeux</dt>
                 <dd>{{ orgue.jeux_count }}</dd>
-                <dt>Etat</dt>
-                <dd>{{ orgue.get_etat_display|default_if_none:"Non défini" }}</dd>
-                <dt>Elévation</dt>
-                <dd>{{ orgue.get_elevation_display|default_if_none:"Non définie" }}</dd>
                 <dt>Pédalier</dt>
                 <dd>{% if orgue.has_pedalier %}Oui{% else %}Non{% endif %}</dd>
+                <dt>Boîte expressive</dt>
+                <dd>{% if orgue.boite_expressive %}Oui{% else %}Non{% endif %}</dd>
                 <dt>Transmission</dt>
                 <dd>{{ orgue.get_transmission_notes_display |default_if_none:"Non définie" }}</dd>
                 <dt>Tirage des jeux</dt>
                 <dd>{{ orgue.get_tirage_jeux_display|default_if_none:"Non défini" }}</dd>
+                <hr>
                 <dt>Propriétaire</dt>
                 <dd>{{ orgue.get_proprietaire_display|default_if_none:"Non défini" }}</dd>
                 {% if orgue.association %}

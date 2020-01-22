@@ -24,7 +24,7 @@ class OrgueGeneralInfoForm(forms.ModelForm):
         widgets = {
             'buffet': forms.Textarea(attrs={'rows': 5, 'cols': 15}),
             'console': forms.Textarea(attrs={'rows': 5, 'cols': 15}),
-            'description': forms.Textarea(attrs={'rows':5, 'cols': 15}),
+            'description': forms.Textarea(attrs={'rows': 5, 'cols': 15}),
             'commentaire_admin': forms.Textarea(attrs={'rows': 2, 'cols': 15}),
         }
 
@@ -33,9 +33,10 @@ TUYAUTERIE_COLUMNS = {
     "transmission_notes": 4,
     "diapason": 4,
     "tirage_jeux": 4,
+    "boite_expressive": 12,
     "sommiers": 12,
     "soufflerie": 12,
-    "commentaire_tuyauterie": 12
+    "commentaire_tuyauterie": 12,
 }
 
 

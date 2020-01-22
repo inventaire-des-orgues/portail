@@ -61,7 +61,8 @@ class Orgue(models.Model):
     )
     # Informations générales
 
-    designation = models.CharField(max_length=300, verbose_name="Désignation",choices=CHOIX_DESIGNATION, default="Orgue")
+    designation = models.CharField(max_length=300, verbose_name="Désignation", choices=CHOIX_DESIGNATION,
+                                   default="Orgue")
     codification = models.CharField(max_length=100)
     description = models.TextField(blank=True, help_text="Description générale")
     proprietaire = models.CharField(max_length=20, choices=CHOIX_PROPRIETAIRE, default="commune")
@@ -70,8 +71,10 @@ class Orgue(models.Model):
     association_lien = models.URLField(max_length=300, null=True, blank=True,
                                        help_text="Lien vers le site de l'association")
     is_polyphone = models.BooleanField(default=False, verbose_name="Orgue polyphone de la manufacture Debierre ?")
+    boite_expressive = models.BooleanField(default=False, verbose_name="Est-ce que l'orgue a une boîte expressive ?")
     etat = models.CharField(max_length=20, choices=CHOIX_ETAT, null=True, blank=True)
-    elevation = models.CharField(max_length=20, choices=CHOIX_ELEVATION, null=True, blank=True,verbose_name="Elévation")
+    elevation = models.CharField(max_length=20, choices=CHOIX_ELEVATION, null=True, blank=True,
+                                 verbose_name="Elévation")
     buffet = models.TextField(null=True, blank=True, help_text="Description du buffet et de son état")
     console = models.TextField(null=True, blank=True,
                                help_text="Description de la console (ex: en fenêtre, séparée organiste tourné vers l'orgue ...)")
@@ -132,13 +135,11 @@ class Orgue(models.Model):
         return self.claviers.filter(type__nom="Pédalier").exists()
 
     @property
-    def facteurs(self):
+    def construction(self):
         """
-        Liste des facteurs ayant participé à la construction de l'instrument
+        Evenement de construction de l'orgue (contient année et facteur)
         """
-        construction = self.evenements.filter(type="construction").first()
-        if construction:
-            return construction.facteurs.all()
+        return self.evenements.filter(type="construction").first()
 
     @property
     def jeux_count(self):
@@ -287,10 +288,9 @@ class Evenement(models.Model):
     class Meta:
         ordering = ["annee"]
 
-
     @property
     def facteurs_str(self):
-        return ",".join(self.facteurs.values_list("nom",flat=True))
+        return ",".join(self.facteurs.values_list("nom", flat=True))
 
 
 class TypeJeu(models.Model):
