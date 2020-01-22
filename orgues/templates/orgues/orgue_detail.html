@@ -22,6 +22,23 @@
             <div class="card-body">
               <div class="row">
                 <div class="col-md-12 order-md-1 py-20">
+                  <h4 class="titre-fiche">Composition</h4>
+                  {% for clavier in orgue.claviers.all %}
+                    {% include 'orgues/clavier_detail.html' %}
+                  {% empty %}
+                    <div class="col-12">
+                      <p class="text-muted">Aucun clavier</p>
+                    </div>
+                  {% endfor %}
+
+                  <hr>
+                  <h4 class="titre-fiche">Frise chronologique</h4>
+                  {% if object.evenements.count %}
+                    <div id='timeline-embed' style="width: 100%; height: 400px"></div>
+                  {% else %}
+                    <p class="text-muted">Aucun événement</p>
+                  {% endif %}
+                  <hr>
                   <h4 class="titre-fiche">Description</h4>
                   <p>
                     {{ object.description|linebreaksbr }}
@@ -38,44 +55,23 @@
                   {% else %}
                     <p class="text-muted">Pas de description</p>
                   {% endif %}
-
-                  <hr>
-                  <h4 class="titre-fiche">Frise chronologique</h4>
-                  {% if object.evenements.count %}
-                    <div id='timeline-embed' style="width: 100%; height: 400px"></div>
-                  {% else %}
-                    <p class="text-muted">Aucun événement</p>
-                  {% endif %}
                   <hr>
                   <h4 class="titre-fiche">Tuyauterie</h4>
-                  <div class="row">
-                    <div class="col-12">
-                      <p>
-                        {{ orgue.commentaire_tuyauterie|linebreaksbr }}
-                      </p>
-                      <p class="font-weight-bold mb-1">Sommiers</p>
-                      {% if orgue.sommiers %}
-                        <p>{{ orgue.sommiers|linebreaksbr }}</p>
-                      {% else %}
-                        <p class="text-muted">Pas de description</p>
-                      {% endif %}
-                      <p class="font-weight-bold mb-1">Soufflerie</p>
-                      {% if orgue.soufflerie %}
-                        <p>{{ orgue.soufflerie|linebreaksbr }}</p>
-                      {% else %}
-                        <p class="text-muted">Pas de description</p>
-                      {% endif %}
-
-                      <p class="font-weight-bold mb-1">Composition</p>
-                    </div>
-                    {% for clavier in orgue.claviers.all %}
-                      {% include 'orgues/clavier_detail.html' %}
-                    {% empty %}
-                      <div class="col-12">
-                        <p class="text-muted">Aucun clavier</p>
-                      </div>
-                    {% endfor %}
-                  </div>
+                  <p>
+                    {{ orgue.commentaire_tuyauterie|linebreaksbr }}
+                  </p>
+                  <p class="font-weight-bold mb-1">Sommiers</p>
+                  {% if orgue.sommiers %}
+                    <p>{{ orgue.sommiers|linebreaksbr }}</p>
+                  {% else %}
+                    <p class="text-muted">Pas de description</p>
+                  {% endif %}
+                  <p class="font-weight-bold mb-1">Soufflerie</p>
+                  {% if orgue.soufflerie %}
+                    <p>{{ orgue.soufflerie|linebreaksbr }}</p>
+                  {% else %}
+                    <p class="text-muted">Pas de description</p>
+                  {% endif %}
                   {% if orgue.images.count %}
                     <h4 class="titre-fiche">Images</h4>
                     <div>
