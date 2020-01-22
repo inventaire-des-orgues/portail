@@ -15,6 +15,7 @@ from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeClavier, TypeJe
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+
 class OrgueList(LoginRequiredMixin, ListView):
     """
     Listing des orgues
@@ -31,6 +32,7 @@ class OrgueList(LoginRequiredMixin, ListView):
         if edifice:
             queryset = queryset.filter(edifice__icontains=edifice)
 
+        queryset = queryset.annotate(clavier_count=Count('claviers'))
         return queryset.order_by('-modified_date')
 
     def get_context_data(self, **kwargs):
@@ -38,7 +40,7 @@ class OrgueList(LoginRequiredMixin, ListView):
         return context
 
 
-class OrgueCarte(LoginRequiredMixin,TemplateView):
+class OrgueCarte(LoginRequiredMixin, TemplateView):
     """
     Cartographie des orgues (gérée par Leaflet)
     """
@@ -49,8 +51,10 @@ class OrgueListJS(View):
     """
     Cette vue est requêtée par Leaflet lors de l'affichage de la carte de France
     """
+
     def get(self, request, *args, **kwargs):
-        data = Orgue.objects.filter(latitude__isnull=False).values("pk", "slug", "commune", "edifice", "latitude", "longitude")
+        data = Orgue.objects.filter(latitude__isnull=False).values("pk", "slug", "commune", "edifice", "latitude",
+                                                                   "longitude")
         return JsonResponse(list(data), safe=False)
 
 
@@ -67,6 +71,7 @@ class OrgueDetailExemple(View):
     """
     Redirige vers la fiche la mieux renseignée du site
     """
+
     def get(self, request, *args, **kwargs):
         orgue = Orgue.objects.order_by('-completion').first()
         return redirect(orgue.get_absolute_url())

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load orgue_tags %}
 {% block content %}
   <section class="sectionheader" style="height:110px;position:relative;">
     <h2 class="text-center text-white" style="z-index:5;position:absolute;left:50%;top:50%;transform: translate(-50%,-50%)">Les orgues</h2>
@@ -46,6 +47,7 @@
                   {% endif %}
                   <div class="card-body">
                     <span class="text-muted">{{ orgue.get_designation_display }}</span> <br>
+                    <small class="text-muted">Claviers : {% resume_clavier orgue.clavier_count orgue.has_pedalier %}</small> <br>
                     <small class="text-muted">{{ orgue.edifice }}</small>
                     <br>
                     <small class="text-muted">{{ orgue.commune }}</small>
