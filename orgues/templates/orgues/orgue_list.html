@@ -12,15 +12,15 @@
       <div class="card-body">
         <form action="" class="" method="get">
           <div class="row">
-            <div class="form-group col-5">
+            <div class="form-group col-md-5">
               <label for="">Commune</label>
               <input type="text" name="commune" placeholder="Rechercher une commune" class="form-control" value="{{ request.GET.commune }}">
             </div>
-            <div class="form-group col-5">
+            <div class="form-group col-md-5">
               <label for="">Edifice</label>
               <input type="text" name="edifice" placeholder="Rechercher un édifice" class="form-control" value="{{ request.GET.edifice }}">
             </div>
-            <div class="form-group col-2">
+            <div class="form-group col-md-2">
               <label for="">&nbsp;</label> <br>
               <button type="submit" class="btn btn-sm btn-outline-primary">Chercher</button>
             </div>
@@ -30,8 +30,8 @@
     </div>
     <div class="row">
       {% for orgue in object_list %}
-      <div class="col-md-4">
-        <div class="card mb-4 box-shadow vignette" onclick="window.location = '{% url 'orgues:orgue-detail' orgue.slug %}'">
+      <div class="col-xs-12 col-md-6 col-lg-4 col-xl-3 p-4 ">
+        <div class="card  box-shadow vignette" onclick="window.location = '{% url 'orgues:orgue-detail' orgue.slug %}'">
           {% if orgue.image_principale %}
           <img class="card-img-top" src="{{ orgue.image_principale.thumbnail.url }}" alt="Photo orgue {{ orgue }}">
           {% else %}

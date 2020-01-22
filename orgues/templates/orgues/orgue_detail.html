@@ -11,10 +11,10 @@
 {% block content %}
   {% include 'orgues/orgue_header.html' %}
 
-  <div class="album p-5 bg-light">
+  <div class="album  bg-light">
     <div class="container-fluid">
       <div class="row justify-content-center">
-        <div class="col-lg-9">
+        <div class="col-lg-9 order-2 col-md-12 order-lg-1  ">
           <div class="card mb-4 box-shadow">
             {% if object.image_principale %}
               <img class="card-img-top" src="{{ orgue.image_principale.image.url }}" alt="Card image cap" style="height:400px">
@@ -111,7 +111,7 @@
             </div>
           </div>
         </div>
-        <div class="col-lg-3">
+        <div class="col-lg-3 order-1 col-md-12 order-lg-2  mb-3">
           <div class="card mb-4 box-shadow">
             <div class="card-body">
               <dl>
@@ -159,9 +159,9 @@
 
                 <div id="mapid" style="height:150px;margin-bottom:10px"></div>
               {% endif %}
+              <a href="{% url 'orgues:orgue-update' object.uuid %}" class="btn btn-primary btn-block">éditer</a>
             </div>
           </div>
-          <a href="{% url 'orgues:orgue-update' object.uuid %}" class="btn btn-primary btn-block">éditer</a>
         </div>
       </div>
     </div>
@@ -197,7 +197,7 @@
 
       var additionalOptions = {
         timenav_height: 130,
-        timenav_height_min : 60
+        timenav_height_min: 60
       }
       new TL.Timeline('timeline-embed', timeline_json, additionalOptions);
     </script>
