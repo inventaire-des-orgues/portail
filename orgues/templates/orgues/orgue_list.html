@@ -24,11 +24,15 @@
                 </div>
                 <div class="form-group">
                   <label for="">Facteur</label> <br>
-                  <select name="" id="id_facteur" name="facteur">
+                  <select id="id_facteur" name="facteur">
                     <option value="">Tous les facteurs</option>
+                    {% if facteur %}
+                      <option value="{{ facteur.pk }}" selected="selected">{{ facteur }}</option>
+                    {% endif %}
                   </select>
                 </div>
                 <div class="form-group">
+                  <a href="{% url 'orgues:orgue-list' %}" class="btn btn-sm btn-outline-secondary">Annuler</a>
                   <button type="submit" class="btn btn-sm btn-outline-primary">Chercher</button>
                 </div>
               </form>
@@ -47,7 +51,8 @@
                   {% endif %}
                   <div class="card-body">
                     <span class="text-muted">{{ orgue.get_designation_display }}</span> <br>
-                    <small class="text-muted">Claviers : {% resume_clavier orgue.clavier_count orgue.has_pedalier %}</small> <br>
+                    <small class="text-muted">Claviers : {% resume_clavier orgue.clavier_count orgue.has_pedalier %}</small>
+                    <br>
                     <small class="text-muted">{{ orgue.edifice }}</small>
                     <br>
                     <small class="text-muted">{{ orgue.commune }}</small>
@@ -65,7 +70,7 @@
             {% endfor %}
           </div>
         </div>
-        ë
+        
       </div>
       {% include 'paginator.html' %}
     </div>
@@ -75,7 +80,7 @@
 
 
   <script>
-  $("#id_facteur").select2({
+    $("#id_facteur").select2({
       placeholder: 'Choisir un facteur',
       ajax: {
         url: '{% url 'orgues:facteur-list-js' %}',
