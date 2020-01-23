@@ -44,14 +44,14 @@
 
             <div class="card box-shadow vignette mb-4" onclick="window.location = '{% url 'orgues:orgue-detail' orgue.slug %}'">
               <div class="row no-gutters">
-                <div class="col-sm-3" style="background: #868e96;">
+                <div class="col-sm-4 col-lg-3" style="background: #868e96;">
                   {% if orgue.image_principale %}
                     <img class="card-img-top h-100" src="{{ orgue.image_principale.thumbnail.url }}" alt="Photo orgue {{ orgue }}">
                   {% else %}
                     <img class="card-img-top" src="{% static 'img/default.jpg' %}" alt="Image par défaut">
                   {% endif %}
                 </div>
-                <div class="col-sm-9">
+                <div class="col-sm-8 col-lg-9">
                   <div class="card-body">
                     <h5 class="card-title">{{ orgue.get_designation_display }}</h5>
                     <p class="my-1 text-muted">
