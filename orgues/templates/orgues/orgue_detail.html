@@ -41,35 +41,31 @@
                   {% endif %}
                   <hr>
                   <h4 class="titre-fiche">Description</h4>
-                  <p>
-                    {{ object.description|linebreaksbr }}
-                  </p>
+                  <div id="description"></div>
                   <p class="font-weight-bold mb-1">Buffet</p>
                   {% if orgue.buffet %}
-                    <p>{{ orgue.buffet|linebreaksbr }}</p>
+                    <div id="buffet"></div>
                   {% else %}
                     <p class="text-muted">Pas de description</p>
                   {% endif %}
                   <p class="font-weight-bold mb-1">Console</p>
                   {% if orgue.console %}
-                    <p>{{ orgue.console|linebreaksbr }}</p>
+                    <div id="console"></div>
                   {% else %}
                     <p class="text-muted">Pas de description</p>
                   {% endif %}
                   <hr>
                   <h4 class="titre-fiche">Tuyauterie</h4>
-                  <p>
-                    {{ orgue.commentaire_tuyauterie|linebreaksbr }}
-                  </p>
+                  <div id="tuyauterie"></div>
                   <p class="font-weight-bold mb-1">Sommiers</p>
                   {% if orgue.sommiers %}
-                    <p>{{ orgue.sommiers|linebreaksbr }}</p>
+                    <div id="sommiers"></div>
                   {% else %}
                     <p class="text-muted">Pas de description</p>
                   {% endif %}
                   <p class="font-weight-bold mb-1">Soufflerie</p>
                   {% if orgue.soufflerie %}
-                    <p>{{ orgue.soufflerie|linebreaksbr }}</p>
+                    <div id="soufflerie"></div>
                   {% else %}
                     <p class="text-muted">Pas de description</p>
                   {% endif %}
@@ -166,6 +162,17 @@
 
 {% block js_extra %}
   {% if object.evenements.count %}
+
+    <script>
+      var converter = new showdown.Converter();
+      $("#description").html(converter.makeHtml("{{ object.description|escapejs }}"))
+      $("#buffet").html(converter.makeHtml("{{ object.buffet|escapejs }}"))
+      $("#console").html(converter.makeHtml("{{ orgue.console|escapejs }}"))
+      $("#tuyauterie").html(converter.makeHtml("{{ orgue.commentaire_tuyauterie|escapejs }}"))
+      $("#tuyauterie").html(converter.makeHtml("{{ orgue.commentaire_tuyauterie|escapejs }}"))
+      $("#sommiers").html(converter.makeHtml("{{ orgue.sommiers|escapejs }}"))
+      $("#soufflerie").html(converter.makeHtml("{{ orgue.soufflerie|escapejs }}"))
+    </script>
     <!-- 1 -->
     <link title="timeline-styles" rel="stylesheet" href="https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css">
 
@@ -175,6 +182,8 @@
 
     <!-- 3 -->
     <script type="text/javascript">
+          var converter = new showdown.Converter();
+
       // The TL.Timeline constructor takes at least two arguments:
       // the id of the Timeline container (no '#'), and
       // the URL to your JSON data file or Google spreadsheet.
@@ -186,7 +195,7 @@
 
         "events": [
           {% for evenement in object.evenements.all %}
-            {"start_date": {"year": "{{evenement.annee}}"}, "text": {"headline": "<b>{{ evenement.get_type_display }}</b>", "text": "{{ evenement.description|escapejs }}"}},
+            {"start_date": {"year": "{{evenement.annee}}"}, "text": {"headline": "<b>{{ evenement.get_type_display }}</b>", "text": converter.makeHtml("{{ evenement.description|escapejs }}")}},
           {% endfor %}
         ]
       };
