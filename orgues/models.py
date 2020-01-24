@@ -273,7 +273,7 @@ class Evenement(models.Model):
         ("reconstruction", "Reconstruction"),
         ("destruction", "Destruction"),
         ("restauration", "Restauration"),
-        ("demenagement", "Déménagement"),
+        ("deplacement", "Déplacement"),
         ("relevage", "Relevage"),
         ("disparition", "Disparition"),
         ("degats", "Dégâts"),
