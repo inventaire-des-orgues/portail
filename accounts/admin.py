@@ -20,6 +20,7 @@ class UserCreateForm(UserCreationForm):
 
 class FabUserAdmin(UserAdmin):
     add_form = UserCreateForm
+    list_display = ('first_name','last_name','email','last_login',)
     prepopulated_fields = {'username': ('first_name', 'last_name',)}
 
     fieldsets = (
