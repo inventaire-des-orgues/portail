@@ -42,5 +42,7 @@ class TypeClavierAdmin(admin.ModelAdmin):
 
 @admin.register(Orgue)
 class OrgueAdmin(admin.ModelAdmin):
-    list_display = ('designation',)
+    list_display = ('designation','commune','edifice','updated_by_user','modified_date')
     inlines = [ClavierInline]
+    list_filter = ('updated_by_user',)
+    search_fields = ('commune','edifice',)
