@@ -48,12 +48,6 @@
                   {% else %}
                     <p class="text-muted">Pas de description</p>
                   {% endif %}
-                  <p class="font-weight-bold mb-1">Console</p>
-                  {% if orgue.console %}
-                    <div id="console"></div>
-                  {% else %}
-                    <p class="text-muted">Pas de description</p>
-                  {% endif %}
                   <hr>
                   <h4 class="titre-fiche">Tuyauterie</h4>
                   <div id="tuyauterie"></div>
@@ -120,7 +114,7 @@
                 </dd>
                 <dt>Elévation</dt>
                 <dd>{{ orgue.get_elevation_display|default_if_none:"Non définie" }}</dd>
-                <dt>Etat</dt>
+                <dt>Etat de l'instrument</dt>
                 <dd>{{ orgue.get_etat_display|default_if_none:"Non défini" }}</dd>
                 <hr>
                 <dt>Claviers</dt>
@@ -131,7 +125,7 @@
                 <dd>{% if orgue.has_pedalier %}Oui{% else %}Non{% endif %}</dd>
                 <dt>Boîte expressive</dt>
                 <dd>{% if orgue.boite_expressive %}Oui{% else %}Non{% endif %}</dd>
-                <dt>Transmission</dt>
+                <dt>Transmission des notes</dt>
                 <dd>{{ orgue.get_transmission_notes_display |default_if_none:"Non définie" }}</dd>
                 <dt>Tirage des jeux</dt>
                 <dd>{{ orgue.get_tirage_jeux_display|default_if_none:"Non défini" }}</dd>
@@ -169,8 +163,6 @@
       var converter = new showdown.Converter();
       $("#description").html(converter.makeHtml("{{ object.description|escapejs }}"))
       $("#buffet").html(converter.makeHtml("{{ object.buffet|escapejs }}"))
-      $("#console").html(converter.makeHtml("{{ orgue.console|escapejs }}"))
-      $("#tuyauterie").html(converter.makeHtml("{{ orgue.commentaire_tuyauterie|escapejs }}"))
       $("#tuyauterie").html(converter.makeHtml("{{ orgue.commentaire_tuyauterie|escapejs }}"))
       $("#sommiers").html(converter.makeHtml("{{ orgue.sommiers|escapejs }}"))
       $("#soufflerie").html(converter.makeHtml("{{ orgue.soufflerie|escapejs }}"))

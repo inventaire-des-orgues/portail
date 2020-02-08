@@ -24,7 +24,8 @@
         {% include 'orgues/clavier_detail.html' %}
       {% endfor %}
       <div class="col-3">
-        <button type="submit" name="next" value="{% url 'orgues:clavier-create' orgue.uuid %}" class="btn new-clavier-btn">Ajouter un clavier</button>
+        <button type="submit" name="next" value="{% url 'orgues:clavier-create' orgue.uuid %}" class="btn new-clavier-btn">
+          Ajouter un plan sonore</button>
       </div>
     </div>
     <hr>

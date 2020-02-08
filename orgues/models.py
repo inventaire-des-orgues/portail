@@ -44,9 +44,12 @@ class Orgue(models.Model):
     CHOIX_TRANSMISSION = (
         ("mecanique", "Mécanique"),
         ("mecanique_suspendue", "Mécanique suspendue"),
+        ("mecanique_balanciers", "Mécanique à balanciers"),
         ("mecanique_barker", "Mécanique Barker"),
         ("pneumatique", "Pneumatique"),
         ("electrique", "Electrique"),
+        ("electrique_proportionnelle", "Electrique proportionnelle"),
+        ("electro-pneumatique", "Electro-pneumatique"),
     )
 
     CHOIX_SOURCE =  [
@@ -59,6 +62,7 @@ class Orgue(models.Model):
         ("mecanique", "Mécanique"),
         ("pneumatique", "Pneumatique"),
         ("electrique", "Electrique"),
+        ("electro-pneumatique", "Electro-pneumatique"),
     )
     CHOIX_DESIGNATION = (
         ("grand_orgue", "Grand orgue"),
@@ -83,9 +87,6 @@ class Orgue(models.Model):
     elevation = models.CharField(max_length=20, choices=CHOIX_ELEVATION, null=True, blank=True,
                                  verbose_name="Elévation")
     buffet = models.TextField(null=True, blank=True, help_text="Description du buffet et de son état.Syntaxe markdown supportée.")
-    console = models.TextField(null=True, blank=True,
-                               help_text="Description de la console (ex: en fenêtre, séparée organiste tourné vers l'orgue ...).Syntaxe markdown supportée.")
-
     commentaire_admin = models.TextField(null=True, blank=True,
                                          help_text="Ce commentaire n'est visible qu'en mode édition")
 
@@ -110,8 +111,8 @@ class Orgue(models.Model):
     sommiers = models.TextField(null=True, blank=True, help_text="Syntaxe markdown supportée")
     soufflerie = models.TextField(null=True, blank=True, help_text="Syntaxe markdown supportée")
     transmission_notes = models.CharField(max_length=20, choices=CHOIX_TRANSMISSION, null=True, blank=True)
-    tirage_jeux = models.CharField(max_length=20, choices=CHOIX_TIRAGE, null=True, blank=True)
-    commentaire_tuyauterie = models.TextField(blank=True, help_text="Syntaxe markdown supportée")
+    tirage_jeux = models.CharField(verbose_name="Tirage des jeux", max_length=20, choices=CHOIX_TIRAGE, null=True, blank=True)
+    commentaire_tuyauterie = models.TextField(verbose_name="Description de la tuyauterie", blank=True, help_text="Syntaxe markdown supportée")
 
     # Auto générés
 
@@ -190,7 +191,6 @@ class Orgue(models.Model):
             self.etat,
             self.elevation,
             self.buffet,
-            self.console,
             self.edifice,
             self.commune,
             self.departement,

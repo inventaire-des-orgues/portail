@@ -15,26 +15,30 @@
               <i class="fa fa-arrow-left"></i> Retour</a>
             <a class="list-group-item d-flex justify-content-between align-items-center
               {% block information_active %}{% endblock %}" href="{% url 'orgues:orgue-update' orgue.uuid %}">
-              Informations
+              Informations générales
             </a>
             <a class="list-group-item d-flex justify-content-between align-items-center
-              {% block geographie_active %}{% endblock %}" href="{% url 'orgues:orgue-update-geographie' orgue.uuid %}">Géographie
+              {% block geographie_active %}{% endblock %}" href="{% url 'orgues:orgue-update-geographie' orgue.uuid %}">
+              Géographie
             </a>
             <a class="list-group-item d-flex justify-content-between align-items-center
               {% block evenement_active %}{% endblock %}" href="{% url 'orgues:evenement-list' orgue.uuid %}">
-              Evénements
+              Historique
               <span class="badge badge-light badge-pill">{{ orgue.evenements.count }}</span>
             </a>
             <a class="list-group-item d-flex justify-content-between align-items-center
-              {% block tuyauterie_active %}{% endblock %}" href="{% url 'orgues:orgue-update-tuyauterie' orgue.uuid %}">Tuyauterie
+              {% block tuyauterie_active %}{% endblock %}" href="{% url 'orgues:orgue-update-tuyauterie' orgue.uuid %}">
+              Tuyauterie
               <span class="badge badge-light badge-pill">{{ orgue.claviers.count }}</span>
             </a>
             <a class="list-group-item d-flex justify-content-between align-items-center
-              {% block image_active %}{% endblock %}" href="{% url 'orgues:image-list' orgue.uuid %}">Images
+              {% block image_active %}{% endblock %}" href="{% url 'orgues:image-list' orgue.uuid %}">
+              Images
               <span class="badge badge-light badge-pill">{{ orgue.images.count }}</span>
             </a>
             <a class="list-group-item d-flex justify-content-between align-items-center
-              {% block fichier_active %}{% endblock %}" href="{% url 'orgues:fichier-list' orgue.uuid %}">Fichiers
+              {% block fichier_active %}{% endblock %}" href="{% url 'orgues:fichier-list' orgue.uuid %}">
+              Fichiers
               <span class="badge badge-light badge-pill">{{ orgue.fichiers.count }}</span>
             </a>
           </div>
