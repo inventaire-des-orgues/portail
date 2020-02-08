@@ -24,7 +24,7 @@ class OrgueGeneralInfoForm(forms.ModelForm):
         widgets = {
             'buffet': forms.Textarea(attrs={'rows': 5, 'cols': 15}),
             'console': forms.Textarea(attrs={'rows': 5, 'cols': 15}),
-            'description': forms.Textarea(attrs={'rows':5, 'cols': 15}),
+            'description': forms.Textarea(attrs={'rows': 5, 'cols': 15}),
             'commentaire_admin': forms.Textarea(attrs={'rows': 2, 'cols': 15}),
         }
 
@@ -33,24 +33,37 @@ TUYAUTERIE_COLUMNS = {
     "transmission_notes": 4,
     "diapason": 4,
     "tirage_jeux": 4,
+    "boite_expressive": 12,
     "sommiers": 12,
     "soufflerie": 12,
-    "commentaire_tuyauterie": 12
+    "commentaire_tuyauterie": 12,
+}
+
+GEOGRAPHIE_COLUMNS = {
+    "commune": 12,
+    "code_insee": 12,
+    "ancienne_commune": 12,
+    "code_departement": 2,
+    "departement": 5,
+    "region": 5,
+    "latitude": 6,
+    "longitude": 6,
+    "osm_type": 6,
+    "osm_id": 6,
+    "osm_latitude": 6,
+    "osm_longitude": 6
 }
 
 
 class OrgueGeographieForm(forms.ModelForm):
     class Meta:
         model = Orgue
-        fields = [
-            "commune",
-            "code_insee",
-            "ancienne_commune",
-            "departement",
-            "region",
-            "latitude",
-            "longitude"
-        ]
+        fields = GEOGRAPHIE_COLUMNS.keys()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs['columns'] = GEOGRAPHIE_COLUMNS[field]
 
 
 class OrgueTuyauterieForm(forms.ModelForm):

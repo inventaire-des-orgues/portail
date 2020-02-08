@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
 from django.forms import modelformset_factory
 from django.http import JsonResponse
@@ -26,19 +27,28 @@ class OrgueList(LoginRequiredMixin, ListView):
         queryset = super().get_queryset()
         commune = self.request.GET.get("commune")
         edifice = self.request.GET.get("edifice")
+        facteur_pk = self.request.GET.get("facteur")
+        if facteur_pk:
+            self.facteur = get_object_or_404(Facteur,pk=facteur_pk)
+            orgue_ids = Evenement.objects.filter(facteurs=self.facteur).values_list("orgue_id", flat=True)
+            queryset = queryset.filter(id__in=orgue_ids)
+        else:
+            self.facteur = None
         if commune:
             queryset = queryset.filter(commune__icontains=commune)
         if edifice:
             queryset = queryset.filter(edifice__icontains=edifice)
 
+        queryset = queryset.annotate(clavier_count=Count('claviers'))
         return queryset.order_by('-modified_date')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
+        context["facteur"] = self.facteur
         return context
 
 
-class OrgueCarte(TemplateView):
+class OrgueCarte(LoginRequiredMixin, TemplateView):
     """
     Cartographie des orgues (gérée par Leaflet)
     """
@@ -49,12 +59,14 @@ class OrgueListJS(View):
     """
     Cette vue est requêtée par Leaflet lors de l'affichage de la carte de France
     """
+
     def get(self, request, *args, **kwargs):
-        data = Orgue.objects.filter(latitude__isnull=False).values("pk", "slug", "commune", "edifice", "latitude", "longitude")
+        data = Orgue.objects.filter(latitude__isnull=False).values("pk", "slug", "commune", "edifice", "latitude",
+                                                                   "longitude")
         return JsonResponse(list(data), safe=False)
 
 
-class OrgueDetail(DetailView):
+class OrgueDetail(LoginRequiredMixin, DetailView):
     """
     Vue de détail (lecture seule) d'un orgue
     """
@@ -67,6 +79,7 @@ class OrgueDetailExemple(View):
     """
     Redirige vers la fiche la mieux renseignée du site
     """
+
     def get(self, request, *args, **kwargs):
         orgue = Orgue.objects.order_by('-completion').first()
         return redirect(orgue.get_absolute_url())

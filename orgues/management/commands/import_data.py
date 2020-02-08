@@ -13,7 +13,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        with open(os.path.join(settings.BASE_DIR, "orgues", "management", "commands","data.csv"), "r") as f:
+        with open(os.path.join(settings.BASE_DIR, "orgues", "management", "commands","data.csv"), "r", encoding="utf-8") as f:
             reader = csv.DictReader(f, delimiter=";")
             for index,row in enumerate(reader):
                 if index % 100 == 0:

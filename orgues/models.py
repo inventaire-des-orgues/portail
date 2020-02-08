@@ -49,6 +49,12 @@ class Orgue(models.Model):
         ("electrique", "Electrique"),
     )
 
+    CHOIX_SOURCE =  [
+        "Disque",
+        "Web",
+        "Ouvrage"
+    ],
+
     CHOIX_TIRAGE = (
         ("mecanique", "Mécanique"),
         ("pneumatique", "Pneumatique"),
@@ -61,20 +67,24 @@ class Orgue(models.Model):
     )
     # Informations générales
 
-    designation = models.CharField(max_length=300, verbose_name="Désignation",choices=CHOIX_DESIGNATION, default="Orgue")
+    designation = models.CharField(max_length=300, verbose_name="Désignation", choices=CHOIX_DESIGNATION,
+                                   default="Orgue")
     codification = models.CharField(max_length=100)
-    description = models.TextField(blank=True, help_text="Description générale")
+    references_palissy = models.CharField(max_length=20, null=True, blank=True)
+    description = models.TextField(blank=True, help_text="Description générale. Syntaxe markdown supportée.")
     proprietaire = models.CharField(max_length=20, choices=CHOIX_PROPRIETAIRE, default="commune")
     association = models.CharField(max_length=100, null=True, blank=True,
                                    help_text="Nom de l'association en charge de l'instrument")
     association_lien = models.URLField(max_length=300, null=True, blank=True,
                                        help_text="Lien vers le site de l'association")
     is_polyphone = models.BooleanField(default=False, verbose_name="Orgue polyphone de la manufacture Debierre ?")
+    boite_expressive = models.BooleanField(default=False, verbose_name="Est-ce que l'orgue a une boîte expressive ?")
     etat = models.CharField(max_length=20, choices=CHOIX_ETAT, null=True, blank=True)
-    elevation = models.CharField(max_length=20, choices=CHOIX_ELEVATION, null=True, blank=True,verbose_name="Elévation")
-    buffet = models.TextField(null=True, blank=True, help_text="Description du buffet et de son état")
+    elevation = models.CharField(max_length=20, choices=CHOIX_ELEVATION, null=True, blank=True,
+                                 verbose_name="Elévation")
+    buffet = models.TextField(null=True, blank=True, help_text="Description du buffet et de son état.Syntaxe markdown supportée.")
     console = models.TextField(null=True, blank=True,
-                               help_text="Description de la console (ex: en fenêtre, séparée organiste tourné vers l'orgue ...)")
+                               help_text="Description de la console (ex: en fenêtre, séparée organiste tourné vers l'orgue ...).Syntaxe markdown supportée.")
 
     commentaire_admin = models.TextField(null=True, blank=True,
                                          help_text="Ce commentaire n'est visible qu'en mode édition")
@@ -85,18 +95,23 @@ class Orgue(models.Model):
     code_insee = models.CharField(max_length=200)
     ancienne_commune = models.CharField(max_length=100, null=True, blank=True)
     departement = models.CharField(max_length=50)
+    code_departement = models.CharField(max_length=5)
     region = models.CharField(max_length=50)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
+    osm_type = models.CharField(verbose_name="Type open street map", max_length=20, null=True, blank=True)
+    osm_id = models.CharField(verbose_name="Id open street map", max_length=20, null=True, blank=True)
+    osm_latitude = models.FloatField(verbose_name="Latitude open street map", null=True, blank=True)
+    osm_longitude = models.FloatField(verbose_name="Longitude open street map", null=True, blank=True)
 
     # Tuyauterie
     diapason = models.CharField(max_length=15, null=True, blank=True,
                                 help_text="Hauteur en Hertz du A2 joué par le prestant 4")
-    sommiers = models.TextField(null=True, blank=True)
-    soufflerie = models.TextField(null=True, blank=True)
+    sommiers = models.TextField(null=True, blank=True, help_text="Syntaxe markdown supportée")
+    soufflerie = models.TextField(null=True, blank=True, help_text="Syntaxe markdown supportée")
     transmission_notes = models.CharField(max_length=20, choices=CHOIX_TRANSMISSION, null=True, blank=True)
     tirage_jeux = models.CharField(max_length=20, choices=CHOIX_TIRAGE, null=True, blank=True)
-    commentaire_tuyauterie = models.TextField(blank=True)
+    commentaire_tuyauterie = models.TextField(blank=True, help_text="Syntaxe markdown supportée")
 
     # Auto générés
 
@@ -132,13 +147,18 @@ class Orgue(models.Model):
         return self.claviers.filter(type__nom="Pédalier").exists()
 
     @property
-    def facteurs(self):
+    def construction(self):
         """
-        Liste des facteurs ayant participé à la construction de l'instrument
+        Evenement de construction de l'orgue (contient année et facteur)
         """
-        construction = self.evenements.filter(type="construction").first()
-        if construction:
-            return construction.facteurs.all()
+        return self.evenements.filter(type="construction").first()
+
+    @property
+    def evenements_facteurs(self):
+        """
+        Liste des évènements qui ont au moins un facteur
+        """
+        return self.evenements.filter(facteurs__isnull=False).prefetch_related("facteurs")
 
     @property
     def jeux_count(self):
@@ -265,7 +285,7 @@ class Evenement(models.Model):
         ("reconstruction", "Reconstruction"),
         ("destruction", "Destruction"),
         ("restauration", "Restauration"),
-        ("demenagement", "Déménagement"),
+        ("deplacement", "Déplacement"),
         ("relevage", "Relevage"),
         ("disparition", "Disparition"),
         ("degats", "Dégâts"),
@@ -276,7 +296,7 @@ class Evenement(models.Model):
     annee = models.IntegerField(verbose_name="Année")
     type = models.CharField(max_length=20, choices=CHOIX_TYPE)
     facteurs = models.ManyToManyField(Facteur, blank=True)
-    description = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True, help_text="Syntaxe markdown supportée")
 
     # Champs automatiques
     orgue = models.ForeignKey(Orgue, on_delete=models.CASCADE, related_name="evenements")
@@ -287,10 +307,9 @@ class Evenement(models.Model):
     class Meta:
         ordering = ["annee"]
 
-
     @property
     def facteurs_str(self):
-        return ",".join(self.facteurs.values_list("nom",flat=True))
+        return ", ".join(self.facteurs.values_list("nom", flat=True))
 
 
 class TypeJeu(models.Model):
