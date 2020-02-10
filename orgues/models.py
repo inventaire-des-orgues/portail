@@ -112,13 +112,13 @@ class Orgue(models.Model):
     # Partie instrumentale
     diapason = models.CharField(max_length=15, null=True, blank=True,
                                 help_text="Hauteur en Hertz du A2 joué par le prestant 4")
-    sommiers = models.TextField(null=True, blank=True, help_text="Syntaxe markdown supportée")
-    soufflerie = models.TextField(null=True, blank=True, help_text="Syntaxe markdown supportée")
+    sommiers = models.TextField(null=True, blank=True)
+    soufflerie = models.TextField(null=True, blank=True)
     transmission_notes = models.CharField(max_length=20, choices=CHOIX_TRANSMISSION, null=True, blank=True)
     transmission_commentaire = models.CharField(max_length=100, null=True, blank=True, help_text="Max 100 caractères")
     tirage_jeux = models.CharField(max_length=20, choices=CHOIX_TIRAGE, null=True, blank=True)
     tirage_commentaire = models.CharField(max_length=100, null=True, blank=True, help_text="Max 100 caractères")
-    commentaire_tuyauterie = models.TextField(blank=True, help_text="Syntaxe markdown supportée")
+    commentaire_tuyauterie = models.TextField(blank=True)
     accessoires = models.ManyToManyField('Accessoire', blank=True)
 
     # Auto générés
