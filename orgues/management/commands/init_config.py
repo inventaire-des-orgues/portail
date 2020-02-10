@@ -1,10 +1,9 @@
 import os
 import json
-import csv
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from orgues.models import TypeClavier, Facteur,TypeJeu
+from orgues.models import TypeClavier, Facteur, TypeJeu, Accessoire
 
 
 class Command(BaseCommand):
@@ -19,7 +18,11 @@ class Command(BaseCommand):
             TypeClavier.objects.get_or_create(nom=type_clavier)
 
         for jeu in data["types_jeux"]:
-            TypeJeu.objects.get_or_create(nom=jeu["nom"],hauteur=jeu["hauteur"])
+
+            TypeJeu.objects.get_or_create(nom=jeu["nom"].strip(), hauteur=jeu["hauteur"].strip())
 
         for facteur in data["facteurs"]:
             Facteur.objects.get_or_create(nom=facteur)
+
+        for accessoire in data["type_accessoire"]:
+            Accessoire.objects.get_or_create(nom=accessoire)

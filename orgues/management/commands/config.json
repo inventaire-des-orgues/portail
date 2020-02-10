@@ -21,11 +21,18 @@
     "Fernwerk"
   ],
   "type_accessoire": [
-    "accouplement",
-    "tirasse",
-    "trémolo",
-    "appel",
-    "renvoi"
+    "Tremblant",
+    "Trémolo",
+    "Accouplement Pos./G.O.",
+    "Accouplement Réc./G.O.",
+    "Accouplement Pos./Réc.",
+    "Accouplement Réc./Pos.",
+    "Tirasse Pos.",
+    "Tirasse Réc.",
+    "Tirasse G.O.",
+    "Anches G.O.",
+    "Anches Pos.",
+    "Anches Réc."
   ],
   "transposition": [
     "16",
