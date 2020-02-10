@@ -39,7 +39,7 @@ TUYAUTERIE_COLUMNS = {
     "commentaire_tuyauterie": 12,
 }
 
-GEOGRAPHIE_COLUMNS = {
+LOCALISATION_COLUMNS = {
     "commune": 12,
     "code_insee": 12,
     "ancienne_commune": 12,
@@ -51,19 +51,19 @@ GEOGRAPHIE_COLUMNS = {
     "osm_type": 6,
     "osm_id": 6,
     "osm_latitude": 6,
-    "osm_longitude": 6
+    "osm_longitude": 6,
 }
 
 
-class OrgueGeographieForm(forms.ModelForm):
+class OrgueLocalisationForm(forms.ModelForm):
     class Meta:
         model = Orgue
-        fields = GEOGRAPHIE_COLUMNS.keys()
+        fields = LOCALISATION_COLUMNS.keys()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields:
-            self.fields[field].widget.attrs['columns'] = GEOGRAPHIE_COLUMNS[field]
+            self.fields[field].widget.attrs['columns'] = LOCALISATION_COLUMNS[field]
 
 
 class OrgueTuyauterieForm(forms.ModelForm):

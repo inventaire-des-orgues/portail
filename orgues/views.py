@@ -134,13 +134,14 @@ class OrgueUpdateTuyauterie(OrgueUpdate):
         return self.request.POST.get("next", success_url)
 
 
-class OrgueUpdateGeographie(OrgueUpdate):
-    form_class = OrgueGeographieForm
-    success_message = 'Géographie mise à jour, merci !'
-    template_name = "orgues/orgue_form_geographie.html"
+class OrgueUpdateLocalisation(OrgueUpdate):
+    form_class = orgue_forms.OrgueLocalisationForm
+    permission_required = "orgues.change_localisation"
+    success_message = 'Localisation mise à jour, merci !'
+    template_name = "orgues/orgue_form_localisation.html"
 
     def get_success_url(self):
-        success_url = reverse('orgues:orgue-update-geographie', args=(self.object.uuid,))
+        success_url = reverse('orgues:orgue-update-localisation', args=(self.object.uuid,))
         return self.request.POST.get("next", success_url)
 
 

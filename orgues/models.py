@@ -127,10 +127,18 @@ class Orgue(models.Model):
 
     class Meta:
         ordering = ['-created_date']
+        permissions = [('change_localisation', "Peut modifier les informations de localisation d'un orgue")]
 
     def save(self, *args, **kwargs):
         self.completion = self.calcul_completion()
         super().save(*args, **kwargs)
+
+    @property
+    def is_expressif(self):
+        """
+        Un orgue est expressif si au moins un de ses claviers l'est
+        """
+        return self.claviers.filter(is_expressif=True).exists()
 
     @property
     def image_principale(self):
