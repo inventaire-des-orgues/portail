@@ -21,21 +21,23 @@ class OrgueList(LoginRequiredMixin, ListView):
     Listing des orgues
     """
     model = Orgue
-    paginate_by = 30
+    paginate_by = 20
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        commune = self.request.GET.get("commune")
+        commune = self.request.GET.get("commune","|")
+        self.selected_commune,code_insee = commune.split("|")
+
         edifice = self.request.GET.get("edifice")
         facteur_pk = self.request.GET.get("facteur")
         if facteur_pk:
-            self.facteur = get_object_or_404(Facteur,pk=facteur_pk)
+            self.facteur = get_object_or_404(Facteur, pk=facteur_pk)
             orgue_ids = Evenement.objects.filter(facteurs=self.facteur).values_list("orgue_id", flat=True)
             queryset = queryset.filter(id__in=orgue_ids)
         else:
             self.facteur = None
-        if commune:
-            queryset = queryset.filter(commune__icontains=commune)
+        if code_insee:
+            queryset = queryset.filter(code_insee=code_insee)
         if edifice:
             queryset = queryset.filter(edifice__icontains=edifice)
 
@@ -45,6 +47,7 @@ class OrgueList(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context["facteur"] = self.facteur
+        context["selected_commune"] = self.selected_commune
         return context
 
 
