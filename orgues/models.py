@@ -331,11 +331,23 @@ class TypeJeu(models.Model):
 
 
 class Jeu(models.Model):
+
+    CHOIX_CONFIGURATION = (
+        ('basse','Basse'),
+        ('dessus','Dessus'),
+    )
+
+
     type = models.ForeignKey(TypeJeu, on_delete=models.CASCADE, related_name='jeux')
     commentaire = models.CharField(max_length=200, null=True, blank=True)
     clavier = models.ForeignKey(Clavier, null=True, on_delete=models.CASCADE, related_name="jeux")
+    configuration = models.CharField(max_length=20, choices=CHOIX_CONFIGURATION, null=True, blank=True)
 
     def __str__(self):
+        if self.configuration == "basse":
+            return "{} (B)".format(self.type)
+        elif self.configuration == "dessus":
+            return "{} (D)".format(self.type)
         return str(self.type)
 
     class Meta:

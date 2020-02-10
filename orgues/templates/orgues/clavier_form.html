@@ -26,21 +26,24 @@
     {% for form in jeux_formset %}
       <div class="row">
         {{ form.id }}
-        <div class="{% if form.DELETE %}col-5{% else %}col-6{% endif %}">
+        <div class="{% if form.DELETE %}col-3{% else %}col-4{% endif %}">
           {% include 'stack_field.html' with field=form.type %}
         </div>
-        <div class="{% if form.DELETE %}col-5{% else %}col-6{% endif %}">
+        <div class="{% if form.DELETE %}col-2{% else %}col-4{% endif %}">
+          {% include 'stack_field.html' with field=form.configuration %}
+        </div>
+        <div class="{% if form.DELETE %}col-4{% else %}col-4{% endif %}">
           {% include 'stack_field.html' with field=form.commentaire %}
         </div>
         {% if form.DELETE %}
-          <div class="col-2">
+          <div class="col-3">
             {% include 'stack_field.html' with field=form.DELETE %}
           </div>
         {% endif %}
       </div>
     {% endfor %}
     <div class="form-group text-right">
-      <a href="{% url 'orgues:orgue-update-tuyauterie' orgue.uuid %}" class="btn btn-outline-secondary">Annuler</a>
+      <a href="{% url 'orgues:orgue-update-composition' orgue.uuid %}" class="btn btn-outline-secondary">Annuler</a>
       <button type="submit" class="btn btn-primary">Enregistrer</button>
     </div>
   </form>
