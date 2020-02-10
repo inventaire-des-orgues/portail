@@ -19,7 +19,7 @@ class Command(BaseCommand):
             "ancienne_commune": orgue.commune,
             "departement": orgue.departement,
             "region": orgue.region,
-            "description": orgue.description,
+            "resume": orgue.resume,
             "references_palissy": orgue.references_palissy,
             "latitude": orgue.latitude,
             "longitude": orgue.longitude,
@@ -59,7 +59,7 @@ class Command(BaseCommand):
                 "annee": evenement.annee,
                 "type": evenement.type.nom,
                 "facteur": str(evenement.facteur),
-                "description": evenement.description
+                "description": evenement.resume
             }
             o["evenements"].append(e)
 

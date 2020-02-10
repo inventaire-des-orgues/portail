@@ -109,17 +109,19 @@ class Orgue(models.Model):
     osm_latitude = models.FloatField(verbose_name="Latitude open street map", null=True, blank=True)
     osm_longitude = models.FloatField(verbose_name="Longitude open street map", null=True, blank=True)
 
-    # Tuyauterie
+    # Partie instrumentale
     diapason = models.CharField(max_length=15, null=True, blank=True,
                                 help_text="Hauteur en Hertz du A2 joué par le prestant 4")
     sommiers = models.TextField(null=True, blank=True, help_text="Syntaxe markdown supportée")
     soufflerie = models.TextField(null=True, blank=True, help_text="Syntaxe markdown supportée")
     transmission_notes = models.CharField(max_length=20, choices=CHOIX_TRANSMISSION, null=True, blank=True)
+    transmission_commentaire = models.CharField(max_length=100, null=True, blank=True, help_text="Max 100 caractères")
     tirage_jeux = models.CharField(max_length=20, choices=CHOIX_TIRAGE, null=True, blank=True)
+    tirage_commentaire = models.CharField(max_length=100, null=True, blank=True, help_text="Max 100 caractères")
     commentaire_tuyauterie = models.TextField(blank=True, help_text="Syntaxe markdown supportée")
+    accessoires = models.ManyToManyField('Accessoire', blank=True)
 
     # Auto générés
-
     created_date = models.DateTimeField(auto_now_add=True, auto_now=False, verbose_name='Creation date')
     modified_date = models.DateTimeField(auto_now=True, auto_now_add=False, verbose_name='Update date')
     updated_by_user = models.ForeignKey(User, null=True, editable=False, on_delete=models.SET_NULL)

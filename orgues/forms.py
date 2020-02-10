@@ -29,10 +29,12 @@ class OrgueGeneralInfoForm(forms.ModelForm):
         }
 
 
-TUYAUTERIE_COLUMNS = {
-    "transmission_notes": 4,
+INSTRUMENTALE_COLUMNS = {
+    "transmission_notes": 6,
+    "transmission_commentaire":6,
+    "tirage_jeux": 6,
+    "tirage_commentaire": 6,
     "diapason": 4,
-    "tirage_jeux": 4,
     "boite_expressive": 12,
     "sommiers": 12,
     "soufflerie": 12,
@@ -81,7 +83,14 @@ class OrgueTuyauterieForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields:
-            self.fields[field].widget.attrs['columns'] = TUYAUTERIE_COLUMNS[field]
+            self.fields[field].widget.attrs['columns'] = INSTRUMENTALE_COLUMNS[field]
+
+
+class OrgueCompositionForm(forms.ModelForm):
+    class Meta:
+        model = Orgue
+
+        fields = ['accessoires']
 
 
 class OrgueCreateForm(forms.ModelForm):
