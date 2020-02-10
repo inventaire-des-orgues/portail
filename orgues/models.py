@@ -182,6 +182,24 @@ class Orgue(models.Model):
         """
         return Jeu.objects.filter(clavier__orgue=self).count()
 
+    @property
+    def liens_pop(self):
+        """
+        Liens vers le site des classements du patrimoine mobilier (PM) du ministère de la culture
+        """
+        liens = []
+
+        for reference in self.references_palissy.split(","):
+            reference = reference.strip()
+            if reference:
+                liens.append(
+                    {
+                        "href": "https://www.pop.culture.gouv.fr/notice/palissy/" + reference,
+                        "title": reference
+                    }
+                )
+        return liens
+
     def get_absolute_url(self):
         return reverse('orgues:orgue-detail', args=(self.slug,))
 

@@ -149,6 +149,21 @@
                   </dd>
                 {% endif %}
               </dl>
+
+              {% if orgue.liens_pop %}
+                <dt>Inscription ou classement</dt>
+                <dd>
+                  <ul>
+                    {% for lien in orgue.liens_pop %}
+                      <li>
+                        <a href="{{ lien.href }}" target="_blank">{{ lien.title }}</a>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </dd>
+              {% endif %}
+
+
               {% if orgue.latitude and orgue.longitude %}
 
                 <div id="mapid" style="height:150px;margin-bottom:10px"></div>
