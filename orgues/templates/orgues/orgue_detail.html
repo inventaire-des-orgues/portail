@@ -73,7 +73,7 @@
                     <h4 class="titre-fiche">Images</h4>
                     <div>
                       {% for image in orgue.images.all %}
-                        <a href="{{ image.image.url }}" data-lightbox="orgue">
+                        <a href="{{ image.image.url }}" data-lightbox="orgue" data-title="Crédit : {{ image.credit }}">
                           <img src="{{ image.vignette.url }}" alt="">
                         </a>
                       {% endfor %}
