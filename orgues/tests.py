@@ -3,6 +3,7 @@ import shutil
 
 from django.contrib.auth.models import Group
 from django.core.management import call_command
+from django.template import Template, Context
 from django.test import TestCase
 from django.urls import reverse
 
@@ -36,3 +37,10 @@ class OrgueTestCase(TestCase):
         })
 
         self.assertEqual(list(Jeu.objects.values_list("nom", flat=True)), ["A", "B", "C", "D", "E"])
+
+
+    def test_resume_clavier(self):
+        self.assertEqual(Template('{% load orgue_tags %}{% resume_clavier 12 3 True %}').render(Context({})),"12, II/P")
+        self.assertEqual(Template('{% load orgue_tags %}{% resume_clavier 12 2 True %}').render(Context({})),"12, I/P")
+        self.assertEqual(Template('{% load orgue_tags %}{% resume_clavier 9 1 True %}').render(Context({})),"9, P")
+
