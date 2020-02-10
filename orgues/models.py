@@ -368,7 +368,7 @@ class Jeu(models.Model):
 
 
 def chemin_fichier(instance, filename):
-    return os.path.join(slugify(instance.orgue.edifice), "fichiers", filename)
+    return os.path.join(str(instance.orgue.code_departement),instance.orgue.codification,"fichiers", filename)
 
 
 class Fichier(models.Model):
@@ -393,7 +393,7 @@ class Fichier(models.Model):
 
 
 def chemin_image(instance, filename):
-    return os.path.join(slugify(instance.orgue.edifice), "fichiers", filename)
+    return os.path.join(str(instance.orgue.code_departement),instance.orgue.codification,"images", filename)
 
 
 class Image(models.Model):
@@ -425,3 +425,14 @@ class Image(models.Model):
         auto_now_add=False,
         verbose_name='Update date'
     )
+
+
+class Accessoire(models.Model):
+    """
+    Ex : Tremblant, Trémolo, Accouplement Pos./G.O.
+    """
+    nom = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.nom
+
