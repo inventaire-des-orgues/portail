@@ -49,11 +49,11 @@ class Orgue(models.Model):
         ("electrique", "Electrique"),
     )
 
-    CHOIX_SOURCE =  [
-        "Disque",
-        "Web",
-        "Ouvrage"
-    ],
+    CHOIX_SOURCE = [
+                       "Disque",
+                       "Web",
+                       "Ouvrage"
+                   ],
 
     CHOIX_TIRAGE = (
         ("mecanique", "Mécanique"),
@@ -70,8 +70,9 @@ class Orgue(models.Model):
     designation = models.CharField(max_length=300, verbose_name="Désignation", choices=CHOIX_DESIGNATION,
                                    default="Orgue")
     codification = models.CharField(max_length=100)
-    references_palissy = models.CharField(max_length=20, null=True, blank=True)
-    description = models.TextField(blank=True, help_text="Description générale. Syntaxe markdown supportée.")
+    references_palissy = models.CharField(max_length=20, null=True, blank=True,
+                                          help_text="Séparer les codes par des virgules")
+    resume = models.TextField(max_length=500, verbose_name="Resumé", blank=True, help_text="Présentation en quelques lignes de l'instrument et son originalité (max 500 caractères)")
     proprietaire = models.CharField(max_length=20, choices=CHOIX_PROPRIETAIRE, default="commune")
     association = models.CharField(max_length=100, null=True, blank=True,
                                    help_text="Nom de l'association en charge de l'instrument")
@@ -82,14 +83,18 @@ class Orgue(models.Model):
     etat = models.CharField(max_length=20, choices=CHOIX_ETAT, null=True, blank=True)
     elevation = models.CharField(max_length=20, choices=CHOIX_ELEVATION, null=True, blank=True,
                                  verbose_name="Elévation")
-    buffet = models.TextField(null=True, blank=True, help_text="Description du buffet et de son état.Syntaxe markdown supportée.")
-    console = models.TextField(null=True, blank=True,
-                               help_text="Description de la console (ex: en fenêtre, séparée organiste tourné vers l'orgue ...).Syntaxe markdown supportée.")
+    buffet = models.TextField(verbose_name="Description buffet",
+                              null=True, blank=True,
+                              help_text="Description du buffet et de son état.")
+    console = models.TextField(verbose_name="Description console", null=True, blank=True,
+                               help_text="Description de la console (ex: en fenêtre, séparée organiste tourné vers l'orgue ...).")
 
-    commentaire_admin = models.TextField(null=True, blank=True,
-                                         help_text="Ce commentaire n'est visible qu'en mode édition")
+    commentaire_admin = models.TextField(
+        verbose_name="Commentaire rédacteurs",
+        null=True, blank=True,
+                                         help_text="Commentaire uniquement visible par les rédacteurs")
 
-    # Géographie
+    # Localisation
     edifice = models.CharField(max_length=300)
     commune = models.CharField(max_length=100)
     code_insee = models.CharField(max_length=200)
@@ -191,7 +196,7 @@ class Orgue(models.Model):
         points = 0
         champs_importants = [
             self.designation,
-            self.description,
+            self.resume,
             self.proprietaire,
             self.association,
             self.association_lien,
@@ -297,14 +302,14 @@ class Evenement(models.Model):
         ("relevage", "Relevage"),
         ("disparition", "Disparition"),
         ("degats", "Dégâts"),
-        ("classement_mh", "Classement aux monuments historiques"),
-        ("inscription_mh", "Inscription aux monuments historiques"),
+        ("classement_mh", "Classement au titre des monuments historiques"),
+        ("inscription_mh", "Inscription au titre des monuments historiques"),
     )
 
     annee = models.IntegerField(verbose_name="Année")
     type = models.CharField(max_length=20, choices=CHOIX_TYPE)
     facteurs = models.ManyToManyField(Facteur, blank=True)
-    description = models.TextField(blank=True, null=True, help_text="Syntaxe markdown supportée")
+    resume = models.TextField(max_length=700,blank=True, null=True, help_text="700 caractères max")
 
     # Champs automatiques
     orgue = models.ForeignKey(Orgue, on_delete=models.CASCADE, related_name="evenements")

@@ -14,7 +14,7 @@ class OrgueGeneralInfoForm(forms.ModelForm):
             "is_polyphone",
             "association",
             "association_lien",
-            "description",
+            "resume",
             "console",
             "buffet",
             "commentaire_admin",
@@ -24,7 +24,7 @@ class OrgueGeneralInfoForm(forms.ModelForm):
         widgets = {
             'buffet': forms.Textarea(attrs={'rows': 5, 'cols': 15}),
             'console': forms.Textarea(attrs={'rows': 5, 'cols': 15}),
-            'description': forms.Textarea(attrs={'rows': 5, 'cols': 15}),
+            'resume': forms.Textarea(attrs={'rows': 5, 'cols': 15}),
             'commentaire_admin': forms.Textarea(attrs={'rows': 2, 'cols': 15}),
         }
 
@@ -105,7 +105,7 @@ class EvenementForm(forms.ModelForm):
             "annee",
             "type",
             "facteurs",
-            "description",
+            "resume",
         ]
 
 
