@@ -53,9 +53,9 @@
                 </div>
                 <div class="col-sm-8 col-lg-9">
                   <div class="card-body">
-                    <h5 class="card-title">{{ orgue.get_designation_display }}</h5>
+                    <h5 class="card-title">{{ orgue.edifice|capfirst }} <span style="color:#a9a9a9">| {{ orgue.commune }} ({{ orgue.departement }})</span></h5>
                     <p class="my-1 text-muted">
-                      {{ orgue.edifice }} -{{ orgue.commune }}
+                      {{ orgue.get_designation_display }}
                     </p>
                     {% if orgue.evenements_facteurs %}
                       <p class="my-1">
