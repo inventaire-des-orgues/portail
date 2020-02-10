@@ -35,7 +35,6 @@ INSTRUMENTALE_COLUMNS = {
     "tirage_jeux": 6,
     "tirage_commentaire": 6,
     "diapason": 4,
-    "boite_expressive": 12,
     "sommiers": 12,
     "soufflerie": 12,
     "commentaire_tuyauterie": 12,

@@ -79,7 +79,7 @@ class Orgue(models.Model):
     association_lien = models.URLField(max_length=300, null=True, blank=True,
                                        help_text="Lien vers le site de l'association")
     is_polyphone = models.BooleanField(default=False, verbose_name="Orgue polyphone de la manufacture Debierre ?")
-    boite_expressive = models.BooleanField(default=False, verbose_name="Est-ce que l'orgue a une boîte expressive ?")
+
     etat = models.CharField(max_length=20, choices=CHOIX_ETAT, null=True, blank=True)
     elevation = models.CharField(max_length=20, choices=CHOIX_ELEVATION, null=True, blank=True,
                                  verbose_name="Elévation")

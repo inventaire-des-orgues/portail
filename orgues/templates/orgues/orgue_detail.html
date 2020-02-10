@@ -130,7 +130,7 @@
                 <dt>Pédalier</dt>
                 <dd>{% if orgue.has_pedalier %}Oui{% else %}Non{% endif %}</dd>
                 <dt>Boîte expressive</dt>
-                <dd>{% if orgue.boite_expressive %}Oui{% else %}Non{% endif %}</dd>
+                <dd>{% if orgue.is_expressif %}Oui{% else %}Non{% endif %}</dd>
                 <dt>Transmission</dt>
                 <dd>{{ orgue.get_transmission_notes_display |default_if_none:"Non définie" }}</dd>
                 <dt>Tirage des jeux</dt>
