@@ -11,6 +11,7 @@ class OrgueGeneralInfoForm(forms.ModelForm):
             "designation",
             "elevation",
             "etat",
+            "proprietaire",
             "is_polyphone",
             "organisme",
             "lien_reference",
