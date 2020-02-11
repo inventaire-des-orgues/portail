@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load orgue_tags %}
 
 {% block head_extra %}
 
@@ -126,12 +127,10 @@
                 <dt>Etat de l'instrument</dt>
                 <dd>{{ orgue.get_etat_display|default_if_none:"Non défini" }}</dd>
                 <hr>
-                <dt>Claviers</dt>
-                <dd>{{ orgue.claviers.count }}</dd>
-                <dt>Jeux</dt>
-                <dd>{{ orgue.jeux_count }}</dd>
-                <dt>Pédalier</dt>
-                <dd>{% if orgue.has_pedalier %}Oui{% else %}Non{% endif %}</dd>
+                <dt>Composition</dt>
+                <dd>
+                {% resume_clavier orgue.jeux_count orgue.claviers.count orgue.has_pedalier %}
+                </dd>
                 <dt>Boîte expressive</dt>
                 <dd>{% if orgue.is_expressif %}Oui{% else %}Non{% endif %}</dd>
                 <dt>Transmission des notes</dt>
