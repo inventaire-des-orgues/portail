@@ -1,10 +1,13 @@
 import json
 import os
+import re
 import uuid
 from django.db import models
 from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.text import slugify
+from django.core.exceptions import ValidationError
+
 from imagekit.models import ImageSpecField
 from pilkit.processors import ResizeToFill
 
@@ -159,7 +162,7 @@ class Orgue(models.Model):
         """
         Est-ce que l'instrument possède un pédalier ?
         """
-        return self.claviers.filter(type__nom="Pédalier").exists()
+        return self.claviers.filter(type__nom__in=['Pédale', 'Pédalier']).exists()
 
     @property
     def construction(self):
@@ -188,6 +191,9 @@ class Orgue(models.Model):
         Liens vers le site des classements du patrimoine mobilier (PM) du ministère de la culture
         """
         liens = []
+
+        if not self.references_palissy:
+            return liens
 
         for reference in self.references_palissy.split(","):
             reference = reference.strip()

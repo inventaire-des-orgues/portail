@@ -3,6 +3,8 @@
 {% load fabtags %}
 
 
+
+
 {% block content %}
   {% include 'orgues/orgue_header.html' %}
 
@@ -28,8 +30,16 @@
               <span class="badge badge-light badge-pill">{{ orgue.evenements.count }}</span>
             </a>
             <a class="list-group-item d-flex justify-content-between align-items-center
-              {% block tuyauterie_active %}{% endblock %}" href="{% url 'orgues:orgue-update-tuyauterie' orgue.uuid %}">Tuyauterie
-              <span class="badge badge-light badge-pill">{{ orgue.claviers.count }}</span>
+              {% block buffet_active %}{% endblock %}" href="{% url 'orgues:orgue-update-buffet' orgue.uuid %}">
+              Buffet / Console
+            </a>
+            <a class="list-group-item d-flex justify-content-between align-items-center
+                        {% block instrumentale_active %}{% endblock %}" href="{% url 'orgues:orgue-update-instrumentale' orgue.uuid %}">
+              Partie instrumentale
+            </a>
+            <a class="list-group-item d-flex justify-content-between align-items-center
+                        {% block composition_active %}{% endblock %}" href="{% url 'orgues:orgue-update-composition' orgue.uuid %}">
+              Composition
             </a>
             <a class="list-group-item d-flex justify-content-between align-items-center
               {% block image_active %}{% endblock %}" href="{% url 'orgues:image-list' orgue.uuid %}">Images
@@ -68,6 +78,3 @@
 
 {% endblock %}
 
-{% block js_extra %}
-
-{% endblock %}

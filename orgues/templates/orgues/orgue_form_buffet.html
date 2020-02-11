@@ -1,7 +1,7 @@
 {% extends 'orgues/base_edition.html' %}
 {% load static %}
 
-{% block buffetconsole_active %}active{% endblock %}
+{% block buffet_active %}active{% endblock %}
 
 {% block card-body %}
 
@@ -13,11 +13,9 @@
     {% endfor %}
   {% endif %}
   <form action="" method="post" id="mainform" enctype="multipart/form-data">{% csrf_token %}
-    <div class="row">
       {% for field in form %}
         {% include 'stack_field.html' with with_helptext='true' %}
       {% endfor %}
-    </div>
     <div class="form-group text-right">
       <button type="submit" class="btn btn-primary" id="create">Enregistrer</button>
     </div>

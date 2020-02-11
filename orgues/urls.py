@@ -13,8 +13,10 @@ urlpatterns = [
     # Administration
     path('creation/', v.OrgueCreate.as_view(), name='orgue-create'),
     path('edition/<uuid:orgue_uuid>/', v.OrgueUpdate.as_view(), name='orgue-update'),
-    path('edition/tuyauterie/<uuid:orgue_uuid>/', v.OrgueUpdateTuyauterie.as_view(), name='orgue-update-tuyauterie'),
-    path('edition/geographie/<uuid:orgue_uuid>/', v.OrgueUpdateGeographie.as_view(), name='orgue-update-geographie'),
+    path('edition/instrumentale/<uuid:orgue_uuid>/', v.OrgueUpdateInstrumentale.as_view(), name='orgue-update-instrumentale'),
+    path('edition/composition/<uuid:orgue_uuid>/', v.OrgueUpdateComposition.as_view(), name='orgue-update-composition'),
+    path('edition/buffet/<uuid:orgue_uuid>/', v.OrgueUpdateBuffet.as_view(), name='orgue-update-buffet'),
+    path('edition/localisation/<uuid:orgue_uuid>/', v.OrgueUpdateLocalisation.as_view(), name='orgue-update-localisation'),
     path('suppression/<uuid:orgue_uuid>/', v.OrgueDelete.as_view(), name='orgue-delete'),
 
     # Evenements

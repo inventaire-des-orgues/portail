@@ -48,8 +48,26 @@ h5.card-title {
 /* GRILLES FICHES */
 
 .titre-fiche {
-    display: inline-block;
     margin: 20px 0 40px 0;
+    color:#3a64a7;
+    font-weight:600;
+    position:relative;
+    font-size:1.5em;
+    border-bottom:1px solid rgba(48, 88, 149, 0.10);
+    padding-bottom:10px;
+}
+
+.soustitre-fiche {
+    color:#3a64a7;
+    font-size:1.1em;
+    font-weight:500;
+
+}
+
+dt {
+    color:#3a64a7;
+    font-size:1em;
+    font-weight:600;
 }
 
 .location::before {
@@ -185,3 +203,35 @@ small.help-block {
         padding: 30px 0;
     }
 }
+
+
+strong {
+        font-weight: 600;
+
+}
+
+
+.select2-selection__rendered {
+    line-height: 31px !important;
+}
+.select2-container .select2-selection--single {
+    height: 35px !important;
+}
+.select2-selection__arrow {
+    height: 34px !important;
+}
+
+
+
+/* Frise chronologique */
+
+
+.tl-slide-content-container h2.tl-headline {
+    font-size:1.2em !important;
+}
+
+
+
+/* Editeur WYSIWYG */
+
+.trumbowyg-box, .trumbowyg-editor { min-height: 200px !important; }

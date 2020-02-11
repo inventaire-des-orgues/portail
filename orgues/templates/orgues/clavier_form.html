@@ -4,21 +4,25 @@
 {% block tuyauterie_active %}active{% endblock %}
 
 {% block card-body %}
-  <h5 class="card-title mb-4">
-    {% if clavier_form.instance.pk %}
-      {{ clavier_form.instance.type }}
-    {% else %}
-      Nouveau clavier
-    {% endif %}
+  <h5 class="card-title">
+    Clavier
   </h5>
   <form method="post"> {% csrf_token %}
-
-
-    {% for field in clavier_form %}
-
-      {% include 'stack_field.html' with with_helptext='true' %}
-
-    {% endfor %}
+    <div class="row">
+      <div class="col-md-6">
+        {% include 'stack_field.html' with field=clavier_form.type %}
+      </div>
+      <div class="col-md-6">
+        {% include 'stack_field.html' with field=clavier_form.facteur %}
+      </div>
+      <div class="col-md-6">
+        {% include 'stack_field.html' with field=clavier_form.etendue %}
+      </div>
+      <div class="col-md-6">
+        <br>
+        {% include 'stack_field.html' with field=clavier_form.is_expressif %}
+      </div>
+    </div>
     <h5 class="card-title">
       Jeux
     </h5>

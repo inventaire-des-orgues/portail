@@ -22,7 +22,7 @@
             <div class="card-body">
               <div class="row">
                 <div class="col-md-12 order-md-1 py-20">
-                  <h4 class="titre-fiche">Composition</h4>
+                  <h2 class="titre-fiche">Composition</h2>
                   <div class="row">
                     {% for clavier in orgue.claviers.all %}
                       {% include 'orgues/clavier_detail.html' %}
@@ -32,45 +32,43 @@
                       </div>
                     {% endfor %}
                   </div>
-                  <hr>
-                  <h4 class="titre-fiche">Frise chronologique</h4>
+                  <h2 class="titre-fiche">Frise chronologique</h2>
                   {% if object.evenements.count %}
                     <div id='timeline-embed' style="width: 100%; height: 400px"></div>
                   {% else %}
                     <p class="text-muted">Aucun événement</p>
                   {% endif %}
                   <hr>
-                  <h4 class="titre-fiche">Description</h4>
+                  <h2 class="titre-fiche">Description</h2>
                   <div id="resume"></div>
-                  <p class="font-weight-bold mb-1">Buffet</p>
+                  <p class="soustitre-fiche">Buffet</p>
                   {% if orgue.buffet %}
-                    <div id="buffet"></div>
+                    <div id="buffet">{{ orgue.buffet|safe }}</div>
                   {% else %}
                     <p class="text-muted">Pas de resumé</p>
                   {% endif %}
-                  <p class="font-weight-bold mb-1">Console</p>
+                  <p class="soustitre-fiche">Console</p>
                   {% if orgue.console %}
-                    <div id="console"></div>
+                    <div id="console">{{ orgue.console|safe }}</div>
                   {% else %}
                     <p class="text-muted">Pas de description</p>
                   {% endif %}
-                  <hr>
-                  <h4 class="titre-fiche">Tuyauterie</h4>
+                  <h2 class="titre-fiche">Partie instrumentale</h2>
                   <div id="tuyauterie"></div>
-                  <p class="font-weight-bold mb-1">Sommiers</p>
+                  <p class="soustitre-fiche">Sommiers</p>
                   {% if orgue.sommiers %}
-                    <div id="sommiers"></div>
+                    <div id="sommiers">{{ orgue.sommiers|safe }}</div>
                   {% else %}
                     <p class="text-muted">Pas de description</p>
                   {% endif %}
-                  <p class="font-weight-bold mb-1">Soufflerie</p>
+                  <p class="soustitre-fiche">Soufflerie</p>
                   {% if orgue.soufflerie %}
-                    <div id="soufflerie"></div>
+                    <div id="soufflerie">{{ orgue.soufflerie|safe }}</div>
                   {% else %}
                     <p class="text-muted">Pas de description</p>
                   {% endif %}
                   {% if orgue.images.count %}
-                    <h4 class="titre-fiche">Images</h4>
+                    <h2 class="titre-fiche">Images</h2>
                     <div>
                       {% for image in orgue.images.all %}
                         <a href="{{ image.image.url }}" data-lightbox="orgue" data-title="Crédit : {{ image.credit }}">
@@ -81,25 +79,25 @@
 
 
                   {% endif %}
-                  <h4 class="titre-fiche">Fichiers</h4>
+                  <h2 class="titre-fiche">Fichiers</h2>
                   {% if orgue.fichiers.count %}
                     <ul>
-                    {% for fichier in orgue.fichiers.all %}
-                      <li>
-                        <a href="{{ fichier.file.url }}">
-                          {% if fichier.description %}
-                            {{ fichier.description }}
-                          {% else %}
-                            {{ fichier.file }}
-                          {% endif %}
-                        </a>
-                      </li>
+                      {% for fichier in orgue.fichiers.all %}
+                        <li>
+                          <a href="{{ fichier.file.url }}">
+                            {% if fichier.description %}
+                              {{ fichier.description }}
+                            {% else %}
+                              {{ fichier.file }}
+                            {% endif %}
+                          </a>
+                        </li>
 
-                    {% endfor %}
+                      {% endfor %}
+                    </ul>
                   {% else %}
                     <p class="text-muted">Aucun fichier</p>
                   {% endif %}
-                  </ul>
                 </div>
                 <hr>
               </div>
@@ -110,10 +108,15 @@
           <div class="card mb-4 box-shadow">
             <div class="card-body">
               <dl>
-                <dt>Construction</dt>
+                <dt>Facteurs</dt>
                 <dd>
-                  {% if orgue.construction %}
-                    {{ orgue.construction.facteurs.all|join:", " }} ({{ orgue.construction.annee }})
+                  {% if orgue.evenements_facteurs.count %}
+                    {% for evenement in orgue.evenements_facteurs.all %}
+                      {% for facteur in evenement.facteurs.all %}
+                        <span data-toggle="tooltip" data-title="{{ evenement.get_type_display }}">{{ facteur }} ({{ evenement.annee }})</span>,
+                      {% endfor %}
+                    {% endfor %}
+
                   {% else %}
                     Pas d'information
                   {% endif %}
@@ -168,8 +171,12 @@
 
                 <div id="mapid" style="height:150px;margin-bottom:10px"></div>
               {% endif %}
-              <a href="{% url 'orgues:orgue-update' object.uuid %}" class="btn btn-primary btn-block">éditer</a>
             </div>
+          </div>
+          <div class="mb-4  box-shadow">
+            <a href="{% url 'orgues:orgue-update' object.uuid %}" class="btn btn-primary  btn-block">
+              <i class="fa fa-edit"></i> Compléter la fiche
+            </a>
           </div>
         </div>
       </div>
@@ -178,25 +185,14 @@
 {% endblock %}
 
 {% block js_extra %}
+
+  <!-- 1 -->
+  <link title="timeline-styles" rel="stylesheet" href="https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css">
+
+  <!-- 2 -->
+  <script src="https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"></script>
+
   {% if object.evenements.count %}
-
-    <script>
-      var converter = new showdown.Converter();
-      $("#description").html(converter.makeHtml("{{ object.description|escapejs }}"))
-      $("#buffet").html(converter.makeHtml("{{ object.buffet|escapejs }}"))
-      $("#console").html(converter.makeHtml("{{ orgue.console|escapejs }}"))
-      $("#tuyauterie").html(converter.makeHtml("{{ orgue.commentaire_tuyauterie|escapejs }}"))
-      $("#tuyauterie").html(converter.makeHtml("{{ orgue.commentaire_tuyauterie|escapejs }}"))
-      $("#sommiers").html(converter.makeHtml("{{ orgue.sommiers|escapejs }}"))
-      $("#soufflerie").html(converter.makeHtml("{{ orgue.soufflerie|escapejs }}"))
-    </script>
-    <!-- 1 -->
-    <link title="timeline-styles" rel="stylesheet" href="https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css">
-
-    <!-- 2 -->
-    <script src="https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"></script>
-
-
     <!-- 3 -->
     <script type="text/javascript">
 
@@ -211,7 +207,7 @@
 
         "events": [
           {% for evenement in object.evenements.all %}
-            {"start_date": {"year": "{{evenement.annee}}"}, "text": {"headline": "<b>{{ evenement.get_type_display }}</b>", "text": converter.makeHtml("{{ evenement.description|escapejs }}")}},
+            {"start_date": {"year": "{{evenement.annee}}"}, "text": {"headline": "<b>{{ evenement.get_type_display }}</b>", "text": "{{ evenement.resume|safe|default_if_none:''}}"}},
           {% endfor %}
         ]
       };

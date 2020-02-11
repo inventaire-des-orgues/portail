@@ -15,8 +15,6 @@ class OrgueGeneralInfoForm(forms.ModelForm):
             "association",
             "association_lien",
             "resume",
-            "console",
-            "buffet",
             "commentaire_admin",
 
         ]
@@ -67,11 +65,11 @@ class OrgueLocalisationForm(forms.ModelForm):
             self.fields[field].widget.attrs['columns'] = LOCALISATION_COLUMNS[field]
 
 
-class OrgueTuyauterieForm(forms.ModelForm):
+class OrgueInstrumentaleForm(forms.ModelForm):
     class Meta:
         model = Orgue
 
-        fields = TUYAUTERIE_COLUMNS.keys()
+        fields = INSTRUMENTALE_COLUMNS.keys()
 
         widgets = {
             'sommiers': forms.Textarea(attrs={'rows': 3, 'cols': 15}),
@@ -90,6 +88,11 @@ class OrgueCompositionForm(forms.ModelForm):
         model = Orgue
 
         fields = ['accessoires']
+
+class OrgueBuffetForm(forms.ModelForm):
+    class Meta:
+        model = Orgue
+        fields = ['buffet','console']
 
 
 class OrgueCreateForm(forms.ModelForm):
@@ -131,8 +134,8 @@ class ClavierForm(forms.ModelForm):
 class JeuForm(forms.ModelForm):
     class Meta:
         model = Jeu
-        fields = ["type", "commentaire"]
-        labels = {"type": "", "commentaire": ""}
+        fields = ["type","configuration", "commentaire"]
+        labels = {"type": "","configuration":"", "commentaire": ""}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

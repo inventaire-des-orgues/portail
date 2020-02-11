@@ -9,8 +9,7 @@ from django.views.generic import ListView, DetailView, TemplateView
 from django.views.generic.base import View
 
 from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdateView, FabView, FabCreateViewJS
-from .forms import OrgueCreateForm, EvenementForm, ClavierForm, OrgueGeneralInfoForm, OrgueTuyauterieForm, JeuForm, \
-    FichierForm, ImageForm, OrgueGeographieForm
+import orgues.forms as orgue_forms
 from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeClavier, TypeJeu, Fichier, Image
 
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -94,7 +93,7 @@ class OrgueCreate(FabCreateView):
     """
     model = Orgue
     permission_required = 'orgues.add_orgue'
-    form_class = OrgueCreateForm
+    form_class = orgue_forms.OrgueCreateForm
     success_url = reverse_lazy('orgues:orgue-list')
     success_message = 'Nouvel orgue créé'
 
@@ -111,7 +110,7 @@ class OrgueUpdate(FabUpdateView):
     slug_field = 'uuid'
     slug_url_kwarg = 'orgue_uuid'
     permission_required = 'orgues.change_orgue'
-    form_class = OrgueGeneralInfoForm
+    form_class = orgue_forms.OrgueGeneralInfoForm
     success_message = 'Informations générales mises à jour !'
 
     def form_valid(self, form):
@@ -127,13 +126,34 @@ class OrgueUpdate(FabUpdateView):
         return context
 
 
-class OrgueUpdateTuyauterie(OrgueUpdate):
-    form_class = OrgueTuyauterieForm
+class OrgueUpdateInstrumentale(OrgueUpdate):
+    form_class = orgue_forms.OrgueInstrumentaleForm
     success_message = 'Tuyauterie mise à jour, merci !'
-    template_name = "orgues/orgue_form_tuyauterie.html"
+    template_name = "orgues/orgue_form_instrumentale.html"
 
     def get_success_url(self):
-        success_url = reverse('orgues:orgue-update-tuyauterie', args=(self.object.uuid,))
+        success_url = reverse('orgues:orgue-update-instrumentale', args=(self.object.uuid,))
+        return self.request.POST.get("next", success_url)
+
+
+class OrgueUpdateComposition(OrgueUpdate):
+    model = Orgue
+    form_class = orgue_forms.OrgueCompositionForm
+    template_name = "orgues/orgue_form_composition.html"
+
+    def get_success_url(self):
+        success_url = reverse('orgues:orgue-update-composition', args=(self.object.uuid,))
+        return self.request.POST.get("next", success_url)
+
+
+
+class OrgueUpdateBuffet(OrgueUpdate):
+    model = Orgue
+    form_class = orgue_forms.OrgueBuffetForm
+    template_name = "orgues/orgue_form_buffet.html"
+
+    def get_success_url(self):
+        success_url = reverse('orgues:orgue-update-buffet', args=(self.object.uuid,))
         return self.request.POST.get("next", success_url)
 
 
@@ -257,7 +277,7 @@ class FacteurListJS(FabListView):
 class EvenementCreate(FabCreateView):
     model = Evenement
     permission_required = "orgues.add_evenement"
-    form_class = EvenementForm
+    form_class = orgue_forms.EvenementForm
     success_message = "Nouvel événement ajouté à la frise, merci!"
 
     def form_valid(self, form):
@@ -277,7 +297,7 @@ class EvenementCreate(FabCreateView):
 class EvenementUpdate(FabUpdateView):
     model = Evenement
     permission_required = "orgues.change_evenement"
-    form_class = EvenementForm
+    form_class = orgue_forms.EvenementForm
     success_message = "Evénement mis à jour, merci !"
 
     def form_valid(self, form):
@@ -310,24 +330,24 @@ class EvenementDelete(FabDeleteView):
 class ClavierCreate(FabView):
     model = Clavier
     permission_required = "orgues.add_clavier"
-    form_class = ClavierForm
+    form_class = orgue_forms.ClavierForm
 
     def get(self, request, *args, **kwargs):
-        JeuFormset = modelformset_factory(Jeu, JeuForm, extra=10)
+        JeuFormset = modelformset_factory(Jeu, orgue_forms.JeuForm, extra=10)
         orgue = get_object_or_404(Orgue, uuid=self.kwargs.get('orgue_uuid'))
         context = {
             "jeux_formset": JeuFormset(queryset=Jeu.objects.none()),
-            "clavier_form": ClavierForm(),
+            "clavier_form": orgue_forms.ClavierForm(),
             "orgue": orgue
         }
         return render(request, "orgues/clavier_form.html", context)
 
     def post(self, request, *args, **kwargs):
         orgue = get_object_or_404(Orgue, uuid=self.kwargs.get('orgue_uuid'))
-        JeuFormset = modelformset_factory(Jeu, JeuForm)
+        JeuFormset = modelformset_factory(Jeu, orgue_forms.JeuForm)
 
         jeux_formset = JeuFormset(self.request.POST)
-        clavier_form = ClavierForm(self.request.POST)
+        clavier_form = orgue_forms.ClavierForm(self.request.POST)
         if jeux_formset.is_valid() and clavier_form.is_valid():
             clavier_form.instance.orgue = orgue
             clavier = clavier_form.save()
@@ -337,7 +357,7 @@ class ClavierCreate(FabView):
                 jeu.save()
 
             messages.success(self.request, "Nouveau clavier ajouté, merci !")
-            return redirect('orgues:orgue-update-tuyauterie', orgue_uuid=orgue.uuid)
+            return redirect('orgues:orgue-update-composition', orgue_uuid=orgue.uuid)
         else:
             context = {
                 "jeux_formset": jeux_formset,
@@ -350,14 +370,14 @@ class ClavierCreate(FabView):
 class ClavierUpdate(FabUpdateView):
     model = Clavier
     permission_required = "orgues.change_clavier"
-    form_class = ClavierForm
+    form_class = orgue_forms.ClavierForm
 
     def get(self, request, *args, **kwargs):
         clavier = get_object_or_404(Clavier, pk=kwargs["pk"])
-        JeuFormset = modelformset_factory(Jeu, JeuForm, extra=3, can_delete=True)
+        JeuFormset = modelformset_factory(Jeu, orgue_forms.JeuForm, extra=3, can_delete=True)
         context = {
             "jeux_formset": JeuFormset(queryset=clavier.jeux.all()),
-            "clavier_form": ClavierForm(instance=clavier),
+            "clavier_form": orgue_forms.ClavierForm(instance=clavier),
             "orgue": clavier.orgue,
             "clavier": clavier
         }
@@ -365,17 +385,17 @@ class ClavierUpdate(FabUpdateView):
 
     def post(self, request, *args, **kwargs):
         clavier = get_object_or_404(Clavier, pk=kwargs["pk"])
-        JeuFormset = modelformset_factory(Jeu, JeuForm, extra=3, can_delete=True)
+        JeuFormset = modelformset_factory(Jeu, orgue_forms.JeuForm, extra=3, can_delete=True)
         jeux_formset = JeuFormset(self.request.POST, queryset=clavier.jeux.all())
-        clavier_form = ClavierForm(self.request.POST, instance=clavier)
+        clavier_form = orgue_forms.ClavierForm(self.request.POST, instance=clavier)
         if jeux_formset.is_valid() and clavier_form.is_valid():
             clavier = clavier_form.save()
             jeux = jeux_formset.save()
             for jeu in jeux:
                 jeu.clavier = clavier
                 jeu.save()
-            messages.success(self.request, "Nouveau clavier ajouté, merci !")
-            return redirect('orgues:orgue-update-tuyauterie', orgue_uuid=clavier.orgue.uuid)
+            messages.success(self.request, "Clavier mis à jour, merci !")
+            return redirect('orgues:orgue-update-composition', orgue_uuid=clavier.orgue.uuid)
         else:
             context = {
                 "jeux_formset": jeux_formset,
@@ -396,7 +416,7 @@ class ClavierDelete(FabDeleteView):
         return context
 
     def get_success_url(self):
-        return reverse('orgues:orgue-update-tuyauterie', args=(self.object.orgue.uuid,))
+        return reverse('orgues:orgue-update-composition', args=(self.object.orgue.uuid,))
 
 
 class FacteurCreateJS(FabCreateViewJS):
@@ -423,14 +443,14 @@ class FichierList(FabListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context["orgue"] = self.orgue
-        context["form"] = FichierForm()
+        context["form"] = orgue_forms.FichierForm()
         return context
 
 
 class FichierCreate(FabCreateView):
     model = Fichier
     permission_required = "orgues.add_fichier"
-    form_class = FichierForm
+    form_class = orgue_forms.FichierForm
     template_name = "orgues/fichier_list.html"
 
     def form_valid(self, form):
@@ -471,14 +491,14 @@ class ImageList(FabListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context["orgue"] = self.orgue
-        context["form"] = ImageForm()
+        context["form"] = orgue_forms.ImageForm()
         return context
 
 
 class ImageCreate(FabCreateView):
     model = Image
     permission_required = "orgues.add_image"
-    form_class = ImageForm
+    form_class = orgue_forms.ImageForm
     template_name = "orgues/image_list.html"
 
     def form_valid(self, form):

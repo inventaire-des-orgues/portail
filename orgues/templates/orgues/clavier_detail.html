@@ -1,23 +1,25 @@
 <div class="col-md-6 col-lg-4 clavier">
   <div class="card">
-    <div class="card-header">
-      <h6>{{ clavier.type }} {% if clavier.is_expressif %}expressif {% endif %}</h6>
-    </div>
     <div class="card-body">
-      <p class="card-text">
-        {% for jeu in clavier.jeux.all %}
-          <span {% if jeu.commentaire %}data-toggle="tooltip" title="{{ jeu.commentaire }}" data-placement="right"{% endif %}>{{ jeu }}</span>
-          {% if jeu.commentaire %}*{% endif %}
-          <br>
-        {% endfor %}
+      <h5 class="card-title">{{ clavier.type }} {% if clavier.is_expressif %}expressif {% endif %}</h5>
+      <p class="card-text" style="font-size:0.9em;">
+        {% if clavier.facteur %}
+          Facteur : {{ clavier.facteur }} <br>
+        {% endif %}
+        {% if clavier.etendue %}
+          Etendue : {{ clavier.etendue }}
+        {% endif %}
       </p>
-
-      {% if clavier.facteur %}
-        <small>Fabriqué par {{ clavier.facteur }}</small>
-      {% endif %}
     </div>
+    <ul class="list-group list-group-flush" style="font-size:0.9em;">
+      {% for jeu in clavier.jeux.all %}
 
-    {% if form %}
+        <li class="list-group-item "
+        {% if jeu.commentaire %}data-toggle="tooltip" title="{{ jeu.commentaire }}" data-placement="right"{% endif %}
+        >{{ jeu }}  {% if jeu.commentaire %}<i class="fa fa-info-circle text-muted"></i> {% endif %}</li>
+      {% endfor %}
+    </ul>
+    {% if editable %}
       <div class="card-footer bg-transparent">
         <a href="{% url 'orgues:clavier-update' clavier.pk %}" class="btn btn-xs btn-outline-secondary editer_clavier">Editer</a>
         <a href="{% url 'orgues:clavier-delete' clavier.pk %}" class="btn btn-xs btn-outline-danger supprimer_clavier">Supprimer</a>
