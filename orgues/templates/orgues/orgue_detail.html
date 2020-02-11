@@ -71,7 +71,7 @@
                     <h2 class="titre-fiche">Images</h2>
                     <div>
                       {% for image in orgue.images.all %}
-                        <a href="{{ image.image.url }}" data-lightbox="orgue" data-title="Crédit : {{ image.credit }}">
+                        <a href="{{ image.image.url }}" data-lightbox="orgue" {% if image.credit %}data-title="Crédit : {{ image.credit }}"{% endif %}>
                           <img src="{{ image.vignette.url }}" alt="">
                         </a>
                       {% endfor %}
@@ -165,10 +165,7 @@
                   </ul>
                 </dd>
               {% endif %}
-
-
               {% if orgue.latitude and orgue.longitude %}
-
                 <div id="mapid" style="height:150px;margin-bottom:10px"></div>
               {% endif %}
             </div>
