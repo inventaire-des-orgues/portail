@@ -47,8 +47,6 @@ LOCALISATION_COLUMNS = {
     "longitude": 6,
     "osm_type": 6,
     "osm_id": 6,
-    "osm_latitude": 6,
-    "osm_longitude": 6,
 }
 
 

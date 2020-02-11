@@ -117,8 +117,6 @@ class Orgue(models.Model):
     longitude = models.FloatField(null=True, blank=True)
     osm_type = models.CharField(verbose_name="Type open street map", max_length=20, null=True, blank=True)
     osm_id = models.CharField(verbose_name="Id open street map", max_length=20, null=True, blank=True)
-    osm_latitude = models.FloatField(verbose_name="Latitude open street map", null=True, blank=True)
-    osm_longitude = models.FloatField(verbose_name="Longitude open street map", null=True, blank=True)
 
     # Partie instrumentale
     diapason = models.CharField(max_length=15, null=True, blank=True,
