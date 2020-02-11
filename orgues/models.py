@@ -83,21 +83,20 @@ class Orgue(models.Model):
                                        help_text="Lien vers le site de l'association")
     is_polyphone = models.BooleanField(default=False, verbose_name="Orgue polyphone de la manufacture Debierre ?")
     boite_expressive = models.BooleanField(default=False, verbose_name="Est-ce que l'orgue a une boîte expressive ?")
-    etat = models.CharField(max_length=20, choices=CHOIX_ETAT, null=True, blank=True)
-    elevation = models.CharField(max_length=20, choices=CHOIX_ELEVATION, null=True, blank=True,
-                                 verbose_name="Elévation")
+    etat = models.CharField(max_length=20, verbose_name="État", choices=CHOIX_ETAT, null=True, blank=True)
+    elevation = models.CharField(max_length=20, verbose_name="Élevation", choices=CHOIX_ELEVATION, null=True, blank=True)
     buffet = models.TextField(null=True, blank=True, help_text="Description du buffet et de son état.Syntaxe markdown supportée.")
     commentaire_admin = models.TextField(null=True, blank=True,
                                          help_text="Ce commentaire n'est visible qu'en mode édition")
 
     # Géographie
-    edifice = models.CharField(max_length=300)
+    edifice = models.CharField(verbose_name="Édifice", max_length=300)
     commune = models.CharField(max_length=100)
     code_insee = models.CharField(max_length=200)
     ancienne_commune = models.CharField(max_length=100, null=True, blank=True)
-    departement = models.CharField(max_length=50)
-    code_departement = models.CharField(max_length=5)
-    region = models.CharField(max_length=50)
+    departement = models.CharField(verbose_name="Département", max_length=50)
+    code_departement = models.CharField(verbose_name="Code département", max_length=5)
+    region = models.CharField(verbose_name="Région", max_length=50)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
     osm_type = models.CharField(verbose_name="Type open street map", max_length=20, null=True, blank=True)
