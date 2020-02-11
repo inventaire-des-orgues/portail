@@ -3,9 +3,6 @@
     <div class="card-body">
       <h5 class="card-title">{{ clavier.type }} {% if clavier.is_expressif %}expressif {% endif %}</h5>
       <p class="card-text" style="font-size:0.9em;">
-        {% if clavier.facteur %}
-          Facteur : {{ clavier.facteur }} <br>
-        {% endif %}
         {% if clavier.etendue %}
           Etendue : {{ clavier.etendue }}
         {% endif %}

@@ -293,7 +293,6 @@ class Clavier(models.Model):
     """
 
     type = models.ForeignKey(TypeClavier, null=True, on_delete=models.CASCADE)
-    facteur = models.ForeignKey(Facteur, null=True, blank=True, on_delete=models.SET_NULL)
     is_expressif = models.BooleanField(verbose_name="Cocher si expressif", default=False)
     etendue = models.CharField(validators=[validate_etendue], max_length=10, null=True, blank=True, help_text="De la forme F1-G5, C1-F#5 ... ")
     # Champs automatiques
@@ -311,6 +310,9 @@ class Clavier(models.Model):
 
     def __str__(self):
         return "{} | {}".format(self.type.nom, self.orgue.designation)
+
+    class Meta:
+        verbose_name = "Plan sonore"
 
 
 class Evenement(models.Model):

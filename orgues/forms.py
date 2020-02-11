@@ -124,7 +124,6 @@ class ClavierForm(forms.ModelForm):
         fields = [
             "type",
             "etendue",
-            "facteur",
             "is_expressif",
         ]
 
