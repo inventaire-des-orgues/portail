@@ -79,12 +79,16 @@ class Orgue(models.Model):
     codification = models.CharField(max_length=100)
     references_palissy = models.CharField(max_length=20, null=True, blank=True,
                                           help_text="Séparer les codes par des virgules")
-    resume = models.TextField(max_length=500, verbose_name="Resumé", blank=True, help_text="Présentation en quelques lignes de l'instrument et son originalité (max 500 caractères)")
+    resume = models.TextField(max_length=500, verbose_name="Resumé", blank=True,
+                              help_text="Présentation en quelques lignes de l'instrument et son originalité (max 500 caractères)")
     proprietaire = models.CharField(max_length=20, choices=CHOIX_PROPRIETAIRE, default="commune")
-    association = models.CharField(max_length=100, null=True, blank=True,
-                                   help_text="Nom de l'association en charge de l'instrument")
-    association_lien = models.URLField(max_length=300, null=True, blank=True,
-                                       help_text="Lien vers le site de l'association")
+    organisme = models.CharField(
+        verbose_name="Organisme auquel s'adresser",
+        max_length=100, null=True, blank=True)
+    lien_reference = models.URLField(
+        verbose_name="Lien de référence",
+        max_length=300, null=True, blank=True
+    )
     is_polyphone = models.BooleanField(default=False, verbose_name="Orgue polyphone de la manufacture Debierre ?")
 
     etat = models.CharField(max_length=20, choices=CHOIX_ETAT, null=True, blank=True)
@@ -99,7 +103,7 @@ class Orgue(models.Model):
     commentaire_admin = models.TextField(
         verbose_name="Commentaire rédacteurs",
         null=True, blank=True,
-                                         help_text="Commentaire uniquement visible par les rédacteurs")
+        help_text="Commentaire uniquement visible par les rédacteurs")
 
     # Localisation
     edifice = models.CharField(max_length=300)
@@ -123,9 +127,10 @@ class Orgue(models.Model):
     soufflerie = models.TextField(null=True, blank=True)
     transmission_notes = models.CharField(max_length=20, choices=CHOIX_TRANSMISSION, null=True, blank=True)
     transmission_commentaire = models.CharField(max_length=100, null=True, blank=True, help_text="Max 100 caractères")
-    tirage_jeux = models.CharField(verbose_name="Tirage des jeux",max_length=20, choices=CHOIX_TIRAGE, null=True, blank=True)
+    tirage_jeux = models.CharField(verbose_name="Tirage des jeux", max_length=20, choices=CHOIX_TIRAGE, null=True,
+                                   blank=True)
     tirage_commentaire = models.CharField(max_length=100, null=True, blank=True, help_text="Max 100 caractères")
-    commentaire_tuyauterie = models.TextField(verbose_name="Description de la tuyauterie",blank=True)
+    commentaire_tuyauterie = models.TextField(verbose_name="Description de la tuyauterie", blank=True)
     accessoires = models.ManyToManyField('Accessoire', blank=True)
 
     # Auto générés
@@ -228,8 +233,8 @@ class Orgue(models.Model):
             self.designation,
             self.resume,
             self.proprietaire,
-            self.association,
-            self.association_lien,
+            self.organisme,
+            self.lien_reference,
             self.etat,
             self.elevation,
             self.buffet,
@@ -283,7 +288,7 @@ class TypeClavier(models.Model):
 
 
 def validate_etendue(value):
-    if not re.match("^[A-G]#{0,1}[1-7]-[A-G]#{0,1}[1-7]$",value):
+    if not re.match("^[A-G]#{0,1}[1-7]-[A-G]#{0,1}[1-7]$", value):
         raise ValidationError("L'étendue doit être de la forme F1-G5, C1-F#5 ...")
 
 
@@ -294,7 +299,8 @@ class Clavier(models.Model):
 
     type = models.ForeignKey(TypeClavier, null=True, on_delete=models.CASCADE)
     is_expressif = models.BooleanField(verbose_name="Cocher si expressif", default=False)
-    etendue = models.CharField(validators=[validate_etendue], max_length=10, null=True, blank=True, help_text="De la forme F1-G5, C1-F#5 ... ")
+    etendue = models.CharField(validators=[validate_etendue], max_length=10, null=True, blank=True,
+                               help_text="De la forme F1-G5, C1-F#5 ... ")
     # Champs automatiques
     orgue = models.ForeignKey(Orgue, null=True, on_delete=models.CASCADE, related_name="claviers")
     created_date = models.DateTimeField(
@@ -345,7 +351,7 @@ class Evenement(models.Model):
     annee = models.IntegerField(verbose_name="Année")
     type = models.CharField(max_length=20, choices=CHOIX_TYPE)
     facteurs = models.ManyToManyField(Facteur, blank=True)
-    resume = models.TextField(max_length=700,blank=True, null=True, help_text="700 caractères max")
+    resume = models.TextField(max_length=700, blank=True, null=True, help_text="700 caractères max")
 
     # Champs automatiques
     orgue = models.ForeignKey(Orgue, on_delete=models.CASCADE, related_name="evenements")
@@ -380,12 +386,10 @@ class TypeJeu(models.Model):
 
 
 class Jeu(models.Model):
-
     CHOIX_CONFIGURATION = (
-        ('basse','Basse'),
-        ('dessus','Dessus'),
+        ('basse', 'Basse'),
+        ('dessus', 'Dessus'),
     )
-
 
     type = models.ForeignKey(TypeJeu, on_delete=models.CASCADE, related_name='jeux')
     commentaire = models.CharField(max_length=200, null=True, blank=True)
@@ -404,7 +408,7 @@ class Jeu(models.Model):
 
 
 def chemin_fichier(instance, filename):
-    return os.path.join(str(instance.orgue.code_departement),instance.orgue.codification,"fichiers", filename)
+    return os.path.join(str(instance.orgue.code_departement), instance.orgue.codification, "fichiers", filename)
 
 
 class Fichier(models.Model):
@@ -429,7 +433,7 @@ class Fichier(models.Model):
 
 
 def chemin_image(instance, filename):
-    return os.path.join(str(instance.orgue.code_departement),instance.orgue.codification,"images", filename)
+    return os.path.join(str(instance.orgue.code_departement), instance.orgue.codification, "images", filename)
 
 
 class Image(models.Model):
@@ -471,4 +475,3 @@ class Accessoire(models.Model):
 
     def __str__(self):
         return self.nom
-

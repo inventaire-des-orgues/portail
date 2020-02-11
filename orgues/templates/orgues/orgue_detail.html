@@ -55,7 +55,6 @@
                     <p class="text-muted">Pas de description</p>
                   {% endif %}
                   <h2 class="titre-fiche">Partie instrumentale</h2>
-
                   <p class="soustitre-fiche">Sommiers</p>
                   {% if orgue.sommiers %}
                     <div id="sommiers">{{ orgue.sommiers|safe }}</div>
@@ -129,7 +128,7 @@
                 <hr>
                 <dt>Composition</dt>
                 <dd>
-                {% resume_clavier orgue.jeux_count orgue.claviers.count orgue.has_pedalier %}
+                  {% resume_clavier orgue.jeux_count orgue.claviers.count orgue.has_pedalier %}
                 </dd>
                 <dt>Boîte expressive</dt>
                 <dd>{% if orgue.is_expressif %}Oui{% else %}Non{% endif %}</dd>
@@ -140,14 +139,16 @@
                 <hr>
                 <dt>Propriétaire</dt>
                 <dd>{{ orgue.get_proprietaire_display|default_if_none:"Non défini" }}</dd>
-                {% if orgue.association %}
-                  <dt>Association</dt>
+                {% if orgue.organisme %}
+                  <dt>Organisme</dt>
                   <dd>
-                    {% if orgue.association_lien %}
-                      <a href="{{ orgue.association_lien }}">{{ orgue.association }}</a>
-                    {% else %}
-                      {{ orgue.association|default_if_none:"" }}
-                    {% endif %}
+                    {{ orgue.organisme }} <br>
+                  </dd>
+                {% endif %}
+                {% if orgue.lien_reference %}
+                  <dt>Lien de référence</dt>
+                  <dd>
+                    <a href="{{ orgue.lien_reference }}">{{ orgue.lien_reference|truncatechars:40 }}</a>
                   </dd>
                 {% endif %}
               </dl>
@@ -192,7 +193,6 @@
   {% if object.evenements.count %}
     <!-- 3 -->
     <script type="text/javascript">
-
       // The TL.Timeline constructor takes at least two arguments:
       // the id of the Timeline container (no '#'), and
       // the URL to your JSON data file or Google spreadsheet.
