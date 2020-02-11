@@ -30,6 +30,7 @@
       <a class="p-3 text-muted" href="{% url 'orgues:orgue-list' %}">Les orgues</a>
       <a class="p-3 text-muted" href="{% url 'orgues:orgue-carte' %}">La carte</a>
       <a class="p-3 text-muted" href="https://docs.inventaire-des-orgues.fr">Aide</a>
+      <a class="p-3 text-muted" href="https://vocabulaire.inventaire-des-orgues.fr">Lexique</a>
       {% if user.is_authenticated %}
         <a class="p-3 text-muted" href="{% url 'logout' %}">Déconnexion</a>
       {% else %}

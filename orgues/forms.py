@@ -7,8 +7,8 @@ class OrgueGeneralInfoForm(forms.ModelForm):
     class Meta:
         model = Orgue
         fields = [
-            "designation",
             "edifice",
+            "designation",
             "etat",
             "elevation",
             "is_polyphone",
@@ -20,8 +20,6 @@ class OrgueGeneralInfoForm(forms.ModelForm):
         ]
 
         widgets = {
-            'buffet': forms.Textarea(attrs={'rows': 5, 'cols': 15}),
-            'console': forms.Textarea(attrs={'rows': 5, 'cols': 15}),
             'resume': forms.Textarea(attrs={'rows': 5, 'cols': 15}),
             'commentaire_admin': forms.Textarea(attrs={'rows': 2, 'cols': 15}),
         }

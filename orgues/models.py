@@ -47,9 +47,12 @@ class Orgue(models.Model):
     CHOIX_TRANSMISSION = (
         ("mecanique", "Mécanique"),
         ("mecanique_suspendue", "Mécanique suspendue"),
+        ("mecanique_balanciers", "Mécanique à balanciers"),
         ("mecanique_barker", "Mécanique Barker"),
         ("pneumatique", "Pneumatique"),
         ("electrique", "Electrique"),
+        ("electrique_proportionnelle", "Electrique proportionnelle"),
+        ("electro-pneumatique", "Electro-pneumatique"),
     )
 
     CHOIX_SOURCE = [
@@ -62,6 +65,7 @@ class Orgue(models.Model):
         ("mecanique", "Mécanique"),
         ("pneumatique", "Pneumatique"),
         ("electrique", "Electrique"),
+        ("electro-pneumatique", "Electro-pneumatique"),
     )
     CHOIX_DESIGNATION = (
         ("grand_orgue", "Grand orgue"),
@@ -102,9 +106,9 @@ class Orgue(models.Model):
     commune = models.CharField(max_length=100)
     code_insee = models.CharField(max_length=200)
     ancienne_commune = models.CharField(max_length=100, null=True, blank=True)
-    departement = models.CharField(max_length=50)
-    code_departement = models.CharField(max_length=5)
-    region = models.CharField(max_length=50)
+    departement = models.CharField(verbose_name="Département", max_length=50)
+    code_departement = models.CharField(verbose_name="Code département", max_length=5)
+    region = models.CharField(verbose_name="Région", max_length=50)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
     osm_type = models.CharField(verbose_name="Type open street map", max_length=20, null=True, blank=True)
@@ -119,9 +123,9 @@ class Orgue(models.Model):
     soufflerie = models.TextField(null=True, blank=True)
     transmission_notes = models.CharField(max_length=20, choices=CHOIX_TRANSMISSION, null=True, blank=True)
     transmission_commentaire = models.CharField(max_length=100, null=True, blank=True, help_text="Max 100 caractères")
-    tirage_jeux = models.CharField(max_length=20, choices=CHOIX_TIRAGE, null=True, blank=True)
+    tirage_jeux = models.CharField(verbose_name="Tirage des jeux",max_length=20, choices=CHOIX_TIRAGE, null=True, blank=True)
     tirage_commentaire = models.CharField(max_length=100, null=True, blank=True, help_text="Max 100 caractères")
-    commentaire_tuyauterie = models.TextField(blank=True)
+    commentaire_tuyauterie = models.TextField(verbose_name="Description de la tuyauterie",blank=True)
     accessoires = models.ManyToManyField('Accessoire', blank=True)
 
     # Auto générés
@@ -229,7 +233,6 @@ class Orgue(models.Model):
             self.etat,
             self.elevation,
             self.buffet,
-            self.console,
             self.edifice,
             self.commune,
             self.departement,

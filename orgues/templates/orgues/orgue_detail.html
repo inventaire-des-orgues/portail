@@ -54,7 +54,7 @@
                     <p class="text-muted">Pas de description</p>
                   {% endif %}
                   <h2 class="titre-fiche">Partie instrumentale</h2>
-                  <div id="tuyauterie"></div>
+
                   <p class="soustitre-fiche">Sommiers</p>
                   {% if orgue.sommiers %}
                     <div id="sommiers">{{ orgue.sommiers|safe }}</div>
@@ -123,7 +123,7 @@
                 </dd>
                 <dt>Elévation</dt>
                 <dd>{{ orgue.get_elevation_display|default_if_none:"Non définie" }}</dd>
-                <dt>Etat</dt>
+                <dt>Etat de l'instrument</dt>
                 <dd>{{ orgue.get_etat_display|default_if_none:"Non défini" }}</dd>
                 <hr>
                 <dt>Claviers</dt>
@@ -134,7 +134,7 @@
                 <dd>{% if orgue.has_pedalier %}Oui{% else %}Non{% endif %}</dd>
                 <dt>Boîte expressive</dt>
                 <dd>{% if orgue.is_expressif %}Oui{% else %}Non{% endif %}</dd>
-                <dt>Transmission</dt>
+                <dt>Transmission des notes</dt>
                 <dd>{{ orgue.get_transmission_notes_display |default_if_none:"Non définie" }}</dd>
                 <dt>Tirage des jeux</dt>
                 <dd>{{ orgue.get_tirage_jeux_display|default_if_none:"Non défini" }}</dd>
@@ -188,6 +188,7 @@
 
   <!-- 1 -->
   <link title="timeline-styles" rel="stylesheet" href="https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css">
+
 
   <!-- 2 -->
   <script src="https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"></script>

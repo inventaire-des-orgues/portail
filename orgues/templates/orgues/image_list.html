@@ -42,7 +42,7 @@
           {% if image.is_principale %}
             Oui
           {% else %}
-            Non (<a href="{% url 'orgues:image-principale' image.pk %}">définir</a>)
+            Non (<a href="{% url 'orgues:image-principale' image.pk %}">choisir</a>)
           {% endif %}</td>
         <td>{{ image.credit|default_if_none:"Aucun" }}</td>
         <td>

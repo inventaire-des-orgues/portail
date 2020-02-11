@@ -4,8 +4,12 @@
 {% block tuyauterie_active %}active{% endblock %}
 
 {% block card-body %}
-  <h5 class="card-title">
-    Clavier
+  <h5 class="card-title mb-4">
+    {% if clavier_form.instance.pk %}
+      {{ clavier_form.instance.type }}
+    {% else %}
+      Nouveau plan sonore
+    {% endif %}
   </h5>
   <form method="post"> {% csrf_token %}
     <div class="row">
