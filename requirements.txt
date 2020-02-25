@@ -6,3 +6,4 @@ Pillow==6.2.1
 pytz==2019.3
 six==1.13.0
 sqlparse==0.3.0
+djangorestframework==3.11.0

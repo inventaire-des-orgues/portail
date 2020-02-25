@@ -10,6 +10,7 @@ from django.views.generic.base import View
 
 from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdateView, FabView, FabCreateViewJS
 import orgues.forms as orgue_forms
+from orgues.api.serializers import OrgueSerializer
 from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeClavier, TypeJeu, Fichier, Image
 
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -75,6 +76,14 @@ class OrgueDetail(LoginRequiredMixin, DetailView):
     model = Orgue
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
+
+    def render_to_response(self, context, **response_kwargs):
+        if self.request.GET.get("format") == "json":
+            return JsonResponse(OrgueSerializer(self.object, context={
+            "request": self.request,
+        }).data, safe=False)
+        return super().render_to_response(context)
+
 
 
 class OrgueDetailExemple(View):
@@ -395,7 +404,7 @@ class ClavierUpdate(FabUpdateView):
                 jeu.clavier = clavier
                 jeu.save()
             messages.success(self.request, "Clavier mis à jour, merci !")
-            return redirect('orgues:orgue-update-composition', orgue_uuid=clavier.orgue.uuid)
+            return redirect('orgues:clavier-update', pk=clavier.pk)
         else:
             context = {
                 "jeux_formset": jeux_formset,
