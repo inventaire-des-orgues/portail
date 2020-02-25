@@ -14,7 +14,6 @@ def resume_clavier(jeux_count, claviers_count, has_pedalier):
 
     cr = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV",
                         "XVI", "XVII", "XVIII", "XIX", "XX", "XXI", "XXII", "XXIII", "XIV", "XV"]
-    print(jeux_count,claviers_count,has_pedalier)
     if claviers_count == 0:
          return "?"
 

@@ -161,6 +161,11 @@ dt {
     margin: 10px 0;
 }
 
+.clavier div.card > ul.list-group > li.list-group-item {
+    padding: .25rem 1.25rem !important;
+    font-size: 0.9rem;
+}
+
 /* UTILITAIRE */
 
 .py-50 {
@@ -204,6 +209,9 @@ small.help-block {
     }
 }
 
+.text-blue {
+    color: #3a64a7
+}
 
 strong {
         font-weight: 600;

@@ -1,17 +1,16 @@
-<div class="col-md-6 col-lg-4 clavier">
+<div class="col-md-4 col-lg-3 clavier">
   <div class="card">
-    <div class="card-body">
+    <div class="card-body py-2 bg-light">
       <h5 class="card-title">{{ clavier.type }} {% if clavier.is_expressif %}expressif {% endif %}</h5>
-      <p class="card-text" style="font-size:0.9em;">
+      <p class="card-text font-weight-bold" style="font-size:0.9em;">
         {% if clavier.etendue %}
           Etendue : {{ clavier.etendue }}
         {% endif %}
       </p>
     </div>
-    <ul class="list-group list-group-flush" style="font-size:0.9em;">
+    <ul class="list-group list-group-flush">
       {% for jeu in clavier.jeux.all %}
-
-        <li class="list-group-item "
+        <li class="list-group-item"
         {% if jeu.commentaire %}data-toggle="tooltip" title="{{ jeu.commentaire }}" data-placement="right"{% endif %}
         >{{ jeu }}  {% if jeu.commentaire %}<i class="fa fa-info-circle text-muted"></i> {% endif %}</li>
       {% endfor %}
