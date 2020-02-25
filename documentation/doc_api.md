@@ -35,7 +35,7 @@ response = requests.get("https://inventaire-des-orgues.fr/api/v1/orgues/",header
 import requests
 
 headers={'Authorization': 'Token b6d113e8bc1b0f205893bca22e46681b4c2f210c'}
-response = requests.get("http://localhost:8000/api/v1/orgues/",params={"offset":"50"},headers=headers)
+response = requests.get("https://inventaire-des-orgues.fr/api/v1/orgues/",params={"offset":"50"},headers=headers)
 ```
 
 
@@ -45,7 +45,7 @@ response = requests.get("http://localhost:8000/api/v1/orgues/",params={"offset":
 import requests
 
 headers={'Authorization': 'Token b6d113e8bc1b0f205893bca22e46681b4c2f210c'}
-response = requests.get("http://localhost:8000/api/v1/orgues/",params={"code_departement":51},headers=headers)
+response = requests.get("https://inventaire-des-orgues.fr/api/v1/orgues/",params={"code_departement":51},headers=headers)
 ```
 
 
