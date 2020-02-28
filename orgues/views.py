@@ -88,7 +88,7 @@ class OrgueDetail(LoginRequiredMixin, DetailView):
 
 class OrgueDetailExemple(View):
     """
-    Redirige vers la fiche la mieux renseignée du site
+    Redirige vers la fiche la mieux complétée du site
     """
 
     def get(self, request, *args, **kwargs):
