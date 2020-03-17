@@ -2,6 +2,8 @@
   $(function () {
     $("#id_facteur").select2({
       placeholder: 'Choisir un facteur',
+            allowClear: true,
+
       ajax: {
         url: '{% url 'orgues:facteur-list-js' %}',
         data: function (params) {
@@ -25,6 +27,7 @@
     $("#id_commune").select2({
       width: "100%",
       language: "fr",
+      allowClear: true,
       minimumInputLength: 3,
       placeholder: 'Choisir une commune',
       ajax: {
