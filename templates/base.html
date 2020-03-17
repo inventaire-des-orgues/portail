@@ -28,7 +28,13 @@
       <div class="row">
         <div class="col-md-6">
           <ul class="top-menu">
-            <li><a href="#">Connexion</a></li>
+            <li>
+              {% if request.user.is_authenticated %}
+                <a href="{% url 'logout' %}">Déconnexion</a>
+              {% else %}
+                <a href="{% url 'login' %}">Connexion</a>
+              {% endif %}
+            </li>
           </ul>
         </div>
         <div class="col-md-6 d-none d-sm-block">
@@ -133,9 +139,9 @@
           <div class="col-md-3 mt-3">
             <div class="widget">
               <div class="widget-title">Participer</div>
-            {% if request.user.is_authenticated %}
-              Vous êtes connecté(e) en temps que "{{ request.user }}"
-            {% endif %}
+              {% if request.user.is_authenticated %}
+                Vous êtes connecté(e) en temps que "{{ request.user }}"
+              {% endif %}
               <ul class="list">
                 <li>
                   {% if request.user.is_authenticated %}
