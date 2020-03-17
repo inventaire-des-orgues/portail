@@ -1,3 +1,5 @@
+from collections import Counter
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
@@ -25,8 +27,12 @@ class OrgueList(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        commune = self.request.GET.get("commune","|")
-        self.selected_commune,code_insee = commune.split("|")
+        commune = self.request.GET.get("commune")
+        if commune:
+            self.selected_commune, code_insee = commune.split("|")
+        else:
+            self.selected_commune = None
+            code_insee = None
 
         edifice = self.request.GET.get("edifice")
         facteur_pk = self.request.GET.get("facteur")
@@ -69,6 +75,26 @@ class OrgueListJS(View):
         return JsonResponse(list(data), safe=False)
 
 
+class OrgueEtatsJS(View):
+    """
+    JSON décrivant les états des orgues pour une région
+    Si pas de région alors envoie les infos aggrégées pour toutes les régions
+    """
+
+    def get(self, request, *args, **kwargs):
+        region = request.GET.get("region")
+        queryset = Orgue.objects.all()
+        if region:
+            queryset = queryset.filter(region=region)
+        valeurs = queryset.values_list("etat", flat=True)
+        etats = dict(Counter(valeurs))
+        etats["total"] = sum(list(etats.values()))
+        if None in etats.keys():
+            etats["inconnu"] = etats.get(None, 0)
+            del etats[None]
+        return JsonResponse(etats, safe=False)
+
+
 class OrgueDetail(LoginRequiredMixin, DetailView):
     """
     Vue de détail (lecture seule) d'un orgue
@@ -80,10 +106,9 @@ class OrgueDetail(LoginRequiredMixin, DetailView):
     def render_to_response(self, context, **response_kwargs):
         if self.request.GET.get("format") == "json":
             return JsonResponse(OrgueSerializer(self.object, context={
-            "request": self.request,
-        }).data, safe=False)
+                "request": self.request,
+            }).data, safe=False)
         return super().render_to_response(context)
-
 
 
 class OrgueDetailExemple(View):
@@ -153,7 +178,6 @@ class OrgueUpdateComposition(OrgueUpdate):
     def get_success_url(self):
         success_url = reverse('orgues:orgue-update-composition', args=(self.object.uuid,))
         return self.request.POST.get("next", success_url)
-
 
 
 class OrgueUpdateBuffet(OrgueUpdate):

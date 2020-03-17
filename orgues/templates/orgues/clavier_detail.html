@@ -1,7 +1,7 @@
-<div class="col-md-4 col-lg-3 clavier">
+<div class="col-md-4 clavier">
   <div class="card">
-    <div class="card-body py-2 bg-light">
-      <h5 class="card-title">{{ clavier.type }} {% if clavier.is_expressif %}expressif {% endif %}</h5>
+    <div class="card-header p-3 bg-light">
+      <h4 class="my-0">{{ clavier.type }} {% if clavier.is_expressif %}expressif {% endif %}</h4>
       <p class="card-text font-weight-bold" style="font-size:0.9em;">
         {% if clavier.etendue %}
           Etendue : {{ clavier.etendue }}
@@ -17,8 +17,8 @@
     </ul>
     {% if editable %}
       <div class="card-footer bg-transparent">
-        <a href="{% url 'orgues:clavier-update' clavier.pk %}" class="btn btn-xs btn-outline-secondary editer_clavier">Editer</a>
-        <a href="{% url 'orgues:clavier-delete' clavier.pk %}" class="btn btn-xs btn-outline-danger supprimer_clavier">Supprimer</a>
+        <a href="{% url 'orgues:clavier-update' clavier.pk %}" class="btn btn-xs btn-outline editer_clavier">Editer</a>
+        <a href="{% url 'orgues:clavier-delete' clavier.pk %}" class="btn btn-xs btn-outline btn-danger supprimer_clavier">Supprimer</a>
       </div>
     {% endif %}
   </div>

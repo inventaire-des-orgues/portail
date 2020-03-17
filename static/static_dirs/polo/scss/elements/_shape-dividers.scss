@@ -1,0 +1,41 @@
+.shape-divider {
+    position: absolute;
+    display: block;
+    width: 100%;
+    z-index: 0;
+    bottom: 0;
+    top: auto;
+    left: 0;
+
+    svg {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    &[data-position="bottom"] {
+        bottom: 0;
+        top: auto;
+    }
+
+    &[data-position="top"] {
+        bottom: auto;
+        top: 0;
+    }
+
+    &[data-flip-horizontal="true"] {
+        transform: rotateY(180deg);
+    }
+
+    &[data-flip-vertical="true"] {
+        transform: rotateX(180deg);
+    }
+
+    &[data-flip-horizontal="true"][data-flip-vertical="true"] {
+        transform: rotateY(180deg) rotateX(180deg);
+    }
+}
+
+/* .shape-divider + .bg-overlay {
+    z-index: -2;
+} */

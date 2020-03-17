@@ -12,7 +12,7 @@
         <th>Type d'événement</th>
         <th>Facteur(s)</th>
         <th>Résumé</th>
-        <th class="text-right">Actions</th>
+        <th class="text-right" width="170px">Actions</th>
       </tr>
       </thead>
       <tbody>
@@ -28,8 +28,8 @@
           {% endfor %}</td>
           <td width="40%"><span class="text-muted">{{ evenement.resume|striptags|truncatechars:150}}</span></td>
           <td width="140px" class="text-right">
-            <a href="{% url 'orgues:evenement-update' evenement.pk %}" class="btn btn-xs btn-outline-secondary">Editer</a>
-            <a href="{% url 'orgues:evenement-delete' evenement.pk %}" class="btn btn-xs btn-outline-danger supprimer_evenement" data-pk="{{ evenement.pk }}">Supprimer</a>
+            <a href="{% url 'orgues:evenement-update' evenement.pk %}" class="btn btn-xs btn btn-outline">Editer</a>
+            <a href="{% url 'orgues:evenement-delete' evenement.pk %}" class="btn btn-xs  btn-danger btn-outline supprimer_evenement" data-pk="{{ evenement.pk }}">Supprimer</a>
           </td>
         </tr>
       {% endfor %}
@@ -41,7 +41,7 @@
     </p>
   {% endif %}
   <p class="text-right">
-    <a href="{% url 'orgues:evenement-create' orgue.uuid %}" class="btn btn-outline-primary">
+    <a href="{% url 'orgues:evenement-create' orgue.uuid %}" class="btn btn-sm btn-outline-primary">
     <i class="fa fa-plus"></i>  Ajouter un événement
     </a>
   </p>

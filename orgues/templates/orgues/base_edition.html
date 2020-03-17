@@ -6,73 +6,78 @@
 
 
 {% block content %}
-  {% include 'orgues/orgue_header.html' %}
 
-  <div class="album p-5 bg-light" id="edition">
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-lg-2">
-          <div class="list-group">
-            <a class="list-group-item" href="{% url 'orgues:orgue-detail' orgue.slug %}">
-              <i class="fa fa-arrow-left"></i> Retour</a>
-            <a class="list-group-item d-flex justify-content-between align-items-center
+  <div class="container mt-4">
+    <div class="row">
+      <div class="col-lg-12 my-4">
+        <h3>
+          {{ orgue.edifice|capfirst }} | {{ orgue.commune }} ({{ orgue.departement }})
+          <small>
+            {{ orgue.get_designation_display }}
+          </small>
+        </h3>
+      </div>
+      <div class="col-lg-3">
+        <div class="list-group">
+          <a class="list-group-item" href="{% url 'orgues:orgue-detail' orgue.slug %}">
+            <i class="fa fa-arrow-left"></i> Retour</a>
+          <a class="list-group-item d-flex justify-content-between align-items-center
               {% block information_active %}{% endblock %}" href="{% url 'orgues:orgue-update' orgue.uuid %}">
-              Informations générales
-            </a>
-            {% if perms.orgues.change_localisation %}
-              <a class="list-group-item d-flex justify-content-between align-items-center
+            Informations générales
+          </a>
+          {% if perms.orgues.change_localisation %}
+            <a class="list-group-item d-flex justify-content-between align-items-center
               {% block localisation_active %}{% endblock %}" href="{% url 'orgues:orgue-update-localisation' orgue.uuid %}">Localisation
-              </a>
-            {% endif %}
+            </a>
+          {% endif %}
 
-            <a class="list-group-item d-flex justify-content-between align-items-center
+          <a class="list-group-item d-flex justify-content-between align-items-center
               {% block evenement_active %}{% endblock %}" href="{% url 'orgues:evenement-list' orgue.uuid %}">
-              Historique
-              <span class="badge badge-light badge-pill">{{ orgue.evenements.count }}</span>
-            </a>
-            <a class="list-group-item d-flex justify-content-between align-items-center
+            Historique
+            <span class="badge badge-light badge-pill">{{ orgue.evenements.count }}</span>
+          </a>
+          <a class="list-group-item d-flex justify-content-between align-items-center
               {% block buffet_active %}{% endblock %}" href="{% url 'orgues:orgue-update-buffet' orgue.uuid %}">
-              Buffet / Console
-            </a>
-            <a class="list-group-item d-flex justify-content-between align-items-center
+            Buffet / Console
+          </a>
+          <a class="list-group-item d-flex justify-content-between align-items-center
                         {% block instrumentale_active %}{% endblock %}" href="{% url 'orgues:orgue-update-instrumentale' orgue.uuid %}">
-              Partie instrumentale
-            </a>
-            <a class="list-group-item d-flex justify-content-between align-items-center
+            Partie instrumentale
+          </a>
+          <a class="list-group-item d-flex justify-content-between align-items-center
                         {% block composition_active %}{% endblock %}" href="{% url 'orgues:orgue-update-composition' orgue.uuid %}">
-              Composition
-            </a>
-            <a class="list-group-item d-flex justify-content-between align-items-center
+            Composition
+          </a>
+          <a class="list-group-item d-flex justify-content-between align-items-center
               {% block image_active %}{% endblock %}" href="{% url 'orgues:image-list' orgue.uuid %}">
-              Images
-              <span class="badge badge-light badge-pill">{{ orgue.images.count }}</span>
-            </a>
-            <a class="list-group-item d-flex justify-content-between align-items-center
+            Images
+            <span class="badge badge-light badge-pill">{{ orgue.images.count }}</span>
+          </a>
+          <a class="list-group-item d-flex justify-content-between align-items-center
               {% block fichier_active %}{% endblock %}" href="{% url 'orgues:fichier-list' orgue.uuid %}">
-              Fichiers
-              <span class="badge badge-light badge-pill">{{ orgue.fichiers.count }}</span>
-            </a>
-          </div>
-          <div class="my-3">
-            <small class="text-muted">Avancement : {{ orgue.completion }}%</small>
-            <div class="progress" style="height:5px">
-              <div class="progress-bar bg-success" role="progressbar" style="width: {{ orgue.completion }}%;" aria-valuenow="{{ orgue.completion }}" aria-valuemin="0" aria-valuemax="100">
-              </div>
+            Fichiers
+            <span class="badge badge-light badge-pill">{{ orgue.fichiers.count }}</span>
+          </a>
+        </div>
+        <div class="my-3">
+          <small class="text-muted">Avancement : {{ orgue.completion }}%</small>
+          <div class="progress" style="height:5px">
+            <div class="progress-bar bg-success" role="progressbar" style="width: {{ orgue.completion }}%;" aria-valuenow="{{ orgue.completion }}" aria-valuemin="0" aria-valuemax="100">
             </div>
           </div>
         </div>
-        <div class="col-lg-10">
-          {% if orgue.commentaire_admin %}
-            <div class="alert alert-info">
-              <b>Commentaire admin :</b> {{ orgue.commentaire_admin|linebreaksbr }}
-            </div>
+      </div>
+      <div class="col-lg-9">
+        {% if orgue.commentaire_admin %}
+          <div class="alert alert-info">
+            <b>Commentaire admin :</b> {{ orgue.commentaire_admin|linebreaksbr }}
+          </div>
 
-          {% endif %}
-          <div class="card box-shadow">
-            <div class="card-body">
-              {% block card-body %}
-              {% endblock %}
-            </div>
+        {% endif %}
+        <div class="card box-shadow">
+          <div class="card-body">
+            {% block card-body %}
+            {% endblock %}
           </div>
         </div>
       </div>

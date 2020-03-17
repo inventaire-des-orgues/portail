@@ -1,0 +1,514 @@
+/* ----------------------------------------------------------------
+	Typography
+-----------------------------------------------------------------*/
+a:not(.btn):not(.badge) {
+  /*  &:not(.btn):not([href]):not([tabindex]) {
+       color: $color-body;
+   } */ }
+  a:not(.btn):not(.badge).link, a:not(.btn):not(.badge):hover, a:not(.btn):not(.badge):focus, a:not(.btn):not(.badge):active {
+    color: #e1c17c; }
+
+/* ----------------------------------------------------------------
+	Accordion
+-----------------------------------------------------------------*/
+.accordion.accordion-theme .ac-item {
+  background-color: #e1c17c; }
+
+/* ----------------------------------------------------------------
+	Blockquotes
+-----------------------------------------------------------------*/
+.blockquote {
+  border-left: 3px solid #e1c17c; }
+
+.blockquote-color {
+  background-color: #e1c17c; }
+
+/* ----------------------------------------------------------------------
+	Buttons
+-------------------------------------------------------------------------*/
+button.btn,
+.btn:not(.close):not(.mfp-close), a.btn:not([href]):not([tabindex]) {
+  background-color: #e1c17c;
+  border-color: #e1c17c; }
+  button.btn:hover, button.btn:focus, button.btn:not(:disabled):not(.disabled):active, button.btn:not(:disabled):not(.disabled).active,
+  .btn:not(.close):not(.mfp-close):hover,
+  .btn:not(.close):not(.mfp-close):focus,
+  .btn:not(.close):not(.mfp-close):not(:disabled):not(.disabled):active,
+  .btn:not(.close):not(.mfp-close):not(:disabled):not(.disabled).active, a.btn:not([href]):not([tabindex]):hover, a.btn:not([href]):not([tabindex]):focus, a.btn:not([href]):not([tabindex]):not(:disabled):not(.disabled):active, a.btn:not([href]):not([tabindex]):not(:disabled):not(.disabled).active {
+    background-color: #e1c17c;
+    border-color: #e1c17c; }
+  button.btn.btn-outline,
+  .btn:not(.close):not(.mfp-close).btn-outline, a.btn:not([href]):not([tabindex]).btn-outline {
+    border-color: #e1c17c;
+    color: #e1c17c; }
+    button.btn.btn-outline:hover, button.btn.btn-outline:focus, button.btn.btn-outline:active, button.btn.btn-outline.active,
+    .btn:not(.close):not(.mfp-close).btn-outline:hover,
+    .btn:not(.close):not(.mfp-close).btn-outline:focus,
+    .btn:not(.close):not(.mfp-close).btn-outline:active,
+    .btn:not(.close):not(.mfp-close).btn-outline.active, a.btn:not([href]):not([tabindex]).btn-outline:hover, a.btn:not([href]):not([tabindex]).btn-outline:focus, a.btn:not([href]):not([tabindex]).btn-outline:active, a.btn:not([href]):not([tabindex]).btn-outline.active {
+      background-color: #e1c17c;
+      border-color: #e1c17c; }
+  button.btn.btn-primary,
+  .btn:not(.close):not(.mfp-close).btn-primary, a.btn:not([href]):not([tabindex]).btn-primary {
+    background-color: #e1c17c;
+    border-color: #e1c17c; }
+    button.btn.btn-primary:hover, button.btn.btn-primary:focus, button.btn.btn-primary:not(:disabled):not(.disabled):active, button.btn.btn-primary:not(:disabled):not(.disabled).active,
+    .btn:not(.close):not(.mfp-close).btn-primary:hover,
+    .btn:not(.close):not(.mfp-close).btn-primary:focus,
+    .btn:not(.close):not(.mfp-close).btn-primary:not(:disabled):not(.disabled):active,
+    .btn:not(.close):not(.mfp-close).btn-primary:not(:disabled):not(.disabled).active, a.btn:not([href]):not([tabindex]).btn-primary:hover, a.btn:not([href]):not([tabindex]).btn-primary:focus, a.btn:not([href]):not([tabindex]).btn-primary:not(:disabled):not(.disabled):active, a.btn:not([href]):not([tabindex]).btn-primary:not(:disabled):not(.disabled).active {
+      background-color: #e1c17c;
+      border-color: #e1c17c; }
+  button.btn.btn-icon-holder.btn-outline:before,
+  .btn:not(.close):not(.mfp-close).btn-icon-holder.btn-outline:before, a.btn:not([href]):not([tabindex]).btn-icon-holder.btn-outline:before {
+    border-left-color: #e1c17c; }
+
+/* ----------------------------------------------------------------------
+    call-to-action (call to action)
+-------------------------------------------------------------------------*/
+.call-to-action.call-to-action-colored {
+  background-color: #e1c17c; }
+
+/* ----------------------------------------------------------------
+Carousels & Slider
+-----------------------------------------------------------------*/
+.inspiro-slider .flickity-button:hover {
+  background-color: #e1c17c; }
+
+.carousel .flickity-button:hover {
+  background-color: #e1c17c; }
+
+/* ----------------------------------------------------------------
+    Dropcat & Highlight
+-----------------------------------------------------------------*/
+.dropcap.dropcap-colored {
+  background-color: #e1c17c; }
+
+.highlight.highlight-colored {
+  background-color: #e1c17c; }
+
+/* ----------------------------------------------------------------------
+Forms
+-------------------------------------------------------------------------*/
+.form-control:focus,
+input:focus,
+select:focus {
+  border-color: #e1c17c; }
+
+/* ----------------------------------------------------------------------
+	Headings
+-------------------------------------------------------------------------*/
+.heading-text.heading-section > h2:before {
+  background-color: #e1c17c; }
+
+.heading-creative strong {
+  color: #e1c17c; }
+
+/* ----------------------------------------------------------------------
+	Icon Box
+-------------------------------------------------------------------------*/
+.icon-box.effect.dark .icon i:after {
+  box-shado: 0 0 0 3px #e1c17c; }
+.icon-box.effect.dark .icon i:hover, .icon-box.effect.dark:hover .icon i {
+  background-color: #e1c17c; }
+
+.text-box.text-box-light:hover {
+  background: #e1c17c; }
+
+.feature-box:hover h2,
+.feature-box:hover h3,
+.feature-box:hover h4 {
+  color: #e1c17c; }
+
+/* ----------------------------------------------------------------
+Lables & Badgets
+-----------------------------------------------------------------*/
+.badge-primary {
+  background-color: #e1c17c; }
+
+/* ----------------------------------------------------------------------
+	Light Box
+-------------------------------------------------------------------------*/
+.mfp-ajax-holder .mfp-close:hover {
+  background: #e1c17c; }
+
+/* ----------------------------------------------------------------------
+	Lists & Bullet Lists
+-------------------------------------------------------------------------*/
+.list-colored li a {
+  color: #e1c17c; }
+
+.list-legend li span {
+  background-color: #e1c17c; }
+
+.list-icon.list-icon-colored li:before, .list-icon.icon-list-colored i {
+  color: #e1c17c; }
+
+.list-group-item.active {
+  background-color: #e1c17c;
+  border: #e1c17c; }
+
+/* ----------------------------------------------------------------------
+	Pagination & Pager
+-------------------------------------------------------------------------*/
+.post-navigation a:hover {
+  color: #e1c17c; }
+
+/* ----------------------------------------------------------------------
+	Pricing Table
+-------------------------------------------------------------------------*/
+.pricing-table.colored .plan-header {
+  background-color: #e1c17c; }
+
+/* ----------------------------------------------------------------------
+	Progress Bar
+-------------------------------------------------------------------------*/
+.p-progress-bar,
+.progress-bar {
+  background-color: #e1c17c; }
+
+/*--------------------------------------------------------
+     Tabs
+---------------------------------------------------------*/
+.tabs .nav-tabs .nav-link.active {
+  color: #e1c17c;
+  border-bottom: 2px solid #e1c17c; }
+.tabs.tabs-vertical .nav-link.active {
+  color: #e1c17c;
+  border-right: 2px solid #e1c17c; }
+
+/* ----------------------------------------------------------------
+	Date picker
+-----------------------------------------------------------------*/
+.datepicker tbody tr > td.day.today.active, .datepicker tbody tr > td.day.active, .datepicker tbody tr > td.day.selected {
+  background: #e1c17c !important; }
+  .datepicker tbody tr > td.day.today.active:hover, .datepicker tbody tr > td.day.active:hover, .datepicker tbody tr > td.day.selected:hover {
+    background: #e1c17c; }
+.datepicker tbody tr > td.day.range.today {
+  background: #e1c17c; }
+.datepicker tbody tr > td span.month.active {
+  background: #e1c17c; }
+  .datepicker tbody tr > td span.month.active:hover {
+    background: #e1c17c; }
+
+.datetimepicker tbody tr > td.day.today,
+.datetimepicker table tr td.active:active,
+.datetimepicker table tr td.active:hover:active,
+.datetimepicker table tr td.active.disabled:active,
+.datetimepicker table tr td.active.disabled:hover:active,
+.datetimepicker table tr td.active.active,
+.datetimepicker table tr td.active:hover.active,
+.datetimepicker table tr td.active.disabled.active,
+.datetimepicker table tr td.active.disabled:hover.active,
+.datetimepicker table tr td span.active:active,
+.datetimepicker table tr td span.active:hover:active,
+.datetimepicker table tr td span.active.disabled:active,
+.datetimepicker table tr td span.active.disabled:hover:active,
+.datetimepicker table tr td span.active.active,
+.datetimepicker table tr td span.active:hover.active,
+.datetimepicker table tr td span.active.disabled.active,
+.datetimepicker table tr td span.active.disabled:hover.active {
+  background: #e1c17c !important; }
+
+.datetimepicker table tr > td.today:hover,
+.datetimepicker table tr > td.today:hover:hover,
+.datetimepicker table tr > td.today.disabled:hover,
+.datetimepicker table tr > td.today.disabled:hover:hover,
+.datetimepicker table tr > td.today:active,
+.datetimepicker table tr > td.today:hover:active,
+.datetimepicker table tr > td.today.disabled:active,
+.datetimepicker table tr > td.today.disabled:hover:active,
+.datetimepicker table tr > td.today.active,
+.datetimepicker table tr > td.today:hover.active,
+.datetimepicker table tr > td.today.disabled.active,
+.datetimepicker table tr > td.today.disabled:hover.active,
+.datetimepicker table tr > td.today.disabled,
+.datetimepicker table tr > td.today:hover.disabled,
+.datetimepicker table tr > td.today.disabled.disabled,
+.datetimepicker table tr > td.today.disabled:hover.disabled,
+.datetimepicker table tr > td.today[disabled],
+.datetimepicker table tr > td.today:hover[disabled],
+.datetimepicker table tr > td.today.disabled[disabled],
+.datetimepicker table tr > td.today.disabled:hover[disabled] {
+  background: #e1c17c !important; }
+
+.daterangepicker .daterangepicker_input .input-mini.active, .daterangepicker .daterangepicker_input .input-mini:focus {
+  border: 1px solid #e1c17c; }
+.daterangepicker tbody td.today {
+  background: #e1c17c; }
+.daterangepicker tbody td.active, .daterangepicker tbody td.in-range, .daterangepicker tbody td.active:hover, .daterangepicker tbody td.in-range:hover {
+  background: #e1c17c; }
+.daterangepicker select.ampmselect.active, .daterangepicker select.ampmselect:focus {
+  border: 1px solid #e1c17c; }
+.daterangepicker select.hourselect.active, .daterangepicker select.hourselect:focus {
+  border: 1px solid #e1c17c; }
+.daterangepicker select.minuteselect.active, .daterangepicker select.minuteselect:focus {
+  border: 1px solid #e1c17c; }
+.daterangepicker select.monthselect.active, .daterangepicker select.monthselect:focus {
+  border: 1px solid #e1c17c; }
+.daterangepicker select.yearselect.active, .daterangepicker select.yearselect:focus {
+  border: 1px solid #e1c17c; }
+.daterangepicker .calendar-time i {
+  color: #b2b1c5; }
+.daterangepicker .ranges li.active {
+  background: #e1c17c;
+  border: 1px solid #e1c17c; }
+
+/* ----------------------------------------------------------------
+	Date range picker
+-----------------------------------------------------------------*/
+.daterangepicker td.active:not(.off),
+.daterangepicker td.active:hover,
+.daterangepicker .active.end-date.in-range {
+  background: #e1c17c !important; }
+
+input.daterange:after,
+input.dates:after {
+  background: #e1c17c; }
+
+/* ----------------------------------------------------------------
+	Bootstrap Switch
+-----------------------------------------------------------------*/
+.bootstrap-switch .bootstrap-switch-on,
+.bootstrap-switch .bootstrap-switch-handle-on,
+.bootstrap-switch .bootstrap-switch-handle-off {
+  background-color: #e1c17c;
+  border-color: #e1c17c; }
+
+.p-radio:checked + .p-radio-style:before {
+  border: 1px solid #e1c17c;
+  background: #e1c17c; }
+
+.p-checkbox:checked + .p-checkbox-style:before {
+  border: #e1c17c;
+  background: #e1c17c; }
+
+.p-switch > input[type="checkbox"]:checked + .p-switch-style {
+  background-color: #e1c17c; }
+
+/* ----------------------------------------------------------------
+	Ion Range Sliders
+-----------------------------------------------------------------*/
+.irs-bar {
+  background: #e1c17c; }
+
+.irs-from,
+.irs-to,
+.irs-single {
+  background: #e1c17c; }
+
+.irs-from:after,
+.irs-to:after,
+.irs-single:after {
+  border-top-color: #e1c17c; }
+
+/* ----------------------------------------------------------------
+	Blog
+-----------------------------------------------------------------*/
+.post-item {
+  /*Types*/ }
+  .post-item .post-image .post-meta-category,
+  .post-item .post-slider .post-meta-category,
+  .post-item .post-video .post-meta-category,
+  .post-item .post-audio .post-meta-category,
+  .post-item .post-quote-img .post-meta-category {
+    background-color: #e1c17c; }
+  .post-item .post-quote-img .post-meta-category {
+    color: #e1c17c; }
+    .post-item .post-quote-img .post-meta-category a {
+      color: #e1c17c; }
+  .post-item.quote .post-item-wrap {
+    background-color: #e1c17c; }
+
+.post-author a {
+  color: #e1c17c; }
+
+/* ----------------------------------------------------------------
+	Grid Filter
+-----------------------------------------------------------------*/
+.grid-filter li:hover a, .grid-filter li.active a {
+  background-color: #e1c17c; }
+.grid-filter.gf-outline li:hover a, .grid-filter.gf-outline li.active a {
+  border-color: #e1c17c;
+  color: #e1c17c; }
+.grid-filter.gf-lines li:hover a, .grid-filter.gf-lines li.active a {
+  color: #e1c17c; }
+  .grid-filter.gf-lines li:hover a:after, .grid-filter.gf-lines li.active a:after {
+    background-color: #e1c17c; }
+.grid-filter.gf-classic li:hover a, .grid-filter.gf-classic li.active a {
+  background-color: #e1c17c; }
+.grid-filter.gf-default li:hover a, .grid-filter.gf-default li.active a {
+  color: #e1c17c; }
+
+/*------------------------------------------------------
+     Comments
+------------------------------------------------------*/
+.comments .comment_number span {
+  color: #e1c17c; }
+
+.respond-comment span {
+  color: #e1c17c; }
+
+/*------------------------------------------------------
+     Extras
+------------------------------------------------------*/
+.item-link {
+  color: #e1c17c; }
+  .item-link:hover {
+    color: #e1c17c; }
+
+.nav-link {
+  color: #e1c17c; }
+
+.background-colored {
+  background-color: #e1c17c; }
+
+/* ----------------------------------------------------------------
+Scroll top
+-----------------------------------------------------------------*/
+#scrollTop:after, #scrollTop:before {
+  background-color: #e1c17c; }
+
+.fc-event-primary.fc-event {
+  background-color: #e1c17c;
+  border-color: #e1c17c; }
+
+.icon-set-container .row > [class^="col-"] {
+  color: #e1c17c; }
+  .icon-set-container .row > [class^="col-"]:hover {
+    background-color: #e1c17c; }
+    .icon-set-container .row > [class^="col-"]:hover .icon-holder {
+      color: #e1c17c; }
+
+/* ----------------------------------------------------------------
+    Forum
+-----------------------------------------------------------------*/
+.forum thead tr > th {
+  background-color: #e1c17c; }
+
+/* ----------------------------------------------------------------
+    Header
+-----------------------------------------------------------------*/
+#header {
+    /* ----------------------------------------------------------------
+Main Menu
+-----------------------------------------------------------------*/ }
+  #header.header-modern:not(.header-active).header-colored .header-inner,
+  #header.header-modern:not(.header-active).header-colored #header-wrap {
+    background-color: #e1c17c; }
+  #header.header-colored .header-inner,
+  #header.header-colored #header-wrap {
+    background-color: #e1c17c; }
+  #header #mainMenu nav > ul > li.hover-active > a,
+  #header #mainMenu nav > ul > li.hover-active > span, #header #mainMenu nav > ul > li.current > a,
+  #header #mainMenu nav > ul > li.current > span, #header #mainMenu nav > ul > li:hover > a,
+  #header #mainMenu nav > ul > li:hover > span, #header #mainMenu nav > ul > li:focus > a,
+  #header #mainMenu nav > ul > li:focus > span {
+    color: #e1c17c; }
+  #header #mainMenu nav > ul > li .dropdown-menu > li > a:focus, #header #mainMenu nav > ul > li .dropdown-menu > li > a:hover, #header #mainMenu nav > ul > li .dropdown-menu > li > a:active,
+  #header #mainMenu nav > ul > li .dropdown-menu > li > span:focus,
+  #header #mainMenu nav > ul > li .dropdown-menu > li > span:hover,
+  #header #mainMenu nav > ul > li .dropdown-menu > li > span:active,
+  #header #mainMenu nav > ul > li .dropdown-menu > li [class*="col-"] > ul > li > a:focus,
+  #header #mainMenu nav > ul > li .dropdown-menu > li [class*="col-"] > ul > li > a:hover,
+  #header #mainMenu nav > ul > li .dropdown-menu > li [class*="col-"] > ul > li > a:active {
+    color: #e1c17c; }
+  #header #mainMenu nav > ul > li .dropdown-menu > li.current > a,
+  #header #mainMenu nav > ul > li .dropdown-menu > li.current > span, #header #mainMenu nav > ul > li .dropdown-menu > li:hover > a,
+  #header #mainMenu nav > ul > li .dropdown-menu > li:hover > span, #header #mainMenu nav > ul > li .dropdown-menu > li:focus > a,
+  #header #mainMenu nav > ul > li .dropdown-menu > li:focus > span, #header #mainMenu nav > ul > li .dropdown-menu > li:active > a,
+  #header #mainMenu nav > ul > li .dropdown-menu > li:active > span, #header #mainMenu nav > ul > li .dropdown-menu > li.hover-active > a,
+  #header #mainMenu nav > ul > li .dropdown-menu > li.hover-active > span {
+    color: #e1c17c; }
+  #header #mainMenu.menu-rounded nav > ul > li.current > a, #header #mainMenu.menu-rounded nav > ul > li:hover > a, #header #mainMenu.menu-rounded nav > ul > li:focus > a {
+    background-color: #e1c17c; }
+  #header #mainMenu.menu-outline nav > ul > li.current > a, #header #mainMenu.menu-outline nav > ul > li:hover > a, #header #mainMenu.menu-outline nav > ul > li:focus > a {
+    color: #e1c17c;
+    border-color: #e1c17c; }
+  #header #mainMenu.menu-lines nav > ul > li.current > a, #header #mainMenu.menu-lines nav > ul > li:hover > a, #header #mainMenu.menu-lines nav > ul > li:focus > a {
+    color: #e1c17c; }
+    #header #mainMenu.menu-lines nav > ul > li.current > a:after, #header #mainMenu.menu-lines nav > ul > li:hover > a:after, #header #mainMenu.menu-lines nav > ul > li:focus > a:after {
+      background-color: #e1c17c; }
+  #header #mainMenu.menu-hover-background nav > ul > li.current, #header #mainMenu.menu-hover-background nav > ul > li:hover, #header #mainMenu.menu-hover-background nav > ul > li:focus {
+    background-color: #e1c17c; }
+  #header #shopping-cart > a .shopping-cart-items {
+    background: #e1c17c; }
+
+/* ----------------------------------------------------------------
+Dots Menu
+-----------------------------------------------------------------*/
+#dotsMenu ul li:hover {
+  background-color: #e1c17c; }
+#dotsMenu ul li.current {
+  background-color: #e1c17c; }
+#dotsMenu ul li a:hover:before, #dotsMenu ul li a.active:before {
+  background-color: #e1c17c; }
+
+/*Menu Dark*/
+#mainMenu.dark:not(.light):not(.menu-rounded) nav > ul > li .dropdown-menu > li > a:hover,
+#mainMenu.dark:not(.light):not(.menu-rounded) nav > ul > li .dropdown-menu > li > span:hover,
+#mainMenu.dark:not(.light):not(.menu-rounded) nav > ul > li .dropdown-menu > li [class*="col-"] > ul > li > a:hover {
+  color: #e1c17c; }
+#mainMenu.dark:not(.light):not(.menu-rounded) nav > ul > li.current > a,
+#mainMenu.dark:not(.light):not(.menu-rounded) nav > ul > li.current > span, #mainMenu.dark:not(.light):not(.menu-rounded) nav > ul > li:hover > a,
+#mainMenu.dark:not(.light):not(.menu-rounded) nav > ul > li:hover > span, #mainMenu.dark:not(.light):not(.menu-rounded) nav > ul > li:focus > a,
+#mainMenu.dark:not(.light):not(.menu-rounded) nav > ul > li:focus > span, #mainMenu.dark:not(.light):not(.menu-rounded) nav > ul > li.hover-active > a,
+#mainMenu.dark:not(.light):not(.menu-rounded) nav > ul > li.hover-active > span {
+  color: #e1c17c; }
+
+.page-menu nav > ul > li:hover > a, .page-menu nav > ul > li.active > a {
+  color: #e1c17c; }
+.page-menu.menu-rounded nav > ul > li:hover > a, .page-menu.menu-rounded nav > ul > li.active > a {
+  background-color: #e1c17c; }
+.page-menu.menu-outline nav > ul > li:hover > a, .page-menu.menu-outline nav > ul > li.active > a {
+  border-color: #e1c17c;
+  color: #e1c17c; }
+.page-menu.menu-lines nav > ul > li:hover > a, .page-menu.menu-lines nav > ul > li.active > a {
+  color: #e1c17c; }
+  .page-menu.menu-lines nav > ul > li:hover > a:after, .page-menu.menu-lines nav > ul > li.active > a:after {
+    background-color: #e1c17c; }
+.page-menu.menu-solid nav > ul > li:hover > a, .page-menu.menu-solid nav > ul > li.active > a {
+  background-color: #e1c17c; }
+
+@media (max-width: 1024px) {
+  .page-menu.menu-rounded nav > ul > li:hover > a, .page-menu.menu-rounded nav > ul > li.active > a, .page-menu.menu-outline nav > ul > li:hover > a, .page-menu.menu-outline nav > ul > li.active > a, .page-menu.menu-lines nav > ul > li:hover > a, .page-menu.menu-lines nav > ul > li.active > a, .page-menu.menu-solid nav > ul > li:hover > a, .page-menu.menu-solid nav > ul > li.active > a, .page-menu.menu-light nav > ul > li:hover > a, .page-menu.menu-light nav > ul > li.active > a, .page-menu.menu-creative nav > ul > li:hover > a, .page-menu.menu-creative nav > ul > li.active > a, .page-menu.inverted nav > ul > li:hover > a, .page-menu.inverted nav > ul > li.active > a {
+    color: #e1c17c; } }
+#search .btn-search-close {
+  background-color: #e1c17c; }
+
+/* ----------------------------------------------------------------
+Topbar
+-----------------------------------------------------------------*/
+#topbar.topbar-colored, #topbar.topbar-colored.dark {
+  background-color: #e1c17c; }
+
+/* ----------------------------------------------------------------
+Helpers
+-----------------------------------------------------------------*/
+.text-theme {
+  color: #e1c17c !important; }
+
+/* ----------------------------------------------------------------
+Portfolio
+-----------------------------------------------------------------*/
+.portfolio-item .portfolio-description a:hover i,
+.portfolio-item .grid-description a:hover i,
+.portfolio-item .portfolio-links a:hover i,
+.grid-item .portfolio-description a:hover i,
+.grid-item .grid-description a:hover i,
+.grid-item .portfolio-links a:hover i {
+  background-color: #e1c17c;
+  border: 1px solid #e1c17c; }
+
+/* ----------------------------------------------------------------
+	Widgets
+-----------------------------------------------------------------*/
+.widget-tweeter li a,
+.widget-twitter li a {
+  color: #e1c17c; }
+
+.tags a:hover, .tags a:focus, .tags a:active, .tags a.active {
+  background-color: #e1c17c;
+  border-color: #e1c17c; }
+
+/*# sourceMappingURL=theme.css.map */

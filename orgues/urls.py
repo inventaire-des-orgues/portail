@@ -4,8 +4,9 @@ import orgues.views as v
 
 app_name = 'orgues'
 urlpatterns = [
-    path('', v.OrgueList.as_view(), name='orgue-list'),
+    path('orgues/', v.OrgueList.as_view(), name='orgue-list'),
     path('liste.json', v.OrgueListJS.as_view(), name='orgue-list-js'),
+    path('etats.json', v.OrgueEtatsJS.as_view(), name='orgue-etats-js'),
     path('carte/', v.OrgueCarte.as_view(), name='orgue-carte'),
     path('detail/<slug:slug>/', v.OrgueDetail.as_view(), name='orgue-detail'),
     path('exemple/', v.OrgueDetailExemple.as_view(), name='orgue-detail-exemple'),

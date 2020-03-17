@@ -446,11 +446,11 @@ class Image(models.Model):
     thumbnail = ImageSpecField(source='image',
                                processors=[ResizeToFill(400, 300)],
                                format='JPEG',
-                               options={'quality': 80})
+                               options={'quality': 100})
     vignette = ImageSpecField(source='image',
                               processors=[ResizeToFill(150, 100)],
                               format='JPEG',
-                              options={'quality': 80})
+                              options={'quality': 100})
 
     orgue = models.ForeignKey(Orgue, null=True, on_delete=models.CASCADE, related_name="images")
     created_date = models.DateTimeField(

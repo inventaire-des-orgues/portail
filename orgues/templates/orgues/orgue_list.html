@@ -2,148 +2,56 @@
 {% load static %}
 {% load orgue_tags %}
 {% block content %}
-  <section class="sectionheader" style="height:110px;position:relative;">
-    <h2 class="text-center text-white" style="z-index:5;position:absolute;left:50%;top:50%;transform: translate(-50%,-50%)">Les orgues</h2>
-    <div style="background:#183564;position:absolute;top:0;bottom:0;left:0;right:0;z-index:3;opacity:0.5;"></div>
-    <div style="background:url('{% static 'img/papyrus.png' %}');z-index:2;filter: grayscale(100%);position:absolute;top:0;bottom:0;left:0;right:0;"></div>
-  </section>
-  <div class="album">
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-lg-3">
-          <div class="card sticky-top mb-4" id="filtercard">
-            <div class="card-body">
-              <form action="" class="" method="get">
-                <div class="form-group">
-                  <label for="">Commune</label>
-                  <select name="commune" id="id_commune" class="form-control" value="{{ request.GET.commune }}">
-                    <option value="">Choisir une commune</option>
-                    {% if request.GET.commune %}
-                    <option value="{{ request.GET.commune }}" selected="selected">{{ selected_commune }}</option>
-                    {% endif %}
+  {% include 'orgues/search_section.html' %}
 
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label for="">Edifice</label>
-                  <input type="text" name="edifice" placeholder="Ex: église " class="form-control" value="{{ request.GET.edifice }}">
-                </div>
-                <div class="form-group">
-                  <label for="">Facteur</label> <br>
-                  <select id="id_facteur" name="facteur">
-                    <option value="">Tous les facteurs</option>
-                    {% if facteur %}
-                      <option value="{{ facteur.pk }}" selected="selected">{{ facteur }}</option>
-                    {% endif %}
-                  </select>
-                </div>
-                <div class="form-group">
-                  <a href="{% url 'orgues:orgue-list' %}" class="btn btn-sm btn-outline-secondary">Annuler</a>
-                  <button type="submit" class="btn btn-sm btn-outline-primary">Chercher</button>
-                </div>
-              </form>
+  <section>
+    <div class="container" id="orgue-list">
+      {% for orgue in object_list %}
+        <div class="card shadow-sm vignette mb-4" onclick="window.location = '{% url 'orgues:orgue-detail' orgue.slug %}'">
+          <div class="row no-gutters">
+            <div class="col-sm-4 col-lg-3" style="background: #868e96;">
+              {% if orgue.image_principale %}
+                <img class="card-img-top h-100" src="{{ orgue.image_principale.thumbnail.url }}" alt="Photo orgue {{ orgue }}">
+              {% else %}
+                <img class="card-img-top" src="{% static 'img/default.jpg' %}" alt="Image par défaut">
+              {% endif %}
+            </div>
+            <div class="col-sm-8 col-lg-9">
+              <div class="card-body">
+                <h3 class="card-title">{{ orgue.edifice|capfirst }} <span style="color:#a9a9a9">| {{ orgue.commune }} ({{ orgue.departement }})</span></h3>
+                <p class="my-1 text-muted">
+                  {{ orgue.get_designation_display }}
+                </p>
+                {% if orgue.evenements_fntteurs %}
+                  <p class="my-1">
+                    {% for evenement in orgue.evenements_facteurs %}
+                      {{ evenement.facteurs_str }} ({{ evenement.annee }})
+                      {% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                  </p>
+                {% endif %}
+                {% resume_clavier orgue.jeux_count orgue.clavier_count orgue.has_pedalier %}
+                {% if user.is_authenticated %}
+                  <p class="text-info my-1" style="position:absolute;bottom:10px;right:20px;">Avancement de la fiche : {{ orgue.completion }}%</p>
+                {% endif %}
+              </div>
             </div>
           </div>
         </div>
-        <div class="col-lg-9">
-          {% for orgue in object_list %}
 
-            <div class="card box-shadow vignette mb-4" onclick="window.location = '{% url 'orgues:orgue-detail' orgue.slug %}'">
-              <div class="row no-gutters">
-                <div class="col-sm-4 col-lg-3" style="background: #868e96;">
-                  {% if orgue.image_principale %}
-                    <img class="card-img-top h-100" src="{{ orgue.image_principale.thumbnail.url }}" alt="Photo orgue {{ orgue }}">
-                  {% else %}
-                    <img class="card-img-top" src="{% static 'img/default.jpg' %}" alt="Image par défaut">
-                  {% endif %}
-                </div>
-                <div class="col-sm-8 col-lg-9">
-                  <div class="card-body">
-                    <h5 class="card-title">{{ orgue.edifice|capfirst }} <span style="color:#a9a9a9">| {{ orgue.commune }} ({{ orgue.departement }})</span></h5>
-                    <p class="my-1 text-muted">
-                      {{ orgue.get_designation_display }}
-                    </p>
-                    {% if orgue.evenements_facteurs %}
-                      <p class="my-1">
-                        {% for evenement in orgue.evenements_facteurs %}
-                          {{ evenement.facteurs_str }} ({{ evenement.annee }})
-                          {% if not forloop.last %},{% endif %}
-                        {% endfor %}
-                      </p>
-                    {% endif %}
-                    {% resume_clavier orgue.jeux_count orgue.clavier_count orgue.has_pedalier %}
-                    {% if user.is_authenticated %}
-                      <p class="text-info my-1" style="position:absolute;bottom:10px;right:20px;">Avancement de la fiche : {{ orgue.completion }}%</p>
-                    {% endif %}
-                  </div>
-                </div>
-              </div>
-            </div>
-          {% endfor %}
-        {% include 'paginator.html' %}
-        </div>
-      </div>
+      {% empty %}
 
+        <p class="text-center py-50">
+        Aucun résultat
+        </p>
+
+      {% endfor %}
+      {% include 'paginator.html' %}
     </div>
-  </div>
+  </section>
 {% endblock %}
 {% block js_extra %}
 
+  {% include 'orgues/search_section_script.html' %}
 
-  <script>
-    $("#id_facteur").select2({
-      placeholder: 'Choisir un facteur',
-      ajax: {
-        url: '{% url 'orgues:facteur-list-js' %}',
-        data: function (params) {
-          var query = {
-            search: params.term,
-            page: params.page || 1
-          }
-          return query;
-        }
-      },
-      escapeMarkup: function (markup) {
-        return markup;
-      },
-      language: {
-        noResults: function () {
-          return "Aucun facteur trouvé ...";
-        }
-      },
-      width: '100%'
-    });
-
-
-
-    $("#id_commune").select2({
-        width: "100%",
-        language: "fr",
-        minimumInputLength: 3,
-        placeholder: 'Choisir une commune',
-        ajax: {
-          delay: 250,
-          url: 'https://api-adresse.data.gouv.fr/search/',
-          data: function (params) {
-            return {
-              q: params.term,
-              type: 'municipality'
-            }
-          },
-          processResults: function (data) {
-            var items = data.features.map(function (result) {
-              return {
-                "id": result.properties.city + "|" + result.properties.citycode,
-                "text": result.properties.city + " (" + result.properties.context + ")"
-              }
-            })
-            return {results: items}
-          }
-        },
-      });
-
-
-
-
-  </script>
 {% endblock %}

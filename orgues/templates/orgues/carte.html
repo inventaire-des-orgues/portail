@@ -2,31 +2,19 @@
 {% load static %}
 
 {% block head_extra %}
-
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
-      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
-      crossorigin=""/>
-  <link rel="stylesheet" href="{% static 'js/leafletcluster/MarkerCluster.Default.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/leaflet/leaflet.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/leafletcluster/MarkerCluster.Default.css' %}">
 {% endblock %}
 
 {% block content %}
-  <section class="sectionheader" style="height:110px;position:relative;">
-    <h2 class="text-center text-white" style="z-index:5;position:absolute;left:50%;top:50%;transform: translate(-50%,-50%)">La carte</h2>
-    <div style="background:#183564;position:absolute;top:0;bottom:0;left:0;right:0;z-index:3;opacity:0.5;"></div>
-    <div style="background:url('{% static 'img/papyrus.png' %}');z-index:2;filter: grayscale(100%);position:absolute;top:0;bottom:0;left:0;right:0;"></div>
-  </section>
-  <div class="album">
-    <div class="container">
+      <div class="container-fluid">
       <div id="mapid" style="height:650px"></div>
     </div>
-  </div>
 {% endblock %}
 
 {% block js_extra %}
-  <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
-      integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
-      crossorigin=""></script>
-  <script src="{% static 'js/leafletcluster/leaflet.markercluster.js' %}"></script>
+  <script src="{% static 'plugins/leaflet/leaflet.js' %}"></script>
+  <script src="{% static 'plugins//leafletcluster/leaflet.markercluster.js' %}"></script>
   <script>
     var carte_orgues = L.map('mapid',
         {

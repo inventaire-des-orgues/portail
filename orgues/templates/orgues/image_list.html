@@ -47,7 +47,7 @@
         <td>{{ image.credit|default_if_none:"Aucun" }}</td>
         <td>
           <form action="{% url 'orgues:image-delete' image.pk %}" method="post">{% csrf_token %}
-            <button type="submit" class="btn btn-outline-danger btn-xs">Supprimer</button>
+            <button type="submit" class="btn btn-outline btn-danger btn-xs">Supprimer</button>
           </form>
         </td>
       </tr>
@@ -59,7 +59,7 @@
     </tbody>
   </table>
   <p class="text-right">
-    <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#exampleModal">
+    <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#exampleModal">
       <i class="fa fa-plus"></i> Ajouter une image
     </button>
   </p>
@@ -80,7 +80,7 @@
             {% endfor %}
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
+            <button type="button" class="btn btn-light" data-dismiss="modal">Annuler</button>
             <button type="submit" class="btn btn-primary">Enregistrer</button>
           </div>
         </form>
