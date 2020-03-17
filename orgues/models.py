@@ -138,6 +138,7 @@ class Orgue(models.Model):
     uuid = models.UUIDField(db_index=True, default=uuid.uuid4, unique=True, editable=False)
     slug = models.SlugField(max_length=255)
     completion = models.IntegerField(default=False, editable=False)
+    keywords = models.TextField()
 
     def __str__(self):
         return self.designation
@@ -148,7 +149,20 @@ class Orgue(models.Model):
 
     def save(self, *args, **kwargs):
         self.completion = self.calcul_completion()
+        self.keywords = self.build_keywords()
         super().save(*args, **kwargs)
+
+    def build_keywords(self):
+        keywords = [
+            self.edifice,
+            self.commune,
+            self.departement,
+            self.code_departement,
+            self.region
+        ]
+        keywords_str = " ".join(keywords)
+        keywords_str_and_slugs = keywords_str + " " + slugify(keywords_str)
+        return keywords_str_and_slugs
 
     @property
     def is_expressif(self):

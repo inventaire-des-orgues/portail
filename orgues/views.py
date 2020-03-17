@@ -45,7 +45,7 @@ class OrgueList(LoginRequiredMixin, ListView):
         if code_insee:
             queryset = queryset.filter(code_insee=code_insee)
         if edifice:
-            queryset = queryset.filter(edifice__icontains=edifice)
+            queryset = queryset.filter(keywords__icontains=edifice)
 
         queryset = queryset.annotate(clavier_count=Count('claviers'))
         return queryset.order_by('-modified_date')

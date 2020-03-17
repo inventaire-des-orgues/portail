@@ -23,7 +23,33 @@
 </head>
 <body>
 {% block body %}
+  <div id="topbar" class="dark topbar-fullwidth">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <ul class="top-menu">
+            <li><a href="#">Connexion</a></li>
+          </ul>
+        </div>
+        <div class="col-md-6 d-none d-sm-block">
+          <div class="social-icons social-icons-colored-hover">
+            <ul>
+              <li class="social-en"><a href="#"><i class="fa fa-envelope"></i></a></li>
+              <li class="social-instagram"><a href="#"><i class="fab fa-instagram"></i></a></li>
+              <li class="social-twitter"><a href="#"><i class="fab fa-twitter"></i></a></li>
+              <li class="social-facebook"><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
   <section id="logo-header">
+    <a class="" href="https://docs.inventaire-des-orgues.fr" id="lien-documentation">
+      <i class="far text-dark fa-question-circle"></i>
+    </a>
     <img src="{% static 'img/ministere_culture.png' %}" alt="" id="logo_ministere">
     <div class="container">
       <div class="page-title">
@@ -47,17 +73,7 @@
             <a href="{% url 'orgues:orgue-list' %}">Les orgues</a>
           </li>
           <li>
-            <a class="" href="https://docs.inventaire-des-orgues.fr">Aide</a>
-          </li>
-          <li>
             <a class="" href="https://vocabulaire.inventaire-des-orgues.fr">Lexique</a>
-          </li>
-          <li>
-            {% if user.is_authenticated %}
-              <a class="" href="{% url 'logout' %}">Déconnexion</a>
-            {% else %}
-              <a href="{% url 'login' %}">Connexion</a>
-            {% endif %}
           </li>
         </ul>
       </nav>
@@ -78,22 +94,24 @@
     <div class="footer-content">
       <div class="container">
         <div class="row align-items-top">
-          <div class="col-md-3 text-center mt-3">
+          <div class="col-md-2 text-center mt-3">
             <img src="{% static 'img/logo.png' %}" alt="" style="filter: invert(1) grayscale(100%);width:120px;">
           </div>
-          <div class="col-md-3 text-center mt-3">
+          <div class="col-md-2 text-center mt-3">
             <p class="text-white">
               Par
             </p>
             <img src="{% static 'img/orgue-en-france.png' %}" alt="" style="width:150px;">
           </div>
-          <div class="col-md-3 text-center mt-3">
+          <div class="col-md-2 text-center mt-3">
             <p class="text-white">
               Avec
             </p>
             <img src="{% static 'img/ministere_culture.png' %}" alt="" style="width:90px;filter:grayscale(100%)">
           </div>
-          <div class="col-md-3 text-center mt-3">
+          <div class="col-md-1 mt-3">
+          </div>
+          <div class="col-md-2 mt-3">
             <div class="widget">
               <div class="widget-title">Liens</div>
               <ul class="list">
@@ -107,16 +125,34 @@
                   <a href="{% url 'orgues:orgue-list' %}">Les orgues</a>
                 </li>
                 <li>
-                  <a class="" href="https://docs.inventaire-des-orgues.fr">Aide</a>
+                  <a class="" href="https://vocabulaire.inventaire-des-orgues.fr">Lexique</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-3 mt-3">
+            <div class="widget">
+              <div class="widget-title">Participer</div>
+            {% if request.user.is_authenticated %}
+              Vous êtes connecté(e) en temps que "{{ request.user }}"
+            {% endif %}
+              <ul class="list">
+                <li>
+                  {% if request.user.is_authenticated %}
+                    <a href="{% url 'logout' %}">Déconnexion</a>
+                  {% else %}
+                    <a href="{% url 'login' %}">Se connecter</a>
+                  {% endif %}
                 </li>
                 <li>
-                  <a class="" href="https://vocabulaire.inventaire-des-orgues.fr">Lexique</a>
+                  <a class="" href="https://docs.inventaire-des-orgues.fr">Aide</a>
                 </li>
               </ul>
             </div>
           </div>
         </div>
       </div>
+    </div>
     </div>
     <div class="copyright-content">
       <div class="container">
