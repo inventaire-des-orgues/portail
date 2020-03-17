@@ -11,17 +11,20 @@
 
 {% block content %}
 
-  <section class="py-3">
+  <section class="py-3 bg-light" id="orgue-detail">
     <div class="container">
       <div class="row justify-content-center">
-      <div class="col-lg-12 my-4">
-        <h3>
-          {{ orgue.edifice|capfirst }} | {{ orgue.commune }} ({{ orgue.departement }})
-          <small>
-            {{ orgue.get_designation_display }}
-          </small>
-        </h3>
-      </div>
+        <div class="col-lg-12 my-4 text-center text-md-left">
+          <h2 class="mb-0">
+            {{ orgue.edifice|capfirst }} <br>
+          </h2>
+          <h4 class="text-muted">
+            {{ orgue.commune }} ({{ orgue.departement }})
+            <small>
+              | {{ orgue.get_designation_display }}
+            </small>
+          </h4>
+        </div>
         <div class="col-lg-9 order-2 col-md-12 order-lg-1  ">
           <div class="card mb-4 box-shadow">
             {% if object.image_principale %}
@@ -77,22 +80,21 @@
                   {% if orgue.images.count %}
                     <h2 class="titre-fiche">Images</h2>
                     <div data-lightbox="gallery" class="row">
-                    {% for image in orgue.images.all %}
+                      {% for image in orgue.images.all %}
 
-                      <div class="col-lg-4">
-                                <div class="grid-item">
-                                    <div class="grid-item-wrap">
-                                        <div class="grid-image"> <img alt="Image Lightbox" src="{{ image.vignette.url }}" />
-                                        </div>
-                                        <div class="grid-description">
-                                            <a title="{% if image.credit %}Crédit : {{ image.credit }}{% endif %}" data-lightbox="gallery-image" href="{{ image.image.url }}" class="btn btn-light btn-rounded">+</a>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="col-lg-4">
+                          <div class="grid-item">
+                            <div class="grid-item-wrap">
+                              <div class="grid-image"><img alt="Image Lightbox" src="{{ image.vignette.url }}"/>
+                              </div>
+                              <div class="grid-description">
+                                <a title="{% if image.credit %}Crédit : {{ image.credit }}{% endif %}" data-lightbox="gallery-image" href="{{ image.image.url }}" class="btn btn-light btn-rounded">+</a>
+                              </div>
                             </div>
-                      {% endfor %}
-
+                          </div>
                         </div>
+                      {% endfor %}
+                    </div>
 
 
                   {% endif %}
@@ -195,7 +197,7 @@
         </div>
       </div>
     </div>
-</section>
+  </section>
 {% endblock %}
 
 {% block js_extra %}
