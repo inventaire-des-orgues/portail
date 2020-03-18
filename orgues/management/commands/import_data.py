@@ -13,6 +13,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
+        def add_arguments(self, parser):
+            parser.add_argument('path', nargs='+', type=str, help='Chemin vers le dossier contenant les orgues à importer')
+
         with open(os.path.join(settings.BASE_DIR, "orgues", "management", "commands","data.csv"), "r", encoding="utf-8") as f:
             reader = csv.DictReader(f, delimiter=";")
             for index,row in enumerate(reader):

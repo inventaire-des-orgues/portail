@@ -8,8 +8,10 @@ col-{{ field.field.widget.attrs.columns }}
   {% if field|is_hidden %}
     {{ field }}
   {% elif field|is_checkbox %}
-    {{ field|addcssclass:"filled-in" }}
+    <div class="form-check">
+    {{ field }}
     <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+    </div>
   {% else %}
     {% if field.label %}
       <label class="" for="{{ field.id_for_label }}">

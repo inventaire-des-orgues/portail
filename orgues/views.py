@@ -1,3 +1,5 @@
+from collections import Counter
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
@@ -10,6 +12,7 @@ from django.views.generic.base import View
 
 from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdateView, FabView, FabCreateViewJS
 import orgues.forms as orgue_forms
+from orgues.api.serializers import OrgueSerializer
 from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeClavier, TypeJeu, Fichier, Image
 
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -24,8 +27,12 @@ class OrgueList(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        commune = self.request.GET.get("commune","|")
-        self.selected_commune,code_insee = commune.split("|")
+        commune = self.request.GET.get("commune")
+        if commune:
+            self.selected_commune, code_insee = commune.split("|")
+        else:
+            self.selected_commune = None
+            code_insee = None
 
         edifice = self.request.GET.get("edifice")
         facteur_pk = self.request.GET.get("facteur")
@@ -38,7 +45,7 @@ class OrgueList(LoginRequiredMixin, ListView):
         if code_insee:
             queryset = queryset.filter(code_insee=code_insee)
         if edifice:
-            queryset = queryset.filter(edifice__icontains=edifice)
+            queryset = queryset.filter(keywords__icontains=edifice)
 
         queryset = queryset.annotate(clavier_count=Count('claviers'))
         return queryset.order_by('-modified_date')
@@ -68,6 +75,26 @@ class OrgueListJS(View):
         return JsonResponse(list(data), safe=False)
 
 
+class OrgueEtatsJS(View):
+    """
+    JSON décrivant les états des orgues pour une région
+    Si pas de région alors envoie les infos aggrégées pour toutes les régions
+    """
+
+    def get(self, request, *args, **kwargs):
+        region = request.GET.get("region")
+        queryset = Orgue.objects.all()
+        if region:
+            queryset = queryset.filter(region=region)
+        valeurs = queryset.values_list("etat", flat=True)
+        etats = dict(Counter(valeurs))
+        etats["total"] = sum(list(etats.values()))
+        if None in etats.keys():
+            etats["inconnu"] = etats.get(None, 0)
+            del etats[None]
+        return JsonResponse(etats, safe=False)
+
+
 class OrgueDetail(LoginRequiredMixin, DetailView):
     """
     Vue de détail (lecture seule) d'un orgue
@@ -76,10 +103,17 @@ class OrgueDetail(LoginRequiredMixin, DetailView):
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
 
+    def render_to_response(self, context, **response_kwargs):
+        if self.request.GET.get("format") == "json":
+            return JsonResponse(OrgueSerializer(self.object, context={
+                "request": self.request,
+            }).data, safe=False)
+        return super().render_to_response(context)
+
 
 class OrgueDetailExemple(View):
     """
-    Redirige vers la fiche la mieux renseignée du site
+    Redirige vers la fiche la mieux complétée du site
     """
 
     def get(self, request, *args, **kwargs):
@@ -144,7 +178,6 @@ class OrgueUpdateComposition(OrgueUpdate):
     def get_success_url(self):
         success_url = reverse('orgues:orgue-update-composition', args=(self.object.uuid,))
         return self.request.POST.get("next", success_url)
-
 
 
 class OrgueUpdateBuffet(OrgueUpdate):
@@ -395,7 +428,7 @@ class ClavierUpdate(FabUpdateView):
                 jeu.clavier = clavier
                 jeu.save()
             messages.success(self.request, "Clavier mis à jour, merci !")
-            return redirect('orgues:orgue-update-composition', orgue_uuid=clavier.orgue.uuid)
+            return redirect('orgues:clavier-update', pk=clavier.pk)
         else:
             context = {
                 "jeux_formset": jeux_formset,

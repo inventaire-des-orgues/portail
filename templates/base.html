@@ -1,69 +1,183 @@
 {% load static %}
-<!doctype html>
-<html lang="fr">
+{% load fabtags %}
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="Inventaire de orgues">
-  <meta name="author" content="FABDEV">
-  <link rel="icon" href="{% static 'img/logo.png' %}">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <meta name="author" content="INSPIRO"/>
+  <meta name="description" content="Themeforest Template Polo, html template">
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Inventaire des orgues</title>
-  <!-- Bootstrap core CSS -->
-  <link href="https://fonts.googleapis.com/css?family=Mukta:300,400,700|Playfair+Display:400,700&display=swap" rel="stylesheet">
-  <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-  <link href="{% static 'css/custom.css' %}?{% now "Ydm " %}" rel="stylesheet">
-  <link href="{% static 'css/all.min.css' %}" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'js/select2/select2.min.css' %}">
-  <link rel="stylesheet" href="{% static 'css/toastr.min.css' %}">
-  <link rel="stylesheet" href="{% static 'js/lightbox/css/lightbox.min.css' %}">
-  <link rel="stylesheet" href="{% static 'js/trumbowyg/ui/trumbowyg.min.css' %}">
+  <link href="{% static 'polo/css/plugins.css' %}" rel="stylesheet">
+  <link href="{% static 'polo/scss/style.css' %}" rel="stylesheet">
+  <link href="{% static 'polo/css/custom.css' %}" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'plugins/select2/select2.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/toastr/toastr.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/lightbox/css/lightbox.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/trumbowyg/ui/trumbowyg.min.css' %}">
 
   {% block head_extra %}
   {% endblock %}
 </head>
 <body>
-<header class="py-3 box-shadow">
-  <h1 class="text-center font-weight-bold">
-    Inventaire des orgues</h1>
-  <div class="container">
-    <p class="text-center my-3" id="menu">
-      <a class="p-3 text-muted" href="{% url 'orgues:orgue-list' %}">Les orgues</a>
-      <a class="p-3 text-muted" href="{% url 'orgues:orgue-carte' %}">La carte</a>
-      <a class="p-3 text-muted" href="https://docs.inventaire-des-orgues.fr">Aide</a>
-      <a class="p-3 text-muted" href="https://vocabulaire.inventaire-des-orgues.fr">Lexique</a>
-      {% if user.is_authenticated %}
-        <a class="p-3 text-muted" href="{% url 'logout' %}">Déconnexion</a>
-      {% else %}
-        <a class="p-3 text-muted" href="{% url 'login' %}">Connexion</a>
-      {% endif %}
-    </p>
+{% block body %}
+  <div id="topbar" class="dark topbar-fullwidth">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <ul class="top-menu">
+            <li>
+              {% if request.user.is_authenticated %}
+                <a href="{% url 'logout' %}">Déconnexion</a>
+              {% else %}
+                <a href="{% url 'login' %}">Connexion</a>
+              {% endif %}
+            </li>
+          </ul>
+        </div>
+        <div class="col-md-6 d-none d-sm-block">
+          <div class="social-icons social-icons-colored-hover">
+            <ul>
+              <li class="social-en"><a href="#"><i class="fa fa-envelope"></i></a></li>
+              <li class="social-instagram"><a href="#"><i class="fab fa-instagram"></i></a></li>
+              <li class="social-twitter"><a href="#"><i class="fab fa-twitter"></i></a></li>
+              <li class="social-facebook"><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-</header>
-<main role="main" class="bg-light">
-  {% block content %}
 
-  {% endblock %}
-</main>
-<footer class="text-muted">
-  <div class="container">
-    <p class="float-right">
-      <a href="#">Retour en haut</a>
-    </p>
-    <p>Inventaire des orgues de France réalisé par <a href="https://fabdev.fr">Fabdev</a>V.0.0.2</p>
+
+  <section id="logo-header">
+    <a class="" href="https://docs.inventaire-des-orgues.fr" id="lien-documentation">
+      <i class="far text-dark fa-question-circle"></i>
+    </a>
+    <img src="{% static 'img/ministere_culture.png' %}" alt="" id="logo_ministere">
+    <div class="container">
+      <div class="page-title">
+        <img src="{% static 'img/logo.png' %}" alt="" width="200px">
+      </div>
+    </div>
+  </section>
+  <!-- end: Page title -->
+  <!-- Page Menu -->
+  <div class="page-menu menu-outline">
+    <div class="container">
+      <nav>
+        <ul>
+          <li>
+            <a href="{% url 'accueil' %}">Accueil</a>
+          </li>
+          <li>
+            <a href="{% url 'orgues:orgue-carte' %}">Carte</a>
+          </li>
+          <li>
+            <a href="{% url 'orgues:orgue-list' %}">Les orgues</a>
+          </li>
+          <li>
+            <a class="" href="https://vocabulaire.inventaire-des-orgues.fr">Lexique</a>
+          </li>
+        </ul>
+      </nav>
+      <div id="pageMenu-trigger">
+        <i class="fa fa-bars"></i>
+      </div>
+    </div>
   </div>
-</footer>
-<!-- Bootstrap core JavaScript
-================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
-<script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
-<script src="{% static 'js/popper.min.js' %}"></script>
-<script src="{% static 'js/bootstrap.min.js' %}"></script>
-<script src="{% static 'js/select2/select2.min.js' %}"></script>
-<script src="{% static 'js/select2/i18n/fr.js' %}"></script>
-<script src="{% static 'js/toastr.min.js' %}"></script>
-<script src="{% static 'js/lightbox/js/lightbox.min.js' %}"></script>
-<script src="{% static 'js/trumbowyg/trumbowyg.min.js' %}"></script>
-<script src="{% static 'js/trumbowyg/langs/fr.min.js' %}"></script>
+  {% block content %}
+    <section id="page-content">
+    </section>
+  {% endblock %}
+
+
+
+
+  <footer id="footer" class="inverted">
+    <div class="footer-content">
+      <div class="container">
+        <div class="row align-items-top">
+          <div class="col-md-2 text-center mt-3">
+            <img src="{% static 'img/logo.png' %}" alt="" style="filter: invert(1) grayscale(100%);width:120px;">
+          </div>
+          <div class="col-md-2 text-center mt-3">
+            <p class="text-white">
+              Par
+            </p>
+            <img src="{% static 'img/orgue-en-france.png' %}" alt="" style="width:150px;">
+          </div>
+          <div class="col-md-2 text-center mt-3">
+            <p class="text-white">
+              Avec
+            </p>
+            <img src="{% static 'img/ministere_culture.png' %}" alt="" style="width:90px;filter:grayscale(100%)">
+          </div>
+          <div class="col-md-1 mt-3">
+          </div>
+          <div class="col-md-2 mt-3">
+            <div class="widget">
+              <div class="widget-title">Liens</div>
+              <ul class="list">
+                <li>
+                  <a href="{% url 'accueil' %}">Accueil</a>
+                </li>
+                <li>
+                  <a href="{% url 'orgues:orgue-carte' %}">Carte</a>
+                </li>
+                <li>
+                  <a href="{% url 'orgues:orgue-list' %}">Les orgues</a>
+                </li>
+                <li>
+                  <a class="" href="https://vocabulaire.inventaire-des-orgues.fr">Lexique</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-3 mt-3">
+            <div class="widget">
+              <div class="widget-title">Participer</div>
+              {% if request.user.is_authenticated %}
+                Vous êtes connecté(e) en temps que "{{ request.user }}"
+              {% endif %}
+              <ul class="list">
+                <li>
+                  {% if request.user.is_authenticated %}
+                    <a href="{% url 'logout' %}">Déconnexion</a>
+                  {% else %}
+                    <a href="{% url 'login' %}">Se connecter</a>
+                  {% endif %}
+                </li>
+                <li>
+                  <a class="" href="https://docs.inventaire-des-orgues.fr">Aide</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    <div class="copyright-content">
+      <div class="container">
+        <div class="copyright-text text-center text-light">© 2020 Inventaire des orgues - Tous droits réservés - Développement :
+          <a href="https://fabdev.fr">FABDEV</a> - Design : Guillaume Lechevalier-Boissel & FABDEV
+        </div>
+      </div>
+    </div>
+  </footer>
+{% endblock %}
+<script src="{% static 'polo/js/jquery.js' %}"></script>
+<script src="{% static 'polo/js/plugins.js' %}"></script>
+<script src="{% static 'polo/js/functions.js' %}"></script>
+<script src="{% static 'plugins/select2/select2.min.js' %}"></script>
+<script src="{% static 'plugins/select2/i18n/fr.js' %}"></script>
+<script src="{% static 'plugins/toastr/toastr.min.js' %}"></script>
+<script src="{% static 'plugins/lightbox/js/lightbox.min.js' %}"></script>
+<script src="{% static 'plugins/trumbowyg/trumbowyg.min.js' %}"></script>
+<script src="{% static 'plugins/trumbowyg/langs/fr.min.js' %}"></script>
 <script>
   {% if messages %}
     {% for message in messages %}
@@ -80,8 +194,13 @@
     $('[data-toggle="tooltip"]').tooltip()
   })
 </script>
-
-
+<script>
+  $(".menu-outline ul li a").each(function () {
+    if ($(this).attr("href") === window.location.pathname) {
+      $(this).parent().addClass("active")
+    }
+  })
+</script>
 
 {% block js_extra %}
 {% endblock %}

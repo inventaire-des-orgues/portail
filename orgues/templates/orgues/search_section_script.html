@@ -1,0 +1,54 @@
+<script>
+  $(function () {
+    $("#id_facteur").select2({
+      placeholder: 'Choisir un facteur',
+            allowClear: true,
+
+      ajax: {
+        url: '{% url 'orgues:facteur-list-js' %}',
+        data: function (params) {
+          var query = {
+            search: params.term,
+            page: params.page || 1
+          }
+          return query;
+        }
+      },
+      escapeMarkup: function (markup) {
+        return markup;
+      },
+      language: {
+        noResults: function () {
+          return "Aucun facteur trouvé ...";
+        }
+      },
+      width: '100%'
+    });
+    $("#id_commune").select2({
+      width: "100%",
+      language: "fr",
+      allowClear: true,
+      minimumInputLength: 3,
+      placeholder: 'Choisir une commune',
+      ajax: {
+        delay: 250,
+        url: 'https://api-adresse.data.gouv.fr/search/',
+        data: function (params) {
+          return {
+            q: params.term,
+            type: 'municipality'
+          }
+        },
+        processResults: function (data) {
+          var items = data.features.map(function (result) {
+            return {
+              "id": result.properties.city + "|" + result.properties.citycode,
+              "text": result.properties.city + " (" + result.properties.context + ")"
+            }
+          })
+          return {results: items}
+        }
+      },
+    });
+  })
+</script>

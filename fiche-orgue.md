@@ -106,7 +106,7 @@ Les accessoires peuvent être :
     - On peut aussi préciser le clavier accouplé et le clavier jouant avec l'accouplement.
 - trémolo : on peut préciser le clavier
 - appel : appel d'un jeu ou de plusieurs jeux, généralement les jeux d'anches ou mixtures.
-- renvoi : renvoi d'un jeu ou de plusieurs jeux, généralement les jeux d'anches ou mixtures. N'est renseigné que si une cuillère spécifique effectue le renvoi. Si la cuillère de l'appel permet le renvoi lorsqu'elle est relâchée, il n'y pas lieu d'indiquer un renvoi.
+- renvoi : renvoi d'un jeu ou de plusieurs jeux, généralement les jeux d'anches ou mixtures. N'est complété que si une cuillère spécifique effectue le renvoi. Si la cuillère de l'appel permet le renvoi lorsqu'elle est relâchée, il n'y pas lieu d'indiquer un renvoi.
 
     "accouplement",
     "trémolo",

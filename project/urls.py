@@ -20,10 +20,15 @@ from django.contrib import admin
 from django.urls import path
 from django.views.generic import TemplateView
 
+from project.views import accueil
+
 urlpatterns = [
     path('', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
+    path('', accueil, name='accueil'),
     path('', include('orgues.urls')),
+    path('api-auth/', include('rest_framework.urls')),
+    path('api/v1/', include(('project.api_urls', 'project'), namespace='api')),
 
     path('error/403/', TemplateView.as_view(template_name='403.html'), name='403'),
     path('error/404/', TemplateView.as_view(template_name='404.html'), name='404'),

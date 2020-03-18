@@ -1,0 +1,300 @@
+@font-face {
+    font-family: D-DIN;
+    src: url("../fonts/d-din/D-DIN.otf");
+}
+
+@font-face {
+    font-family: D-DIN-Bold;
+    src: url("../fonts/d-din/D-DIN-Bold.otf");
+    font-weight: bold;
+}
+
+body {
+    font-family: D-DIN, sans-serif !important;
+}
+
+#logo-header {
+    clear: both;
+    padding: 30px 0;
+    background-color: #fff;
+    position: relative;
+}
+
+#lien-documentation {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 1.2em
+}
+
+#logo-header .page-title {
+    text-align: center;
+    padding: 0;
+}
+
+button.btn.btn-primary, .btn:not(.close):not(.mfp-close).btn-primary {
+    background-color: #5c1c54;
+    color: white;
+    border: none;
+}
+
+button.btn.btn-primary:hover, button.btn.btn-primary:focus, button.btn.btn-primary:not(:disabled):not(.disabled):active, button.btn.btn-primary:not(:disabled):not(.disabled).active, .btn:not(.close):not(.mfp-close).btn-primary:hover, .btn:not(.close):not(.mfp-close).btn-primary:focus, .btn:not(.close):not(.mfp-close).btn-primary:not(:disabled):not(.disabled):active, .btn:not(.close):not(.mfp-close).btn-primary:not(:disabled):not(.disabled).active, a.btn:not([href]):not([tabindex]).btn-primary:hover, a.btn:not([href]):not([tabindex]).btn-primary:focus, a.btn:not([href]):not([tabindex]).btn-primary:not(:disabled):not(.disabled):active, a.btn:not([href]):not([tabindex]).btn-primary:not(:disabled):not(.disabled).active {
+    background-color: #3c1434;
+    border-color: #3c1434;
+    color: #fff;
+}
+
+.page-menu {
+    padding-top: 1px;
+
+}
+
+.page-menu nav > ul > li > a {
+    font-size: 1.1em;
+
+}
+
+#logo_ministere {
+    position: absolute;
+    top: 0;
+    left: 50px;
+    width: 100px;
+}
+
+@media (max-width: 700px) {
+    #logo_ministere {
+        width: 50px;
+    }
+}
+
+.page-menu.menu-outline nav > ul > li:hover > a, .page-menu.menu-outline nav > ul > li.active > a {
+    border-color: #5c1c54;
+    color: #5c1c54;
+    background-color: transparent;
+}
+
+.form-group label:not(.error) {
+    font-size: 1.1em;
+}
+
+#map svg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+
+#map svg path {
+    fill: #dddddd;
+    stroke: #aaaaaa;
+    cursor: pointer;
+}
+
+#map svg path:hover {
+    opacity: 0.8;
+}
+
+#map svg .active {
+    fill: #5c1c54;
+}
+
+img.img-responsive {
+    width: 100%;
+}
+
+span.round-number {
+    color: white;
+    padding: 12px 18px;
+    border-radius: 20px;
+    font-size: 1.3em;
+    font-weight: bold;
+}
+
+/* CLAVIERS */
+
+.clavier div.card > ul.list-group > li.list-group-item {
+    padding: .35rem 1.25rem !important;
+    font-size: 0.9rem;
+}
+
+/* EDITION ORGUE */
+
+.titre-fiche {
+    margin: 20px 0 40px 0;
+    color: #5c1c54;
+    font-weight: 600;
+    position: relative;
+    font-size: 1.5em;
+    border-bottom: 1px solid rgba(48, 88, 149, 0.10);
+    padding-bottom: 10px;
+}
+
+.soustitre-fiche {
+    color: #5c1c54;
+    font-size: 1.1em;
+    font-weight: 500;
+
+}
+
+dt {
+    color: #5c1c54;
+    font-size: 1em;
+    font-weight: 600;
+}
+
+.location::before {
+    content: '';
+    width: 16px;
+    height: 16px;
+    position: relative;
+    top: 3px;
+    right: 4px;
+    display: inline-block;
+    background: url('/static/img/pin.png');
+}
+
+.century::before {
+    content: '';
+    width: 16px;
+    height: 16px;
+    position: relative;
+    top: 3px;
+    right: 4px;
+    display: inline-block;
+    background: url('/static/img/century.png');
+}
+
+#clavier-template, #evenement-template {
+    visibility: hidden;
+    position: absolute;
+    z-index: -10;
+}
+
+.content-heading {
+    padding-bottom: 8px;
+    font-size: 1.428571rem;
+    font-weight: 400;
+    line-height: 28px;
+    margin-top: 40px;
+    border-bottom: 1px solid #e4e7ed;
+}
+
+.retirer_clavier {
+    display: inline-block;
+    cursor: pointer;
+    padding: 6px 5px;
+    font-size: 1.5em;
+    color: #6c757d;
+    background: 0 0;
+    position: absolute;
+    right: 10px;
+    top: 3px;
+    border: none;
+}
+
+.new-clavier-btn {
+    text-align: center;
+    margin-top: 10px;
+    height: 220px;
+    line-height: 210px;
+    border: 2px dashed #5c1c54;
+    border-radius: 10px;
+    width: 100%;
+    color: #5c1c54;
+}
+
+.new-clavier-btn:hover {
+    color: black;
+}
+
+.new-evenement-btn {
+    text-align: center;
+    margin-top: 10px;
+    height: 100px;
+    border: 2px dashed lightgray;
+    width: 100%;
+    color: #989898;
+}
+
+.new-evenement-btn:hover {
+    color: black;
+}
+
+.clavier, .evenement {
+    margin: 10px 0;
+}
+
+.clavier div.card > ul.list-group > li.list-group-item {
+    padding: .25rem 1.25rem !important;
+    font-size: 0.9rem;
+}
+
+/* Frise chronologique */
+
+.tl-slide-content-container h2.tl-headline {
+    font-size: 1.2em !important;
+}
+
+/* Editeur WYSIWYG */
+
+.trumbowyg-box, .trumbowyg-editor {
+    min-height: 200px !important;
+    margin-bottom: 2px !important;
+
+}
+
+/* Carte leaflet */
+
+div.leaflet-popup-content h6 {
+    text-transform: capitalize;
+}
+
+/* Utilitaire */
+
+.py-50 {
+    padding: 50px 0;
+}
+
+.vignette {
+    cursor: pointer;
+}
+
+.vignette:hover {
+    background: #f5f5f5;
+}
+
+section.triangle {
+    position: relative;
+    overflow: visible;
+}
+
+section.triangle::before {
+    content: "";
+    display: inline-block;
+    border-radius: 10px;
+    background: #5c1c54;
+    width: 60px;
+    height: 60px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    position: absolute;
+    top: -25px;
+}
+
+@media (max-width: 992px) {
+    .container {
+        width: 100%;
+    }
+
+    #orgue-detail .container {
+        padding: 0 10px;
+
+    }
+
+
+}
+
+#carte {
+        padding:0;
+    }

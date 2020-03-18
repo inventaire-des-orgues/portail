@@ -11,8 +11,8 @@
     </p>
     <form action="" method="post">{% csrf_token %}
       <div class="form-group">
-        <a href="{% url 'orgues:orgue-update-composition' orgue.uuid %}" class="btn btn-outline-secondary">Annuler</a>
-        <button type="submit" class="btn btn-danger">Oui</button>
+        <a href="{% url 'orgues:orgue-update-composition' orgue.uuid %}" class="btn btn-light btn-sm">Annuler</a>
+        <button type="submit" class="btn btn-danger btn-sm">Oui</button>
       </div>
     </form>
   </form>

@@ -1,34 +1,50 @@
+{% extends 'base.html' %}
 {% load static %}
-<!doctype html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="FABDEV">
-  <title>Connexion</title>
-  <link rel="icon" href="{% static 'img/logo.png' %}">
-  <!-- Bootstrap core CSS -->
-  <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-  <!-- Custom styles for this template -->
-  <link href="{% static 'css/signin.css' %}" rel="stylesheet">
-</head>
-<body class="text-center">
-<form class="form-signin" method="post">{% csrf_token %}
-  <h1 class="h3 mb-3 font-weight-normal">Connexion</h1>
-  {% for error in form.non_field_errors %}
-    <p class="text-danger">
-      {{ error }}
-    </p>
-  {% endfor %}
+
+{% block content %}
+  <section>
+    <div class="container ">
+      <div class="row justify-content-center">
+        <div class="col-lg-4">
+          <div class="panel ">
+            <div class="panel-body">
+              <form method="post" action="">{% csrf_token %}
+                {% if form.errors %}
+                  {% for field in form %}
+                    {% for error in field.errors %}
+                      <div class="alert alert-danger">
+                        <strong>{{ error|escape }}</strong>
+                      </div>
+                    {% endfor %}
+                  {% endfor %}
+                  {% for error in form.non_field_errors %}
+                    <div class="alert alert-danger">
+                      <strong>{{ error|escape }}</strong>
+                    </div>
+                  {% endfor %}
+                {% endif %}
+                <div class="form-group">
+                  <label for="">Email</label>
+                  <div class="form-group">
+                    <input type="email" name="username" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="">Mot de passe</label>
+                  <div class="form-group">
+                    <input type="password" name="password" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <button class="btn btn-primary" type="submit">Connexion</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
 
-  <label for="inputEmail" class="sr-only">Adresse email</label>
-  <input type="email" id="inputEmail" name="username" class="form-control" placeholder="Email address" required>
-  <label for="inputPassword" class="sr-only">Mot de passe</label>
-  <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Password" required>
-  <button class="btn btn-lg btn-primary btn-block" type="submit">Connexion</button>
-</form>
-</body>
-</html>
-
+{% endblock %}
