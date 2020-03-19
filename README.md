@@ -23,8 +23,8 @@ python manage.py runserver
 # Faire un import de données sur le serveur : 
 
 
-Remplacer le fichier `/var/www/portail/orgues/management/commands/data.csv`.  
-A noter : la colonne `Codification_instrument` est utilisée comme pivot pour retrouver des orgues potentiellement déjà existants dans la base de données avant
+Placer le fichier JSON d'importation quelque part sur le disque. (s'inspirer du format de `exemple_orgue-v3.json`) 
+A noter : la colonne `codification` est utilisée comme pivot pour retrouver des orgues potentiellement déjà existants dans la base de données avant
 de les mettre à jour.  
 
 Lancer :
@@ -32,8 +32,10 @@ Lancer :
 ```
 source /var/www/pythonenv/bin/activate
 cd /var/www/portail
-python manage.py import_data
+python manage.py import_data chemin/vers/exemple_orgue-v3.json
 ```
+
+Optionel : ajouter `--delete` pour supprimer les orgues existants avant l'importation
 
 
 # Api : 

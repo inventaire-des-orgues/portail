@@ -1,3 +1,4 @@
+import json
 import os
 import shutil
 
@@ -10,7 +11,7 @@ from django.urls import reverse
 
 from django.conf import settings
 from accounts.models import User
-from orgues.models import Jeu, validate_etendue
+from orgues.models import Jeu, validate_etendue, Orgue
 
 
 class OrgueTestCase(TestCase):
@@ -54,3 +55,54 @@ class OrgueTestCase(TestCase):
         self.assertIsNone(validate_etendue("C#1-F3"))
         self.assertIsNone(validate_etendue("G#1-F6"))
         self.assertIsNone(validate_etendue("G#7-A1"))
+
+    def test_import_data(self):
+        call_command('init_config')
+        json_test = os.path.join(settings.BASE_DIR,'exemple_orgue-v3.json')
+        call_command('import_data',json_test)
+
+        with open(json_test, "r",encoding="utf-8") as f:
+            orgue_json = json.load(f)[0]
+
+
+        orgue = Orgue.objects.first()
+
+        self.assertEqual(orgue.designation, orgue_json["designation"])
+        self.assertEqual(orgue.references_palissy, orgue_json["references_palissy"])
+        self.assertEqual(orgue.resume, orgue_json["resume"])
+        self.assertEqual(orgue.proprietaire, orgue_json["proprietaire"])
+        self.assertEqual(orgue.organisme, orgue_json["organisme"])
+        self.assertEqual(orgue.lien_reference, orgue_json["lien_reference"])
+        self.assertEqual(orgue.is_polyphone, orgue_json["is_polyphone"])
+        self.assertEqual(orgue.etat, orgue_json["etat"])
+        self.assertEqual(orgue.elevation, orgue_json["elevation"])
+        self.assertEqual(orgue.buffet, orgue_json["buffet"])
+        self.assertEqual(orgue.console, orgue_json["console"])
+        self.assertEqual(orgue.commentaire_admin, orgue_json["commentaire_admin"])
+        self.assertEqual(orgue.edifice, orgue_json["edifice"])
+        self.assertEqual(orgue.commune, orgue_json["commune"])
+        self.assertEqual(orgue.code_insee, orgue_json["code_insee"])
+        self.assertEqual(orgue.ancienne_commune, orgue_json["ancienne_commune"])
+        self.assertEqual(orgue.departement, orgue_json["departement"])
+        self.assertEqual(orgue.code_departement, orgue_json["code_departement"])
+        self.assertEqual(orgue.region, orgue_json["region"])
+        self.assertEqual(orgue.osm_type, orgue_json["osm_type"])
+        self.assertEqual(orgue.osm_id, orgue_json["osm_id"])
+        self.assertEqual(orgue.diapason, orgue_json["diapason"])
+        self.assertEqual(orgue.sommiers, orgue_json["sommiers"])
+        self.assertEqual(orgue.soufflerie, orgue_json["soufflerie"])
+        self.assertEqual(orgue.transmission_notes, orgue_json["transmission_notes"])
+        self.assertEqual(orgue.transmission_commentaire, orgue_json["transmission_commentaire"])
+        self.assertEqual(orgue.tirage_jeux, orgue_json["tirage_jeux"])
+        self.assertEqual(orgue.tirage_commentaire, orgue_json["tirage_commentaire"])
+        self.assertEqual(orgue.commentaire_tuyauterie, orgue_json["commentaire_tuyauterie"])
+
+
+        self.assertGreater(orgue.accessoires.count(),3)
+        self.assertGreater(orgue.claviers.count(),1)
+        self.assertGreater(orgue.images.count(),0)
+        self.assertGreater(orgue.claviers.filter(type__nom="Grand-Orgue").first().jeux.count(),4)
+
+        construction = orgue.evenements.filter(type="construction").first()
+        self.assertEqual(construction.annee,1885)
+        self.assertEqual(construction.facteurs.first().nom,"Joseph Merklin & Cie")
