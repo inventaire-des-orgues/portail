@@ -1,7 +1,6 @@
 import os
 import json
-import csv
-from django.conf import settings
+from tqdm import tqdm
 from django.core.files import File
 from django.core.management.base import BaseCommand
 from django.utils.text import slugify
@@ -28,9 +27,7 @@ class Command(BaseCommand):
             Jeu.objects.all().delete()
         with open(options['path'][0], "r",encoding="utf-8") as f:
             rows = json.load(f)
-            for index, row in enumerate(rows):
-                if index % 100 == 0:
-                    print(index, "lignes traitées")
+            for row in tqdm(rows):
                 orgue, created = Orgue.objects.get_or_create(
                     codification=row["codification"],
                 )
@@ -84,7 +81,7 @@ class Command(BaseCommand):
                         acc = Accessoire.objects.get(nom=nom)
                         orgue.accessoires.add(acc)
 
-                    for evenement in row.get("evenements"):
+                    for evenement in row.get("evenements",[]):
                         e = Evenement.objects.create(
                             annee=evenement.get("annee"),
                             type=evenement.get("type"),
@@ -96,7 +93,7 @@ class Command(BaseCommand):
                             fac = Facteur.objects.get(nom=nom)
                             e.facteurs.add(fac)
 
-                    for clavier in row.get("claviers"):
+                    for clavier in row.get("claviers",[]):
                         type = TypeClavier.objects.get(nom=clavier["type"])
                         c = Clavier.objects.create(
                             type=type,
@@ -104,7 +101,7 @@ class Command(BaseCommand):
                             etendue=clavier.get("etendue"),
                             orgue=orgue
                         )
-                        for jeu in clavier.get("jeux"):
+                        for jeu in clavier.get("jeux",[]):
                             type = TypeJeu.objects.get(nom=jeu["type"]["nom"], hauteur=jeu["type"]["hauteur"])
                             Jeu.objects.create(
                                 type=type,
@@ -113,7 +110,7 @@ class Command(BaseCommand):
                                 configuration=jeu.get("configuration"),
                             )
 
-                    for image in row.get("images"):
+                    for image in row.get("images",[]):
                         im = Image.objects.create(orgue=orgue,credit=image.get("credit"))
                         im.image.save(os.path.basename(image["chemin"]),File(open(image["chemin"],'rb')))
 
