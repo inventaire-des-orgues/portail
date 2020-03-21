@@ -176,11 +176,12 @@ class Orgue(models.Model):
         return self.evenements.filter(type="construction").first()
 
     @property
-    def evenements_facteurs(self):
+    def facteurs(self):
         """
         Liste des évènements qui ont au moins un facteur
         """
-        return self.evenements.filter(facteurs__isnull=False).prefetch_related("facteurs")
+        return self.evenements.filter(facteurs__isnull=False).values("annee","facteurs__nom","type").distinct()
+
 
     @property
     def jeux_count(self):
@@ -345,7 +346,7 @@ class Evenement(models.Model):
 
     annee = models.IntegerField(verbose_name="Année")
     type = models.CharField(max_length=20, choices=CHOIX_TYPE)
-    facteurs = models.ManyToManyField(Facteur, blank=True)
+    facteurs = models.ManyToManyField(Facteur, blank=True, related_name="evenements")
     resume = models.TextField(max_length=700, blank=True, null=True, help_text="700 caractères max")
 
     # Champs automatiques

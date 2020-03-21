@@ -129,13 +129,11 @@
               <dl>
                 <dt>Facteurs</dt>
                 <dd>
-                  {% if orgue.evenements_facteurs.count %}
-                    {% for evenement in orgue.evenements_facteurs.all %}
-                      {% for facteur in evenement.facteurs.all %}
-                        <span data-toggle="tooltip" data-title="{{ evenement.get_type_display }}">{{ facteur }} ({{ evenement.annee }})</span>,
-                      {% endfor %}
+                  {% if orgue.facteurs %}
+                    {% for facteur in orgue.facteurs %}
+                      <span>{{ facteur.facteurs__nom }} ({{ facteur.type }} - {{ facteur.annee }})</span>
+                      {% if not forloop.last %},{% endif %}
                     {% endfor %}
-
                   {% else %}
                     Pas d'information
                   {% endif %}
