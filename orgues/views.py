@@ -48,7 +48,7 @@ class OrgueList(LoginRequiredMixin, ListView):
             queryset = queryset.filter(keywords__icontains=edifice)
 
         queryset = queryset.annotate(clavier_count=Count('claviers'))
-        return queryset.order_by('-modified_date')
+        return queryset.order_by('-completion')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
