@@ -137,15 +137,13 @@ class Orgue(models.Model):
 
     def build_keywords(self):
         keywords = [
-            self.edifice,
+            self.edifice.lower(),
+            slugify(self.edifice).replace("-", " "),
+            slugify(self.commune).replace("-", " "),
             self.commune,
-            self.departement,
-            self.code_departement,
-            self.region
         ]
         keywords_str = " ".join(keywords)
-        keywords_str_and_slugs = keywords_str + " " + slugify(keywords_str)
-        return keywords_str_and_slugs
+        return keywords_str
 
     @property
     def is_expressif(self):
