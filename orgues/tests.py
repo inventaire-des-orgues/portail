@@ -56,14 +56,29 @@ class OrgueTestCase(TestCase):
         self.assertIsNone(validate_etendue("G#1-F6"))
         self.assertIsNone(validate_etendue("G#7-A1"))
 
+    def test_search(self):
+        elisabeth = Orgue.objects.create(edifice="église Sainte-Elisabeth")
+
+        self.client.login(username='admin_user@fabdev.fr', password='123456TEST')
+        url = reverse('orgues:orgue-list')
+
+        for search_term in ['elisa',
+                            'Eglise elisabeth',
+                            'Eglise Sainte-Elisabeth',
+                            'sainte-Elisabeth',
+                            'élisabeth',
+                            'Saint élisabeth',
+                            'sainte-élisabeth']:
+            response = self.client.get(url, {'edifice': search_term})
+            self.assertIn(elisabeth,response.context['object_list'])
+
     def test_import_data(self):
         call_command('init_config')
-        json_test = os.path.join(settings.BASE_DIR,'exemple_orgue-v3.json')
-        call_command('import_data',json_test)
+        json_test = os.path.join(settings.BASE_DIR, 'exemple_orgue-v3.json')
+        call_command('import_data', json_test)
 
-        with open(json_test, "r",encoding="utf-8") as f:
+        with open(json_test, "r", encoding="utf-8") as f:
             orgue_json = json.load(f)[0]
-
 
         orgue = Orgue.objects.first()
 
@@ -97,12 +112,11 @@ class OrgueTestCase(TestCase):
         self.assertEqual(orgue.tirage_commentaire, orgue_json["tirage_commentaire"])
         self.assertEqual(orgue.commentaire_tuyauterie, orgue_json["commentaire_tuyauterie"])
 
-
-        self.assertGreater(orgue.accessoires.count(),3)
-        self.assertGreater(orgue.claviers.count(),1)
-        self.assertGreater(orgue.images.count(),0)
-        self.assertGreater(orgue.claviers.filter(type__nom="Grand-Orgue").first().jeux.count(),4)
+        self.assertGreater(orgue.accessoires.count(), 3)
+        self.assertGreater(orgue.claviers.count(), 1)
+        self.assertGreater(orgue.images.count(), 0)
+        self.assertGreater(orgue.claviers.filter(type__nom="Grand-Orgue").first().jeux.count(), 4)
 
         construction = orgue.evenements.filter(type="construction").first()
-        self.assertEqual(construction.annee,1885)
-        self.assertEqual(construction.facteurs.first().nom,"Joseph Merklin & Cie")
+        self.assertEqual(construction.annee, 1885)
+        self.assertEqual(construction.facteurs.first().nom, "Joseph Merklin & Cie")

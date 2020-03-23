@@ -2,11 +2,12 @@ from collections import Counter
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.forms import modelformset_factory
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy, reverse
+from django.utils.text import slugify
 from django.views.generic import ListView, DetailView, TemplateView
 from django.views.generic.base import View
 
@@ -28,14 +29,14 @@ class OrgueList(LoginRequiredMixin, ListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         commune = self.request.GET.get("commune")
+        edifice = self.request.GET.get("edifice")
+        facteur_pk = self.request.GET.get("facteur")
+
         if commune:
             self.selected_commune, code_insee = commune.split("|")
         else:
             self.selected_commune = None
             code_insee = None
-
-        edifice = self.request.GET.get("edifice")
-        facteur_pk = self.request.GET.get("facteur")
         if facteur_pk:
             self.facteur = get_object_or_404(Facteur, pk=facteur_pk)
             orgue_ids = Evenement.objects.filter(facteurs=self.facteur).values_list("orgue_id", flat=True)
@@ -45,7 +46,11 @@ class OrgueList(LoginRequiredMixin, ListView):
         if code_insee:
             queryset = queryset.filter(code_insee=code_insee)
         if edifice:
-            queryset = queryset.filter(keywords__icontains=edifice)
+            terms = [slugify(term) for term in edifice.split(" ") if term]
+            query = Q()
+            for term in terms:
+                query = query & Q(keywords__icontains=term)
+            queryset = queryset.filter(query)
 
         queryset = queryset.annotate(clavier_count=Count('claviers'))
         return queryset.order_by('-completion')

@@ -74,21 +74,28 @@ class Orgue(models.Model):
     )
     # Informations générales
 
-    designation = models.CharField(max_length=300, verbose_name="Désignation", choices=CHOIX_DESIGNATION,default="Orgue")
+    designation = models.CharField(max_length=300, verbose_name="Désignation", choices=CHOIX_DESIGNATION,
+                                   default="Orgue")
     codification = models.CharField(max_length=100)
-    references_palissy = models.CharField(max_length=20, null=True, blank=True,help_text="Séparer les codes par des virgules")
-    resume = models.TextField(max_length=500, verbose_name="Resumé", blank=True,help_text="Présentation en quelques lignes de l'instrument et son originalité (max 500 caractères)")
+    references_palissy = models.CharField(max_length=20, null=True, blank=True,
+                                          help_text="Séparer les codes par des virgules")
+    resume = models.TextField(max_length=500, verbose_name="Resumé", blank=True,
+                              help_text="Présentation en quelques lignes de l'instrument et son originalité (max 500 caractères)")
     proprietaire = models.CharField(max_length=20, choices=CHOIX_PROPRIETAIRE, default="commune")
-    organisme = models.CharField(verbose_name="Organisme auquel s'adresser",max_length=100, null=True, blank=True)
-    lien_reference = models.URLField(verbose_name="Lien de référence",max_length=300, null=True, blank=True)
+    organisme = models.CharField(verbose_name="Organisme auquel s'adresser", max_length=100, null=True, blank=True)
+    lien_reference = models.URLField(verbose_name="Lien de référence", max_length=300, null=True, blank=True)
     is_polyphone = models.BooleanField(default=False, verbose_name="Orgue polyphone de la manufacture Debierre ?")
 
     etat = models.CharField(max_length=20, choices=CHOIX_ETAT, null=True, blank=True)
-    elevation = models.CharField(max_length=20, choices=CHOIX_ELEVATION, null=True, blank=True,verbose_name="Elévation")
-    buffet = models.TextField(verbose_name="Description buffet",null=True, blank=True,help_text="Description du buffet et de son état.")
-    console = models.TextField(verbose_name="Description console", null=True, blank=True,help_text="Description de la console (ex: en fenêtre, séparée organiste tourné vers l'orgue ...).")
+    elevation = models.CharField(max_length=20, choices=CHOIX_ELEVATION, null=True, blank=True,
+                                 verbose_name="Elévation")
+    buffet = models.TextField(verbose_name="Description buffet", null=True, blank=True,
+                              help_text="Description du buffet et de son état.")
+    console = models.TextField(verbose_name="Description console", null=True, blank=True,
+                               help_text="Description de la console (ex: en fenêtre, séparée organiste tourné vers l'orgue ...).")
 
-    commentaire_admin = models.TextField(verbose_name="Commentaire rédacteurs",null=True, blank=True,help_text="Commentaire uniquement visible par les rédacteurs")
+    commentaire_admin = models.TextField(verbose_name="Commentaire rédacteurs", null=True, blank=True,
+                                         help_text="Commentaire uniquement visible par les rédacteurs")
 
     # Localisation
     edifice = models.CharField(max_length=300)
@@ -104,12 +111,14 @@ class Orgue(models.Model):
     osm_id = models.CharField(verbose_name="Id open street map", max_length=20, null=True, blank=True)
 
     # Partie instrumentale
-    diapason = models.CharField(max_length=15, null=True, blank=True,help_text="Hauteur en Hertz du A2 joué par le prestant 4")
+    diapason = models.CharField(max_length=15, null=True, blank=True,
+                                help_text="Hauteur en Hertz du A2 joué par le prestant 4")
     sommiers = models.TextField(null=True, blank=True)
     soufflerie = models.TextField(null=True, blank=True)
     transmission_notes = models.CharField(max_length=20, choices=CHOIX_TRANSMISSION, null=True, blank=True)
     transmission_commentaire = models.CharField(max_length=100, null=True, blank=True, help_text="Max 100 caractères")
-    tirage_jeux = models.CharField(verbose_name="Tirage des jeux", max_length=20, choices=CHOIX_TIRAGE, null=True,blank=True)
+    tirage_jeux = models.CharField(verbose_name="Tirage des jeux", max_length=20, choices=CHOIX_TIRAGE, null=True,
+                                   blank=True)
     tirage_commentaire = models.CharField(max_length=100, null=True, blank=True, help_text="Max 100 caractères")
     commentaire_tuyauterie = models.TextField(verbose_name="Description de la tuyauterie", blank=True)
     accessoires = models.ManyToManyField('Accessoire', blank=True)
@@ -133,6 +142,10 @@ class Orgue(models.Model):
     def save(self, *args, **kwargs):
         self.completion = self.calcul_completion()
         self.keywords = self.build_keywords()
+        if not self.slug:
+
+            self.slug = "orgue-{}-{}-{}".format(slugify(self.commune), slugify(self.edifice), self.pk)
+
         super().save(*args, **kwargs)
 
     def build_keywords(self):
@@ -178,8 +191,7 @@ class Orgue(models.Model):
         """
         Liste des évènements qui ont au moins un facteur
         """
-        return self.evenements.filter(facteurs__isnull=False).values("annee","facteurs__nom","type").distinct()
-
+        return self.evenements.filter(facteurs__isnull=False).values("annee", "facteurs__nom", "type").distinct()
 
     @property
     def jeux_count(self):
