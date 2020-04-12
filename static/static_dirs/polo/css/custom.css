@@ -58,12 +58,12 @@ button.btn.btn-primary:hover, button.btn.btn-primary:focus, button.btn.btn-prima
     position: absolute;
     top: 0;
     left: 50px;
-    width: 100px;
+    width: 200px;
 }
 
 @media (max-width: 700px) {
     #logo_ministere {
-        width: 50px;
+        width: 80px;
     }
 }
 
