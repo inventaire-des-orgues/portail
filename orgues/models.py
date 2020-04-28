@@ -27,9 +27,9 @@ class Facteur(models.Model):
 class Orgue(models.Model):
     CHOIX_PROPRIETAIRE = (
         ("commune", "Commune"),
-        ("Etat", "Etat"),
-        ("association culturelle", "Association culturelle"),
-        ("diocèse", "Diocèse"),
+        ("etat", "Etat"),
+        ("association_culturelle", "Association culturelle"),
+        ("diocese", "Diocèse"),
         ("paroisse", "Paroisse"),
     )
 
@@ -52,7 +52,7 @@ class Orgue(models.Model):
         ("pneumatique", "Pneumatique"),
         ("electrique", "Electrique"),
         ("electrique_proportionnelle", "Electrique proportionnelle"),
-        ("electro-pneumatique", "Electro-pneumatique"),
+        ("electro_pneumatique", "Electro-pneumatique"),
     )
 
     CHOIX_SOURCE = [
@@ -65,7 +65,7 @@ class Orgue(models.Model):
         ("mecanique", "Mécanique"),
         ("pneumatique", "Pneumatique"),
         ("electrique", "Electrique"),
-        ("electro-pneumatique", "Electro-pneumatique"),
+        ("electro_pneumatique", "Electro-pneumatique"),
     )
     CHOIX_DESIGNATION = (
         ("grand_orgue", "Grand orgue"),
@@ -82,28 +82,20 @@ class Orgue(models.Model):
     resume = models.TextField(max_length=500, verbose_name="Resumé", blank=True,
                               help_text="Présentation en quelques lignes de l'instrument et son originalité (max 500 caractères)")
     proprietaire = models.CharField(max_length=20, choices=CHOIX_PROPRIETAIRE, default="commune")
-    organisme = models.CharField(
-        verbose_name="Organisme auquel s'adresser",
-        max_length=100, null=True, blank=True)
-    lien_reference = models.URLField(
-        verbose_name="Lien de référence",
-        max_length=300, null=True, blank=True
-    )
+    organisme = models.CharField(verbose_name="Organisme auquel s'adresser", max_length=100, null=True, blank=True)
+    lien_reference = models.URLField(verbose_name="Lien de référence", max_length=300, null=True, blank=True)
     is_polyphone = models.BooleanField(default=False, verbose_name="Orgue polyphone de la manufacture Debierre ?")
 
     etat = models.CharField(max_length=20, choices=CHOIX_ETAT, null=True, blank=True)
     elevation = models.CharField(max_length=20, choices=CHOIX_ELEVATION, null=True, blank=True,
                                  verbose_name="Elévation")
-    buffet = models.TextField(verbose_name="Description buffet",
-                              null=True, blank=True,
+    buffet = models.TextField(verbose_name="Description buffet", null=True, blank=True,
                               help_text="Description du buffet et de son état.")
     console = models.TextField(verbose_name="Description console", null=True, blank=True,
                                help_text="Description de la console (ex: en fenêtre, séparée organiste tourné vers l'orgue ...).")
 
-    commentaire_admin = models.TextField(
-        verbose_name="Commentaire rédacteurs",
-        null=True, blank=True,
-        help_text="Commentaire uniquement visible par les rédacteurs")
+    commentaire_admin = models.TextField(verbose_name="Commentaire rédacteurs", null=True, blank=True,
+                                         help_text="Commentaire uniquement visible par les rédacteurs")
 
     # Localisation
     edifice = models.CharField(max_length=300)
@@ -150,19 +142,21 @@ class Orgue(models.Model):
     def save(self, *args, **kwargs):
         self.completion = self.calcul_completion()
         self.keywords = self.build_keywords()
+        if not self.slug:
+
+            self.slug = "orgue-{}-{}-{}".format(slugify(self.commune), slugify(self.edifice), self.pk)
+
         super().save(*args, **kwargs)
 
     def build_keywords(self):
         keywords = [
-            self.edifice,
+            self.edifice.lower(),
+            slugify(self.edifice).replace("-", " "),
+            slugify(self.commune).replace("-", " "),
             self.commune,
-            self.departement,
-            self.code_departement,
-            self.region
         ]
         keywords_str = " ".join(keywords)
-        keywords_str_and_slugs = keywords_str + " " + slugify(keywords_str)
-        return keywords_str_and_slugs
+        return keywords_str
 
     @property
     def is_expressif(self):
@@ -193,11 +187,11 @@ class Orgue(models.Model):
         return self.evenements.filter(type="construction").first()
 
     @property
-    def evenements_facteurs(self):
+    def facteurs(self):
         """
         Liste des évènements qui ont au moins un facteur
         """
-        return self.evenements.filter(facteurs__isnull=False).prefetch_related("facteurs")
+        return self.evenements.filter(facteurs__isnull=False).values("annee", "facteurs__nom", "type").distinct()
 
     @property
     def jeux_count(self):
@@ -362,7 +356,7 @@ class Evenement(models.Model):
 
     annee = models.IntegerField(verbose_name="Année")
     type = models.CharField(max_length=20, choices=CHOIX_TYPE)
-    facteurs = models.ManyToManyField(Facteur, blank=True)
+    facteurs = models.ManyToManyField(Facteur, blank=True, related_name="evenements")
     resume = models.TextField(max_length=700, blank=True, null=True, help_text="700 caractères max")
 
     # Champs automatiques

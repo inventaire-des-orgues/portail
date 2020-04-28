@@ -58,12 +58,12 @@ button.btn.btn-primary:hover, button.btn.btn-primary:focus, button.btn.btn-prima
     position: absolute;
     top: 0;
     left: 50px;
-    width: 100px;
+    width: 200px;
 }
 
 @media (max-width: 700px) {
     #logo_ministere {
-        width: 50px;
+        width: 80px;
     }
 }
 
@@ -298,3 +298,13 @@ section.triangle::before {
 #carte {
         padding:0;
     }
+
+
+/* Make Select2 boxes match Bootstrap3 heights: */
+.select2-selection__rendered {
+  line-height: 32px !important;
+}
+
+.select2-selection {
+  height: 34px !important;
+}

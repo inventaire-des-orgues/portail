@@ -7,7 +7,7 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
   <meta name="author" content="INSPIRO"/>
   <meta name="description" content="Themeforest Template Polo, html template">
-  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="shortcut icon" href="{% static 'img/favicon.ico' type='image/x-icon' %}">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Inventaire des orgues</title>
   <link href="{% static 'polo/css/plugins.css' %}" rel="stylesheet">
@@ -93,6 +93,8 @@
     </section>
   {% endblock %}
 
+  {% block modal %}
+  {% endblock %}
 
 
 
@@ -101,19 +103,19 @@
       <div class="container">
         <div class="row align-items-top">
           <div class="col-md-2 text-center mt-3">
-            <img src="{% static 'img/logo.png' %}" alt="" style="filter: invert(1) grayscale(100%);width:120px;">
+            <img src="{% static 'img/logo-nb.png' %}" alt="" style="width:120px;">
           </div>
-          <div class="col-md-2 text-center mt-3">
+          <div class="col-md-2 mt-3">
             <p class="text-white">
               Par
             </p>
             <img src="{% static 'img/orgue-en-france.png' %}" alt="" style="width:150px;">
           </div>
-          <div class="col-md-2 text-center mt-3">
+          <div class="col-md-2 mt-3">
             <p class="text-white">
               Avec
             </p>
-            <img src="{% static 'img/ministere_culture.png' %}" alt="" style="width:90px;filter:grayscale(100%)">
+            <img src="{% static 'img/ministere_culture_nb.png' %}" alt="" style="width:160px;filter:grayscale(100%) invert(100%);">
           </div>
           <div class="col-md-1 mt-3">
           </div>
@@ -170,6 +172,7 @@
   </footer>
 {% endblock %}
 <script src="{% static 'polo/js/jquery.js' %}"></script>
+<script src="{% static 'plugins/popper/popper.min.js' %}"></script>
 <script src="{% static 'polo/js/plugins.js' %}"></script>
 <script src="{% static 'polo/js/functions.js' %}"></script>
 <script src="{% static 'plugins/select2/select2.min.js' %}"></script>

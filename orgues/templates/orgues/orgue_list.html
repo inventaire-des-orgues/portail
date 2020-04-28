@@ -2,56 +2,65 @@
 {% load static %}
 {% load orgue_tags %}
 {% block content %}
-  {% include 'orgues/search_section.html' %}
-
-  <section>
-    <div class="container" id="orgue-list">
-      {% for orgue in object_list %}
-        <div class="card shadow-sm vignette mb-4" onclick="window.location = '{% url 'orgues:orgue-detail' orgue.slug %}'">
-          <div class="row no-gutters">
-            <div class="col-sm-4 col-lg-3" style="background: #868e96;">
-              {% if orgue.image_principale %}
-                <img class="card-img-top h-100" src="{{ orgue.image_principale.thumbnail.url }}" alt="Photo orgue {{ orgue }}">
-              {% else %}
-                <img class="card-img-top" src="{% static 'img/default.jpg' %}" alt="Image par défaut">
-              {% endif %}
-            </div>
-            <div class="col-sm-8 col-lg-9">
-              <div class="card-body">
-                <h3 class="card-title">{{ orgue.edifice|capfirst }} <span style="color:#a9a9a9">| {{ orgue.commune }} ({{ orgue.departement }})</span></h3>
-                <p class="my-1 text-muted">
-                  {{ orgue.get_designation_display }}
-                </p>
-                {% if orgue.evenements_fntteurs %}
-                  <p class="my-1">
-                    {% for evenement in orgue.evenements_facteurs %}
-                      {{ evenement.facteurs_str }} ({{ evenement.annee }})
-                      {% if not forloop.last %},{% endif %}
-                    {% endfor %}
-                  </p>
-                {% endif %}
-                {% resume_clavier orgue.jeux_count orgue.clavier_count orgue.has_pedalier %}
-                {% if user.is_authenticated %}
-                  <p class="text-info my-1" style="position:absolute;bottom:10px;right:20px;">Avancement de la fiche : {{ orgue.completion }}%</p>
-                {% endif %}
-              </div>
+  <div class="container">
+    <section id="orgue-list">
+      <div class="row">
+        <div class="col-xl-4 sidebar sticky-sidebar">
+          <div class="card ">
+            <div class="card-body pb-0">
+             {% include 'orgues/search_form.html' %}
             </div>
           </div>
         </div>
+        <div class="col-xl-8">
+          {% for orgue in object_list %}
+            <div class="card shadow-sm vignette mb-lg-4 mb-sm-5" onclick="window.location = '{% url 'orgues:orgue-detail' orgue.slug %}'">
+              <div class="row no-gutters">
+                <div class="col-md-4" style="background: #868e96;">
+                  {% if orgue.image_principale %}
+                    <img class="card-img-top" src="{{ orgue.image_principale.thumbnail.url }}" alt="Photo orgue {{ orgue }}">
+                  {% else %}
+                    <img class="card-img-top" src="{% static 'img/default.jpg' %}" alt="Image par défaut">
+                  {% endif %}
+                </div>
+                <div class="col-md-8">
+                  <div class="card-body py-md-3">
+                    <h4 class="card-title mb-1">{{ orgue.edifice|capfirst }} <span>| {{ orgue.commune }} ({{ orgue.departement }})</span></h4>
+                    <p class="my-0 text-muted font-weight-bold">
+                      {{ orgue.get_designation_display }} - {% resume_clavier orgue.jeux_count orgue.clavier_count orgue.has_pedalier %}
+                    </p>
+                    {% if orgue.facteurs %}
+                      <p class="my-1">
+                        {% for facteur in orgue.facteurs %}
+                          <span>{{ facteur.facteurs__nom }}</span>
+                          {% if not forloop.last %},{% endif %}
+                        {% endfor %}
+                      </p>
+                    {% endif %}
+                    {% if user.is_authenticated %}
+                      <p class="text-info my-1 d-none d-md-block" style="position:absolute;bottom:10px;right:20px;">Avancement de la fiche : {{ orgue.completion }}%</p>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
 
-      {% empty %}
+          {% empty %}
 
-        <p class="text-center py-50">
-        Aucun résultat
-        </p>
+            <p class="text-center py-50">
+              Aucun résultat
+            </p>
 
-      {% endfor %}
-      {% include 'paginator.html' %}
-    </div>
-  </section>
+          {% endfor %}
+          {% include 'paginator.html' %}
+        </div>
+      </div>
+    </section>
+  </div>
 {% endblock %}
 {% block js_extra %}
 
   {% include 'orgues/search_section_script.html' %}
+
 
 {% endblock %}

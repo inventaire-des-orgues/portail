@@ -1,0 +1,133 @@
+[
+  {
+    "designation": "grand_orgue",
+    "codification": "FR-72154-FLECH-STTHOM-X",
+    "references_palissy": "PM22002078",
+    "resume": "Cette fiche est utilisée dans un test unitaire.",
+    "proprietaire": "commune",
+    "organisme": "Fabdev",
+    "lien_reference": "https://fabdev.fr",
+    "is_polyphone": false,
+    "etat": "degrade",
+    "elevation": "tribune",
+    "buffet": "exemple de description du buffet",
+    "console": "exemple de description de la console",
+    "commentaire_admin": "exemple de commentaire admin",
+    "edifice": "\u00e9glise Saint-Thomas",
+    "commune": "La Fl\u00e8che",
+    "code_insee": "72154",
+    "ancienne_commune": null,
+    "departement": "Sarthe",
+    "code_departement": "1",
+    "region": "Pays de la Loire",
+    "latitude": 47.6990546,
+    "longitude": -0.0756923,
+    "osm_type": null,
+    "osm_id": null,
+    "diapason": "440",
+    "sommiers": "exemple de description des sommiers",
+    "soufflerie": "exemple de description de la soufflerie",
+    "transmission_notes": "mecanique_barker",
+    "transmission_commentaire": null,
+    "tirage_jeux": "mecanique",
+    "tirage_commentaire": null,
+    "commentaire_tuyauterie": "exemple de commentaire tuyauterie",
+    "evenements": [
+      {
+        "annee": 1807,
+        "type": "deplacement",
+        "resume": null,
+        "facteurs": []
+      },
+      {
+        "annee": 1885,
+        "type": "construction",
+        "resume": null,
+        "facteurs": [
+          "Joseph Merklin & Cie"
+        ]
+      },
+      {
+        "annee": 1946,
+        "type": "relevage",
+        "resume": null,
+        "facteurs": [
+          "Ch\u00e9ron Pierre"
+        ]
+      },
+      {
+        "annee": 1976,
+        "type": "relevage",
+        "resume": null,
+        "facteurs": [
+          "Benoit Charles",
+          "Sar\u00e9lot Pierre"
+        ]
+      }
+    ],
+    "accessoires": [
+      "Tremblant",
+      "Trémolo",
+      "Accouplement Pos./G.O.",
+      "Accouplement Réc./G.O.",
+      "Accouplement Pos./Réc.",
+      "Accouplement Réc./Pos.",
+      "Tirasse Pos.",
+      "Tirasse Réc.",
+      "Tirasse G.O.",
+      "Anches G.O.",
+      "Anches Pos.",
+      "Anches Réc."
+    ],
+    "claviers": [
+      {
+        "type": "Grand-Orgue",
+        "is_expressif": false,
+        "etendue": "C1-G5",
+        "jeux": [
+          {"type": {"nom": "Bourdon", "hauteur": "16"}, "commentaire": null, "configuration": null},
+          {"type": {"nom": "Bourdon", "hauteur": "8"}, "commentaire": null, "configuration": null},
+          {"type": {"nom": "Montre", "hauteur": "8"}, "commentaire": null, "configuration": null},
+          {"type": {"nom": "Prestant", "hauteur": "4"}, "commentaire": null, "configuration": null},
+          {"type": {"nom": "Fl\u00fbte harmonique", "hauteur": "8"}, "commentaire": null, "configuration": null},
+          {"type": {"nom": "\u200bFl\u00fbte octaviante", "hauteur": "4"}, "commentaire": null, "configuration": null},
+          {"type": {"nom": "Fourniture", "hauteur": "IV"}, "commentaire": null, "configuration": null},
+          {"type": {"nom": "Basson", "hauteur": "16"}, "commentaire": null, "configuration": null},
+          {"type": {"nom": "Trompette", "hauteur": "8"}, "commentaire": null, "configuration": null},
+          {"type": {"nom": "Clairon", "hauteur": "4"}, "commentaire": null, "configuration": null}
+        ]
+      },
+      {
+        "type": "R\u00e9cit",
+        "is_expressif": true,
+        "etendue": "C1-G5",
+        "jeux": [
+          {"type": {"nom": "Bourdon", "hauteur": "8"}, "commentaire": null, "configuration": null},
+          {"type": {"nom": "Fl\u00fbte traversi\u00e8re", "hauteur": "8"}, "commentaire": null, "configuration": null},
+          {"type": {"nom": "Voix c\u00e9leste", "hauteur": "8"}, "commentaire": null, "configuration": null},
+          {"type": {"nom": "Gambe", "hauteur": "8"}, "commentaire": null, "configuration": null},
+          {"type": {"nom": "Fl\u00fbte", "hauteur": "4"}, "commentaire": null, "configuration": null},
+          {"type": {"nom": "Flageolet", "hauteur": "2"}, "commentaire": null, "configuration": null},
+          {"type": {"nom": "Tierce", "hauteur": "1 3/5"}, "commentaire": null, "configuration": null},
+          {"type": {"nom": "Trompette", "hauteur": "8"}, "commentaire": null, "configuration": null},
+          {"type": {"nom": "Basson-hautbois", "hauteur": "8"}, "commentaire": null, "configuration": null}
+        ]
+      },
+      {
+        "type": "P\u00e9dale",
+        "is_expressif": false,
+        "etendue": null,
+        "jeux": [
+          {"type": {"nom": "Contrebasse", "hauteur": "16"}, "commentaire": null, "configuration": null},
+          {"type": {"nom": "\u200bSoubasse", "hauteur": "16"}, "commentaire": "Emprunt\u00e9 au GO", "configuration": null},
+          {"type": {"nom": "Bourdon", "hauteur": "8"}, "commentaire": "Emprunt\u00e9 au GO", "configuration": null},
+          {"type": {"nom": "Fl\u00fbte", "hauteur": "8"}, "commentaire": "Emprunt\u00e9 au GO", "configuration": null},
+          {"type": {"nom": "Basson", "hauteur": "16"}, "commentaire": "Emprunt\u00e9 au GO", "configuration": null}
+        ]
+      }
+    ],
+    "images": [
+      {"chemin": "/Users/lucasberbesson/code/inventaire-des-orgues/portail/static/static_dirs/img/orgue-accueil.jpg", "is_principale": false, "credit": "Lucas Berbesson"}
+    ]
+  }
+]
