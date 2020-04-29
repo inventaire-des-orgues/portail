@@ -56,7 +56,6 @@ class Command(BaseCommand):
         for clavier in orgue.claviers.all():
             c = {
                 "type": clavier.type.nom,
-                "facteur": str(clavier.facteur),
                 "is_expressif": clavier.is_expressif,
                 "jeux": []
             }

@@ -5,7 +5,7 @@ from django.core.files import File
 from django.core.management.base import BaseCommand
 from django.utils.text import slugify
 
-from orgues.models import Orgue, Accessoire, Evenement, Facteur, TypeClavier, Clavier, Jeu, TypeJeu, Image, Fichier
+from orgues.models import Orgue, Accessoire, Evenement, Facteur, TypeClavier, Clavier, Jeu, TypeJeu, Image, Fichier, Source
 
 
 class Command(BaseCommand):
@@ -114,7 +114,7 @@ class Command(BaseCommand):
                         im.image.save(os.path.basename(image["chemin"]), File(open(image["chemin"], 'rb')))
 
                     for source in row.get("sources", []):
-                        e = Source.objects.create(
+                        s = Source.objects.create(
                             type=source.get("type"),
                             description=source.get("description"),
                             lien=source.get("lien"),
