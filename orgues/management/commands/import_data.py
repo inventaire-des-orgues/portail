@@ -110,9 +110,16 @@ class Command(BaseCommand):
                             )
 
                     for image in row.get("images", []):
-                        im = Im
-                        age.objects.create(orgue=orgue, credit=image.get("credit"))
+                        im = Image.objects.create(orgue=orgue, credit=image.get("credit"))
                         im.image.save(os.path.basename(image["chemin"]), File(open(image["chemin"], 'rb')))
+
+                    for source in row.get("sources", []):
+                        e = Source.objects.create(
+                            type=source.get("type"),
+                            description=source.get("description"),
+                            lien=source.get("lien"),
+                            orgue=orgue
+                        )
 
                 except Exception as e:
                     print("Erreur sur l'orgue {} : {}".format(row['codification'], str(e)))

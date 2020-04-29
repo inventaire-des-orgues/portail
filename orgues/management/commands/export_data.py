@@ -12,6 +12,7 @@ class Command(BaseCommand):
         orgue = Orgue.objects.order_by('-modified_date').first()
 
         o = {
+            "id": orgue.id,
             "commentaire_admin": orgue.commentaire_admin,
             "designation": orgue.designation,
             "is_polyphone": orgue.is_polyphone,
@@ -49,6 +50,7 @@ class Command(BaseCommand):
             "images": [],
             "fichiers": [],
             "accessoires": [],
+            "sources": [],
         }
 
         for clavier in orgue.claviers.all():
@@ -73,10 +75,12 @@ class Command(BaseCommand):
         for evenement in orgue.evenements.all():
             e = {
                 "annee": evenement.annee,
-                "type": evenement.type.nom,
-                "facteur": str(evenement.facteur),
-                "description": evenement.resume
+                "type": evenement.type,
+                "facteurs": [],
+                "resume": evenement.resume
             }
+            for facteur in evenement.facteurs.all():
+                e["facteurs"].append(str(facteur))
             o["evenements"].append(e)
 
         for image in orgue.images.all():
@@ -95,6 +99,14 @@ class Command(BaseCommand):
 
         for accessoire in orgue.accessoires.all():
             o["accessoires"].append(str(accessoire))
+
+        for source in orgue.sources.all():
+            s = {
+                "type": source.type,
+                "description": source.description,
+                "lien": source.lien
+            }
+            o["sources"].append(s)
 
         with open('exemple_orgue.json', 'w') as f:
             json.dump(o, f)

@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Orgue, Evenement, Clavier, Facteur, Jeu, Fichier, Image
+from .models import Orgue, Evenement, Clavier, Facteur, Jeu, Fichier, Image, Source
 
 
 class OrgueGeneralInfoForm(forms.ModelForm):
@@ -86,10 +86,11 @@ class OrgueCompositionForm(forms.ModelForm):
 
         fields = ['accessoires']
 
+
 class OrgueBuffetForm(forms.ModelForm):
     class Meta:
         model = Orgue
-        fields = ['buffet','console']
+        fields = ['buffet', 'console']
 
 
 class OrgueCreateForm(forms.ModelForm):
@@ -148,3 +149,13 @@ class ImageForm(forms.ModelForm):
     class Meta:
         model = Image
         fields = ["image", "credit"]
+
+
+class SourceForm(forms.ModelForm):
+    class Meta:
+        model = Source
+        fields = [
+            "description",
+            "type",
+            "lien",
+        ]

@@ -55,25 +55,20 @@ class Orgue(models.Model):
         ("electro_pneumatique", "Electro-pneumatique"),
     )
 
-    CHOIX_SOURCE = [
-                       "Disque",
-                       "Web",
-                       "Ouvrage"
-                   ],
-
     CHOIX_TIRAGE = (
         ("mecanique", "Mécanique"),
         ("pneumatique", "Pneumatique"),
         ("electrique", "Electrique"),
         ("electro_pneumatique", "Electro-pneumatique"),
     )
+
     CHOIX_DESIGNATION = (
         ("grand_orgue", "Grand orgue"),
         ("orgue_choeur", "Orgue de chœur"),
         ("orgue", "Orgue")
     )
-    # Informations générales
 
+    # Informations générales
     designation = models.CharField(max_length=300, verbose_name="Désignation", choices=CHOIX_DESIGNATION,
                                    default="Orgue")
     codification = models.CharField(max_length=100)
@@ -96,6 +91,7 @@ class Orgue(models.Model):
 
     commentaire_admin = models.TextField(verbose_name="Commentaire rédacteurs", null=True, blank=True,
                                          help_text="Commentaire uniquement visible par les rédacteurs")
+
 
     # Localisation
     edifice = models.CharField(max_length=300)
@@ -133,7 +129,7 @@ class Orgue(models.Model):
     keywords = models.TextField()
 
     def __str__(self):
-        return self.designation
+        return "{} {} {}".format(self.designation, self.edifice, self.commune)
 
     class Meta:
         ordering = ['-created_date']
@@ -381,7 +377,7 @@ class TypeJeu(models.Model):
     hauteur = models.CharField(max_length=20,
                                help_text="La hauteur est indiquée par convention en pieds, en chiffres arabes, "
                                          "sans précision de l'unité. La nombre de rangs des fournitures, plein-jeux,"
-                                         " cornet, etc. est indiqué en chiffre romains,"
+                                         " cornet, etc. est indiqué en chiffres romains,"
                                          " sans précision du terme \"rangs\" (ni \"rgs\").")
 
     def __str__(self):
@@ -417,9 +413,29 @@ def chemin_fichier(instance, filename):
     return os.path.join(str(instance.orgue.code_departement), instance.orgue.codification, "fichiers", filename)
 
 
+class Source(models.Model):
+    """
+    Source bibliographique ou discographique.
+    """
+    CHOIX_SOURCE = (
+        ("disque", "Disque"),
+        ("web", "Web"),
+        ("ouvrage", "Ouvrage"),
+        ("video", "Video"),
+    )
+
+    type = models.CharField(max_length=20, verbose_name="Type de source", choices=CHOIX_SOURCE)
+    description = models.CharField(max_length=100, verbose_name="Description de la source")
+    lien = models.CharField(max_length=100, verbose_name="Lien")
+    orgue = models.ForeignKey(Orgue, null=True, on_delete=models.CASCADE, related_name="sources")
+
+    def __str__(self):
+        return "{} ({})".format(self.type, self.description)
+
+
 class Fichier(models.Model):
     """
-    Fichiers liées à un instrument
+    Fichiers liés à un instrument
     """
     file = models.FileField(upload_to=chemin_fichier, verbose_name="Fichier")
     description = models.CharField(max_length=100, verbose_name="Nom de fichier à afficher")

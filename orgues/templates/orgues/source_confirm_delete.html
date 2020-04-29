@@ -1,0 +1,20 @@
+{% extends 'orgues/base_edition.html' %}
+{% load static %}
+
+{% block source_active %}active{% endblock %}
+
+{% block card-body %}
+  <h5 class="card-title">Suppression source</h5>
+  <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <p>
+      Etes-vous sûr(e) de vouloir supprimer la source <b>"{{ object.description }} - {{ object.type }}"</b> ?
+    </p>
+    <form action="" method="post">{% csrf_token %}
+      <div class="form-group">
+        <a href="{% url 'orgues:source-list' orgue.uuid %}" class="btn btn-light btn-sm">Annuler</a>
+        <button type="submit" class="btn btn-dange btn-sm">Oui</button>
+      </div>
+    </form>
+  </form>
+
+{% endblock %}
