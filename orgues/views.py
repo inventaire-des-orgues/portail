@@ -433,7 +433,7 @@ class ClavierUpdate(FabUpdateView):
                 jeu.clavier = clavier
                 jeu.save()
             messages.success(self.request, "Clavier mis à jour, merci !")
-            return redirect('orgues:clavier-update', pk=clavier.pk)
+            return redirect('orgues:orgue-update-composition', orgue_uuid=clavier.orgue.uuid)
         else:
             context = {
                 "jeux_formset": jeux_formset,
