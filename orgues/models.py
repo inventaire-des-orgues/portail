@@ -7,11 +7,13 @@ from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 
 from imagekit.models import ImageSpecField
 from pilkit.processors import ResizeToFill
 
 from accounts.models import User
+
 
 
 class Facteur(models.Model):
@@ -94,12 +96,15 @@ class Orgue(models.Model):
 
 
     # Localisation
+    code_dep_validator = RegexValidator(regex='^(97[12346]|0[1-9]|[1-8][0-9]|9[0-5]|2[AB])$',
+                                        message="Renseigner un code de département valide")
+
     edifice = models.CharField(max_length=300)
     commune = models.CharField(max_length=100)
     code_insee = models.CharField(max_length=200)
     ancienne_commune = models.CharField(max_length=100, null=True, blank=True)
     departement = models.CharField(verbose_name="Département", max_length=50)
-    code_departement = models.CharField(verbose_name="Code département", max_length=5)
+    code_departement = models.CharField(validators=[code_dep_validator], verbose_name="Code département", max_length=3)
     region = models.CharField(verbose_name="Région", max_length=50)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
