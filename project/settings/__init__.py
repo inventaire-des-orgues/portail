@@ -5,6 +5,5 @@ from .locale import *
 
 try:
     from .dev import *
-except :
+except:
     from .production import *
-

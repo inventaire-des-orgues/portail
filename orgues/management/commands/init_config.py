@@ -11,7 +11,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        with open(os.path.join(settings.BASE_DIR, "orgues", "management", "commands", "config.json"), "r") as f:
+        with open(os.path.join(settings.BASE_DIR, "orgues", "management", "commands", "config.json"),
+                  "r", encoding='utf-8') as f:
             data = json.load(f)
 
         for type_clavier in data["types_claviers"]:

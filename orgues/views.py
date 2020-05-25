@@ -14,7 +14,7 @@ from django.views.generic.base import View
 from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdateView, FabView, FabCreateViewJS
 import orgues.forms as orgue_forms
 from orgues.api.serializers import OrgueSerializer
-from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeClavier, TypeJeu, Fichier, Image
+from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeClavier, TypeJeu, Fichier, Image, Source
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -433,7 +433,7 @@ class ClavierUpdate(FabUpdateView):
                 jeu.clavier = clavier
                 jeu.save()
             messages.success(self.request, "Clavier mis à jour, merci !")
-            return redirect('orgues:clavier-update', pk=clavier.pk)
+            return redirect('orgues:orgue-update-composition', orgue_uuid=clavier.orgue.uuid)
         else:
             context = {
                 "jeux_formset": jeux_formset,
@@ -576,3 +576,76 @@ class ImagePrincipale(FabView):
         image.save()
         messages.success(request, "Nouvelle image principale, merci !")
         return redirect('orgues:image-list', orgue_uuid=image.orgue.uuid)
+
+
+class SourceList(FabListView):
+    """
+    Voir et éditer la liste des sources
+    """
+    model = Source
+    permission_required = "orgues.add_source"
+
+    def get_queryset(self):
+        self.orgue = get_object_or_404(Orgue, uuid=self.kwargs["orgue_uuid"])
+        queryset = super().get_queryset()
+        queryset = queryset.filter(orgue=self.orgue)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["orgue"] = self.orgue
+        return context
+
+
+class SourceCreate(FabCreateView):
+    model = Source
+    permission_required = "orgues.add_source"
+    form_class = orgue_forms.SourceForm
+    success_message = "Nouvelle source ajoutée, merci!"
+
+    def form_valid(self, form):
+        orgue = get_object_or_404(Orgue, uuid=self.kwargs['orgue_uuid'])
+        form.instance.orgue = orgue
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["orgue"] = Orgue.objects.get(uuid=self.kwargs["orgue_uuid"])
+        return context
+
+    def get_success_url(self):
+        return reverse('orgues:source-list', args=(self.kwargs["orgue_uuid"],))
+
+
+class SourceUpdate(FabUpdateView):
+    model = Source
+    permission_required = "orgues.change_source"
+    form_class = orgue_forms.SourceForm
+    success_message = "Source mise à jour, merci !"
+
+    def form_valid(self, form):
+        form.instance.updated_by_user = self.request.user
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["orgue"] = self.object.orgue
+        return context
+
+    def get_success_url(self):
+        return reverse('orgues:source-list', args=(self.object.orgue.uuid,))
+
+
+class SourceDelete(FabDeleteView):
+    model = Source
+    permission_required = "orgues.delete_source"
+    success_message = "Source supprimée, merci !"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["orgue"] = self.object.orgue
+        return context
+
+    def get_success_url(self):
+        return reverse('orgues:source-list', args=(self.object.orgue.uuid,))
+

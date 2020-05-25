@@ -1,5 +1,6 @@
 [
   {
+    "id": -1,
     "designation": "grand_orgue",
     "codification": "FR-72154-FLECH-STTHOM-X",
     "references_palissy": "PM22002078",
@@ -127,7 +128,14 @@
       }
     ],
     "images": [
-      {"chemin": "/Users/lucasberbesson/code/inventaire-des-orgues/portail/static/static_dirs/img/orgue-accueil.jpg", "is_principale": false, "credit": "Lucas Berbesson"}
+      {"chemin": "./static/static_dirs/img/orgue-accueil.jpg", "is_principale": false, "credit": "Lucas Berbesson"}
+    ],
+     "sources": [
+      {
+        "type": "",
+        "description": "Andr\u00e9 Isoir joue du Merklin",
+        "lien": "https://www.france-orgue.fr/disque/index.php?ior=1&org=Andr%E9+ISOIR"
+      }
     ]
   }
 ]

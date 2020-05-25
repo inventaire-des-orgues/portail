@@ -115,6 +115,7 @@ static/media/
 project/settings/dev.py
 production.py
 
+/orgues/migrations/*
 
 data.csv
 

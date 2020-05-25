@@ -5,7 +5,7 @@ from django.core.files import File
 from django.core.management.base import BaseCommand
 from django.utils.text import slugify
 
-from orgues.models import Orgue, Accessoire, Evenement, Facteur, TypeClavier, Clavier, Jeu, TypeJeu, Image, Fichier
+from orgues.models import Orgue, Accessoire, Evenement, Facteur, TypeClavier, Clavier, Jeu, TypeJeu, Image, Fichier, Source
 
 
 class Command(BaseCommand):
@@ -15,7 +15,7 @@ class Command(BaseCommand):
         parser.add_argument('path', nargs=1, type=str,
                             help='Chemin vers le dossier contenant les orgues à importer')
 
-        parser.add_argument('--delete',help='Supprime les orgues, jeux et claviers existants')
+        parser.add_argument('--delete', help='Supprime les orgues, jeux et claviers existants')
 
     def handle(self, *args, **options):
 
@@ -25,7 +25,7 @@ class Command(BaseCommand):
             Orgue.objects.all().delete()
             Clavier.objects.all().delete()
             Jeu.objects.all().delete()
-        with open(options['path'][0], "r",encoding="utf-8") as f:
+        with open(options['path'][0], "r", encoding="utf-8") as f:
             rows = json.load(f)
             for row in tqdm(rows):
                 orgue, created = Orgue.objects.get_or_create(
@@ -33,12 +33,11 @@ class Command(BaseCommand):
                 )
                 try:
                     assert row.get("designation") in [c[0] for c in Orgue.CHOIX_DESIGNATION]
-                    assert row.get("proprietaire") in [c[0] for c in Orgue.CHOIX_PROPRIETAIRE]
+                    assert row.get("proprietaire") in [c[0] for c in Orgue.CHOIX_PROPRIETAIRE] + [None]
                     assert row.get("etat") in [c[0] for c in Orgue.CHOIX_ETAT] + [None]
                     assert row.get("elevation") in [c[0] for c in Orgue.CHOIX_ELEVATION] + [None]
                     assert row.get("tirage_jeux") in [c[0] for c in Orgue.CHOIX_TIRAGE] + [None]
                     assert row.get("transmission_notes") in [c[0] for c in Orgue.CHOIX_TRANSMISSION] + [None]
-
 
                     orgue.designation = row.get("designation")
                     orgue.references_palissy = row.get("references_palissy")
@@ -81,7 +80,7 @@ class Command(BaseCommand):
                         acc = Accessoire.objects.get(nom=nom)
                         orgue.accessoires.add(acc)
 
-                    for evenement in row.get("evenements",[]):
+                    for evenement in row.get("evenements", []):
                         e = Evenement.objects.create(
                             annee=evenement.get("annee"),
                             type=evenement.get("type"),
@@ -93,7 +92,7 @@ class Command(BaseCommand):
                             fac = Facteur.objects.get(nom=nom)
                             e.facteurs.add(fac)
 
-                    for clavier in row.get("claviers",[]):
+                    for clavier in row.get("claviers", []):
                         type = TypeClavier.objects.get(nom=clavier["type"])
                         c = Clavier.objects.create(
                             type=type,
@@ -101,7 +100,7 @@ class Command(BaseCommand):
                             etendue=clavier.get("etendue"),
                             orgue=orgue
                         )
-                        for jeu in clavier.get("jeux",[]):
+                        for jeu in clavier.get("jeux", []):
                             type = TypeJeu.objects.get(nom=jeu["type"]["nom"], hauteur=jeu["type"]["hauteur"])
                             Jeu.objects.create(
                                 type=type,
@@ -110,9 +109,17 @@ class Command(BaseCommand):
                                 configuration=jeu.get("configuration"),
                             )
 
-                    for image in row.get("images",[]):
-                        im = Image.objects.create(orgue=orgue,credit=image.get("credit"))
-                        im.image.save(os.path.basename(image["chemin"]),File(open(image["chemin"],'rb')))
+                    for image in row.get("images", []):
+                        im = Image.objects.create(orgue=orgue, credit=image.get("credit"))
+                        im.image.save(os.path.basename(image["chemin"]), File(open(image["chemin"], 'rb')))
+
+                    for source in row.get("sources", []):
+                        s = Source.objects.create(
+                            type=source.get("type"),
+                            description=source.get("description"),
+                            lien=source.get("lien"),
+                            orgue=orgue
+                        )
 
                 except Exception as e:
-                    print("Erreur sur l'orgue {} : {}".format(row['codification'],str(e)))
+                    print("Erreur sur l'orgue {} : {}".format(row['codification'], str(e)))
