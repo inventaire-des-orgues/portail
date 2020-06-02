@@ -11,6 +11,7 @@ INSTALLED_APPS = [
     'imagekit',  # https://github.com/matthewwithanm/django-imagekit
     'rest_framework',  # https://www.django-rest-framework.org/
     'rest_framework.authtoken',
+    'dbbackup', # https://django-dbbackup.readthedocs.io/en/stable/installation.html
 
     'accounts',
     'fabutils',
@@ -32,3 +33,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 50
 }
+
+
+DBBACKUP_STORAGE = 'dbbackup.storage.filesystem_storage'
+DBBACKUP_STORAGE_OPTIONS = {'location': '/data/db_backup'}
+DBBACKUP_CLEANUP_KEEP = 10
