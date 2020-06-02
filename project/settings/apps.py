@@ -36,5 +36,5 @@ REST_FRAMEWORK = {
 
 
 DBBACKUP_STORAGE = 'dbbackup.storage.filesystem_storage'
-DBBACKUP_STORAGE_OPTIONS = {'location': '/data/db_backup'}
+DBBACKUP_STORAGE_OPTIONS = {'location': '/home/fabdev/data/db_saved'}
 DBBACKUP_CLEANUP_KEEP = 10
