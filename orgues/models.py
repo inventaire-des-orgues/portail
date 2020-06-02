@@ -116,7 +116,7 @@ class Orgue(models.Model):
                                 help_text="Hauteur en Hertz du A2 joué par le prestant 4")
     sommiers = models.TextField(null=True, blank=True)
     soufflerie = models.TextField(null=True, blank=True)
-    transmission_notes = models.CharField(max_length=20, choices=CHOIX_TRANSMISSION, null=True, blank=True)
+    transmission_notes = models.CharField(max_length=30, choices=CHOIX_TRANSMISSION, null=True, blank=True)
     transmission_commentaire = models.CharField(max_length=100, null=True, blank=True, help_text="Max 100 caractères")
     tirage_jeux = models.CharField(verbose_name="Tirage des jeux", max_length=20, choices=CHOIX_TIRAGE, null=True,
                                    blank=True)
