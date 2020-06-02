@@ -35,6 +35,6 @@ REST_FRAMEWORK = {
 }
 
 
-DBBACKUP_STORAGE = 'dbbackup.storage.filesystem_storage'
+DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
 DBBACKUP_STORAGE_OPTIONS = {'location': '/home/fabdev/data/db_saved'}
 DBBACKUP_CLEANUP_KEEP = 10
