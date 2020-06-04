@@ -2,6 +2,7 @@
 
 Installer python 3.4+   
 Installer les librairies listées dans le fichier `requirements.txt`.  
+Créer un fichier `project/settings/dev.py` inspiré de `project/settings/dev.example.py` avec les settings de dev.
 
 ```
 pip install -r requirements.txt
@@ -40,4 +41,3 @@ Optionel : ajouter `--delete` pour supprimer les orgues existants avant l'import
 
 # Api : 
 [voir la doc](documentation/doc_api.md)
-
