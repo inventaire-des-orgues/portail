@@ -111,6 +111,14 @@ span.round-number {
     font-weight: bold;
 }
 
+span.puce-etat {
+    display: inline-block;
+    width: 75.27px;
+    height: 44px;
+    line-height: 1;
+    text-align: center;
+}
+
 /* CLAVIERS */
 
 .clavier div.card > ul.list-group > li.list-group-item {
