@@ -50,27 +50,26 @@
         <div class="col-lg-5">
           <h3 id="selected-region">France</h3>
           <p class="text-bold" id="nb-etat-total">
-            <span class="round-number bg-primary mr-2">{{ regions.france.total }}</span>
+            <span class="puce-etat bg-primary"></span>
             Nombre d'orgues recencés
           </p>
           <p class="mt-5 mb-4">
             Etat général des orgues
-            {{ etats }}
           </p>
           <p class="mb-4" id="nb-etat-bon">
-            <span class="round-number mr-2" style="background-color:#252525;"></span>
+            <span class="puce-etat" style="background-color:#252525;"></span>
             <span>Très bon ou bon : tout à fait jouable</span>
           </p>
           <p class="mb-4" id="nb-etat-altere">
-            <span class="round-number mr-2" style="background-color:#636363;"></span>
+            <span class="puce-etat" style="background-color:#636363;"></span>
             <span>Altéré : difficilement jouable</span>
           </p>
           <p class="mb-4" id="nb-etat-degrade">
-            <span class="round-number mr-2" style="background-color:#969696;"></span>
+            <span class="puce-etat" style="background-color:#969696;"></span>
             <span>Dégradé ou en ruine : injouable</span>
           </p>
           <p id="nb-etat-inconnu">
-            <span class="round-number mr-2" style="background-color:#cccccc;"></span>
+            <span class="puce-etat " style="background-color:#cccccc;"></span>
             <span>Etat inconnu</span>
           </p>
         </div>
@@ -140,11 +139,11 @@
           } else {
             var bons, alteres, degrades, inconnus = "0 %"
           }
-          $("#nb-etat-bon .round-number").html(bons);
-          $("#nb-etat-altere .round-number").html(alteres);
-          $("#nb-etat-degrade .round-number").html(degrades);
-          $("#nb-etat-inconnu .round-number").html(inconnus);
-          $("#nb-etat-total .round-number").html(total);
+          $("#nb-etat-bon .puce-etat").html(bons);
+          $("#nb-etat-altere .puce-etat").html(alteres);
+          $("#nb-etat-degrade .puce-etat").html(degrades);
+          $("#nb-etat-inconnu .puce-etat").html(inconnus);
+          $("#nb-etat-total .puce-etat").html(total);
         },
         error: function () {
         }

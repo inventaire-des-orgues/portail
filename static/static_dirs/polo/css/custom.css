@@ -103,13 +103,18 @@ img.img-responsive {
     width: 100%;
 }
 
-span.round-number {
+span.puce-etat {
     color: white;
-    padding: 12px 18px;
+    padding: 5px 0;
+    margin-right: 4px;
     border-radius: 20px;
     font-size: 1.3em;
     font-weight: bold;
+    width: 65px;
+    display: inline-block;
+    text-align: center;
 }
+
 
 /* CLAVIERS */
 
@@ -292,19 +297,17 @@ section.triangle::before {
 
     }
 
-
 }
 
 #carte {
-        padding:0;
-    }
-
+    padding: 0;
+}
 
 /* Make Select2 boxes match Bootstrap3 heights: */
 .select2-selection__rendered {
-  line-height: 32px !important;
+    line-height: 32px !important;
 }
 
 .select2-selection {
-  height: 34px !important;
+    height: 34px !important;
 }
