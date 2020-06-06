@@ -3,6 +3,7 @@ from tqdm import tqdm
 
 from orgues.models import Orgue
 
+
 class Command(BaseCommand):
     help = 'Build search index'
 

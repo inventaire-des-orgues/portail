@@ -1,10 +1,8 @@
-import json
 import os
 import re
 import uuid
 from django.db import models
 from django.urls import reverse
-from django.utils.functional import cached_property
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
@@ -13,7 +11,6 @@ from imagekit.models import ImageSpecField
 from pilkit.processors import ResizeToFill
 
 from accounts.models import User
-
 
 
 class Facteur(models.Model):
@@ -77,7 +74,8 @@ class Orgue(models.Model):
     references_palissy = models.CharField(max_length=20, null=True, blank=True,
                                           help_text="Séparer les codes par des virgules")
     resume = models.TextField(max_length=500, verbose_name="Resumé", blank=True,
-                              help_text="Présentation en quelques lignes de l'instrument et son originalité (max 500 caractères)")
+                              help_text="Présentation en quelques lignes de l'instrument \
+                              et son originalité (max 500 caractères)")
     proprietaire = models.CharField(max_length=20, choices=CHOIX_PROPRIETAIRE, default="commune")
     organisme = models.CharField(verbose_name="Organisme auquel s'adresser", max_length=100, null=True, blank=True)
     lien_reference = models.URLField(verbose_name="Lien de référence", max_length=300, null=True, blank=True)
@@ -89,11 +87,11 @@ class Orgue(models.Model):
     buffet = models.TextField(verbose_name="Description buffet", null=True, blank=True,
                               help_text="Description du buffet et de son état.")
     console = models.TextField(verbose_name="Description console", null=True, blank=True,
-                               help_text="Description de la console (ex: en fenêtre, séparée organiste tourné vers l'orgue ...).")
+                               help_text="Description de la console (ex: en fenêtre, \
+                               séparée organiste tourné vers l'orgue ...).")
 
     commentaire_admin = models.TextField(verbose_name="Commentaire rédacteurs", null=True, blank=True,
                                          help_text="Commentaire uniquement visible par les rédacteurs")
-
 
     # Localisation
     code_dep_validator = RegexValidator(regex='^(97[12346]|0[1-9]|[1-8][0-9]|9[0-5]|2[AB])$',
@@ -144,7 +142,6 @@ class Orgue(models.Model):
         self.completion = self.calcul_completion()
         self.keywords = self.build_keywords()
         if not self.slug:
-
             self.slug = "orgue-{}-{}-{}".format(slugify(self.commune), slugify(self.edifice), self.pk)
 
         super().save(*args, **kwargs)
@@ -295,7 +292,7 @@ class TypeClavier(models.Model):
 
 
 def validate_etendue(value):
-    if not re.match("^[A-G]#{0,1}[1-7]-[A-G]#{0,1}[1-7]$", value):
+    if not re.match("^[A-G]#?[1-7]-[A-G]#?[1-7]$", value):
         raise ValidationError("L'étendue doit être de la forme F1-G5, C1-F#5 ...")
 
 
@@ -336,9 +333,9 @@ class Evenement(models.Model):
 
     Relavage : simple opération de conservation de l'instrument, menée à intervalles réguliers.
     Reconstruction : des éléments nouveaux sont ajoutés en grand nombre, la structure de l'instrument est modifiée.
-    Restauration : opération d'importance, à caractère patrimonial : il s'agit de revenir à un état antérieur de l'instrument.
+    Restauration : opération d'importance, à caractère patrimonial visant à retrouver un état antérieur de l'instrument.
     Destruction : dégâts sur l'ensemble de l'instrument, rendu totalement inutilisable.
-    Disparition : distincte de destruction, car l'orgue a pu disparaître suit à un déménagement, ou être stocké dans un endroit inconnu.
+    Disparition : distincte de destruction, car l'orgue a pu connaître un déménagement, ou être stocké.
 
     """
 

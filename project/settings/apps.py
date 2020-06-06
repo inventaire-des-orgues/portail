@@ -11,7 +11,7 @@ INSTALLED_APPS = [
     'imagekit',  # https://github.com/matthewwithanm/django-imagekit
     'rest_framework',  # https://www.django-rest-framework.org/
     'rest_framework.authtoken',
-    'dbbackup', # https://django-dbbackup.readthedocs.io/en/stable/installation.html
+    'dbbackup',  # https://django-dbbackup.readthedocs.io/en/stable/installation.html
 
     'accounts',
     'fabutils',
@@ -22,7 +22,7 @@ INSTALLED_APPS = [
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     'DEFAULT_AUTHENTICATION_CLASSES': [
-            'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
 

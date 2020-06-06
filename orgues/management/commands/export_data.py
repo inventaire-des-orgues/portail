@@ -6,8 +6,9 @@ from orgues.models import Orgue
 
 class Command(BaseCommand):
     help = "Exporte l'orgue le plus récemment modifié en format JSON"
-    #TODO: A TESTER : Implémenter export des noms et chemins de fichers
-    #TODO: Implémenter export des accessoires
+    # TODO: A TESTER : Implémenter export des noms et chemins de fichers
+    # TODO: Implémenter export des accessoires
+
     def handle(self, *args, **options):
         orgue = Orgue.objects.order_by('-modified_date').first()
 

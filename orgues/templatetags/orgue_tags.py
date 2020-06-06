@@ -1,5 +1,3 @@
-import re
-
 from django import template
 
 register = template.Library()
@@ -13,12 +11,12 @@ def resume_clavier(jeux_count, claviers_count, has_pedalier):
     """
 
     cr = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV",
-                        "XVI", "XVII", "XVIII", "XIX", "XX", "XXI", "XXII", "XXIII", "XIV", "XV"]
+          "XVI", "XVII", "XVIII", "XIX", "XX", "XXI", "XXII", "XXIII", "XIV", "XV"]
     if claviers_count == 0:
-         return "?"
+        return "?"
 
     if has_pedalier and claviers_count > 1:
-        return "{}, {}/P".format(jeux_count, cr[claviers_count-2])
+        return "{}, {}/P".format(jeux_count, cr[claviers_count - 2])
 
     elif has_pedalier and claviers_count == 1:
         return "{}, P".format(jeux_count)

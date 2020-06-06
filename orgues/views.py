@@ -14,9 +14,7 @@ from django.views.generic.base import View
 from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdateView, FabView, FabCreateViewJS
 import orgues.forms as orgue_forms
 from orgues.api.serializers import OrgueSerializer
-from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeClavier, TypeJeu, Fichier, Image, Source
-
-from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source
 
 
 class OrgueList(LoginRequiredMixin, ListView):
@@ -648,4 +646,3 @@ class SourceDelete(FabDeleteView):
 
     def get_success_url(self):
         return reverse('orgues:source-list', args=(self.object.orgue.uuid,))
-

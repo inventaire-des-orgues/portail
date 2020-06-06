@@ -1,18 +1,21 @@
 from rest_framework import serializers
-from orgues.models import Orgue, Jeu, Clavier, TypeJeu, Image, Fichier, Evenement, Facteur, Source
+from orgues.models import Orgue, Jeu, Clavier, TypeJeu, Image, Fichier, Evenement, Source
 
 
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image
-        fields = ["image","is_principale","credit"]
+        fields = ["image", "is_principale", "credit"]
+
 
 class FichierSerializer(serializers.ModelSerializer):
     class Meta:
         model = Fichier
-        fields = ["file","description"]
+        fields = ["file", "description"]
+
 
 class TypeJeuSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = TypeJeu
         exclude = ["id"]
@@ -20,26 +23,31 @@ class TypeJeuSerializer(serializers.ModelSerializer):
 
 class EvenementSerializer(serializers.ModelSerializer):
     facteurs = serializers.StringRelatedField(many=True)
+
     class Meta:
         model = Evenement
-        exclude = ["id","orgue"]
+        exclude = ["id", "orgue"]
 
 
 class JeuSerializer(serializers.ModelSerializer):
     type = TypeJeuSerializer()
+
     class Meta:
         model = Jeu
-        exclude = ["clavier","id"]
+        exclude = ["clavier", "id"]
+
 
 class ClavierSerializer(serializers.ModelSerializer):
     jeux = JeuSerializer(many=True)
     type = serializers.StringRelatedField()
+
     class Meta:
         model = Clavier
-        exclude = ["id","created_date", "modified_date","orgue"]
+        exclude = ["id", "created_date", "modified_date", "orgue"]
 
 
 class SourceSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Source
         exclude = ["id", "orgue"]
@@ -55,7 +63,6 @@ class OrgueSerializer(serializers.ModelSerializer):
     evenements = EvenementSerializer(many=True)
     sources = SourceSerializer(many=True)
 
-
     class Meta:
         model = Orgue
-        exclude = ["uuid","slug","completion","created_date"]
+        exclude = ["uuid", "slug", "completion", "created_date"]

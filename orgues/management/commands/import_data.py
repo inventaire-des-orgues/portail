@@ -5,7 +5,7 @@ from django.core.files import File
 from django.core.management.base import BaseCommand
 from django.utils.text import slugify
 
-from orgues.models import Orgue, Accessoire, Evenement, Facteur, TypeClavier, Clavier, Jeu, TypeJeu, Image, Fichier, Source
+from orgues.models import Orgue, Accessoire, Evenement, Facteur, TypeClavier, Clavier, Jeu, TypeJeu, Image, Source
 
 
 class Command(BaseCommand):
@@ -93,17 +93,17 @@ class Command(BaseCommand):
                             e.facteurs.add(fac)
 
                     for clavier in row.get("claviers", []):
-                        type = TypeClavier.objects.get(nom=clavier["type"])
+                        type_clavier = TypeClavier.objects.get(nom=clavier["type"])
                         c = Clavier.objects.create(
-                            type=type,
+                            type=type_clavier,
                             is_expressif=clavier.get("is_expressif"),
                             etendue=clavier.get("etendue"),
                             orgue=orgue
                         )
                         for jeu in clavier.get("jeux", []):
-                            type = TypeJeu.objects.get(nom=jeu["type"]["nom"], hauteur=jeu["type"]["hauteur"])
+                            type_jeu = TypeJeu.objects.get(nom=jeu["type"]["nom"], hauteur=jeu["type"]["hauteur"])
                             Jeu.objects.create(
-                                type=type,
+                                type=type_jeu,
                                 commentaire=jeu.get("commentaire"),
                                 clavier=c,
                                 configuration=jeu.get("configuration"),
@@ -114,7 +114,7 @@ class Command(BaseCommand):
                         im.image.save(os.path.basename(image["chemin"]), File(open(image["chemin"], 'rb')))
 
                     for source in row.get("sources", []):
-                        s = Source.objects.create(
+                        Source.objects.create(
                             type=source.get("type"),
                             description=source.get("description"),
                             lien=source.get("lien"),
