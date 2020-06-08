@@ -303,11 +303,3 @@ section.triangle::before {
     padding: 0;
 }
 
-/* Make Select2 boxes match Bootstrap3 heights: */
-.select2-selection__rendered {
-    line-height: 32px !important;
-}
-
-.select2-selection {
-    height: 34px !important;
-}
