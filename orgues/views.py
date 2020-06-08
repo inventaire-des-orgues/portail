@@ -57,9 +57,9 @@ class OrgueList(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context["facteur"] = self.facteur
         context["selected_commune"] = self.selected_commune
         return context
+
 
 
 class OrgueCarte(LoginRequiredMixin, TemplateView):
