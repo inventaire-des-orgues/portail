@@ -1,0 +1,51 @@
+{% extends 'orgues/base_edition.html' %}
+{% load static %}
+
+{% block head_extra %}
+<link href="{% static 'plugins/cropper/cropper.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block card-body %}
+<div>
+    <img id="image" src="{{ image.image.url }}" style="max-width: 100%;">
+</div>
+<div class="mt-4 text-right">
+    <button type="submit" class="btn btn-primary" id="save-crop">Enregistrer</button>
+</div>
+{% endblock %}}
+
+{% block js_extra %}
+<script src="{% static 'plugins/cropper/cropper.js' %}"></script>
+<script src="{% static 'plugins/cropper/jquery-cropper.js'%}"></script>
+
+<script>
+    var $image = $('#image');
+
+    $image.cropper({
+        dragMode: 'move',
+        aspectRatio: 4 / 3,
+        zoomable: false,
+        movable: false,
+    });
+
+    // Get the Cropper.js instance after initialized
+    var cropper = $image.data('cropper');
+
+    $("#save-crop").on('click', function (event) {
+        cropData = cropper.getData();
+        console.log(cropData);
+
+        $.ajax({
+            type: "POST",
+            url: "{% url 'orgues:image-principale' image.pk %}",
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                cropData,
+            },
+            dataType: 'json',
+        })
+    })
+
+</script>
+{% endblock %}
+

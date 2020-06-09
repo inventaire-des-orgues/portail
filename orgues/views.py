@@ -18,6 +18,9 @@ from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeClavier, TypeJe
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+from imagekit.models import ImageSpecField, ProcessedImageField
+from imagekit.processors import ResizeToFill, Crop
+
 
 class OrgueList(LoginRequiredMixin, ListView):
     """
@@ -571,11 +574,35 @@ class ImagePrincipale(FabView):
 
     def get(self, request, *args, **kwargs):
         image = get_object_or_404(Image, pk=kwargs["pk"])
-        image.orgue.images.update(is_principale=False)
-        image.is_principale = True
-        image.save()
-        messages.success(request, "Nouvelle image principale, merci !")
-        return redirect('orgues:image-list', orgue_uuid=image.orgue.uuid)
+        context = {
+            'image': image,
+            'orgue': image.orgue,
+        }
+
+        return render(request, template_name='orgues/crop_image.html', context=context)
+
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+            x = int(float(request.POST['cropData[x]']))
+            y = int(float(request.POST['cropData[y]']))
+            width = int(float(request.POST['cropData[width]']))
+            height = int(float(request.POST['cropData[height]']))
+
+            image = get_object_or_404(Image, pk=kwargs["pk"])
+
+            image.thumbnail_principale = ImageSpecField(source=image.image,
+                                                        processors=[Crop(x=x, y=y, width=width, height=height),
+                                                                    ResizeToFill(800, 300)],
+                                                        format='JPEG',
+                                                        options={'quality': 100})
+
+            image.orgue.images.update(is_principale=False)
+            image.is_principale = True
+            image.save()
+
+            messages.success(request, "Nouvelle image principale, merci !")
+
+            return redirect('orgues:image-list', orgue_uuid=image.orgue.uuid)
 
 
 class SourceList(FabListView):
@@ -648,4 +675,3 @@ class SourceDelete(FabDeleteView):
 
     def get_success_url(self):
         return reverse('orgues:source-list', args=(self.object.orgue.uuid,))
-

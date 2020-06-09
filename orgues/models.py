@@ -472,6 +472,11 @@ class Image(models.Model):
     credit = models.CharField(max_length=200, null=True, blank=True)
 
     # Champs automatiques
+    thumbnail_principale = ImageSpecField(source='image',
+                               processors=[ResizeToFill(400, 300)],
+                               format='JPEG',
+                               options={'quality': 100})
+
     thumbnail = ImageSpecField(source='image',
                                processors=[ResizeToFill(400, 300)],
                                format='JPEG',
