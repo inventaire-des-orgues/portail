@@ -20,12 +20,14 @@ from django.contrib import admin
 from django.urls import path
 from django.views.generic import TemplateView
 
-from project.views import accueil
+
+from project.views import accueil, ContactView
 
 urlpatterns = [
     path('', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
     path('', accueil, name='accueil'),
+    path('contact/', ContactView.as_view(), name='contact'),
     path('', include('orgues.urls')),
     path('api-auth/', include('rest_framework.urls')),
     path('api/v1/', include(('project.api_urls', 'project'), namespace='api')),
