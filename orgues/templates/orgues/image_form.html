@@ -6,9 +6,12 @@
 {% endblock %}
 
 {% block card-body %}
-
   <h4>Vignette actuelle</h4>
+  {% if image.thumbnail_principale %}
   <img src="{{ image.thumbnail_principale.url }}" alt="" style="width:400px;">
+  {% elif image.thumbnail %}
+  <img src="{{ image.thumbnail.url }}" alt="" style="width:400px;">
+  {% endif %}
   <h4 class="mt-3">Redéfinir la vignette</h4>
   <div>
     <img id="image" src="{{ image.image.url }}" style="max-width: 100%;">

@@ -513,6 +513,7 @@ class Image(models.Model):
     )
 
 
+
 class Accessoire(models.Model):
     """
     Ex : Tremblant, Trémolo, Accouplement Pos./G.O.
