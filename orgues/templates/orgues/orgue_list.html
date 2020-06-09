@@ -8,7 +8,7 @@
         <div class="col-xl-4 sidebar sticky-sidebar">
           <div class="card ">
             <div class="card-body pb-0">
-             {% include 'orgues/search_form.html' %}
+              {% include 'orgues/search_form.html' %}
             </div>
           </div>
         </div>
@@ -17,11 +17,7 @@
             <div class="card shadow-sm vignette mb-lg-4 mb-sm-5" onclick="window.location = '{% url 'orgues:orgue-detail' orgue.slug %}'">
               <div class="row no-gutters">
                 <div class="col-md-4" style="background: #868e96;">
-                  {% if orgue.image_principale %}
-                    <img class="card-img-top" src="{{ orgue.image_principale.thumbnail.url }}" alt="Photo orgue {{ orgue }}">
-                  {% else %}
-                    <img class="card-img-top" src="{% static 'img/default.png' %}" alt="Image par défaut">
-                  {% endif %}
+                  <img class="card-img-top" src="{{ orgue.vignette }}" alt="Photo orgue {{ orgue }}">
                 </div>
                 <div class="col-md-8">
                   <div class="card-body py-md-3">

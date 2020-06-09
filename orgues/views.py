@@ -1,5 +1,6 @@
+import os
 from collections import Counter
-
+from PIL import Image as PILImage
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count, Q
@@ -11,7 +12,8 @@ from django.utils.text import slugify
 from django.views.generic import ListView, DetailView, TemplateView
 from django.views.generic.base import View
 
-from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdateView, FabView, FabCreateViewJS
+from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdateView, FabView, FabCreateViewJS, \
+    FabUpdateViewJS
 import orgues.forms as orgue_forms
 from orgues.api.serializers import OrgueSerializer
 from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeClavier, TypeJeu, Fichier, Image, Source
@@ -569,40 +571,27 @@ class ImageDelete(FabDeleteView):
         return reverse('orgues:image-list', args=(self.object.orgue.uuid,))
 
 
-class ImagePrincipale(FabView):
+class ImagePrincipale(FabUpdateView):
+    """
+    Rognage de l'image principale d'un orgue dans le but de créer une vignette (utilise ajax et cropper.js)
+    """
+    model = Image
+    fields = ['thumbnail_principale']
     permission_required = "orgues.change_image"
+    success_message = "Vignette mise à jour, merci !"
 
-    def get(self, request, *args, **kwargs):
-        image = get_object_or_404(Image, pk=kwargs["pk"])
-        context = {
-            'image': image,
-            'orgue': image.orgue,
-        }
+    def form_valid(self,form):
+        image = form.save(commit=False)
+        image.orgue.images.update(is_principale=False)
+        image.is_principale = True
+        image.save()
+        messages.success(self.request,self.success_message)
+        return JsonResponse({})
 
-        return render(request, template_name='orgues/crop_image.html', context=context)
-
-    def post(self, request, *args, **kwargs):
-        if request.is_ajax():
-            x = int(float(request.POST['cropData[x]']))
-            y = int(float(request.POST['cropData[y]']))
-            width = int(float(request.POST['cropData[width]']))
-            height = int(float(request.POST['cropData[height]']))
-
-            image = get_object_or_404(Image, pk=kwargs["pk"])
-
-            image.thumbnail_principale = ImageSpecField(source=image.image,
-                                                        processors=[Crop(x=x, y=y, width=width, height=height),
-                                                                    ResizeToFill(800, 300)],
-                                                        format='JPEG',
-                                                        options={'quality': 100})
-
-            image.orgue.images.update(is_principale=False)
-            image.is_principale = True
-            image.save()
-
-            messages.success(request, "Nouvelle image principale, merci !")
-
-            return redirect('orgues:image-list', orgue_uuid=image.orgue.uuid)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["orgue"] = self.object.orgue
+        return context
 
 
 class SourceList(FabListView):

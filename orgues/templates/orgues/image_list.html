@@ -40,9 +40,9 @@
         <td><a href="{{ image.image.url }}" target="_blank"><img src="{{ image.vignette.url }}" alt="" width="70px;"></a></td>
         <td>
           {% if image.is_principale %}
-            Oui
+            Oui (<a href="{% url 'orgues:image-principale' image.pk %}">modifier la vignette</a>)
           {% else %}
-            Non (<a href="{% url 'orgues:image-principale' image.pk %}">choisir</a>)
+            Non (<a href="{% url 'orgues:image-principale' image.pk %}">choisir & définir la vignette</a>)
           {% endif %}</td>
         <td>{{ image.credit|default_if_none:"Aucun" }}</td>
         <td>

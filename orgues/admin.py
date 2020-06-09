@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Orgue, Clavier, TypeClavier, TypeJeu, Jeu, Fichier
+from .models import Orgue, Clavier, TypeClavier, TypeJeu, Jeu, Fichier, Image
 
 
 class ClavierInline(admin.StackedInline):
@@ -15,6 +15,10 @@ from .models import Orgue, Clavier, TypeClavier, TypeJeu, Facteur
 @admin.register(Fichier)
 class FichierAdmin(admin.ModelAdmin):
     list_display = ('pk','file','description','orgue')
+
+@admin.register(Image)
+class ImageAdmin(admin.ModelAdmin):
+    list_display = ('pk','orgue','is_principale')
 
 @admin.register(Jeu)
 class JeuAdmin(admin.ModelAdmin):
