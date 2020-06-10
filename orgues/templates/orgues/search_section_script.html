@@ -59,9 +59,18 @@
         delay: 250,
         url: 'https://geo.api.gouv.fr/departements',
         data: function (params) {
-          return {
-            nom: params.term,
+          if (!isNaN(parseInt(params.term))){
+              return {
+                  code: parseInt(params.term),
+              }
           }
+          else{
+              return {
+                  nom: params.term,
+              }
+          }
+
+
         },
         processResults: function (data) {
             console.log(data);
