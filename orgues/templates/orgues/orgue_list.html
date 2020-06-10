@@ -4,42 +4,45 @@
 {% block content %}
   <div class="container">
     <section id="orgue-list">
-      <div class="row">
-        <div class="col-xl-4 sidebar sticky-sidebar">
-          <div class="card ">
-            <div class="card-body pb-0">
-              {% include 'orgues/search_form.html' %}
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-8">
-          {% for orgue in object_list %}
-            <div class="card shadow-sm vignette mb-lg-4 mb-sm-5" onclick="window.location = '{% url 'orgues:orgue-detail' orgue.slug %}'">
-              <div class="row no-gutters">
-                <div class="col-md-4" style="background: #868e96;">
-                  <img class="card-img-top" src="{{ orgue.vignette }}" alt="Photo orgue {{ orgue }}">
+        <div class="row">
+            <div class="col-xl-4 sidebar sticky-sidebar">
+                <div class="card ">
+                    <div class="card-body pb-0">
+                        {% include 'orgues/search_form.html' %}
+                    </div>
                 </div>
-                <div class="col-md-8">
-                  <div class="card-body py-md-3">
-                    <h4 class="card-title mb-1">{{ orgue.edifice|capfirst }} <span>| {{ orgue.commune }} ({{ orgue.departement }})</span></h4>
-                    <p class="my-0 text-muted font-weight-bold">
-                      {{ orgue.get_designation_display }} - {% resume_clavier orgue.jeux_count orgue.clavier_count orgue.has_pedalier %}
-                    </p>
-                    {% if orgue.facteurs %}
-                      <p class="my-1">
-                        {% for facteur in orgue.facteurs %}
-                          <span>{{ facteur.facteurs__nom }}</span>
-                          {% if not forloop.last %},{% endif %}
-                        {% endfor %}
-                      </p>
-                    {% endif %}
-                    {% if user.is_authenticated %}
-                      <p class="my-1 d-none d-md-block" style="position:absolute;bottom:10px;right:20px; color:#5C1C54">Avancement de la fiche : {{ orgue.completion }}%</p>
-                    {% endif %}
-                  </div>
-                </div>
-              </div>
             </div>
+            <div class="col-xl-8">
+                {% for orgue in object_list %}
+                <div class="card shadow-sm vignette mb-lg-4 mb-sm-5" onclick="window.location = '{% url 'orgues:orgue-detail' orgue.slug %}'">
+                    <div class="row no-gutters">
+                        <div class="col-md-4" style="background: #868e96;">
+                            <img class="card-img-top" src="{{ orgue.vignette }}" alt="Photo orgue {{ orgue }}">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body py-md-3">
+                                <h4 class="card-title mb-1">{{ orgue.edifice|capfirst }} <span>| {{ orgue.commune }} ({{ orgue.departement }})</span></h4>
+                                <p class="my-0 text-muted font-weight-bold">
+                                    {{ orgue.get_designation_display }} - {% resume_clavier orgue.jeux_count orgue.clavier_count orgue.has_pedalier %}
+                                </p>
+                                {% if orgue.facteurs %}
+                                <p class="my-1">
+                                    {% for facteur in orgue.facteurs %}
+                                    <span>{{ facteur.facteurs__nom }}</span>
+                                    {% if not forloop.last %},{% endif %}
+                                    {% endfor %}
+                                </p>
+                                {% endif %}
+                                {% if user.is_authenticated %}
+                                <p class="my-1 d-none d-md-block" style="position:absolute;bottom:10px;right:20px; color:#5C1C54">Avancement de la fiche : {{ orgue.completion }}%</p>
+                                {% endif %}
+                            </div>
+                            {% if user.is_authenticated %}
+                            <div class="card-footer d-md-none" style="color:#5C1C54">Avancement de la fiche : {{ orgue.completion }}%</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
 
           {% empty %}
 
