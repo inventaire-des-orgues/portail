@@ -1,4 +1,13 @@
 <form action="{% url 'orgues:orgue-list' %}" class="" method="get">
+    <div class="form-group">
+    <label for="">Département</label>
+    <select name="departement" id="id_departement" class="form-control" value="{{ request.GET.departement }}">
+      <option value="">Choisir un departement</option>
+      {% if request.GET.departement %}
+        <option value="{{ request.GET.departement }}" selected="selected">{{ selected_departement }}</option>
+      {% endif %}
+    </select>
+  </div>
   <div class="form-group">
     <label for="">Commune</label>
     <select name="commune" id="id_commune" class="form-control" value="{{ request.GET.commune }}">

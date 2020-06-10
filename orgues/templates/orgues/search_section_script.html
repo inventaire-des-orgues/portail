@@ -50,5 +50,32 @@
         }
       },
     });
+        $("#id_departement").select2({
+      width: "100%",
+      language: "fr",
+      allowClear: true,
+      placeholder: 'Choisir un departement',
+      ajax: {
+        delay: 250,
+        url: 'https://geo.api.gouv.fr/departements',
+        data: function (params) {
+          return {
+            nom: params.term,
+          }
+        },
+        processResults: function (data) {
+            console.log(data);
+          var items = data.map(function (result) {
+            return {
+              "id":  result.nom + " (" + result.code +")" + "|" + result.code,
+              "text": result.nom + " (" + result.code +")"
+            }
+          })
+          return {results: items}
+        }
+      },
+    });
+
+
   })
 </script>
