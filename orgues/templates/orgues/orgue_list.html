@@ -2,7 +2,17 @@
 {% load static %}
 {% load orgue_tags %}
 {% block content %}
-  <div class="container">
+<div class="container">
+    <section class="pb-0" id="contact">
+        <div class="row justify-content-center">
+            <div class="col-5 text-center">
+                <h5>
+                    L'orgue que vous recherchez n'est pas répertorié ? Si cela est le cas vous pouvez le signaler ici
+                </h5>
+                <a class="btn btn-primary rounded-pill" href="{% url 'contact'%}">Faire la demande</a>
+            </div>
+        </div>
+    </section>
     <section id="orgue-list">
         <div class="row">
             <div class="col-xl-4 sidebar sticky-sidebar">
@@ -44,22 +54,22 @@
                     </div>
                 </div>
 
-          {% empty %}
+                {% empty %}
 
-            <p class="text-center py-50">
-              Aucun résultat
-            </p>
+                <p class="text-center py-50">
+                    Aucun résultat
+                </p>
 
-          {% endfor %}
-          {% include 'paginator.html' %}
+                {% endfor %}
+                {% include 'paginator.html' %}
+            </div>
         </div>
-      </div>
     </section>
-  </div>
+</div>
 {% endblock %}
 {% block js_extra %}
 
-  {% include 'orgues/search_section_script.html' %}
+{% include 'orgues/search_section_script.html' %}
 
 
 {% endblock %}

@@ -2,27 +2,29 @@
 {% load static %}
 
 {% block content %}
-<section class="bg-primary">
+<section class="bg-primary pt-5">
     <div class="container">
         <div class="row justify-content-center">
+            <div class="col-12">
+                <h3 class="text-center text-white mb-5">Nous contacter</h3>
+            </div>
             <div class="col-lg-9">
                 <div class="card" style="border-radius:50px;">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-lg-12 my-4 text-center text-lg-left">
-                                <h1 class="">Nous Contacter</h1>
-                            </div>
                             <div class="col-lg-6">
                                 <img src="{% static 'img/iso.png' %}" alt="" width="300px" style="display: block; margin: auto">
                                 <p>Ici vous pouvez nous contacter si vous avez des recommandations particulières ou bien un problème quelconque avec l'utilisation de l'inventaire des orgues.</p>
                                 <p>C'est ici également que vous pouvez signaler un orgue (généralement récent) qui ne serait pas répertorié.</p>
                                 <p>Pour cela, envoyer nous un mail avec les informations suivantes:</p>
-                                <ol>
-                                  <li>La Région</li>
-                                  <li>La ville</li>
-                                  <li>Le nom complet de l'édifice</li>
+                                <p>
+                                <ol style="color: #777777; padding-left: 1em">
+                                    <li>La Région</li>
+                                    <li>La ville</li>
+                                    <li>Le nom complet de l'édifice</li>
                                 </ol>
-                              <p>Nous traiterons votre demande.</p>
+                                </p>
+                                <p>Nous traiterons votre demande.</p>
                             </div>
                             <div class="col-lg-6"> {% include 'contact_form.html' %}</div>
                         </div>
