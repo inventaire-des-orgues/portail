@@ -3,171 +3,173 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-  <meta name="author" content="INSPIRO"/>
-  <meta name="description" content="Themeforest Template Polo, html template">
-  <link rel="shortcut icon" href="{% static 'img/favicon.ico'%}" type='image/x-icon' >
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Inventaire des orgues</title>
-  <link href="{% static 'polo/css/plugins.css' %}" rel="stylesheet">
-  <link href="{% static 'polo/scss/style.css' %}" rel="stylesheet">
-  <link href="{% static 'polo/css/custom.css' %}" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'plugins/select2/select2.min.css' %}">
-  <link rel="stylesheet" href="{% static 'plugins/toastr/toastr.min.css' %}">
-  <link rel="stylesheet" href="{% static 'plugins/lightbox/css/lightbox.min.css' %}">
-  <link rel="stylesheet" href="{% static 'plugins/trumbowyg/ui/trumbowyg.min.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="author" content="INSPIRO"/>
+    <meta name="description" content="Themeforest Template Polo, html template">
+    <link rel="shortcut icon" href="{% static 'img/favicon.ico'%}" type='image/x-icon'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Inventaire des orgues</title>
+    <link href="{% static 'polo/css/plugins.css' %}" rel="stylesheet">
+    <link href="{% static 'polo/scss/style.css' %}" rel="stylesheet">
+    <link href="{% static 'polo/css/custom.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'plugins/select2/select2.min.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/toastr/toastr.min.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/lightbox/css/lightbox.min.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/trumbowyg/ui/trumbowyg.min.css' %}">
 
-  {% block head_extra %}
-  {% endblock %}
+    {% block head_extra %}
+    {% endblock %}
 </head>
 <body>
 {% block body %}
-  <div id="topbar" class="dark topbar-fullwidth">
+<div id="topbar" class="dark topbar-fullwidth">
     <div class="container">
-      <div class="row">
-        <div class="col-md-6">
-          <ul class="top-menu">
-            <li>
-              {% if request.user.is_authenticated %}
-                <a href="{% url 'logout' %}">Déconnexion</a>
-              {% else %}
-                <a href="{% url 'login' %}">Connexion</a>
-              {% endif %}
-            </li>
-          </ul>
+        <div class="row">
+            <div class="col-md-6">
+                <ul class="top-menu">
+                    <li>
+                        {% if request.user.is_authenticated %}
+                        <a href="{% url 'logout' %}">Déconnexion</a>
+                        {% else %}
+                        <a href="{% url 'login' %}">Connexion</a>
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-6 d-none d-sm-block">
+                <div class="social-icons social-icons-colored-hover">
+                    <ul>
+                        <li class="social-en"><a href="#"><i class="fa fa-envelope"></i></a></li>
+                        <li class="social-instagram"><a href="#"><i class="fab fa-instagram"></i></a></li>
+                        <li class="social-twitter"><a href="#"><i class="fab fa-twitter"></i></a></li>
+                        <li class="social-facebook"><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
-        <div class="col-md-6 d-none d-sm-block">
-          <div class="social-icons social-icons-colored-hover">
-            <ul>
-              <li class="social-en"><a href="#"><i class="fa fa-envelope"></i></a></li>
-              <li class="social-instagram"><a href="#"><i class="fab fa-instagram"></i></a></li>
-              <li class="social-twitter"><a href="#"><i class="fab fa-twitter"></i></a></li>
-              <li class="social-facebook"><a href="#"><i class="fab fa-facebook-f"></i></a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
+</div>
 
 
-  <section id="logo-header">
+<section id="logo-header">
     <a class="" href="https://docs.inventaire-des-orgues.fr" id="lien-documentation">
-      <i class="far text-dark fa-question-circle"></i>
+        <i class="far text-dark fa-question-circle"></i>
     </a>
     <div class="container">
-      <div class="page-title">
-        <a href="/">
-        <img src="{% static 'img/logo.png' %}" alt="" width="200px">
-        </a>
-      </div>
-    </div>
-  </section>
-  <!-- end: Page title -->
-  <!-- Page Menu -->
-  <div class="page-menu menu-outline">
-    <div class="container">
-      <nav>
-        <ul>
-          <li>
-            <a href="{% url 'accueil' %}">Accueil</a>
-          </li>
-          <li>
-            <a href="{% url 'orgues:orgue-carte' %}">Carte</a>
-          </li>
-          <li>
-            <a href="{% url 'orgues:orgue-list' %}">Les orgues</a>
-          </li>
-          <li>
-            <a class="" href="https://vocabulaire.inventaire-des-orgues.fr">Lexique</a>
-          </li>
-        </ul>
-      </nav>
-      <div id="pageMenu-trigger">
-        <i class="fa fa-bars"></i>
-      </div>
-    </div>
-  </div>
-  {% block content %}
-    <section id="page-content">
-    </section>
-  {% endblock %}
-
-  {% block modal %}
-  {% endblock %}
-
-
-
-  <footer id="footer" class="inverted">
-    <div class="footer-content">
-      <div class="container">
-        <div class="row align-items-top">
-          <div class="col-md-2 text-center mt-3">
-            <img src="{% static 'img/logo-nb.png' %}" alt="" style="width:120px;">
-          </div>
-          <div class="col-md-2 mt-3">
-            <p class="text-white">
-              Par
-            </p>
-            <img src="{% static 'img/orgue-en-france.png' %}" alt="" style="width:150px;">
-          </div>
-          <div class="col-md-2 mt-3">
-            <img src="{% static 'img/Soutenu_ministere_culture.png' %}" alt="" style="width:160px;">
-          </div>
-          <div class="col-md-1 mt-3">
-          </div>
-          <div class="col-md-2 mt-3">
-            <div class="widget">
-              <div class="widget-title">Liens</div>
-              <ul class="list">
-                <li>
-                  <a href="{% url 'accueil' %}">Accueil</a>
-                </li>
-                <li>
-                  <a href="{% url 'orgues:orgue-carte' %}">Carte</a>
-                </li>
-                <li>
-                  <a href="{% url 'orgues:orgue-list' %}">Les orgues</a>
-                </li>
-                <li>
-                  <a class="" href="https://vocabulaire.inventaire-des-orgues.fr">Lexique</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-md-3 mt-3">
-            <div class="widget">
-              <div class="widget-title">Participer</div>
-              {% if request.user.is_authenticated %}
-                Vous êtes connecté(e) en temps que "{{ request.user }}"
-              {% endif %}
-              <ul class="list">
-                <li>
-                  {% if request.user.is_authenticated %}
-                    <a href="{% url 'logout' %}">Déconnexion</a>
-                  {% else %}
-                    <a href="{% url 'login' %}">Se connecter</a>
-                  {% endif %}
-                </li>
-                <li>
-                  <a class="" href="https://docs.inventaire-des-orgues.fr">Aide</a>
-                </li>
-              </ul>
-            </div>
-          </div>
+        <div class="page-title">
+            <a href="/">
+                <img src="{% static 'img/logo.png' %}" alt="" width="200px">
+            </a>
         </div>
-      </div>
+    </div>
+</section>
+<!-- end: Page title -->
+<!-- Page Menu -->
+<div class="page-menu menu-outline">
+    <div class="container">
+        <nav>
+            <ul>
+                <li>
+                    <a href="{% url 'accueil' %}">Accueil</a>
+                </li>
+                <li>
+                    <a href="{% url 'orgues:orgue-carte' %}">Carte</a>
+                </li>
+                <li>
+                    <a href="{% url 'orgues:orgue-list' %}">Les orgues</a>
+                </li>
+                <li>
+                    <a class="" href="https://vocabulaire.inventaire-des-orgues.fr">Lexique</a>
+                </li>
+            </ul>
+        </nav>
+        <div id="pageMenu-trigger">
+            <i class="fa fa-bars"></i>
+        </div>
+    </div>
+</div>
+{% block content %}
+<section id="page-content">
+</section>
+{% endblock %}
+
+{% block modal %}
+{% endblock %}
+
+
+<footer id="footer" class="inverted">
+    <div class="footer-content">
+        <div class="container">
+            <div class="row align-items-top">
+                <div class="col-lg-2 text-lg-center mt-4">
+                    <img src="{% static 'img/logo-nb.png' %}" alt="" style="width:120px;">
+                </div>
+                <div class="col-lg-2 mt-4">
+                    <p class="text-white" style="font-size: 14px;letter-spacing: 1px;font-weight: 600;">
+                        Par
+                    </p>
+                    <img src="{% static 'img/orgue-en-france.png' %}" alt="" style="width:150px;">
+                </div>
+                <div class="col-lg-2 mt-4">
+                    <img src="{% static 'img/Soutenu_ministere_culture.png' %}" alt="" style="width:160px;">
+                </div>
+                <div class="col-lg-1 mt-4">
+                </div>
+                <div class="col-lg-2 mt-4">
+                    <div class="widget">
+                        <div class="widget-title">Liens</div>
+                        <ul class="list">
+                            <li>
+                                <a href="{% url 'accueil' %}">Accueil</a>
+                            </li>
+                            <li>
+                                <a href="{% url 'orgues:orgue-carte' %}">Carte</a>
+                            </li>
+                            <li>
+                                <a href="{% url 'orgues:orgue-list' %}">Les orgues</a>
+                            </li>
+                            <li>
+                                <a class="" href="https://vocabulaire.inventaire-des-orgues.fr">Lexique</a>
+                            </li>
+                            <li>
+                                <a class="" href="{% url 'contact' %}">Contact</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-3 mt-4">
+                    <div class="widget">
+                        <div class="widget-title">Participer</div>
+                        {% if request.user.is_authenticated %}
+                        Vous êtes connecté(e) en temps que "{{ request.user }}"
+                        {% endif %}
+                        <ul class="list">
+                            <li>
+                                {% if request.user.is_authenticated %}
+                                <a href="{% url 'logout' %}">Déconnexion</a>
+                                {% else %}
+                                <a href="{% url 'login' %}">Se connecter</a>
+                                {% endif %}
+                            </li>
+                            <li>
+                                <a class="" href="https://docs.inventaire-des-orgues.fr">Aide</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     </div>
     <div class="copyright-content">
-      <div class="container">
-        <div class="copyright-text text-center text-light">© 2020 Inventaire des orgues - Tous droits réservés - Développement :
-          <a href="https://fabdev.fr">FABDEV</a> - Design : Guillaume Lechevalier-Boissel & FABDEV
+        <div class="container">
+            <div class="copyright-text text-center text-light">© 2020 Inventaire des orgues - Tous droits réservés - Développement :
+                <a href="https://fabdev.fr">FABDEV</a> - Design : Guillaume Lechevalier-Boissel & FABDEV
+            </div>
         </div>
-      </div>
     </div>
-  </footer>
+</footer>
 {% endblock %}
 <script src="{% static 'polo/js/jquery.js' %}"></script>
 <script src="{% static 'plugins/popper/popper.min.js' %}"></script>
@@ -180,27 +182,40 @@
 <script src="{% static 'plugins/trumbowyg/trumbowyg.min.js' %}"></script>
 <script src="{% static 'plugins/trumbowyg/langs/fr.min.js' %}"></script>
 <script>
-  {% if messages %}
-    {% for message in messages %}
-      {% if 'error' in message.tags %}
-        toastr.error("{{message|safe}}");
-      {% elif 'warning' in message.tags %}
-        toastr.warning("{{message|safe}}");
-      {% else %}
-        toastr.success("{{message|safe}}");
-      {% endif %}
-    {% endfor %}
-  {% endif %}
-  $(function () {
-    $('[data-toggle="tooltip"]').tooltip()
-  })
+    {%
+        if messages %}
+    {%
+        for message in messages %}
+    {%
+        if 'error' in message.tags %}
+    toastr.error("{{message|safe}}");
+    {%
+        elif
+        'warning' in message.tags %
+    }
+    toastr.warning("{{message|safe}}");
+    {% else %
+    }
+    toastr.success("{{message|safe}}");
+    {%
+        endif %
+    }
+    {%
+        endfor %
+    }
+    {%
+        endif %
+    }
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
 </script>
 <script>
-  $(".menu-outline ul li a").each(function () {
-    if ($(this).attr("href") === window.location.pathname) {
-      $(this).parent().addClass("active")
-    }
-  })
+    $(".menu-outline ul li a").each(function () {
+        if ($(this).attr("href") === window.location.pathname) {
+            $(this).parent().addClass("active")
+        }
+    })
 </script>
 
 {% block js_extra %}
