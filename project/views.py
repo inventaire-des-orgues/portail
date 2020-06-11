@@ -4,6 +4,7 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import FormView
 
 import project.forms as project_forms
+from django.contrib import messages
 
 
 @login_required
@@ -22,4 +23,5 @@ class ContactView(FormView):
 
     def form_valid(self, form):
         form.send_email()
+        messages.success(self.request, 'Votre message a été envoyé')
         return super().form_valid(form)

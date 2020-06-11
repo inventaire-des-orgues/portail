@@ -33,10 +33,16 @@ class OrgueList(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        departement = self.request.GET.get("departement")
         commune = self.request.GET.get("commune")
         edifice = self.request.GET.get("edifice")
         facteur_pk = self.request.GET.get("facteur")
 
+        if departement:
+            self.selected_departement, code_departement = departement.split("|")
+        else:
+            self.selected_departement = None
+            code_departement = None
         if commune:
             self.selected_commune, code_insee = commune.split("|")
         else:
@@ -48,6 +54,8 @@ class OrgueList(LoginRequiredMixin, ListView):
             queryset = queryset.filter(id__in=orgue_ids)
         else:
             self.facteur = None
+        if code_departement:
+            queryset = queryset.filter(code_departement=code_departement)
         if code_insee:
             queryset = queryset.filter(code_insee=code_insee)
         if edifice:
@@ -64,6 +72,7 @@ class OrgueList(LoginRequiredMixin, ListView):
         context = super().get_context_data()
         context["facteur"] = self.facteur
         context["selected_commune"] = self.selected_commune
+        context["selected_departement"] = self.selected_departement
         return context
 
 
@@ -580,12 +589,12 @@ class ImagePrincipale(FabUpdateView):
     permission_required = "orgues.change_image"
     success_message = "Vignette mise à jour, merci !"
 
-    def form_valid(self,form):
+    def form_valid(self, form):
         image = form.save(commit=False)
         image.orgue.images.update(is_principale=False)
         image.is_principale = True
         image.save()
-        messages.success(self.request,self.success_message)
+        messages.success(self.request, self.success_message)
         return JsonResponse({})
 
     def get_context_data(self, **kwargs):
