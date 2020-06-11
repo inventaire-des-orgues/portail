@@ -26,6 +26,7 @@ from imagekit.models import ImageSpecField, ProcessedImageField
 from imagekit.processors import ResizeToFill, Crop
 
 import logging
+import pandas as pd
 
 
 class OrgueList(LoginRequiredMixin, ListView):
@@ -610,7 +611,7 @@ class ImageUpdate(FabUpdateView):
         image.is_principale = True
         image.save()
 
-        #remove old thumbnail
+        # remove old thumbnail
         if old_path:
             os.remove(old_path)
 
@@ -693,3 +694,20 @@ class SourceDelete(FabDeleteView):
 
     def get_success_url(self):
         return reverse('orgues:source-list', args=(self.object.orgue.uuid,))
+
+
+class SearchLogView(LoginRequiredMixin, TemplateView):
+    template_name = 'orgues/search_log.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # load search log as a dataframe
+        log = pd.read_csv(settings.SEARCHLOG_FILE, sep=";",
+                          names=['Date', 'Level', 'Utilisateur', 'Code département', 'Code commune INSEE', 'Edifice', 'pk facteur'],
+                          header=None)
+        log.fillna('', inplace=True)
+        log.replace(to_replace='None',value='', inplace=True)
+        log = log.iloc[:, [0, 2, 3, 4, 5, 6]]
+        context['log'] = log.to_html(classes="table table-striped table-sm")
+        return context

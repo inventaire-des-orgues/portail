@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head_extra %}
+{% endblock %}
+
+{% block content %}
+<section>
+    <div class="container">
+            <h2>Historique des recherches</h2>
+    {{log | safe}}
+    </div>
+</section>
+
+{% endblock %}
+
+
