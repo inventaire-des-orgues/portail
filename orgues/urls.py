@@ -49,7 +49,7 @@ urlpatterns = [
     path('images/<uuid:orgue_uuid>/', v.ImageList.as_view(), name='image-list'),
     path('images/creation/<uuid:orgue_uuid>/', v.ImageCreate.as_view(), name='image-create'),
     path('images/suppression/<int:pk>/', v.ImageDelete.as_view(), name='image-delete'),
-    path('images/principale/<int:pk>/', v.ImagePrincipale.as_view(), name='image-principale'),
+    path('images/principale/<int:pk>/', v.ImageUpdate.as_view(), name='image-principale'),
 
     # Sources
     path('sources/<uuid:orgue_uuid>/', v.SourceList.as_view(), name='source-list'),

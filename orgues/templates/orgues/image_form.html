@@ -41,7 +41,7 @@
     $("#save-crop").on('click', function (event) {
       cropper.getCroppedCanvas({width: 400, height: 300}).toBlob((blob) => {
         const formData = new FormData();
-        formData.append('thumbnail_principale', blob, 'example.png');
+        formData.append('thumbnail_principale', blob, 'vignette.jpg');
         formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
         $.ajax("{% url 'orgues:image-principale' image.pk %}", {
           method: 'POST',
@@ -59,4 +59,3 @@
     })
   </script>
 {% endblock %}
-

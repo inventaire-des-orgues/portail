@@ -9,19 +9,23 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy, reverse
 from django.utils.text import slugify
-from django.views.generic import ListView, DetailView, TemplateView
+from django.views.generic import ListView, DetailView, TemplateView, FormView
 from django.views.generic.base import View
 
 from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdateView, FabView, FabCreateViewJS, \
     FabUpdateViewJS
 import orgues.forms as orgue_forms
 from orgues.api.serializers import OrgueSerializer
+from project import settings
+from project.settings import MEDIA_ROOT
 from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeClavier, TypeJeu, Fichier, Image, Source
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from imagekit.models import ImageSpecField, ProcessedImageField
 from imagekit.processors import ResizeToFill, Crop
+
+import logging
 
 
 class OrgueList(LoginRequiredMixin, ListView):
@@ -66,6 +70,11 @@ class OrgueList(LoginRequiredMixin, ListView):
             queryset = queryset.filter(query)
 
         queryset = queryset.annotate(clavier_count=Count('claviers'))
+
+        # log search
+        logger = logging.getLogger("search")
+        logger.info(f"{self.request.user};{code_departement};{code_insee};{edifice};{facteur_pk}")
+
         return queryset.order_by('-completion')
 
     def get_context_data(self, **kwargs):
@@ -580,7 +589,7 @@ class ImageDelete(FabDeleteView):
         return reverse('orgues:image-list', args=(self.object.orgue.uuid,))
 
 
-class ImagePrincipale(FabUpdateView):
+class ImageUpdate(FabUpdateView):
     """
     Rognage de l'image principale d'un orgue dans le but de créer une vignette (utilise ajax et cropper.js)
     """
@@ -590,10 +599,21 @@ class ImagePrincipale(FabUpdateView):
     success_message = "Vignette mise à jour, merci !"
 
     def form_valid(self, form):
+        old_path = None
+        try:
+            old_path = Image.objects.get(pk=form.instance.pk).thumbnail_principale.path
+        except:
+            print('No old thumbnail')
+
         image = form.save(commit=False)
         image.orgue.images.update(is_principale=False)
         image.is_principale = True
         image.save()
+
+        #remove old thumbnail
+        if old_path:
+            os.remove(old_path)
+
         messages.success(self.request, self.success_message)
         return JsonResponse({})
 
