@@ -1,6 +1,4 @@
 from django import forms
-from django.core.mail import send_mail, BadHeaderError
-from project.settings.base import ADMIN_EMAILS
 
 
 class ContactForm(forms.Form):
@@ -8,26 +6,11 @@ class ContactForm(forms.Form):
     prenom = forms.CharField(max_length=100, label="Prénom")
     email = forms.EmailField()
     sujet = forms.CharField(max_length=100)
-    message = forms.CharField(widget=forms.Textarea)
-
-    def send_email(self):
-        nom = self.cleaned_data['nom']
-        prenom = self.cleaned_data['prenom']
-        email = self.cleaned_data['email']
-        sujet = self.cleaned_data['sujet']
-        message = self.cleaned_data['message']
-        email_message = f"message de {prenom} {nom} : \n{message}"
-        try:
-            send_mail(subject=sujet,
-                      message=email_message,
-                      from_email=email,
-                      recipient_list=ADMIN_EMAILS,
-                      fail_silently=False)
-        except BadHeaderError:
-            pass
-
-
-
-
-
-
+    message = forms.CharField(widget=forms.Textarea, max_length=1000)
+    # password is a honeypot field to detect spam bots.
+    password = forms.CharField(
+        widget=forms.TextInput(attrs={'name': 'a_password',
+                                      'style': 'display:none; !important',
+                                      'tabindex': '-1',
+                                      'autocomplete': 'off'}),
+        required=False)
