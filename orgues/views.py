@@ -1,6 +1,8 @@
+import csv
+import logging
 import os
-from collections import Counter
-from PIL import Image as PILImage
+from collections import Counter, deque
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count, Q
@@ -9,24 +11,14 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy, reverse
 from django.utils.text import slugify
-from django.views.generic import ListView, DetailView, TemplateView, FormView
+from django.views.generic import ListView, DetailView, TemplateView
 from django.views.generic.base import View
 
-from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdateView, FabView, FabCreateViewJS, \
-    FabUpdateViewJS
 import orgues.forms as orgue_forms
+from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdateView, FabView, FabCreateViewJS
 from orgues.api.serializers import OrgueSerializer
 from project import settings
-from project.settings import MEDIA_ROOT
-from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeClavier, TypeJeu, Fichier, Image, Source
-
-from django.contrib.auth.mixins import LoginRequiredMixin
-
-from imagekit.models import ImageSpecField, ProcessedImageField
-from imagekit.processors import ResizeToFill, Crop
-
-import logging
-import pandas as pd
+from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source
 
 
 class OrgueList(LoginRequiredMixin, ListView):
@@ -74,7 +66,7 @@ class OrgueList(LoginRequiredMixin, ListView):
 
         # log search
         logger = logging.getLogger("search")
-        logger.info(f"{self.request.user};{code_departement};{code_insee};{edifice};{facteur_pk}")
+        logger.info(f"{self.request.user};{code_departement};{code_insee};{edifice};{facteur_pk}".replace("None",""))
 
         return queryset.order_by('-completion')
 
@@ -701,13 +693,9 @@ class SearchLogView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        # load search log as a dataframe
-        log = pd.read_csv(settings.SEARCHLOG_FILE, sep=";",
-                          names=['Date', 'Level', 'Utilisateur', 'Code département', 'Code commune INSEE', 'Edifice', 'pk facteur'],
-                          header=None)
-        log.fillna('', inplace=True)
-        log.replace(to_replace='None',value='', inplace=True)
-        log = log.iloc[:, [0, 2, 3, 4, 5, 6]]
-        context['log'] = log.to_html(classes="table table-striped table-sm")
+        rows = int(self.request.GET.get("rows", 100))
+        with open(settings.SEARCHLOG_FILE) as f:
+            reader = csv.reader(deque(f, maxlen=rows), delimiter=";")
+            search_logs = reversed(list(reader))
+            context["search_logs"] = search_logs
         return context

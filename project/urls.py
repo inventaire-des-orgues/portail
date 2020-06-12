@@ -35,7 +35,7 @@ urlpatterns = [
     path('error/403/', TemplateView.as_view(template_name='403.html'), name='403'),
     path('error/404/', TemplateView.as_view(template_name='404.html'), name='404'),
     path('error/500/', TemplateView.as_view(template_name='500.html'), name='500'),
-    path('robots.txt', TemplateView.as_view(template_name='robots.txt'), name='500'),
+    path('robots.txt', TemplateView.as_view(template_name='robots.txt'), name='robots'),
 
 ]
 
