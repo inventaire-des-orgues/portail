@@ -1,15 +1,20 @@
+import datetime
+import logging
+import time
+
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
-from django.http import BadHeaderError
-from django.shortcuts import render
-from django.urls import reverse_lazy, reverse
+from django.http import HttpResponseForbidden
+from django.shortcuts import render, redirect
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 from django.views.generic import FormView
-from django.contrib import messages
 
 import project.forms as project_forms
 from project.settings import ADMIN_EMAILS
-from django.template.loader import render_to_string
-from django.utils.html import strip_tags
+
+logger = logging.getLogger("fabaccess")
 
 
 @login_required
@@ -24,11 +29,22 @@ def accueil(request):
 class ContactView(FormView):
     template_name = "contact.html"
     form_class = project_forms.ContactForm
-    success_url = reverse_lazy('orgues:orgue-list')
 
     def form_valid(self, form):
+        last_email_sent = self.request.session.get("last_email_sent")
+
+        # user can send 1 message per 5 minutes max
+        if last_email_sent and (time.time() - last_email_sent) < 60 * 5:
+            messages.warning(self.request,
+                             "Vous avez déjà envoyé un message il n'y a pas longtemps, revenez dans 5 minutes")
+            return redirect('orgues:orgue-list')
         # password is a honeypot field to prevent spam bots
-        if not form.cleaned_data['password']:
+        elif form.cleaned_data['password']:
+            logger.warning("{user};{method};{get_full_path};400".format(user=self.request.user,
+                                                                        method=self.request.method,
+                                                                        get_full_path=self.request.get_full_path()))
+            return HttpResponseForbidden()
+        else:
             context = {
                 'nom': form.cleaned_data['nom'],
                 'prenom': form.cleaned_data['prenom'],
@@ -39,15 +55,12 @@ class ContactView(FormView):
 
             html_message = render_to_string('emails/contact_email.html', context)
             text_message = strip_tags(html_message)
-            try:
-                send_mail(subject='Contact inventaire des orgues',
-                          message=text_message,
-                          from_email="info@love.engie.com",
-                          recipient_list=[ADMIN_EMAILS],
-                          html_message=html_message)
-                messages.success(self.request, 'Votre message a été envoyé')
-            except BadHeaderError:
-                messages.error(self.request, "une erreur est survenue lors de l'envoi de votre message")
-        else:
-            print('spam bot detected')
-        return super().form_valid(form)
+            send_mail(subject='Contact inventaire des orgues',
+                      message=text_message,
+                      from_email=form.cleaned_data['email'],
+                      recipient_list=ADMIN_EMAILS,
+                      html_message=html_message)
+            messages.success(self.request, 'Votre message a été envoyé')
+            self.request.session["last_email_sent"] = time.time()
+
+        return redirect('orgues:orgue-list')

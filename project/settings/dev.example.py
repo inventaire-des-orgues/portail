@@ -4,7 +4,7 @@ from .base import BASE_DIR
 SECRET_KEY = 'THIS_KEY_WILL_BE_CHANGED'
 DEBUG = True
 
-EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 DATABASES = {
     'default': {
