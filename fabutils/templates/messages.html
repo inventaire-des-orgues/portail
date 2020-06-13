@@ -1,3 +1,13 @@
-{% for message in messages %}
-  <div class="alert alert-{{ message.tags }} alert-dismissable">{{ message }}</div>
-{% endfor %}
+<script>
+  {% if messages %}
+    {% for message in messages %}
+      {%  if 'error' in message.tags %}
+        toastr.error("{{message|safe}}");
+      {% elif 'warning' in message.tags %}
+        toastr.warning("{{message|safe}}");
+      {% else %}
+        toastr.success("{{message|safe}}");
+      {% endif %}
+    {%endfor %}
+  {% endif %}
+</script>

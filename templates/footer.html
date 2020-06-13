@@ -1,0 +1,73 @@
+{% load static %}
+<footer id="footer" class="inverted">
+  <div class="footer-content">
+    <div class="container">
+      <div class="row align-items-top">
+        <div class="col-lg-2 text-lg-center mt-4">
+          <img src="{% static 'img/logo-nb.png' %}" alt="" style="width:120px;">
+        </div>
+        <div class="col-lg-2 mt-4">
+          <p style="font-size: 14px;letter-spacing: 1px;font-weight: 600;color:white;">
+            PAR
+          </p>
+          <img src="{% static 'img/orgue-en-france.png' %}" alt="" style="width:150px;">
+        </div>
+        <div class="col-lg-2 mt-4">
+          <img src="{% static 'img/Soutenu_ministere_culture.png' %}" alt="" style="width:160px;">
+        </div>
+        <div class="col-lg-1 mt-4">
+        </div>
+        <div class="col-lg-2 mt-4">
+          <div class="widget">
+            <div class="widget-title">Liens</div>
+            <ul class="list">
+              <li>
+                <a href="{% url 'accueil' %}">Accueil</a>
+              </li>
+              <li>
+                <a href="{% url 'orgues:orgue-carte' %}">Carte</a>
+              </li>
+              <li>
+                <a href="{% url 'orgues:orgue-list' %}">Les orgues</a>
+              </li>
+              <li>
+                <a class="" href="https://vocabulaire.inventaire-des-orgues.fr">Lexique</a>
+              </li>
+              <li>
+                <a class="" href="{% url 'contact' %}">Contact</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-lg-3 mt-4">
+          <div class="widget">
+            <div class="widget-title">Participer</div>
+            {% if request.user.is_authenticated %}
+              Vous êtes connecté(e) en temps que "{{ request.user }}"
+            {% endif %}
+            <ul class="list">
+              <li>
+                {% if request.user.is_authenticated %}
+                  <a href="{% url 'logout' %}">Déconnexion</a>
+                {% else %}
+                  <a href="{% url 'login' %}">Se connecter</a>
+                {% endif %}
+              </li>
+              <li>
+                <a class="" href="https://docs.inventaire-des-orgues.fr">Aide</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  <div class="copyright-content">
+    <div class="container">
+      <div class="copyright-text text-center text-light">© 2020 Inventaire des orgues - Tous droits réservés - Développement :
+        <a href="https://fabdev.fr">FABDEV</a> - Design : Guillaume Lechevalier-Boissel & FABDEV
+      </div>
+    </div>
+  </div>
+</footer>
