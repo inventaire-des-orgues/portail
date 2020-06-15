@@ -7,7 +7,7 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
   <meta name="author" content="INSPIRO"/>
   <meta name="description" content="Themeforest Template Polo, html template">
-  <link rel="shortcut icon" href="{% static 'img/favicon.ico'%}" type='image/x-icon' >
+  <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type='image/x-icon'>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Inventaire des orgues</title>
   <link href="{% static 'polo/css/plugins.css' %}" rel="stylesheet">
@@ -58,7 +58,9 @@
     </a>
     <div class="container">
       <div class="page-title">
-        <img src="{% static 'img/logo.png' %}" alt="" width="200px">
+        <a href="/">
+          <img src="{% static 'img/logo.png' %}" alt="" width="200px">
+        </a>
       </div>
     </div>
   </section>
@@ -95,77 +97,7 @@
   {% block modal %}
   {% endblock %}
 
-
-
-  <footer id="footer" class="inverted">
-    <div class="footer-content">
-      <div class="container">
-        <div class="row align-items-top">
-          <div class="col-md-2 text-center mt-3">
-            <img src="{% static 'img/logo-nb.png' %}" alt="" style="width:120px;">
-          </div>
-          <div class="col-md-2 mt-3">
-            <p class="text-white">
-              Par
-            </p>
-            <img src="{% static 'img/orgue-en-france.png' %}" alt="" style="width:150px;">
-          </div>
-          <div class="col-md-2 mt-3">
-            <img src="{% static 'img/Soutenu_ministere_culture.png' %}" alt="" style="width:160px;">
-          </div>
-          <div class="col-md-1 mt-3">
-          </div>
-          <div class="col-md-2 mt-3">
-            <div class="widget">
-              <div class="widget-title">Liens</div>
-              <ul class="list">
-                <li>
-                  <a href="{% url 'accueil' %}">Accueil</a>
-                </li>
-                <li>
-                  <a href="{% url 'orgues:orgue-carte' %}">Carte</a>
-                </li>
-                <li>
-                  <a href="{% url 'orgues:orgue-list' %}">Les orgues</a>
-                </li>
-                <li>
-                  <a class="" href="https://vocabulaire.inventaire-des-orgues.fr">Lexique</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-md-3 mt-3">
-            <div class="widget">
-              <div class="widget-title">Participer</div>
-              {% if request.user.is_authenticated %}
-                Vous êtes connecté(e) en temps que "{{ request.user }}"
-              {% endif %}
-              <ul class="list">
-                <li>
-                  {% if request.user.is_authenticated %}
-                    <a href="{% url 'logout' %}">Déconnexion</a>
-                  {% else %}
-                    <a href="{% url 'login' %}">Se connecter</a>
-                  {% endif %}
-                </li>
-                <li>
-                  <a class="" href="https://docs.inventaire-des-orgues.fr">Aide</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    </div>
-    <div class="copyright-content">
-      <div class="container">
-        <div class="copyright-text text-center text-light">© 2020 Inventaire des orgues - Tous droits réservés - Développement :
-          <a href="https://fabdev.fr">FABDEV</a> - Design : Guillaume Lechevalier-Boissel & FABDEV
-        </div>
-      </div>
-    </div>
-  </footer>
+{% include 'footer.html' %}
 {% endblock %}
 <script src="{% static 'polo/js/jquery.js' %}"></script>
 <script src="{% static 'plugins/popper/popper.min.js' %}"></script>
@@ -177,18 +109,8 @@
 <script src="{% static 'plugins/lightbox/js/lightbox.min.js' %}"></script>
 <script src="{% static 'plugins/trumbowyg/trumbowyg.min.js' %}"></script>
 <script src="{% static 'plugins/trumbowyg/langs/fr.min.js' %}"></script>
+{% include 'messages.html' %}
 <script>
-  {% if messages %}
-    {% for message in messages %}
-      {% if 'error' in message.tags %}
-        toastr.error("{{message|safe}}");
-      {% elif 'warning' in message.tags %}
-        toastr.warning("{{message|safe}}");
-      {% else %}
-        toastr.success("{{message|safe}}");
-      {% endif %}
-    {% endfor %}
-  {% endif %}
   $(function () {
     $('[data-toggle="tooltip"]').tooltip()
   })

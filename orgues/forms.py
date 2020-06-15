@@ -28,7 +28,7 @@ class OrgueGeneralInfoForm(forms.ModelForm):
 
 INSTRUMENTALE_COLUMNS = {
     "transmission_notes": 6,
-    "transmission_commentaire":6,
+    "transmission_commentaire": 6,
     "tirage_jeux": 6,
     "tirage_commentaire": 6,
     "diapason": 4,
@@ -131,8 +131,8 @@ class ClavierForm(forms.ModelForm):
 class JeuForm(forms.ModelForm):
     class Meta:
         model = Jeu
-        fields = ["type","configuration", "commentaire"]
-        labels = {"type": "","configuration":"", "commentaire": ""}
+        fields = ["type", "configuration", "commentaire"]
+        labels = {"type": "", "configuration": "", "commentaire": ""}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

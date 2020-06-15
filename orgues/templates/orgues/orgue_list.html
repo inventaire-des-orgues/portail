@@ -8,7 +8,7 @@
         <div class="col-xl-4 sidebar sticky-sidebar">
           <div class="card ">
             <div class="card-body pb-0">
-             {% include 'orgues/search_form.html' %}
+              {% include 'orgues/search_form.html' %}
             </div>
           </div>
         </div>
@@ -17,11 +17,7 @@
             <div class="card shadow-sm vignette mb-lg-4 mb-sm-5" onclick="window.location = '{% url 'orgues:orgue-detail' orgue.slug %}'">
               <div class="row no-gutters">
                 <div class="col-md-4" style="background: #868e96;">
-                  {% if orgue.image_principale %}
-                    <img class="card-img-top" src="{{ orgue.image_principale.thumbnail.url }}" alt="Photo orgue {{ orgue }}">
-                  {% else %}
-                    <img class="card-img-top" src="{% static 'img/default.png' %}" alt="Image par défaut">
-                  {% endif %}
+                  <img class="card-img-top" src="{{ orgue.vignette }}" alt="Photo orgue {{ orgue }}">
                 </div>
                 <div class="col-md-8">
                   <div class="card-body py-md-3">
@@ -38,17 +34,22 @@
                       </p>
                     {% endif %}
                     {% if user.is_authenticated %}
-                      <p class="text-info my-1 d-none d-md-block" style="position:absolute;bottom:10px;right:20px;">Avancement de la fiche : {{ orgue.completion }}%</p>
+                      <p class="my-1 d-none d-md-block" style="position:absolute;bottom:10px;right:20px; color:#5C1C54">Avancement de la fiche : {{ orgue.completion }}%</p>
                     {% endif %}
                   </div>
+                  {% if user.is_authenticated %}
+                    <div class="card-footer d-md-none" style="color:#5C1C54">Avancement de la fiche : {{ orgue.completion }}%</div>
+                  {% endif %}
                 </div>
               </div>
             </div>
 
           {% empty %}
 
-            <p class="text-center py-50">
-              Aucun résultat
+            <p class="text-center lead py-50">
+              L'orgue que vous recherchez n'est pas répertorié ? <br>
+              Si cela est le cas vous pouvez le signaler ici <br>
+              <a class="btn btn-primary rounded-pill mt-2" href="{% url 'contact' %}">Faire la demande</a>
             </p>
 
           {% endfor %}

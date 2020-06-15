@@ -1,4 +1,7 @@
-from collections import Counter
+import csv
+import logging
+import os
+from collections import Counter, deque
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -11,12 +14,11 @@ from django.utils.text import slugify
 from django.views.generic import ListView, DetailView, TemplateView
 from django.views.generic.base import View
 
-from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdateView, FabView, FabCreateViewJS
 import orgues.forms as orgue_forms
+from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdateView, FabView, FabCreateViewJS
 from orgues.api.serializers import OrgueSerializer
-from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeClavier, TypeJeu, Fichier, Image, Source
-
-from django.contrib.auth.mixins import LoginRequiredMixin
+from project import settings
+from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source
 
 
 class OrgueList(LoginRequiredMixin, ListView):
@@ -28,10 +30,16 @@ class OrgueList(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        departement = self.request.GET.get("departement")
         commune = self.request.GET.get("commune")
         edifice = self.request.GET.get("edifice")
         facteur_pk = self.request.GET.get("facteur")
 
+        if departement:
+            self.selected_departement, code_departement = departement.split("|")
+        else:
+            self.selected_departement = None
+            code_departement = None
         if commune:
             self.selected_commune, code_insee = commune.split("|")
         else:
@@ -43,6 +51,8 @@ class OrgueList(LoginRequiredMixin, ListView):
             queryset = queryset.filter(id__in=orgue_ids)
         else:
             self.facteur = None
+        if code_departement:
+            queryset = queryset.filter(code_departement=code_departement)
         if code_insee:
             queryset = queryset.filter(code_insee=code_insee)
         if edifice:
@@ -53,11 +63,17 @@ class OrgueList(LoginRequiredMixin, ListView):
             queryset = queryset.filter(query)
 
         queryset = queryset.annotate(clavier_count=Count('claviers'))
+
+        # log search
+        logger = logging.getLogger("search")
+        logger.info(f"{self.request.user};{code_departement};{code_insee};{edifice};{facteur_pk}".replace("None",""))
+
         return queryset.order_by('-completion')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context["selected_commune"] = self.selected_commune
+        context["selected_departement"] = self.selected_departement
         return context
 
 
@@ -566,16 +582,38 @@ class ImageDelete(FabDeleteView):
         return reverse('orgues:image-list', args=(self.object.orgue.uuid,))
 
 
-class ImagePrincipale(FabView):
+class ImageUpdate(FabUpdateView):
+    """
+    Rognage de l'image principale d'un orgue dans le but de créer une vignette (utilise ajax et cropper.js)
+    """
+    model = Image
+    fields = ['thumbnail_principale']
     permission_required = "orgues.change_image"
+    success_message = "Vignette mise à jour, merci !"
 
-    def get(self, request, *args, **kwargs):
-        image = get_object_or_404(Image, pk=kwargs["pk"])
+    def form_valid(self, form):
+        old_path = None
+        try:
+            old_path = Image.objects.get(pk=form.instance.pk).thumbnail_principale.path
+        except Image.DoesNotExist:
+            print('No old thumbnail')
+
+        image = form.save(commit=False)
         image.orgue.images.update(is_principale=False)
         image.is_principale = True
         image.save()
-        messages.success(request, "Nouvelle image principale, merci !")
-        return redirect('orgues:image-list', orgue_uuid=image.orgue.uuid)
+
+        # remove old thumbnail
+        if old_path:
+            os.remove(old_path)
+
+        messages.success(self.request, self.success_message)
+        return JsonResponse({})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["orgue"] = self.object.orgue
+        return context
 
 
 class SourceList(FabListView):
@@ -649,3 +687,15 @@ class SourceDelete(FabDeleteView):
     def get_success_url(self):
         return reverse('orgues:source-list', args=(self.object.orgue.uuid,))
 
+
+class SearchLogView(LoginRequiredMixin, TemplateView):
+    template_name = 'orgues/search_log.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        rows = int(self.request.GET.get("rows", 100))
+        with open(settings.SEARCHLOG_FILE) as f:
+            reader = csv.reader(deque(f, maxlen=rows), delimiter=";")
+            search_logs = reversed(list(reader))
+            context["search_logs"] = search_logs
+        return context

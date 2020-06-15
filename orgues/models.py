@@ -9,7 +9,7 @@ from django.utils.text import slugify
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 
-from imagekit.models import ImageSpecField
+from imagekit.models import ImageSpecField, ProcessedImageField
 from pilkit.processors import ResizeToFill
 
 from accounts.models import User
@@ -165,6 +165,20 @@ class Orgue(models.Model):
         Un orgue est expressif si au moins un de ses claviers l'est
         """
         return self.claviers.filter(is_expressif=True).exists()
+
+    @property
+    def vignette(self):
+        """
+        Récupère l'image principale de l'instrument
+        """
+        image_principale = self.image_principale
+        if not image_principale:
+            return "/static/img/default.png"
+        elif image_principale.thumbnail_principale:
+            return image_principale.thumbnail_principale.url
+        elif image_principale.thumbnail:
+            return image_principale.thumbnail.url
+
 
     @property
     def image_principale(self):
@@ -472,6 +486,11 @@ class Image(models.Model):
     credit = models.CharField(max_length=200, null=True, blank=True)
 
     # Champs automatiques
+    thumbnail_principale = ProcessedImageField(upload_to=chemin_image,
+                               processors=[ResizeToFill(400, 300)],
+                               format='JPEG',
+                               options={'quality': 100})
+
     thumbnail = ImageSpecField(source='image',
                                processors=[ResizeToFill(400, 300)],
                                format='JPEG',
@@ -492,6 +511,7 @@ class Image(models.Model):
         auto_now_add=False,
         verbose_name='Update date'
     )
+
 
 
 class Accessoire(models.Model):
