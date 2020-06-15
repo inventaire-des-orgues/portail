@@ -595,7 +595,7 @@ class ImageUpdate(FabUpdateView):
         old_path = None
         try:
             old_path = Image.objects.get(pk=form.instance.pk).thumbnail_principale.path
-        except Image.DoesNotExist:
+        except:
             print('No old thumbnail')
 
         image = form.save(commit=False)
