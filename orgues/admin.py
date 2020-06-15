@@ -19,7 +19,7 @@ class FichierAdmin(admin.ModelAdmin):
 
 @admin.register(Image)
 class ImageAdmin(admin.ModelAdmin):
-    list_display = ('pk','orgue','is_principale')
+    list_display = ('pk','orgue','credit','is_principale')
     list_editable = ('credit',)
 
 @admin.register(Jeu)
