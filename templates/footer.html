@@ -46,6 +46,11 @@
               Vous êtes connecté(e) en temps que "{{ request.user }}"
             {% endif %}
             <ul class="list">
+              {% if request.user.is_authenticated %}
+                <li>
+                  <a href="{% url 'orgues:search-log' %}">Historique des recherches</a>
+                </li>
+              {% endif %}
               <li>
                 {% if request.user.is_authenticated %}
                   <a href="{% url 'logout' %}">Déconnexion</a>
