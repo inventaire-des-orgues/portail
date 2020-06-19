@@ -46,6 +46,7 @@ class OrgueList(LoginRequiredMixin, ListView):
             self.selected_commune = None
             code_insee = None
         if facteur_pk:
+            self.facteur = Facteur.objects.get(pk=facteur_pk)
             queryset = queryset.filter(facteurs=self.facteur)
         else:
             self.facteur = None
