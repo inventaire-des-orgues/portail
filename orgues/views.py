@@ -5,7 +5,7 @@ from collections import Counter, deque
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Count, Q
+from django.db.models import Count, Q, Prefetch
 from django.forms import modelformset_factory
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -46,9 +46,7 @@ class OrgueList(LoginRequiredMixin, ListView):
             self.selected_commune = None
             code_insee = None
         if facteur_pk:
-            self.facteur = get_object_or_404(Facteur, pk=facteur_pk)
-            orgue_ids = Evenement.objects.filter(facteurs=self.facteur).values_list("orgue_id", flat=True)
-            queryset = queryset.filter(id__in=orgue_ids)
+            queryset = queryset.filter(facteurs=self.facteur)
         else:
             self.facteur = None
         if code_departement:
@@ -66,16 +64,19 @@ class OrgueList(LoginRequiredMixin, ListView):
 
         # log search
         logger = logging.getLogger("search")
-        logger.info(f"{self.request.user};{code_departement};{code_insee};{edifice};{facteur_pk}".replace("None",""))
+        logger.info(f"{self.request.user};{code_departement};{code_insee};{edifice};{facteur_pk}".replace("None", ""))
 
-        return queryset.order_by('-completion')
+        return queryset.order_by('-completion').prefetch_related(
+            Prefetch('facteurs'),
+            Prefetch("images", queryset=Image.objects.filter(is_principale=True))
+
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context["selected_commune"] = self.selected_commune
         context["selected_departement"] = self.selected_departement
         return context
-
 
 
 class OrgueCarte(LoginRequiredMixin, TemplateView):
@@ -130,6 +131,13 @@ class OrgueDetail(LoginRequiredMixin, DetailView):
                 "request": self.request,
             }).data, safe=False)
         return super().render_to_response(context)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["claviers"] = self.object.claviers.all().prefetch_related('type', 'jeux', 'jeux__type')
+        context["evenements"] = self.object.evenements.all().prefetch_related('facteurs')
+        context["facteurs_evenements"] = self.object.evenements.filter(facteurs__isnull=False).prefetch_related('facteurs')
+        return context
 
 
 class OrgueDetailExemple(View):
@@ -409,7 +417,6 @@ class ClavierCreate(FabView):
             for jeu in jeux:
                 jeu.clavier = clavier
                 jeu.save()
-
             messages.success(self.request, "Nouveau clavier ajouté, merci !")
             return redirect('orgues:orgue-update-composition', orgue_uuid=orgue.uuid)
         else:
@@ -540,7 +547,7 @@ class ImageList(FabListView):
 
     def get_queryset(self):
         self.orgue = get_object_or_404(Orgue, uuid=self.kwargs["orgue_uuid"])
-        return Image.objects.filter(orgue=self.orgue)
+        return Image.objects.filter(orgue=self.orgue).prefetch_related('orgue')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()

@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load orgue_tags %}
 
 {% block head_extra %}
 
@@ -35,7 +34,7 @@
                 <div class="col-md-12 order-md-1 py-20">
                   <h2 class="titre-fiche">Composition</h2>
                   <div class="row">
-                    {% for clavier in orgue.claviers.all %}
+                    {% for clavier in claviers %}
                       {% include 'orgues/clavier_detail.html' %}
                     {% empty %}
                       <div class="col-12">
@@ -44,7 +43,7 @@
                     {% endfor %}
                   </div>
                   <h2 class="titre-fiche">Frise chronologique</h2>
-                  {% if object.evenements.count %}
+                  {% if evenements.count %}
                     <div id='timeline-embed' style="width: 100%; height: 400px"></div>
                   {% else %}
                     <p class="text-muted">Aucun événement</p>
@@ -129,14 +128,12 @@
               <dl>
                 <dt>Facteurs</dt>
                 <dd>
-                  {% if orgue.facteurs %}
-                    {% for facteur in orgue.facteurs %}
-                      <span>{{ facteur.facteurs__nom }} ({{ facteur.type }} - {{ facteur.annee }})</span>
-                      {% if not forloop.last %},{% endif %}
-                    {% endfor %}
-                  {% else %}
+                  {% for evenement in facteurs_evenements %}
+                    <span>{{ evenement.facteurs.all|join:' & ' }} ({{ evenement.type }} - {{ evenement.annee }})</span>
+                    {% if not forloop.last %},{% endif %}
+                  {% empty %}
                     Pas d'information
-                  {% endif %}
+                  {% endfor %}
                 </dd>
                 <dt>Elévation</dt>
                 <dd>{{ orgue.get_elevation_display|default_if_none:"Non définie" }}</dd>
@@ -145,7 +142,7 @@
                 <hr>
                 <dt>Composition</dt>
                 <dd>
-                  {% resume_clavier orgue.jeux_count orgue.claviers.count orgue.has_pedalier %}
+                  {{ orgue.resume_clavier }}
                 </dd>
                 <dt>Boîte expressive</dt>
                 <dd>{% if orgue.is_expressif %}Oui{% else %}Non{% endif %}</dd>
@@ -207,7 +204,7 @@
   <!-- 2 -->
   <script src="https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"></script>
 
-  {% if object.evenements.count %}
+  {% if evenements.count %}
     <!-- 3 -->
     <script type="text/javascript">
       // The TL.Timeline constructor takes at least two arguments:
@@ -220,7 +217,7 @@
       var timeline_json = {
 
         "events": [
-          {% for evenement in object.evenements.all %}
+          {% for evenement in evenements %}
             {"start_date": {"year": "{{evenement.annee}}"}, "text": {"headline": "<b>{{ evenement.get_type_display }}</b>", "text": "{{ evenement.resume|safe|escapejs|default_if_none:''}}"}},
           {% endfor %}
         ]
