@@ -63,9 +63,10 @@ class OrgueList(LoginRequiredMixin, ListView):
 
         queryset = queryset.annotate(clavier_count=Count('claviers'))
 
-        # log search
-        logger = logging.getLogger("search")
-        logger.info(f"{self.request.user};{code_departement};{code_insee};{edifice};{facteur_pk}".replace("None", ""))
+        if departement or commune or edifice or self.facteur:
+            # log search
+            logger = logging.getLogger("search")
+            logger.info(f"{self.request.user};{self.selected_departement};{self.selected_commune};{edifice};{self.facteur}".replace("None", ""))
 
         return queryset.order_by('-completion').prefetch_related(
             Prefetch('facteurs'),
