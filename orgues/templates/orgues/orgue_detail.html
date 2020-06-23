@@ -218,7 +218,7 @@
 
         "events": [
           {% for evenement in evenements %}
-            {"start_date": {"year": "{{evenement.annee}}"}, "text": {"headline": "<b>{{ evenement.get_type_display }}</b>", "text": "{{ evenement.resume|safe|escapejs|default_if_none:''}}"}},
+            {"start_date": {"year": "{{evenement.annee}}"}, "text": {"headline": "<b>{{ evenement.get_type_display }}</b>", "text": "{% if evenement.resume %}{{ evenement.resume|safe|escapejs}}{% endif %}"}},
           {% endfor %}
         ]
       };
