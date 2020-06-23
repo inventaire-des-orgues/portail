@@ -15,7 +15,6 @@ from pilkit.processors import ResizeToFill
 from accounts.models import User
 
 
-
 class Facteur(models.Model):
     """
     Pas celui qui distribue le courrier
@@ -94,7 +93,6 @@ class Orgue(models.Model):
     commentaire_admin = models.TextField(verbose_name="Commentaire rédacteurs", null=True, blank=True,
                                          help_text="Commentaire uniquement visible par les rédacteurs")
 
-
     # Localisation
     code_dep_validator = RegexValidator(regex='^(97[12346]|0[1-9]|[1-8][0-9]|9[0-5]|2[AB])$',
                                         message="Renseigner un code de département valide")
@@ -144,7 +142,6 @@ class Orgue(models.Model):
         self.completion = self.calcul_completion()
         self.keywords = self.build_keywords()
         if not self.slug:
-
             self.slug = "orgue-{}-{}-{}".format(slugify(self.commune), slugify(self.edifice), self.pk)
 
         super().save(*args, **kwargs)
@@ -178,7 +175,6 @@ class Orgue(models.Model):
             return image_principale.thumbnail_principale.url
         elif image_principale.thumbnail:
             return image_principale.thumbnail.url
-
 
     @property
     def image_principale(self):
@@ -250,44 +246,34 @@ class Orgue(models.Model):
         Pourcentage de remplissage de la fiche instrument
         """
         points = 0
-        champs_importants = [
-            self.designation,
-            self.resume,
-            self.proprietaire,
-            self.organisme,
-            self.lien_reference,
-            self.etat,
-            self.elevation,
-            self.buffet,
-            self.edifice,
-            self.commune,
-            self.departement,
-            self.region,
-            self.latitude,
-            self.longitude,
-            self.diapason,
-            self.sommiers,
-            self.soufflerie,
-            self.transmission_notes,
-            self.tirage_jeux,
-        ]
 
-        for champ in champs_importants:
-            if champ:
-                points += 1
-
-        if self.claviers.count():
+        if (self.commune and self.region and self.departement):
             points += 5
 
-        if self.evenements.filter(type="construction", facteurs__isnull=False):
-            points += 3
+        if len(self.edifice) > 6:
+            points += 5
+
+        if self.etat:
+            points += 10
+
+        if self.claviers.count() >= 1:
+            points += 10
 
         if self.images.filter(is_principale=True):
-            points += 5
+            points += 30
 
-        points_max = len(champs_importants) + 5 + 3 + 5
+        champs_texte_description = [
+            self.resume,
+            self.buffet,
+            self.sommiers,
+            self.soufflerie,
+        ]
 
-        return int(100 * points / points_max)
+        for champ in champs_texte_description:
+            if champ:
+                points += 10
+
+        return int(points)
 
 
 class TypeClavier(models.Model):
@@ -334,6 +320,10 @@ class Clavier(models.Model):
         auto_now_add=False,
         verbose_name='Update date'
     )
+
+    def save(self, *args, **kwargs):
+        self.orgue.completion = self.orgue.calcul_completion()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return "{} | {}".format(self.type.nom, self.orgue.designation)
@@ -487,9 +477,9 @@ class Image(models.Model):
 
     # Champs automatiques
     thumbnail_principale = ProcessedImageField(upload_to=chemin_image,
-                               processors=[ResizeToFill(400, 300)],
-                               format='JPEG',
-                               options={'quality': 100})
+                                               processors=[ResizeToFill(400, 300)],
+                                               format='JPEG',
+                                               options={'quality': 100})
 
     thumbnail = ImageSpecField(source='image',
                                processors=[ResizeToFill(400, 300)],
@@ -512,6 +502,9 @@ class Image(models.Model):
         verbose_name='Update date'
     )
 
+    def save(self, *args, **kwargs):
+        self.orgue.completion = self.orgue.calcul_completion()
+        super().save(*args, **kwargs)
 
 
 class Accessoire(models.Model):
