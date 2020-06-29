@@ -10,6 +10,7 @@ urlpatterns = [
     path('carte/', v.OrgueCarte.as_view(), name='orgue-carte'),
     path('detail/<slug:slug>/', v.OrgueDetail.as_view(), name='orgue-detail'),
     path('exemple/', v.OrgueDetailExemple.as_view(), name='orgue-detail-exemple'),
+    path('conseils/', v.ConseilsFicheView.as_view(),name='orgue-fiche-conseils'),
 
     # Administration
     path('creation/', v.OrgueCreate.as_view(), name='orgue-create'),
