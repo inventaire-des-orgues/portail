@@ -32,6 +32,7 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('api/v1/', include(('project.api_urls', 'project'), namespace='api')),
 
+    path('lexique/', TemplateView.as_view(template_name='lexique.html'), name='lexique'),
     path('error/403/', TemplateView.as_view(template_name='403.html'), name='403'),
     path('error/404/', TemplateView.as_view(template_name='404.html'), name='404'),
     path('error/500/', TemplateView.as_view(template_name='500.html'), name='500'),

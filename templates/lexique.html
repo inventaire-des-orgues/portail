@@ -1,0 +1,1455 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+  <div class="container py-3" style="min-height:700px;">
+    <div class="input-group my-4"  style="max-width:400px;">
+      <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Rechercher..." class="form-control">
+    </div>
+    <table class="table" id="lexique">
+      <thead>
+      <tr>
+        <th width="200px">Concept</th>
+        <th>Définition</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>Abrégé</td>
+        <td>Elément de transmission de la touche à la soupape (sauf pour le clavier de positif lorsque le positif est de dos), permettant de passer de la largeur du clavier à celle des sommiers et utilisé dans le cas d'un orgue à transmission mécanique avec ou sans machine pneumatique. L'abrégé est constitué de tiges de bois ou de fer plates, de longueur variables, les « vergettes » joignant les touches au sommet par l’intermédiaire d’une petite pièce de bois de section octogonale et pivotante, le « rouleau d’abrégé ». Les vergettes sont accrochées à la touche par une petite tringle métallique appelée « demoiselle » (pendules) et au rouleau par une tige de fer, le « fer d’abrégé » (bras). Dans certains cas, le rouleau est supprimé : les « fers d’abrégés » se réunissent alors pour former une « équerre ».</td>
+      </tr>
+      <tr>
+        <td>Accord</td>
+        <td>Mise au ton d'un tuyau ou d'un ensemble de tuyaux. L'accord se fait sur le jeu de prestant du clavier, de grand-orgue. Pour les jeux à bouche, on modifie l'ouverture suérieure du tuyau en la rétrécissant ou en l'élargissant, ou on modifie l'ouverture de l'entaille. Pour les jeux d'anches, on relève ou on enfonce la rasette.</td>
+      </tr>
+      <tr>
+        <td>Accouplement</td>
+        <td>Mécanisme permettant d'accoupler certains claviers manuels entre eux. A l'époque classique, on accouplait exclusivement sur le clavier de Grand-Orgue.</td>
+      </tr>
+      <tr>
+        <td>Accouplement à tiroir ou à chariot</td>
+        <td>Système permettant d'accoupler les claviers en les déplaçant à la main d'arrière en avant et en les accrochant ainsi à l'extrémité des touches par de longues tiges, les talons (époque classique).</td>
+      </tr>
+      <tr>
+        <td>Ailes</td>
+        <td>Panneaux décoratifs placés de part et d’autres de l’étage de la tuyauterie dans le plan de la façade.</td>
+      </tr>
+      <tr>
+        <td>Altération</td>
+        <td>Baisse de l'intensité sonore dûe à un mauvais fonctionnement de l'alimentation d'air.</td>
+      </tr>
+      <tr>
+        <td>Amphithéâtre</td>
+        <td>cf. Tirant</td>
+      </tr>
+      <tr>
+        <td>Anche (tuyau à anche)</td>
+        <td>Réunion du noyau, de l'auge et de la languette.</td>
+      </tr>
+      <tr>
+        <td>Anche battante ou anche libre</td>
+        <td>cf. Tuyau à anche</td>
+      </tr>
+      <tr>
+        <td>Annulateur</td>
+        <td>Bouton permettant de supprimer l'effet de toutes les combinaisons ajustables à la fois.</td>
+      </tr>
+      <tr>
+        <td>Anti-secousses</td>
+        <td>Boîtes régulatrices, cf. Houppement.</td>
+      </tr>
+      <tr>
+        <td>Appel</td>
+        <td>cf. combinaison générale.</td>
+      </tr>
+      <tr>
+        <td>Auge (tuyau à anche)</td>
+        <td>Appendice situé dans le pied, soudé au noyau, dans l'axe du tuyau et en forme de pelle. Il est prolongé à travers le noyau part un court cylindre.</td>
+      </tr>
+      <tr>
+        <td>Balancier (à)</td>
+        <td>La transmission mécanique est à balancier lorsque la touche repose sur sa partie médiane et en s'enfonçant repousse la vergette vers le haut.</td>
+      </tr>
+      <tr>
+        <td>Barre de registre</td>
+        <td>Longue tige de bois ou de fer mobile qui transmet le mouvement d'un tirant au registre dans le cas d'un orgue à transmission mécanique avec ou sans machine pneumatique. Elle est "en balancier", "en pilote tournant" (rotative sur elle-même) ou présente divers autres types.</td>
+      </tr>
+      <tr>
+        <td>Basson (jeu d’anches à résonnateur long)</td>
+        <td>Jeu d'anches de 4, 8 ou 16 pieds, à résonnateur conique et surmonté d'une partie plus évasée, à diapason légèrement plus large que le hautbois et à anche plus longue et plus épaisse.</td>
+      </tr>
+      <tr>
+        <td>Batterie d'anches (jeu d’anches à résonnateur long)</td>
+        <td>Bombarde, trompette et clairon réunis.</td>
+      </tr>
+      <tr>
+        <td>Biseau (tuyau à bouche)</td>
+        <td>(syn. en acoustique : fond). Pièce métallique fixe, perpendiculaire à la paroi du tuyau, soudée au sommet du pied sur une partie de la section. Il comporte parfois des "dents" ou entailles servant à modifier le son.</td>
+      </tr>
+      <tr>
+        <td>Bloc de clavier</td>
+        <td>Paire de pièces de bois rectangulaires pouvant être moulurées ou incrustées, situées à droite et à gauche de chaque clavier et servant à l’encadrer.</td>
+      </tr>
+      <tr>
+        <td>Boite Expressive</td>
+        <td>(caisson d'expression) Caisse contenant un sommier et sa tuyauterie correspondant à un clavier, placée soit à l'intérieur, soit à l'extérieur du buffet, visible ou non. Ce clavier est rendu expressif par la manœuvre de "volets d'expression" placés sur une ou plusieurs faces de cette boite.</td>
+      </tr>
+      <tr>
+        <td>Bombarde (jeu d’anches à résonnateur long)</td>
+        <td>Jeu d'anches de 16 ou 32 pieds (dans ce dernier cas parfois appelé "contre-bombarde") à résonnateur conique, ouvert, parfois harmonique, pouvant comporter des entailles. La bombarde de 32 pieds est placée à la pédale. La bombarde de 16 peut être placée en "chamade".</td>
+      </tr>
+      <tr>
+        <td>Bouche (tuyau à bouche)</td>
+        <td>Ouverture partielle entre le pied et le corps dont les bords inférieurs et supérieurs sont appelés lèvres (syn. En acoustique de la lèvre supéreure : biseau). Une lèvre supérieure est dite "équeulée" quand elle a été recoupée pour modifier le son.</td>
+      </tr>
+      <tr>
+        <td>Bourdon (famille des bourdons)</td>
+        <td>Jeu bouché de tuyaux cylindriques lorsqu'ils sont en métal de 4, 8 ou 16 pieds, placé au clavier manuel, exceptionnellement pour le 8 pieds au pédalier.</td>
+      </tr>
+      <tr>
+        <td>Bourdon doux</td>
+        <td>Bourdon de 8 pieds à basse pression donc à sonorité très atténuée.</td>
+      </tr>
+      <tr>
+        <td>Boursette</td>
+        <td>petit sac de peau souple assurant l’étanchéité du passage au travers du fond du sommier.</td>
+      </tr>
+      <tr>
+        <td>Bouton</td>
+        <td>(pommette) cf. Tirant.</td>
+      </tr>
+      <tr>
+        <td>Bras (fers d'abrégé, pioches)</td>
+        <td>cf. Abrégé.</td>
+      </tr>
+      <tr>
+        <td>Buffet</td>
+        <td>Construction de bois contenant et soutenant l'orgue. (N.b. un orgue contemporain peut ne pas comporter de buffet). cf. Grand buffet, cf. Buffet de positif, cf. Buffet supplémentaire.</td>
+      </tr>
+      <tr>
+        <td>Buffet de positif</td>
+        <td>Buffet secondaire d’un orgue en comportant deux ou plus. Il est « positif de dos » lorsqu’il est posé au bord de la tribune et « pectoral » (positif de poitrine) lorsqu’il est introduit dans la façade du grand buffet.</td>
+      </tr>
+      <tr>
+        <td>Buffet supplémentaire</td>
+        <td>Buffet annexe du buffet principal.</td>
+      </tr>
+      <tr>
+        <td>Buffet (faux)</td>
+        <td>Décor, soit en trompe l'œil imitant une montre, soit en véritable tuyaux (muets), placé au bord d'une tribune, mais ne cachant pas un orgue.</td>
+      </tr>
+      <tr>
+        <td>Cabinet d’orgue</td>
+        <td>cf. Positif.</td>
+      </tr>
+      <tr>
+        <td>Caisson d’expression</td>
+        <td>cf. Boite expressive.</td>
+      </tr>
+      <tr>
+        <td>Calotte (tuyau à bouche)</td>
+        <td>Couverle de métal ayant le même rôle que le tampon et utilisé pour les tuyaux de métal. Il est mobile ou soudé.</td>
+      </tr>
+      <tr>
+        <td>Carillon (jeu de mutations composées)</td>
+        <td>Jeu semblable au cornet, comportant la 2e quinte et la 3e tierce, mais dont la 3e octave (doublette) est remplacée par une 4e octave (piccolo) (8e harmonique).</td>
+      </tr>
+      <tr>
+        <td>Case</td>
+        <td>cf. Gravure.</td>
+      </tr>
+      <tr>
+        <td>Chaiere</td>
+        <td>Siège de l'organiste, en ressaut au milieu de la tribune.</td>
+      </tr>
+      <tr>
+        <td>Chalumeau (jeu d’anches à résonnateur court)</td>
+        <td>Jeu d'anches court, de 4 ou 8 pieds, dont le résonnateur en fuseau s'élargit avant de se refermer, généralement utilisé en solo.</td>
+      </tr>
+      <tr>
+        <td>Chamade</td>
+        <td>(cf. infra tuyauterie). Nom donné à certains tuyaux disposés horizontalement en ressaut sur un buffet et appelés ainsi à sonner plus fortement. Leur disposition suit le plan de la façade du buffet.</td>
+      </tr>
+      <tr>
+        <td>Champignon (poussoir, piston)</td>
+        <td>cf. combinaison générale.</td>
+      </tr>
+      <tr>
+        <td>Chape (sommier à gravures)</td>
+        <td>Planche de bois située au-desus de chaque registre et assurant l'étanchéité. La largueur de chaque chape est supérieure à celle du registre. Par extention, ce nom est aussi donné à l'ensemble des chapes.</td>
+      </tr>
+      <tr>
+        <td>Cheminée (tuyau à bouche)</td>
+        <td>Petit tuyau traversant la calotte et servant à allonger le tuyau tout en donnant un son plus incisif.</td>
+      </tr>
+      <tr>
+        <td>Chevalet</td>
+        <td>cf. Pilote.</td>
+      </tr>
+      <tr>
+        <td>Chromatique</td>
+        <td>Se dit d’un sommier en une partie car les tuyaux se suivent de demi ton en demi ton. cf. Sommier.</td>
+      </tr>
+      <tr>
+        <td>Claire-voie</td>
+        <td>(ou clair-voir). Panneau vertical en haut d'une plate-face ou d'une tourelle, servant à masquer et soutenir l'extrémité supérieure des tuyaux de montre. La claire-voie est généralement chantournée en sa partie inférieure et ajourée.</td>
+      </tr>
+      <tr>
+        <td>Clairon (jeu d’anches à résonnateur long)</td>
+        <td>Jeu d'anches de 4 pieds, ouvert, parfois harmonique à résonnateur conique pouvant comporter des entailles. On remplace quelquefois la dernière octave aigue par des tuyaux de de prestant. Il peut être en "chamade".</td>
+      </tr>
+      <tr>
+        <td>Clairon en chamade</td>
+        <td>cf. Clairon. cf. chamade.</td>
+      </tr>
+      <tr>
+        <td>Clair-voir</td>
+        <td>cf. claire-voie.</td>
+      </tr>
+      <tr>
+        <td>Clarinette (jeu d’anches à résonnateur court)</td>
+        <td>Jeu d'anches court de 8 ou 16 pieds, à résonnateur cylindrique, ouvert, à anche moins épaisse que la clarinette, généralement utilisé en solo. Construit à partir du XVIe siècle pour limiter un instrument à vent de l’orchestre.</td>
+      </tr>
+      <tr>
+        <td>Clavier</td>
+        <td>Ensemble des touches qui constituent une rangée. L'étendue est le nombre de notes d'un clavier.</td>
+      </tr>
+      <tr>
+        <td>Clavier à octave courte</td>
+        <td>Clavier limité, soit dans les graves, soit dans les aigus.</td>
+      </tr>
+      <tr>
+        <td>Clavier de bombarde</td>
+        <td>(syn. : clavier de Solo, Clavier de Grand-Chœur), Clavier faisant parler des tuyaux très puissants et complétant le clavier de Grand-Orgue.</td>
+      </tr>
+      <tr>
+        <td>Clavier d'écho</td>
+        <td>(époque classique) Clavier, parfois incomplet dans le grave, chargé de répondre par un effet plus lointain au récit.</td>
+      </tr>
+      <tr>
+        <td>Clavier de Grand-Choeur</td>
+        <td>cf. Clavier de bombarde.</td>
+      </tr>
+      <tr>
+        <td>Clavier de Grand-Orgue</td>
+        <td>Clavier principal, faisant parler les parties essentielles d'une tuyauterie placée dans le grand buffet.</td>
+      </tr>
+      <tr>
+        <td>Clavier de positif</td>
+        <td>Clavier dont la tuyauterie est une réplique atténuée de celle du grand Orgue et qui se trouve généralement placée dans un buffet de positif.</td>
+      </tr>
+      <tr>
+        <td>Clavier de récit</td>
+        <td>Clavier dont la tuyauterie (à l'époque classique) est chargée de réciter un chant ou (à partir du XIXe s. et très augmenté) d'être le plan sonore expressif de l'instrument, dit alors "récit expressif".</td>
+      </tr>
+      <tr>
+        <td>Clavier de solo</td>
+        <td>cf. Clavier de bombarde.</td>
+      </tr>
+      <tr>
+        <td>Clavier expressif</td>
+        <td>cf. Boite expressive.</td>
+      </tr>
+      <tr>
+        <td>Clavier manuel</td>
+        <td>Clavier que l’on touche avec les mains. Lorsqu’il y a plusieurs claviers manuels, chacun porte un nom spécifique.</td>
+      </tr>
+      <tr>
+        <td>Combinaison ajustable</td>
+        <td>Système d'électro-aimant permettant de préparer à l'avance une combinaison de registres et/ou de claviers, actionnés par des boutons placés sous les claviers et pouvant être dédoublés par des poussoirs au pied ou par des dominos situés au-dessus des claviers (console electrique).</td>
+      </tr>
+      <tr>
+        <td>Combinaison générale</td>
+        <td>(pédale d'anches, pédale de combinaison, appel) Pédale qui permet de faire parler ensemble certains tirants de registres préparés à l'avance. Elle est à cran ou lorsqu'elle est électrique à champignon (poussoir, piston). Mise au point au XIXe siècle par Cavaillé-Coll. La pédale de combinaison peut être dédoublée par un domino placé au-dessus des claviers (console électrique).</td>
+      </tr>
+      <tr>
+        <td>Combinaison préparée</td>
+        <td>Système d'électro-aimant permettant de faire sortir des combinaisons de tirants et/ou de claviers préparés par le facteur lors de la construction et actionné par des boutons placés sous le premier clavier.</td>
+      </tr>
+      <tr>
+        <td>Composition</td>
+        <td>Nomenclature des jeux d'un orgue avec le classement par clavier. La composition réelle ne correspond pas toujours aux jeux annoncés sur la console.</td>
+      </tr>
+      <tr>
+        <td>Conduit</td>
+        <td>cf. Portevent.</td>
+      </tr>
+      <tr>
+        <td>Console</td>
+        <td>Ensemble de claviers, registres, pédales et de tout l’appareillage visible utilisé pour jouer de l’orgue. Par extension, désigne aussi le bâti qui le contient.</td>
+      </tr>
+      <tr>
+        <td>Console en fenêtre</td>
+        <td>Console disposée dans le massif.</td>
+      </tr>
+      <tr>
+        <td>Console indépendante</td>
+        <td>Console située en dehors du massif.</td>
+      </tr>
+      <tr>
+        <td>Contrebasse (famille des principaux)</td>
+        <td>Principal de 16 pieds, non placé en façade et joué au pédalier.</td>
+      </tr>
+      <tr>
+        <td>Contrebasse</td>
+        <td>cf. Sous-basse.</td>
+      </tr>
+      <tr>
+        <td>Contre-bombarde</td>
+        <td>cf. Bombarde.</td>
+      </tr>
+      <tr>
+        <td>Copula</td>
+        <td>Système permettant d'accoupler les claviers manuels par une pédale (XIXe siècle). La pédale de copula peut être dédoublée par un domino placé au-dessus des claviers (console électrique).</td>
+      </tr>
+      <tr>
+        <td>Cor anglais (jeu d’anches à résonnateur long)</td>
+        <td>Jeu d'anches, généralement de 8 pieds, dont le résonnateur conique s'élargit dans son extrémité avant de se resserrer.</td>
+      </tr>
+      <tr>
+        <td>Cor de chamois</td>
+        <td>cf. Gemeshorn.</td>
+      </tr>
+      <tr>
+        <td>Cor de nuit</td>
+        <td>Bourdon de 8 pieds à sonorité plus atténuée que le bourdon doux.</td>
+      </tr>
+      <tr>
+        <td>Cornement</td>
+        <td>Dérèglement dû à un blocage de la soupape d'un tuyau qui libère en permanence de l'air une fois la touche enfoncée et relevée.</td>
+      </tr>
+      <tr>
+        <td>Cornet (jeu de mutations composées)</td>
+        <td>Jeu de mutations composées, ouvert sauf la fondamentale qui se trouve placée sur le même registre, de tuyaux cylindriques à diapason large ou moyen, laissant entendre simultanément, parfois la 2e octave (2e harmonique), la deuxième quinte, la troisième octave et la troisième tierce (3e, 4e, 5e harmonique) du son fondamental de 8 pieds.</td>
+      </tr>
+      <tr>
+        <td>Cornet (gros) (jeu de mutations composées)</td>
+        <td>Cornet de 9 rangs placé au clavier de grand orgue.</td>
+      </tr>
+      <tr>
+        <td>Cornet (dessus de) (jeu de mutations composées)</td>
+        <td>Cornet dans lequel tous les tuyaux sont posés sur un petit sommier posté appelé "pièce gravée », le tout étant actionné par un seul tirant de jeu. Le dessus de cornet est toujours utilisé en solo et ne descend pas en dessous du 3e ut.</td>
+      </tr>
+      <tr>
+        <td>Cornet décomposé (jeu de mutations simples)</td>
+        <td>cf. Jeu de tierce.</td>
+      </tr>
+      <tr>
+        <td>Corps (tuyau à bouche)</td>
+        <td>Conduit de la colonne d’air cylindrique, conique (évasé vers le haut) ou fuselé (rentrant vers le haut).</td>
+      </tr>
+      <tr>
+        <td>Corps</td>
+        <td>cf. Résonnateur.</td>
+      </tr>
+      <tr>
+        <td>Coupé au ton</td>
+        <td>cf. Entaille.</td>
+      </tr>
+      <tr>
+        <td>Couronnement</td>
+        <td>Ensemble des éléments décoratifs dominant l'étage de la tuyauterie.</td>
+      </tr>
+      <tr>
+        <td>Couvercle (tuyau à anche)</td>
+        <td>Petite pièce de métal soudée sur la partie supérieure d'un résonnateur, le couvrant partiellement et servant à modifier la sonorité du tuyau.</td>
+      </tr>
+      <tr>
+        <td>Cymbale (jeu de mutations composées)</td>
+        <td>Jeu semblable à la fourniture, mais plus aigu, avec des reprises sur chaque octave, comprenant généralement 2 ou 3 rangs et la fondamentale variable étant émise par un autre jeu. Il comporte des reprises.</td>
+      </tr>
+      <tr>
+        <td>Cymbale (grosse) (jeu de mutations composées)</td>
+        <td>Cymbale à la fondamentale de 16 ou 32 pieds dans un clavier à deux cymbales.</td>
+      </tr>
+      <tr>
+        <td>Cymbale (petite) (jeu de mutations composées)</td>
+        <td>Cymbale à la fondamentale de 8 pieds dans un clavier à deux cymbales.</td>
+      </tr>
+      <tr>
+        <td>Déchargeoir</td>
+        <td>Soupape de sécurité située sur le dessus du soufflet. cf. Soufflet.</td>
+      </tr>
+      <tr>
+        <td>Demoiselle</td>
+        <td>Petite pièce métallique qui permet de relié les vergettes à la touche. cf. Abrégé.</td>
+      </tr>
+      <tr>
+        <td>Dents</td>
+        <td>cf. biseau.</td>
+      </tr>
+      <tr>
+        <td>Dépavillonné</td>
+        <td>Se dit d'un tuyau dont on a supprimé le pavillon ou l'entaille.</td>
+      </tr>
+      <tr>
+        <td>Désaccord</td>
+        <td>Dérèglement dans lequel les tuyaux ne donnent plus le son pour lequel ils sont construits. Les causes sont diverses : changement d'hygrométrie, changement de température, mauvaise alimentation du vent, poussière, déréglage de la mécanique, altération du métal, etc.</td>
+      </tr>
+      <tr>
+        <td>Diatonique</td>
+        <td>Se dit d’un sommier en deux parties, chaque moitié ayant des tuyaux se suivant par ton. cf. Sommier.</td>
+      </tr>
+      <tr>
+        <td>Diapason (mesure)</td>
+        <td>En facture d'orgue, rapport entre le diamètre et la hauteur du tuyau. Plus le diapason est large, plus la sonorité est puissante et sonore, plus il est étroit, plus elle est douce, perçante et imprécise.</td>
+      </tr>
+      <tr>
+        <td>Diapason (famille des principaux)</td>
+        <td>Principal de 4 ou 8 pieds à sonorité plus tranchante que la montre (en Angleterre, nom donné au jeu de montre); N.B. Ne pas confondre avec le diapason, terme de mesure, et le diapason, instrument d'accord.</td>
+      </tr>
+      <tr>
+        <td>Dimension d’un jeu</td>
+        <td>La dimension est celle, en pieds, du tuyau le plus grave de ce jeu. cf. Jeu.</td>
+      </tr>
+      <tr>
+        <td>Domino</td>
+        <td>cf. Combinaison ajustable. cf. Copula.</td>
+      </tr>
+      <tr>
+        <td>Double laye (sommier à gravures)</td>
+        <td>Système de cloison fixe horizontale, divisant interieurement la laye et permettant de donner des pressions différentes à l'arrivée des registres, cette disposition permet la marche des pédales de combinaison (apparaît au XIXe siècle).</td>
+      </tr>
+      <tr>
+        <td>Doublette (famille des principaux)</td>
+        <td>n.f. Principal de 2 pieds, donnant la deuxième octave de 8 pieds.</td>
+      </tr>
+      <tr>
+        <td>Dulciane (famille gambes)</td>
+        <td>Jeu de tuyaux cylindrinques (ou rectangulaires lorsqu'ils sont en bois) à diapason étroit de 4, 8, 16 pieds. Lorsqu'un orgue possède plusieurs jeux de gambe, on les différencie par l'un des termes en leur donnant alors un caractère plus particulier en jouant sur le diapason. Une gambe de 4 pieds peut être appelée Salicet ou Fugara.</td>
+      </tr>
+      <tr>
+        <td>Ecusson (tuyau à bouche)</td>
+        <td>cadrement de la bouche, ovale ou lonsagé, obtenu par enfoncement des lèvres ou ajout d'un élément de métal.</td>
+      </tr>
+      <tr>
+        <td>Egueulée</td>
+        <td>Lèvre supérieure recoupée pour modifier le son. cf. Bouche.</td>
+      </tr>
+      <tr>
+        <td>Emprunts</td>
+        <td>Altération intérieure du sommier, dûe au décellement des gravures laissant certains tuyaux parler quand on enfonce une touche voisine, bien que le registre soit repoussé.</td>
+      </tr>
+      <tr>
+        <td>Enflure</td>
+        <td>Gonflement dû à l'humidité des différentes parties en bois de l'instrument et qui l'empêche de fonctionner.</td>
+      </tr>
+      <tr>
+        <td>Entaille (tuyau à bouche)</td>
+        <td>Fente pratiquée au bord supérieur du tuyau pour faciliter l'accord. Elle est pratiquée dès l'origine ou en restauration. Lorsqu'il n'a pas de fente, le tuyau est coupé au ton.</td>
+      </tr>
+      <tr>
+        <td>Entaille (tuyau à anche)</td>
+        <td>(pavillon) Fente pratiquée dans la partie supérieure du résonnateur pour en faciliter l'accord. Elle est pratiquée dès l'origine ou en restauration.</td>
+      </tr>
+      <tr>
+        <td>Equerre</td>
+        <td>cf. Pilote.</td>
+      </tr>
+      <tr>
+        <td>Etage de la tuyauterie</td>
+        <td>Partie haute du buffet surmontant le massif et la frise et contenant la tuyauterie.</td>
+      </tr>
+      <tr>
+        <td>Etendue (du clavier)</td>
+        <td>Le nombre de note d’un clavier. cf. Clavier.</td>
+      </tr>
+      <tr>
+        <td>Euphone (jeu d’anches à résonnateur long)</td>
+        <td>Jeu d'anches à anche battante de 8 pieds, à résonnateur conique, ouvert, pouvant comporter des entailles.</td>
+      </tr>
+      <tr>
+        <td>Famille des bourdons</td>
+        <td>(Jeux bouchés) cf. Bourdons, cf. Sous-basse, cf. Flûte douce.</td>
+      </tr>
+      <tr>
+        <td>Famille des flûtes</td>
+        <td>Jeu à diaposon large, de 2, 4, 8, 16 ou 32 pieds pouvant être harmonique ou non. cf. Grosse flûte, cf. Flûte harmonique, cf. Flûte octaviante, cf. Octavin, cf. Flûte traversière, cf. Flûte à cheminée, cf. Flûte conique, cf. Flûte à fuseau, cf. Flûte allemande, cf. Flûte creuse.</td>
+      </tr>
+      <tr>
+        <td>Famille des gambes</td>
+        <td>Jeux à diapason étroit. cf. Salicional, cf. Violoncelle, cf. Viole de gambe.</td>
+      </tr>
+      <tr>
+        <td>Famille des principaux</td>
+        <td>Jeux formés de tuyaux cylindriques, à diapasion moyen, formant à l’origine l’essentiel de la tuyauterie de l’orgue et la base de l’édifice sonore. cf. Montre, cf. Prestant, cf. Doublette.</td>
+      </tr>
+      <tr>
+        <td>Fausse-montre</td>
+        <td>Montre de tuyaux muets (les Chanoines). cf. Montre.</td>
+      </tr>
+      <tr>
+        <td>Faux-buffet</td>
+        <td>Décor, soit en trompe l'œil imitant une montre, soit en véritable tuyaux (muets), placé au bord d'une tribune, mais ne cachant pas un orgue.</td>
+      </tr>
+      <tr>
+        <td>Faux-registre (cf. sommier à gravures),</td>
+        <td>(registre dormant) cf. Registre.</td>
+      </tr>
+      <tr>
+        <td>Faux-sommier</td>
+        <td>(tamis) Planche horizontale de dimensions égales à celles du sommier, percé de trous, placé à 20 cm environ au-desus et aidant à supporter la tuyauterie qui le traverse.</td>
+      </tr>
+      <tr>
+        <td>Feinte</td>
+        <td>Touche de petite taille, située en arrière, au-dessus et à cheval sur les touches bécarres et servant à obtenir une note dièze ou bémol.</td>
+      </tr>
+      <tr>
+        <td>Fenêtre</td>
+        <td>Ouverture pratiquée dans le massif pour y déposer la console.</td>
+      </tr>
+      <tr>
+        <td>Fer d’abrégé</td>
+        <td>(bras) Tige de fer. cf. Abrégé.</td>
+      </tr>
+      <tr>
+        <td>Flûte (famille des flûtes)</td>
+        <td>Jeu à diaposon large, de 2, 4, 8, 16 ou 32 pieds pouvant être harmonique ou non.</td>
+      </tr>
+      <tr>
+        <td>Flûte allemande (famille des flûtes)</td>
+        <td>(Flûte de dessus) Flûte de tuyaux cylindriques, non harmonique, de 8 pieds, ne descendant pas au-dessus du 3e ut. Elle s'utilise donc en solo.</td>
+      </tr>
+      <tr>
+        <td>Flûte à cheminée (famille des flûtes)</td>
+        <td>Flûte de tuyaux cylindriques, non harmonique, de 4, 8 ou 16 pieds, à cheminée.</td>
+      </tr>
+      <tr>
+        <td>Flûte à fuseau (famille des flûtes)</td>
+        <td>Flûte de tuyaux fuselés, non harmonique, de 4, 8 ou 16 pieds.</td>
+      </tr>
+      <tr>
+        <td>Flûte conique (famille des flûtes)</td>
+        <td>Flûte de tuyaux coniques, non harmonique, de 4 ou 8 pieds.</td>
+      </tr>
+      <tr>
+        <td>Flûte creuse (famille des flûtes)</td>
+        <td>Flûte non harmonique, dont le diapason se situe entre la flûte et le salocional.</td>
+      </tr>
+      <tr>
+        <td>Flûte douce (famille des bourdons)</td>
+        <td>Jeu constitué de tuyaux bouchés pour la plus grande partie des notes et de tuyaux ouverts pour les notes les plus aigues.</td>
+      </tr>
+      <tr>
+        <td>Flûte (grosse) (famille des flûtes)</td>
+        <td>Flûte de 8 pieds non harmonique au diaposon très large.</td>
+      </tr>
+      <tr>
+        <td>Flûte de dessus (famille des flûtes)</td>
+        <td>Flûte allemande.</td>
+      </tr>
+      <tr>
+        <td>Flûte harmonique (famille des flûtes)</td>
+        <td>Flûte de tuyaux cylindriques, harmonique, sonnant 8 pieds, et dont la sonorité est la plus puissante parmi les jeux de fond.</td>
+      </tr>
+      <tr>
+        <td>Flûte octaviante (famille des flûtes)</td>
+        <td>Flûte de tuyaux cylindriques, harmonique, sonnant 4 pieds.</td>
+      </tr>
+      <tr>
+        <td>Flûte traversière (famille des flûtes)</td>
+        <td>Flûte de tuyaux cylindriques, harmonique, sonnant 8 pieds, de diapason plus faible que la flûte harmonique et au timbre imitant la flûte de l'orchestre.</td>
+      </tr>
+      <tr>
+        <td>Fond (sommier à gravures)</td>
+        <td>Planche fermant le sommier en sa partie inférieure. cf. Sommier à gravure.</td>
+      </tr>
+      <tr>
+        <td>Fourniture (jeu de mutations composées)</td>
+        <td>Jeu de mutations composées, ouvert, de tuyaux de cylindriques, à diapason moyen, faisant entendre simultanément la 2e octave et la 2e quinte (4e et 6e harmoniques) et leurs octaves, comprenant de 3 à 10 rangs de tuyaux, le son fondamental variable étant émis par un autre jeu. Il comporte des reprises. Dans un orgue à un seul clavier le fondamental est en principe de 8 pieds.</td>
+      </tr>
+      <tr>
+        <td>Fourniture (grosse) (jeu de mutations composées)</td>
+        <td>Fourniture à fondamentale de 16 ou 32 pieds dans un clavier à 2 fournitures.</td>
+      </tr>
+      <tr>
+        <td>Fourniture (petite) (jeu de mutations composées)</td>
+        <td>Fourniture à fondamentale de 8 pieds dans un clavier à deux fournitures.</td>
+      </tr>
+      <tr>
+        <td>Frein (tuyau à bouche)</td>
+        <td>(rouleau) Pièce de métal cylindrique placée horizontalement devant la bouche, entre les deux oreilles, pour atténuer la sonorité du tuyau (XIXe siècle).</td>
+      </tr>
+      <tr>
+        <td>Frise</td>
+        <td>Rangée de panneaux mobiles situés au-dessus du massif, occupant toute la largueur de la tuyauterie de façade et permettant de vérifier le mécanisme.</td>
+      </tr>
+      <tr>
+        <td>Fronton de touche</td>
+        <td>Pièce de bois ou de matièr précieuse, moulurée ou non, couvrant la partie antérieure de la touche à main. cf. Touche.</td>
+      </tr>
+      <tr>
+        <td>Fugara</td>
+        <td>cf. Gambe.</td>
+      </tr>
+      <tr>
+        <td>Fuite</td>
+        <td>Manque d'étanchéité en un point quelconque de l'alimentation d'air</td>
+      </tr>
+      <tr>
+        <td>Gambe (famille gambes)</td>
+        <td>Jeu de tuyaux cylindrinques (ou rectangulaires lorsqu'ils sont en bois) à diapason étroit de 4, 8, 16 pieds. Lorsqu'un orgue possède plusieurs jeux de gambe, on les différencie par l'un des termes en leur donnant alors un caractère plus particulier en jouant sur le diapason. Une gambe de 4 pieds peut être appelée Salicet ou Fugara.</td>
+      </tr>
+      <tr>
+        <td>Gambe douce (famille gambes)</td>
+        <td>Jeu de tuyaux cylindrinques (ou rectangulaires lorsqu'ils sont en bois) à diapason étroit de 4, 8, 16 pieds. Lorsqu'un orgue possède plusieurs jeux de gambe, on les différencie par l'un des termes en leur donnant alors un caractère plus particulier en jouant sur le diapason. Une gambe de 4 pieds peut être appelée Salicet ou Fugara.</td>
+      </tr>
+      <tr>
+        <td>Gemshorn (famille gambes)</td>
+        <td>n.m. (cor de chamois). Jeu de diapason étroit, de tuyaux fuselés, ce qui atténue la sonorité.</td>
+      </tr>
+      <tr>
+        <td>Gosier</td>
+        <td>Conduit souple, plissé et mobile posé sur le soufflet ou le réservoir dont il subit les mouvements. Fermé à sa base par une soupape, il est chargé de maintenir l'air comprimé dans l'orgue pendant que le soufflet ou le réservoir se remplit.</td>
+      </tr>
+      <tr>
+        <td>Gradin</td>
+        <td>Marches de bois situés au-delà des blocs de clavier. cf. Tirant.</td>
+      </tr>
+      <tr>
+        <td>Grand orgue</td>
+        <td>Orgue de taille importante comprenant généralement plusieurs claviers. Il est indépendant ou accompagné d’un positif.</td>
+      </tr>
+      <tr>
+        <td>Grand orgue à positif</td>
+        <td>Orgue de taille importante comprenant généralement plusieurs claviers. Il est accompagné d’un positif.</td>
+      </tr>
+      <tr>
+        <td>Grand orgue à positif</td>
+        <td>Orgue principal, généralement de taille importante, d’un édifice en comprenant plusieurs. Il joue alors en soliste.</td>
+      </tr>
+      <tr>
+        <td>Gravure (sommier à gravures)</td>
+        <td>(case) Espace séparant chaque barre, d’une largeur de 4 cm environ.</td>
+      </tr>
+      <tr>
+        <td>Grille (sommier à gravures)</td>
+        <td>Ensemble d'une ou pluseiurs rangées de barres de bois horizontales et parallèles au petit côté du sommier, placées au-dessus de la laye ; chaque rangée est d'une largeur de 30 à 50 cm et chaque barre d'une épaisseur de 5 à 6 cm.</td>
+      </tr>
+      <tr>
+        <td>Guide</td>
+        <td>Petite tige métallique fixe, parallèle et verticale. cf. Soupape.</td>
+      </tr>
+      <tr>
+        <td>Hautbois (jeu d’anches à résonnateur long)</td>
+        <td>Jeu d'anches à anche battante, de 8 pieds, à résonnateur légèrement conique, surmonté d'une partie plus évasée et ouvert, utilisé en solo.</td>
+      </tr>
+      <tr>
+        <td>Houppement</td>
+        <td>Dérèglement dû à un défaut d'alimentation de l'air, donnant une irrégularité dans l'émission du son. On peut le corriger par l'emploi d'anti-secousses (boîtes régulatrices) petits soufflets supplémentaires placés sous le sommier ou sur le portevent.</td>
+      </tr>
+      <tr>
+        <td>Hydraule</td>
+        <td>orgue antique. cf. Soufflerie.</td>
+      </tr>
+      <tr>
+        <td>Inventaire</td>
+        <td>Répertoire de chaque tuyau en situation ou déposé donnant leur état, leur date, leur note, leur registre, leur clavier.</td>
+      </tr>
+      <tr>
+        <td>Jeu</td>
+        <td>Rangée de tuyaux, en principe de même forme, placés sur un même registre. Le nombre de tuyaux correspond au nombre de touches du clavier, sauf dans le cas des mutations composées. La dimension d'un jeu est celle, en pieds, du tuyau le plus grave de ce jeu. Un jeu est actionné par un tirant sauf dans le cas du jeu brisé (sur les orgues à un seul clavier) où il est actionné par 2 tirants, l'un correspondant à la basse (notes graves), l'autre au dessus (notes aigues).</td>
+      </tr>
+      <tr>
+        <td>Jeu</td>
+        <td>cf. Tirant.</td>
+      </tr>
+      <tr>
+        <td>Jeu à bouche</td>
+        <td>Jeu composés uniquement de tuyaux à bouche, cf. Jeux de fonds, Jeux de mutation.</td>
+      </tr>
+      <tr>
+        <td>Jeu à diapason étroit</td>
+        <td>Famille des gambes. cf. Jeu ouvert.</td>
+      </tr>
+      <tr>
+        <td>Jeu à diapason large</td>
+        <td>Certains jeux à diapason large sont dit harmoniques : la paroi du tuyau est percée, ce qui fait parler, outre la fondamentale, l’octave aigue de la note correspondant à la longueur, celle-ci étant double de la longueur nécessaire pour la note fondamentale émise. Ce procédé donne à ces jeux une sonorité éclatante et ronde. cf. Jeu ouvert.</td>
+      </tr>
+      <tr>
+        <td>Jeu à diapason moyen</td>
+        <td>Famille des principaux. cf. Jeu ouvert.</td>
+      </tr>
+      <tr>
+        <td>Jeu bouché</td>
+        <td>Jeux de fond composés de tuyaux fermés à leur extrémité supérieure par une calotte (sans cheminée) ou un tampon, ce qui les fait sonner à l'octave grave de la note correspondant à leur longueur. Ces jeux ont une sonorité voilée et douce.</td>
+      </tr>
+      <tr>
+        <td>Jeu brisé</td>
+        <td>cf. Jeu.</td>
+      </tr>
+      <tr>
+        <td>Jeu d'anche</td>
+        <td>Jeux composés uniquement de tuyaux à anches ; dans certains cas les tuyaux à anches sont remplacés dans les notes les plus aigues par quelques tuyaux à bouche (ceux-ci se désaccordant moins facilement). cf. Jeu d’anche harmonique. cf. Jeu d’anche court.</td>
+      </tr>
+      <tr>
+        <td>Jeu d'anche court</td>
+        <td>Jeu d'anche dans lequel le résonnateur est particulièrement court par rapport à la taille de la languette.</td>
+      </tr>
+      <tr>
+        <td>Jeu d'anche harmonique</td>
+        <td>Jeu d’anche dans lequel la taille de la languette est supérieure à celle qui normalement doit correspondre au résonnateur qui lui est effectivement joint : la sonorité est ainsi plus grave.</td>
+      </tr>
+      <tr>
+        <td>Jeu de fond</td>
+        <td>Jeux à bouche dans lesquels il y a un tuyau par note, la note émise corresopnd à la note jouée. cf. Jeux ouverts. cf. Jeux bouchés.</td>
+      </tr>
+      <tr>
+        <td>Jeu de mixture</td>
+        <td>cf. Jeu de mutations composées.</td>
+      </tr>
+      <tr>
+        <td>Jeu de montre (famille des principaux)</td>
+        <td>Principal constituté de tuyaux de 8, 16 ou 32 pieds placés en, façade.</td>
+      </tr>
+      <tr>
+        <td>Jeu de mutations</td>
+        <td>Jeux à bouches dans lesquels sont émises une ou plusieurs harmoniques d'une note fondamentale.</td>
+      </tr>
+      <tr>
+        <td>Jeu de mutations composées</td>
+        <td>(syn. Mixtures) Jeux de mutations dans lesquels il y a autant de tuyaux pour une note qu l'on désire faire entendre d'harmoniques de cette note, la fondamentale étant sur le jeu ou émise par un autre jeu. Ces tuyaux sont disposés en "rangs", situés sur le même registre. Dans ces jeux, on est amené à utiliser vers l’aigu des tuyaux de longueur très réduite émettant à la limite des sons audibles. Pour pallier à cela, on utilise la reprise.</td>
+      </tr>
+      <tr>
+        <td>Jeu de mutations simples</td>
+        <td>Jeux de mutation dans lesquels il y a un tuyau par note, chaque tuyau donnant selon le cas une note et son harmonique, ou l'harmonique seule (la fondamentale étant alors émise par un autre jeu).</td>
+      </tr>
+      <tr>
+        <td>Jeu de tierce (jeu de mutations simples)</td>
+        <td>(cornet décomposé) Tierce, nasard et quarte de nasard réunis.</td>
+      </tr>
+      <tr>
+        <td>Jeu d’orgue</td>
+        <td>syn. Ancien d’orgue.</td>
+      </tr>
+      <tr>
+        <td>Jeu harmonique</td>
+        <td>cf. Jeu à diapason large.</td>
+      </tr>
+      <tr>
+        <td>Jeu ouvert</td>
+        <td>Jeux de fond dans lequel l'extrémité du tuyau est libre, ce qui le fait sonner en fonction de sa longueur. On distingue trois familles d'après leur diapason (les limites des catégories variant selon les factures et les instruments): "Jeux à diapason moyen", "Jeux à diapason étroit", "Jeux à diapason large". Certains jeux à diapason large sont dit "harmoniques": la paroi du tuyau est percée, ce qui fait parler, outre la fondamentale, l'octave aigue de la note correspondant à la longueur nécessaire pour la note fondamentale émise. Ce procédé donne à ces jeux une sonorité éclatante et ronde.</td>
+      </tr>
+      <tr>
+        <td>Jeu ouvert</td>
+        <td>Jeux de fond dans lequel l'extrémité du tuyau est libre, ce qui le fait sonner en fonction de sa longueur. Ondistingue 3 familles d'après leur diapason (les limites des catégories ci-dessous variant selon les factures et les instruments): Jeux à diapason moyen, jeux à diapason étroit, jeux à diapason large.</td>
+      </tr>
+      <tr>
+        <td>Joue</td>
+        <td>Galbe des côtés du massif permettant de lme raccorder à l'étage des tuyaux. cf. Tambour</td>
+      </tr>
+      <tr>
+        <td>Jubé</td>
+        <td>syn. ancien tribune. cf. Tribune</td>
+      </tr>
+      <tr>
+        <td>Keraulophone (famille des principaux)</td>
+        <td>Principal dont les tuyaux comportent en leur extrémité supérieure une douille emboitante, percés sur le desus d'une ouverture circulaire lui donnant une sonorité mordante.</td>
+      </tr>
+      <tr>
+        <td>Languette (tuyau à anche)</td>
+        <td>Petite feuille de métal mobile, fixée à l'auge et destinée à venir la frapper.</td>
+      </tr>
+      <tr>
+        <td>Larigot (jeu de mutations simples)</td>
+        <td>n.m. Jeu de mutation simple, ouvert, de tuyaux cylindriques, à diapason moyen, de 1 pied 1/3 donnant la deuxième quinte (troisième harmonique) ou son fondamental de 4 pieds.</td>
+      </tr>
+      <tr>
+        <td>Laye (sommier à gravures)</td>
+        <td>Espace au-dessus du fond conservant l'air provenant du portevent.</td>
+      </tr>
+      <tr>
+        <td>Lèpre</td>
+        <td>n.f. Maladie de l'étain altérant les tuyaux de telle manière qu'on ne peut plus les restaurer.</td>
+      </tr>
+      <tr>
+        <td>Lèvres</td>
+        <td>cf. Bouche.</td>
+      </tr>
+      <tr>
+        <td>Lumière (tuyau à bouche)</td>
+        <td>Passage étroit entre la lèvre inférieure et le biseau.</td>
+      </tr>
+      <tr>
+        <td>Machine Barker</td>
+        <td>Transmission mécanique avec machine pneumatique (machine Barker)</td>
+      </tr>
+      <tr>
+        <td>Manchon (cf. Tuyau à bouche),</td>
+        <td>cf. Pavillon</td>
+      </tr>
+      <tr>
+        <td>Massif</td>
+        <td>(soubassement) Etage inférieur du buffet, contenant la partie mécanique de l’instrument (le positif ne possède pas de massif). cf. Fenêtre, cf. Ouverture d’écho, cf. Tambour.</td>
+      </tr>
+      <tr>
+        <td>Mécanique à balancier</td>
+        <td>Transmission mécanique est à balancier lorsque la touche repose sur la partie médiane et en s’enfonçant repousse la vergette vers le haut.</td>
+      </tr>
+      <tr>
+        <td>Mécanique suspendue</td>
+        <td>Transmission mécanique est suspendue lorsque la touche repose sur son extrémité postérieure et en s’enfonçant tire la vergette.</td>
+      </tr>
+      <tr>
+        <td>Mixture</td>
+        <td>syn. Jeu à mutation simple.</td>
+      </tr>
+      <tr>
+        <td>Montre</td>
+        <td>Ensemble de tuyaux de façade. Certains tuyaux peuvent être muets (voir Prestant).</td>
+      </tr>
+      <tr>
+        <td>Montre (famille des principaux)</td>
+        <td>Principal constituté de tuyaux de 8, 16 ou 32 pieds placés en façade.</td>
+      </tr>
+      <tr>
+        <td>Musette (jeu d’anches à résonnateur court)</td>
+        <td>Jeu d'anches court, de 8 ou 16 pieds, à résonnateur en fuseau, parfois en partie bouché. Très rare après le XVIIIe siècle.</td>
+      </tr>
+      <tr>
+        <td>Mutations composées</td>
+        <td>cf. Fourniture, cf. Cymbale, cf. Plein jeu.</td>
+      </tr>
+      <tr>
+        <td>Mutations simples</td>
+        <td>cf. Quintaton, cf. quinte, cf. Nasard, cf. Gros nasard, cf. Quarte de nasard, cf. Tierce, cf. Jeu de tierce, cf. Larigot, cf. Septième.</td>
+      </tr>
+      <tr>
+        <td>Nasard (nazard) (jeu de mutations simples)</td>
+        <td>Jeu de mutation simple, ouvert, de tuyaux cylindriques à diapason moyen, de 2 pieds 2/3, donnant la deuxième quinte (troisième harmonique) du son fondamental de 8 pieds.</td>
+      </tr>
+      <tr>
+        <td>Nasard (gros) (jeu de mutations simples)</td>
+        <td>Jeu de mutation simple, ouvert, de tuyaux cylindriques, à diapason moyen, de 5 pieds, donnant la deuxième quinte (troisième harmonique) du son fondamental de 16 pieds.</td>
+      </tr>
+      <tr>
+        <td>Nasard (quarte de) (jeu de mutations simples)</td>
+        <td>Jeu de mutation simple, ouvert, de tuyaux cylindriques de 2 pieds, à diapason moyen mais plus étroit que la doublette, formant un ensemble avec le nasard, et donnant la quarte de nasard, donc la deuxième octave (quatrième harmonique) du son fondamental de 8 pieds.</td>
+      </tr>
+      <tr>
+        <td>Note muette</td>
+        <td>Note de sonnant plus pour diverses raisons: vergettes décrochées, tuyau enlevé, faux contactn etc…</td>
+      </tr>
+      <tr>
+        <td>Noyau (tuyau à anche)</td>
+        <td>Bouchon horizontal mobile, formant le dessus du pied.</td>
+      </tr>
+      <tr>
+        <td>Octavin (famille des flûtes)</td>
+        <td>Flûte de tuyaux cylindriques, harmonique, sonnant 2 pieds.</td>
+      </tr>
+      <tr>
+        <td>Orage</td>
+        <td>Pédale actionnant un mécanisme qui abaisse toutes les touches de la première octave (grave) de tous les claviers et avec tous les registres, ce qui produit un bruit imitatif très fort</td>
+      </tr>
+      <tr>
+        <td>Oreilles (cf. Tuyau à bouche)</td>
+        <td>Paire de petites plaques de métal soudées verticalement sur leur chant, à droite et à gauche de la bouche.</td>
+      </tr>
+      <tr>
+        <td>Orgue</td>
+        <td>(anciennement: jeu d'orgue) Instrument de musique à vent, constitué de tuyaux de taille et de forme différentes que l'on fait résonner à l'aide d'air comprimé et dont on joue avec un ou plusieurs claviers à mains et à pieds. Par extension: ensemble de l'instruement et du/ou des buffets qui le contient.</td>
+      </tr>
+      <tr>
+        <td>Ouverture d'écho</td>
+        <td>Ouverture pratiquée dans le massif pour placer les tuyaux des claviers d'écho. Elle est souvent fermée par un grillage, des balustres, etc.</td>
+      </tr>
+      <tr>
+        <td>Orgue à pied</td>
+        <td>Orgue mécanique dont la soufflerie est actionnée par l’exécutant au moyen d’une pédale.</td>
+      </tr>
+      <tr>
+        <td>Orgue à cylindre</td>
+        <td>(orgue à rouleau, orgue mécanique) Orgue portatif comportant un cylindre sur lequel est posé un carton perforé entrainant les touches d’un clavier qui fait sonner les tuyaux.</td>
+      </tr>
+      <tr>
+        <td>Orgue à pendule</td>
+        <td>Orgue à cylindre entraîné par une pendule.</td>
+      </tr>
+      <tr>
+        <td>Orgue à pied</td>
+        <td>Orgue mécanique dont la soufflerie est actionnée par l’exécutant au moyen d’une pédale.</td>
+      </tr>
+      <tr>
+        <td>Orgue à rouleau</td>
+        <td>cf. Orgue à cylindre.</td>
+      </tr>
+      <tr>
+        <td>Orgue de barbarie</td>
+        <td>Orgue à cylindre entrainé par une manivelle.</td>
+      </tr>
+      <tr>
+        <td>Orgue de choeur</td>
+        <td>cf. Petit-orgue.</td>
+      </tr>
+      <tr>
+        <td>Orgue électrique</td>
+        <td>Orgue dans lequel la transmission des touches aux soupapes est électrique (voir transmission).</td>
+      </tr>
+      <tr>
+        <td>Orgue hydraulique</td>
+        <td>(hydraule) Orgue dont la soufflerie est hydraulique (voir soufflerie hydraulique).</td>
+      </tr>
+      <tr>
+        <td>Orgue mécanique</td>
+        <td>Orgue dans lequel la transmission des touches aux soupapes, et des tirants de jeux aux registres est soit entièrement mécanique, soit mécanique pour les touches et pneumatique ou électrique pour les jeux (voir transmission).</td>
+      </tr>
+      <tr>
+        <td>Orgue portatif</td>
+        <td>Orgue de très petites dimensions porté en bandoulière.</td>
+      </tr>
+      <tr>
+        <td>Orgue pneumatique</td>
+        <td>cf. Orgue tubulaire.</td>
+      </tr>
+      <tr>
+        <td>Orgue tubulaire</td>
+        <td>(orgue pneumatique) Orgue dans lequel la transmission des touches et des jeux est entièrement pneumatique (voir transmission).</td>
+      </tr>
+      <tr>
+        <td>Osier (sommier à gravures)</td>
+        <td>Tige verticale tirant sur la soupape pour l’ouvrir et passant au travers du fond du sommier ; l’étanchéité de ce passage est assuréepar un petit sac de peau souple appelé boursette.</td>
+      </tr>
+      <tr>
+        <td>Ouverture d'écho</td>
+        <td>Ouverture pratiquée dans le massif pour placer les tuyaux des claviers d'écho. Elle est souvent fermée par un grillage, des balustres, etc.</td>
+      </tr>
+      <tr>
+        <td>Pavillon</td>
+        <td>cf. Résonnateur. cf. Entaille.</td>
+      </tr>
+      <tr>
+        <td>Pavillon (tuyau à bouche)</td>
+        <td>Tube emboîté dans l'extrémité supérieure d'une tuyau à bouche et servant à modifier la hauteur pour accorder le tuyau. Il est executé dès l'origine ou en restauration.</td>
+      </tr>
+      <tr>
+        <td>Pectoral (positif de poitrine)</td>
+        <td>cf. buffet de positif.</td>
+      </tr>
+      <tr>
+        <td>Pédale crescendo</td>
+        <td>Pédale qui, placée sur certaines consoles électriques, un certain nombre de combinaisons étant préparées, permet d’augmenter jusqu’au tutti (utilisation de tous les jeux de l’orgue) le nombre de registres utilisés. Elle est toujours à bascule.</td>
+      </tr>
+      <tr>
+        <td>Pédale d’anche</td>
+        <td>cf. Combinaison générale.</td>
+      </tr>
+      <tr>
+        <td>Pédale de clavier</td>
+        <td>Pédale actionnant un mécanisme pneumatique qui permet d’appeler ou de supprimer tout jeu sur un clavier.</td>
+      </tr>
+      <tr>
+        <td>Pédale de combinaison</td>
+        <td>cf. Combinaison générale.</td>
+      </tr>
+      <tr>
+        <td>Pédale d'expression</td>
+        <td>Pédale qui permet de manœuvrer les volets mobiles qui ferment en façade la boîte expressive (voir ce mot). Cette pédale est, soit "à cuiller" venant se mettre en plusieurs positions dans des crans, soit "à bascule" (simple pression).</td>
+      </tr>
+      <tr>
+        <td>Pédale d’octave</td>
+        <td>Pédale qui par son mécanisme permet en jouant une note de faire entendre en même temps la même note à l’octave grave ou aigüe.</td>
+      </tr>
+      <tr>
+        <td>Pédalier</td>
+        <td>Clavier composé de grosses touches en bois que l'on enfonce avec les pieds. cf. pédalier à la française, cf. pédalier à l’allemande.</td>
+      </tr>
+      <tr>
+        <td>Pédalier à la française</td>
+        <td>Pédalier composé de touches cubiques s'enfonçant au travers d'une grande planche horizontale ou légèrement inclinée (disparait vers 1830).</td>
+      </tr>
+      <tr>
+        <td>Pédalier à l'allemande</td>
+        <td>Pédalier constitué de longues touches disposées de même manière qu'un clavier manuel et permettant de jouer alternativement du talon et de la pointe</td>
+      </tr>
+      <tr>
+        <td>Pédalier en éventail</td>
+        <td>Pédalier à l’allemande est dit en évantail lorsque les touches sont posées en éventail (N.b. se fait surtout en Angleterre et Amérique du Nord).</td>
+      </tr>
+      <tr>
+        <td>Pendule</td>
+        <td>cf. Demoiselle.</td>
+      </tr>
+      <tr>
+        <td>Petit orgue</td>
+        <td>(orgue de choeur) Orgue le moins important d’un édifice en comportant deux. Il sert surtout à l’accompagnement.</td>
+      </tr>
+      <tr>
+        <td>Piccolo (famille des principaux)</td>
+        <td>(sifflet) Principal de 1 pied, jeu le plus aigu de l'orgue, donnant la troisième octave de 8 pieds.</td>
+      </tr>
+      <tr>
+        <td>Pièce gravée</td>
+        <td>cf. Dessus de cornet.</td>
+      </tr>
+      <tr>
+        <td>Pied</td>
+        <td>(1°) Pour les tuyaux à bouche, unité de mesure d'envirion 0,33 m. utilisés en facture d'orgue. On mesure un tuyau de la bouche (lèvre supérieure) à l'extrémité supérieure sauf s'il y a entaille auquel cas on s'arrête à la base de celle-ci
+          (2°) Pour les tuyaux à anche, mesure artificielle correspondant à la longueur d’un tuyau à bouche émettant la même note.
+        </td>
+      </tr>
+      <tr>
+        <td>Pied (tuyau à anche)</td>
+        <td>Partie inférieure (en cône renversé) en une ou deux parties. Les pieds en deux parties sont plus anciens et ont été exécutés jusqu’à la fin du XVIIIe siècle.</td>
+      </tr>
+      <tr>
+        <td>Pied (tuyau à bouche)</td>
+        <td>Partie inférieure (en cône renversé pour les tuyaux en métal).</td>
+      </tr>
+      <tr>
+        <td>Pilote</td>
+        <td>Tige horizontale passant sous le pédalier et remplaçant le rouleau d'abrégé et ses annexes pour le clavier de positif lorsqu'il est de dos. La vergette est accrochée au pilote par une "équerreé pivotant sur un "chevalet".</td>
+      </tr>
+      <tr>
+        <td>Pilote tournant</td>
+        <td>cf. Barre de registre.</td>
+      </tr>
+      <tr>
+        <td>Piston</td>
+        <td>cf. Combinaison générale. Syn. Champignon.</td>
+      </tr>
+      <tr>
+        <td>Plate-face</td>
+        <td>Partie située entre deux tourelles ou, en l'absence de tourelles, entre 2 montants principaux (séparant alors plusieurs plates-faces).</td>
+      </tr>
+      <tr>
+        <td>Plein jeu (jeu de mutations composées)</td>
+        <td>Jeu de mutations composées utilisé dans les orgues de petite taille pour remplacer la fourniture et la cymbale, ouvert, de tuyaux cylindriques, à diapason moyen, faisant entendre simultanément la troisième octave et la troisième quinte (4è et 6è harmonique), parfois la troisème tierce (5è harmonique), comprenant 3 à 5 rangs de tuyaux, la fondamentale variable étant sur un autre jeu. il comporte généralement des reprises.</td>
+      </tr>
+      <tr>
+        <td>Plis</td>
+        <td>cf. Soufflet.</td>
+      </tr>
+      <tr>
+        <td>Pommette</td>
+        <td>cf. Tirant.</td>
+      </tr>
+      <tr>
+        <td>Portevent</td>
+        <td>(conduit) Toute canalisation rigide, en bois, en métal ou en carton, chargée de conduire de l'air comprimé dans les différentes parties de l'orgue. Il y a des portevents entre les gosiers et les sommiers.</td>
+      </tr>
+      <tr>
+        <td>Positif</td>
+        <td>Orgue de taille réduite, posé sur le sol, sur une table ou sur le rebord d’une tribune. Il constitue un instrument indépendant ou il forme un ensemble avec le grand orgue. Il est dit « cabinet d’orgue » (XVIIe-XVIIIe siècle) quand il est placé dans un salon.</td>
+      </tr>
+      <tr>
+        <td>Positif de dos</td>
+        <td>cf. buffet de positif.</td>
+      </tr>
+      <tr>
+        <td>Postage (sommier à gravures)</td>
+        <td>Petit porte-vent partant de la chape vers un tuyau placé en dehors du sommier.</td>
+      </tr>
+      <tr>
+        <td>Poussoirs</td>
+        <td>cf. Combinaison ajustable.</td>
+      </tr>
+      <tr>
+        <td>Prestant (famille des principaux)</td>
+        <td>Principal de 4 pieds, en façade, donnant la première octave de 8 pieds. L'orgue est accordé sur le prestant.</td>
+      </tr>
+      <tr>
+        <td>Principal (jeu à diapason moyen)</td>
+        <td>Jeu formé de tuyaux cylindriques, à diapason moyen, formant à l'origine l'essentiel de la tuyauterie de l'orgue et la base de l'édifice sonore. cf. Montre, cf. Prestant, cf. Doublette, cf. Piccolo, cf. Contrebasse, cf. Diapason, cf. Keraulophone.</td>
+      </tr>
+      <tr>
+        <td>Quarte de nasard</td>
+        <td>Jeu de mutation simple, ouvert, de tuyaux cylindriques de 2 pieds, à diapason moyen mais plus étroit que la doublette, formant un ensemble avec le nasard, et donnant la quarte de nasard, donc la deuxième octave (quatrième harmonique) du sonf fondamental de 8 pieds.</td>
+      </tr>
+      <tr>
+        <td>Quintaton (jeu de mutations simples)</td>
+        <td>Jeu de mutation simple, bouché, de tuyaux cylindriques, de 4, 8 ou 16 pieds, faisant entendre à la fois la fondamentale et la deuxième quinte (troisième harmonique).</td>
+      </tr>
+      <tr>
+        <td>Quinte (jeu de mutations simples)</td>
+        <td>(quinte flûte) Jeu de mutation simple, ouvert, de tuyaux cylindriques à diapason large, de 2 pieds 2/3, donnant la deuxième quinte (troisième harmonique) de son fondamental de 8 pieds.</td>
+      </tr>
+      <tr>
+        <td>Quinte flûte</td>
+        <td>cf. Quinte.</td>
+      </tr>
+      <tr>
+        <td>Rangs</td>
+        <td>cf. Jeu de mutation composés).</td>
+      </tr>
+      <tr>
+        <td>Rasette (tuyau à anche)</td>
+        <td>Petite tige métaliqque mobile et verticale, traversant le noyau et permettant de régler l'amplitude de vibration de la languette. Cette tige, visible et maniable de l'extérieur permet l'accord du tuyau.</td>
+      </tr>
+      <tr>
+        <td>Récit expressif</td>
+        <td>cf. Clavier de récit.</td>
+      </tr>
+      <tr>
+        <td>Régale (jeu d’anches à résonnateur court)</td>
+        <td>Jeu d'anches, particulièrement court, de 4, 8 ou 16 pieds, à résonnateur cylindrique court et ouvert.</td>
+      </tr>
+      <tr>
+        <td>Registre (sommier à gravures)</td>
+        <td>Latte de bois mobile, percée de trous, située au-dessus de la table, perpendiculaire au sens des gravures et coulissant sur feuillure, entre des lattes fixes, les "faux-registres" (ou registres dormant). Le nombre de trous de chaque registre correspond au nombre de trous de chaque rangée de trous de la table. Suivant leur position, les registres permettent de libérer ou non l'air provenant des gravures et d'isoler les rangées de tuyaux.</td>
+      </tr>
+      <tr>
+        <td>Registre dormant</td>
+        <td>cf. Faux-registre, cf. Registre.</td>
+      </tr>
+      <tr>
+        <td>Reprise</td>
+        <td>Truquage consistant à placer des tuyaux plus longs, plus graves, alors que l'on monte vers l'aigu. Il existe souvent plusieurs reprises pour un même jeu. cf. Jeu de mutations composées.</td>
+      </tr>
+      <tr>
+        <td>Relevage</td>
+        <td>Révision générale d'un orgue, accompagnée d'un nettoyage d'autant plus complet que toute la tuyauterie a pû être déposée.</td>
+      </tr>
+      <tr>
+        <td>Réservoir</td>
+        <td>Récipient servant à recevoir l'air des soufflets et à le renvoyer sous-pression dans l'orgue. Les réservoirs se présentent comme des soufflets à tables parallèles et sont maintenus sous pression constante par des poids posés sur la table supérieure. Un soufflet nécessite parfois plusieurs réservoirs. On évite la surpression dans le réservoir par un rideau, pièce mobile qui équilibre l'arrivée d'air.</td>
+      </tr>
+      <tr>
+        <td>Résonateur (tuyau à anche)</td>
+        <td>(Corps, pavillon) Conduit de la colonne d'air dont l'extrémité parfois rapportée peut avoir une forme différente. Le conduit est conique (évasé vers le haut), fuselé (rentrant vers le haut), ou cylindrique. L'extrémité est de diverses formes.</td>
+      </tr>
+      <tr>
+        <td>Rouleau</td>
+        <td>Pédale à bascule, permettant d’augmenter le nombre de registres utilisés (utilisé surtout en Allemagne).</td>
+      </tr>
+      <tr>
+        <td>Rouleau</td>
+        <td>cf. Frein.</td>
+      </tr>
+      <tr>
+        <td>Salicet</td>
+        <td>cf. Gambe.</td>
+      </tr>
+      <tr>
+        <td>Salicional (famille gambes)</td>
+        <td>Jeu de tuyaux cylindrinques (ou rectangulaires lorsqu'ils sont en bois) à diapason étroit de 4, 8, 16 pieds. Lorsqu'un orgue possède plusieurs jeux de gambe, on les différencie par l'un des termes en leur donnant alors un caractère plus particulier en jouant sur le diapason. Une gambe de 4 pieds peut être appelée Salicet ou Fugara.</td>
+      </tr>
+      <tr>
+        <td>Septième (jeu de mutations simples)</td>
+        <td>Jeu de mutation simple, ouvert, de tuyaux cylindriques, à diapason moyen, faisant entendre la troisème septième (septième harmonique) du son fondamental variable. Sa longueur dépend donc du son fondamental. Elle est de : 1 pied 1/7 pour le 8 pieds ; 2 pieds 2/7 pour le 16 pieds ; 4 pieds 4/7 pour 32 pieds (N.b. ce jeu ne se trouve que sur les très grands instruments).</td>
+      </tr>
+      <tr>
+        <td>Sesquialtera (jeu de mutations composées)</td>
+        <td>Jeu semblable au cornet, mais ne comportant que la 2e quinte et la 3e tierce.</td>
+      </tr>
+      <tr>
+        <td>Sifflet</td>
+        <td>cf. Piccolo.</td>
+      </tr>
+      <tr>
+        <td>Sommier</td>
+        <td>Caisse rectangulaire horisontale, haute de 20 cm environ, supportant la tuyauterie et contenant les appareils destinés à faire vibrer l'air des tuyaux. Le sommier est surmonté d'un "faux-sommier". Le sommier peut être en une ou plusieurs partie. S’il est en une partie, il est chromatique, car les tuyaux se suivent de demi-ton en demi-ton. S’il est en deux parties, il est diatonique, chaque moitié ayant des tuyaux se suivant par ton.</td>
+      </tr>
+      <tr>
+        <td>Sommier à gravures</td>
+        <td>Nom donné à un type de sommier très fréquent constitué des éléments suivants : fond, laye, soupape, double laye, osier. cf. Fond, cf. Laye, cf. Soupape, cf. double laye, cf. Osier.</td>
+      </tr>
+      <tr>
+        <td>Sommier à membranes (sommier à ressort)</td>
+        <td>Type particulier de sommier à pistons (surtout avec une traction électrique).</td>
+      </tr>
+      <tr>
+        <td>Sommier à pistons (sommier à ressort)</td>
+        <td>Appellation d’un cas particulier de sommier à ressorts (rare).</td>
+      </tr>
+      <tr>
+        <td>Sommier à ressort</td>
+        <td>(Sommier à soupapes) Sommier où la gravure est en partie supprimée au profit d'un ensemble de ressorts et pistons, libérant l'air pour chaque trou. (Jusqu'au XVIè siècle seulement).</td>
+      </tr>
+      <tr>
+        <td>Sommier à soupapes</td>
+        <td>cf. sommier à ressort.</td>
+      </tr>
+      <tr>
+        <td>Sommier poste</td>
+        <td>Sommier placé au-dessus d'un autre sommier (à gravure ou à ressort) et ne comportant que des gravures (sans soupapes) alimentées directement au moyen de postages par le sommier principal. Ce système est utilisé surtout pour les dessus de cornet et permet ainsi, tout en gagnant de la place, de procurer parfois un effet sonore particulier.</td>
+      </tr>
+      <tr>
+        <td>Soubassement</td>
+        <td>cf. Massif.</td>
+      </tr>
+      <tr>
+        <td>Soufflerie</td>
+        <td>Ensemble des éléments utilisés pour fournir l'air nécessaire à l'orgue. La soufflerie est composée soit d'un ou plusieurs soufflets, soit d'un ventilateur (électrique) fournissant de l'air à un ou plusieurs réservoirs. Les soufflets sont actionnés à la main ou au pied, plus rarement par un ventilateur (modernisation d’un système ancien), le soufflet jouant alors le rôle d'un premier réservoir. Dans les orgues antiques, appelées hydraules, les réservoirs étaient remplacés par des cloches à eau, l’au maintenant la pression de l’air et les soufflets étaient remplacés par des pompes à air.</td>
+      </tr>
+      <tr>
+        <td>Soufflerie à main</td>
+        <td>cf. Soufflerie.</td>
+      </tr>
+      <tr>
+        <td>Soufflerie à pied</td>
+        <td>cf. Soufflerie.</td>
+      </tr>
+      <tr>
+        <td>Soufflerie électrique</td>
+        <td>syn. Soufflerie à ventilateur. cf. Soufflerie.</td>
+      </tr>
+      <tr>
+        <td>Soufflet</td>
+        <td>Machine servant à fournir de l'air, constituée d'un contenant souple, fermé de pièces de peaux disposées en plis, maintenus par des pièces de bois et pouvant être comprimés entre deux plaques de bois, les tables situées au-dessus, table supérieure (mobile) et au-dessous, table inférieure (fixe) celle-ci comportant une ouverture avec soupape pour faire entrer l'air. Une soupape de sécurité, le déchargeoir est située sur le dessus du soufflet. Les plis en nombre variable sont, soit rentrants, soit saillants, soit les deux alternés, par rapport à l'aplomb des tables. Un orgue peut nécessiter plusieurs réservoirs. cf. Soufflet cunéiforme, cf. Soufflet à tables parallèles.</td>
+      </tr>
+      <tr>
+        <td>Soufflet à tables parallèles (cf. Soufflet)</td>
+        <td>(Soufflet en lanterne) Soufflet dans lequel les deux tables restent horizontales et superposées (apparait au XIXe siècle).</td>
+      </tr>
+      <tr>
+        <td>Soufflet en lanterne</td>
+        <td>cf. Soufflet à tables parallèles.</td>
+      </tr>
+      <tr>
+        <td>Soufflet cunéiforme (cf. Soufflet)</td>
+        <td>Soufflet affectant la forme d'un cône couché lorsqu'il est développé (forme de soufflet existant jusqu'au XIXe siècle).</td>
+      </tr>
+      <tr>
+        <td>Soupape (sommier à gravures)</td>
+        <td>Petite latte de bois mobile, recouverte de cuir, située entre la laye et une gravure et permettant de libérer l'air nécéssaire pour chaque note (chaque soupape correspond à une touche et donc à une note). La soupape est maintenue dans sa course par des "guides", petites tiges métalliques fixes, parallèles et verticales</td>
+      </tr>
+      <tr>
+        <td>Sous-basse (famille des bourdons)</td>
+        <td>Jeu bouché de 16 ou 32 pieds placé au pédalier. Il est parfois dit "contrebasse" lorsqu'il est de 32 pieds.</td>
+      </tr>
+      <tr>
+        <td>Table (sommier à gravures)</td>
+        <td>Planche de bois fixe, située au-dessus de la grille, de mêmes dimensions que la sommier, percée de trous en rangées perpendiculaires aux gravures et dont le nombre correspond au nombre de tuyaux.</td>
+      </tr>
+      <tr>
+        <td>Table inférieure</td>
+        <td>cf. Soufflet.</td>
+      </tr>
+      <tr>
+        <td>Table supérieure</td>
+        <td>cf. Soufflet.</td>
+      </tr>
+      <tr>
+        <td>Talon</td>
+        <td>cf. Accouplement à tiroir ou à chariot.</td>
+      </tr>
+      <tr>
+        <td>Tamis</td>
+        <td>cf. Faux-sommier.</td>
+      </tr>
+      <tr>
+        <td>Tampon (tuyau à bouche)</td>
+        <td>n.m. Pièce de bois pénétrant dans l'extrémité du tuyau de bois et le bouchant, lui permettant ainsi de sonner à l'octave grave de sa longueur.</td>
+      </tr>
+      <tr>
+        <td>Tierce (jeu de mutations simples)</td>
+        <td>Jeu de mutation simple, ouvert, de tuyaux cylindriques à diapason moyen faisant entendre la troisième tierce (cinquième harmonique) du son fondamental variable. Sa longueur dépend donc du son fondamental. Elle est de : 1 pied 3/5 pour les 8 pieds: "tierce proprement dite" ; 3 pieds 1/5 pour les 16 pieds: "grosse tierce" (double tierce) ; 6 pieds 2/5 pour les 32 pieds : "grosse tierce" (double tierce).</td>
+      </tr>
+      <tr>
+        <td>Tierce proprement dite</td>
+        <td>cf. Tierce.</td>
+      </tr>
+      <tr>
+        <td>Tierce (grosse)</td>
+        <td>syn. Double tierce, cf. Tierce.</td>
+      </tr>
+      <tr>
+        <td>Tirant</td>
+        <td>(de registre, jeu) Longue tige de bois qui permet de faire manœuvrer à partir de la console la barre de registre qui conduit au registre mécanique. L'extrémité visible du tirant sur la console est constituée d'un bouton (pommette) pouvant comporter le nom du jeu. Les tirants peuvent être disposés en rangées sur des pânneaux accostant les claviers ou la console, ou sur le panneau dominant les claviers, ou sur des marches de bois, gradins, situées audelà des blocs de claviers. Ces gradins peuvent être incurvés en amphithéâtre.</td>
+      </tr>
+      <tr>
+        <td>Tirasse</td>
+        <td>Mécanisme permettant d'accoupler sur le pédalier un clavier, dont il prend alors le nom, manœuvré d'ordinaire par une pédale.</td>
+      </tr>
+      <tr>
+        <td>Touche</td>
+        <td>Pièce de bois rectangulaire mobile, recouverte d'une pellicule d'un autre matériau (ivoire, ébène, etc. lui donnant une couleur blanche, noire ou autre) et qui, en s'enfonçant sous la pression des doigts ou des pieds, entre des guides, fait ouvrir une soupape qui laisse pénétrer de l'air dans les tuyaux par l'intermédiaire d'un mécanisme, de façon à obtenir une note. Le fronton de touche est la pièce de bois ou de matière précieuse, moulurée ou non, couvrant la partie antérieure de la touche à main. cf. Touche bécarre, cf. Feinte, cf. Touche brisée, cf. Touche fixe.</td>
+      </tr>
+      <tr>
+        <td>Touche bécarre</td>
+        <td>(Grande touche, touche naturelle, touche blanche). Touche antérieure d’un clavier.</td>
+      </tr>
+      <tr>
+        <td>Touche blanche</td>
+        <td>cf. Touche bécarre.</td>
+      </tr>
+      <tr>
+        <td>Touche brisée</td>
+        <td>Touche placée en feinte coupée dans la longueur et correspondant à deux notes dont l'une peut être bécarre. Elle est utilisée pour les claviers à ctave courte.</td>
+      </tr>
+      <tr>
+        <td>Touche feinte</td>
+        <td>Touche de petite taille, située en arrière, au-dessus et à cheval sur les touches bécarres et servant à obtenir une note dièze ou bémol.</td>
+      </tr>
+      <tr>
+        <td>Touche fixe</td>
+        <td>Touche non utilisable, servant à compléter un clavier</td>
+      </tr>
+      <tr>
+        <td>Touche naturelle</td>
+        <td>cf. Touche bécarre.</td>
+      </tr>
+      <tr>
+        <td>Tourelle</td>
+        <td>n.f. Partie marquée par un décrochement sur la façade ou le couronnement, ou partie détachée du corps du buffet et placée symétriquement à une autre. (Ne pas confondre avec "trompe", ancienne tourelle détachée qui ne comportait pas toujours de symétrique). cf. Tourelle plate, cf. Tourelle en tiers-point, cf. Tourelle arrondie, cf. Tourelle en proue.</td>
+      </tr>
+      <tr>
+        <td>Tourelle arrondie</td>
+        <td>Tourelle sur le plan semi-circulaire.</td>
+      </tr>
+      <tr>
+        <td>Tourelle en proue</td>
+        <td>Tourelle sur plan de façade en accolade.</td>
+      </tr>
+      <tr>
+        <td>Tourelle en tiers-point</td>
+        <td>Tourelle sur plan triangulaire.</td>
+      </tr>
+      <tr>
+        <td>Tourelle plate</td>
+        <td>Tourelle sur plan rectangulaire ou carrée.</td>
+      </tr>
+      <tr>
+        <td>Transmission</td>
+        <td>Ensemble des mécanismes utilisés entre la touche et la soupape et entre le tirant et le registre pour transmettre l'effet. cf. Transmission mécanique, cf. Transmission mécanique avec machine pneumatique, cf. Transmission pneumatique, cf. Transmission électrique, cf. Transmission électro-pneumatique.</td>
+      </tr>
+      <tr>
+        <td>Transmission électrique</td>
+        <td>Système utilisant les relais d'électro-aimants entre la touche et la soupape (absence d'abrégés) ou entre le tirant et le registre (absence de barre de registre).</td>
+      </tr>
+      <tr>
+        <td>Transmission électro-pneumatique</td>
+        <td>Système de transmission des tirants aux registres à l’aide d’un électro-aiment déclanchant une coupape qui actionne le registre).</td>
+      </tr>
+      <tr>
+        <td>Transmission mécanique</td>
+        <td>Système de transmission entièrement mécanique de la touche à la soupape (présence d'abrégés) ou du tirant au registre. Elle est "suspendue" lorsque la touche repose sur son extrémité postérieure et en s'enfonçant tire la vergette. Elle est à balancier losque la touche repose sur sa partie médiane et en s’enfonçant repousse la vergette vers le haut.</td>
+      </tr>
+      <tr>
+        <td>Transmission mécanique avec machine pneumatique (machine Barker)</td>
+        <td>Système de transmission mécanique assistée par une machine pneumatique entre le tirant et le registre ou entre la touche et la soupape.</td>
+      </tr>
+      <tr>
+        <td>Tranmission tubulaire</td>
+        <td>(transmission pneumatique) Sysème de transmission entièrement mécanique de la touche à la soupape (présence d'abrégés) ou du tirant au registre.</td>
+      </tr>
+      <tr>
+        <td>Tremblant</td>
+        <td>(trémolo) Pédale ou tirant qui actionne un mécanisme composé d'une ou deux soupapes placées dans le portevent et permettant de faire trembler la sonorité de l'air émis par les tuyaux. On distingue le tremblant "doux" à effet discret et le tremblant "fort" à effet plus marqué (tremblant "à vent perdu" car il se perd un peu de vent quand il joue).</td>
+      </tr>
+      <tr>
+        <td>Tremblant à vent perdu</td>
+        <td>(tremblant fort) cf. Tremblant.</td>
+      </tr>
+      <tr>
+        <td>Tremblant doux</td>
+        <td>cf. Tremblant.</td>
+      </tr>
+      <tr>
+        <td>Tremblant fort</td>
+        <td>cf. Tremblant.</td>
+      </tr>
+      <tr>
+        <td>Trémolo</td>
+        <td>cf. Tremblant.</td>
+      </tr>
+      <tr>
+        <td>Tribune</td>
+        <td>(anciennement jubé) Construction élevée, de pierre ou de bois, spécialement édifiée pour supporter l’orgue. La tribune peut reposer sur une voûte, sur des piliers ou sur des colonnes, sur des consoles ou sur des culs de lampe.</td>
+      </tr>
+      <tr>
+        <td>Tribune en nid d’hirondelle</td>
+        <td>Tribune accrochée à un seul mur.</td>
+      </tr>
+      <tr>
+        <td>Trompe</td>
+        <td>Ancienne tourelle détachée qui ne comportait pas toujours de symétrie. cf. Tourelle.</td>
+      </tr>
+      <tr>
+        <td>Trompette (jeu d’anches à résonnateur long)</td>
+        <td>Jeu d'anches de 8 pieds à résonnateur conique, ouvert, parfois harmonique, pouvant comporter des entailles, constitutant le principal jeu d'anches d'un orgue. Les trompettes peuvent être placées horizontalement, "en chamade", soit au-dessus de la frise, soit au-dessus du buffet. Cette disposition leur donne un éclat exceptionnel.</td>
+      </tr>
+      <tr>
+        <td>Tuba magna</td>
+        <td>Bombarde de 16 pieds, harmonique, placé au 4e clavier, mais sonnant plus fort à cause d'une pression supérieure.</td>
+      </tr>
+      <tr>
+        <td>Tutti</td>
+        <td>Utilisation de tous les jeux de l'orgue. cf. Pédale créscendo.</td>
+      </tr>
+      <tr>
+        <td>Tuyau</td>
+        <td>Conduit en métal ou en bois, de section carée ou circulaire, délimitant une colonne d'air que l'on fait vibrer pour obtenir un son. Les tuyaux sont de taille et de forme variées</td>
+      </tr>
+      <tr>
+        <td>Tuyau à anche</td>
+        <td>Tuyau où l'air se heurte à une pièce mobile battante, "la languette", parallèle aux parois. Il comporte les parties suivantes: "Pied", "Noyau", "Auge","Anche", "Rasette", "Résonnateur", "Entaille", "Couvercle".</td>
+      </tr>
+      <tr>
+        <td>Tuyau à anche battante</td>
+        <td>(anche libre) Tuyau où la languette vibre librement à l'intérieur de l'auge sans frapper sur celle-ci</td>
+      </tr>
+      <tr>
+        <td>Tuyau à bouche</td>
+        <td>Tuyau où l'air se heurte à une pièce fixe, le "biseau", situé en travers du tuyau et nécessitant une ouverture, la bouche. Il comporte les parties suivantes: "pied", "Corps", "Biseau", "Bouche", "Ecusson", "Oreilles", "Frein", "lumière", "Entaille", "Pavillon", "Tampon", "Calotte" et "Cheminée".</td>
+      </tr>
+      <tr>
+        <td>Tuyau coudé</td>
+        <td>Tuyau dont le résonnateur trop long est coudé</td>
+      </tr>
+      <tr>
+        <td>Unda Maris (famille gambes)</td>
+        <td>Voix céleste, légèrement moins désaccordée, produisant ainsi des battements plus lents et plus amples.</td>
+      </tr>
+      <tr>
+        <td>Vergette</td>
+        <td>Tiges de bois ou de fer plates de longueur variable joignant les touches au sommier par l'intermédiaire d'une petite pièce de bois de section octogonale et pivotante, le rouleau d'abrégé. Les vergettes sont accrochées à la touche par une petite tringle métallique, appelée demoiselle et au rouleau par une tige de fer, le fer d'abrégé (bras). Dans certains cas, le rouleau est supprimé : les fers d'abrégé se réunissent alors pour former une équerre. cf. Abrégé.</td>
+      </tr>
+      <tr>
+        <td>Viole de gambe (famille gambes)</td>
+        <td>Jeu de tuyaux cylindrinques (ou rectangulaires lorsqu'ils sont en bois) à diapason étroit de 4, 8, 16 pieds. Lorsqu'un orgue possède plusieurs jeux de gambe, on les différencie par l'un des termes en leur donnant alors un caractère plus particulier en jouant sur le diapason. Une gambe de 4 pieds peut être appelée Salicet ou Fugara.</td>
+      </tr>
+      <tr>
+        <td>Violoncelle (famille gambes)</td>
+        <td>Jeu de tuyaux cylindrinques (ou rectangulaires lorsqu'ils sont en bois) à diapason étroit de 4, 8, 16 pieds. Lorsqu'un orgue possède plusieurs jeux de gambe, on les différencie par l'un des termes en leur donnant alors un caractère plus particulier en jouant sur le diapason. Une gambe de 4 pieds peut être appelée Salicet ou Fugara.</td>
+      </tr>
+      <tr>
+        <td>Voix céleste (famille gambes)</td>
+        <td>Gambe de 8 pieds composée de deux tuyaux par note, légèrement désaccordés l'un par rapport à l'autre, ce qui produit des battements d'une sonorité ondulante.</td>
+      </tr>
+      <tr>
+        <td>Voix humaine (jeu d’anches à résonnateur court)</td>
+        <td>Jeu d'anches court, de 8 pieds, à résonnateur cylindrique ou légèrement conique, en partie bouché, tulisé en solo, souvent avec le tremblant.</td>
+      </tr>
+      <tr>
+        <td>Volet</td>
+        <td>Panneaux de bois mobiles protégeant la tuyauterie d'un orgue hors de service : pendant l'avant ou le carême, etc. (NB utilisé jusqu'au XVIIIème). cf. Etage de la tuyauterie.</td>
+      </tr>
+      <tr>
+        <td>Volets d'expression</td>
+        <td>Le clavier est rendu expressif par la manœuvre de volets d'expression placés sur une ou plusieurs faces de cette boîte. cf. Boite expressive.</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
+
+
+{% block js_extra %}
+
+  <script>
+    function myFunction() {
+      // Declare variables
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("myInput");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("lexique");
+      tr = table.getElementsByTagName("tr");
+
+      // Loop through all table rows, and hide those who don't match the search query
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[0];
+        if (td) {
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+    }
+  </script>
+
+{% endblock %}

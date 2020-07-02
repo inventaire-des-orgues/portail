@@ -708,3 +708,6 @@ class SearchLogView(LoginRequiredMixin, TemplateView):
             search_logs = reversed(list(reader))
             context["search_logs"] = search_logs
         return context
+
+class ConseilsFicheView(TemplateView):
+    template_name = 'orgues/conseils_fiche.html'
