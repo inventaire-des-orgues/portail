@@ -312,3 +312,9 @@ section.triangle::before {
     height: 34px !important;
 }
 
+
+
+
+table#lexique td:first-child {
+    font-weight: bold;
+}
