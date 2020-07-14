@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Orgue, Clavier, TypeClavier, TypeJeu, Jeu, Fichier, Facteur
+from .models import Orgue, Clavier, TypeClavier, TypeJeu, Jeu, Fichier, Image
 
 
 class ClavierInline(admin.StackedInline):
@@ -8,15 +8,23 @@ class ClavierInline(admin.StackedInline):
     extra = 0
 
 
+from .models import Orgue, Clavier, TypeClavier, TypeJeu, Facteur
+
+
+
 @admin.register(Fichier)
 class FichierAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'file', 'description', 'orgue')
+    list_display = ('pk','file','description','orgue')
 
+
+@admin.register(Image)
+class ImageAdmin(admin.ModelAdmin):
+    list_display = ('pk','orgue','credit','is_principale')
+    list_editable = ('credit',)
 
 @admin.register(Jeu)
 class JeuAdmin(admin.ModelAdmin):
-    list_display = ('type', 'clavier', 'commentaire')
-
+    list_display = ('type','clavier','commentaire')
 
 @admin.register(Facteur)
 class FacteurAdmin(admin.ModelAdmin):
@@ -40,7 +48,7 @@ class TypeClavierAdmin(admin.ModelAdmin):
 
 @admin.register(Orgue)
 class OrgueAdmin(admin.ModelAdmin):
-    list_display = ('designation', 'commune', 'edifice', 'region', 'etat', 'updated_by_user', 'modified_date')
+    list_display = ('designation','commune','edifice','region','etat','updated_by_user','modified_date')
     inlines = [ClavierInline]
     list_filter = ('updated_by_user',)
-    search_fields = ('commune', 'edifice',)
+    search_fields = ('commune','edifice',)

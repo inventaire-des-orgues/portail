@@ -19,6 +19,20 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
+Certaines données sont mises en cache pour améliorer la perfomance des requêtes.  
+Pour forcer le recalcul des "résumés clavier" il faut lancer la commande : 
+```
+python manage.py calcul_resume_clavier
+```  
+Normalement le résumé clavier est recalculé automatiquement à chaque modification de la composition d'un orgue.
+
+
+Pour rapatrier les facteurs d'un orgue stockés dans ses divers évenements, lancer : 
+```
+python manage.py calcul_facteurs
+```
+Normalement les facteurs d'un orgue sont recalculés automatiquement à chaque ajout/suppression d'un evenement. 
+
 
 
 # Faire un import de données sur le serveur : 

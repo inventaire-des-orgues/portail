@@ -33,10 +33,15 @@
                   <label for="">Mot de passe</label>
                   <div class="form-group">
                     <input type="password" name="password" class="form-control">
+                    <small>
+                       <a href="{% url 'password_reset' %}">Mot de passe oublié ?
+                      </a>
+                    </small>
                   </div>
                 </div>
                 <div class="form-group">
                   <button class="btn btn-primary" type="submit">Connexion</button>
+
                 </div>
               </form>
             </div>

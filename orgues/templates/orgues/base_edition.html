@@ -71,13 +71,18 @@
 
           </div>
           <div class="my-3">
-            <small class="text-muted">Avancement : {{ orgue.completion }}%</small>
+            <small style="color:#5c1c54">Avancement : {{ orgue.completion }}%</small>
             <div class="progress" style="height:5px">
-              <div class="progress-bar bg-success" role="progressbar" style="width: {{ orgue.completion }}%;" aria-valuenow="{{ orgue.completion }}" aria-valuemin="0" aria-valuemax="100">
+              <div class="progress-bar" role="progressbar" style="width: {{ orgue.completion }}%;background-color:#5c1c54" aria-valuenow="{{ orgue.completion }}" aria-valuemin="0" aria-valuemax="100">
               </div>
             </div>
           </div>
+        <div class="my-3">
+          <a class="my-3" href="{% url 'orgues:orgue-fiche-conseils' %}"><i class="fa fa-question-circle"></i> Quelques conseils pour bien remplir la fiche d'un orgue</a>
         </div>
+
+        </div>
+
         <div class="col-lg-9">
           {% if orgue.commentaire_admin %}
             <div class="alert alert-info">

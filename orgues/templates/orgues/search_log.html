@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head_extra %}
+{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <section class="pb-0" id="contact">
+      <h3 class="text-center">Dernières recherches effectuées</h3>
+      <div class="card">
+        <div class="card-body">
+          <table class="table table-bordered">
+          <thead>
+          <tr>
+            <th>Date de la recherche</th>
+            <th>Code département</th>
+            <th>Code commune INSEE</th>
+            <th>Edifice</th>
+            <th>pk facteur</th>
+          </tr>
+          </thead>
+            <tbody>
+            {% for search_log in search_logs %}
+              <tr>
+                <td>{{ search_log.0 }}</td>
+                <td>{{ search_log.3 }}</td>
+                <td>{{ search_log.4 }}</td>
+                <td>{{ search_log.5 }}</td>
+                <td>{{ search_log.6 }}</td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+
+
+{% endblock %}
+
+

@@ -2,12 +2,14 @@ import os
 import re
 import uuid
 from django.db import models
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 
-from imagekit.models import ImageSpecField
+from imagekit.models import ImageSpecField, ProcessedImageField
 from pilkit.processors import ResizeToFill
 
 from accounts.models import User
@@ -130,6 +132,8 @@ class Orgue(models.Model):
     slug = models.SlugField(max_length=255)
     completion = models.IntegerField(default=False, editable=False)
     keywords = models.TextField()
+    resume_clavier = models.CharField(max_length=30, null=True, blank=True, editable=False)
+    facteurs = models.ManyToManyField(Facteur,blank=True, editable=False)
 
     def __str__(self):
         return "{} {} {}".format(self.designation, self.edifice, self.commune)
@@ -164,6 +168,19 @@ class Orgue(models.Model):
         return self.claviers.filter(is_expressif=True).exists()
 
     @property
+    def vignette(self):
+        """
+        Récupère l'image principale de l'instrument
+        """
+        image_principale = self.image_principale
+        if not image_principale:
+            return "/static/img/default.png"
+        elif image_principale.thumbnail_principale:
+            return image_principale.thumbnail_principale.url
+        elif image_principale.thumbnail:
+            return image_principale.thumbnail.url
+
+    @property
     def image_principale(self):
         """
         Récupère l'image principale de l'instrument
@@ -183,13 +200,6 @@ class Orgue(models.Model):
         Evenement de construction de l'orgue (contient année et facteur)
         """
         return self.evenements.filter(type="construction").first()
-
-    @property
-    def facteurs(self):
-        """
-        Liste des évènements qui ont au moins un facteur
-        """
-        return self.evenements.filter(facteurs__isnull=False).values("annee", "facteurs__nom", "type").distinct()
 
     @property
     def jeux_count(self):
@@ -228,49 +238,71 @@ class Orgue(models.Model):
     def get_delete_url(self):
         return reverse('orgues:orgue-delete', args=(self.uuid,))
 
+    def calcul_resume_clavier(self):
+        """
+        On stocke dans la base de données l'information Clavier et Pédale de façon commune, sous le format :
+        [nombre de claviers en chiffres romains]["/P" si Pédale]
+        """
+
+        has_pedalier = self.has_pedalier
+        claviers_count = self.claviers.count()
+        jeux_count = self.jeux_count
+        cr = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV",
+              "XVI", "XVII", "XVIII", "XIX", "XX", "XXI", "XXII", "XXIII", "XIV", "XV"]
+        if claviers_count == 0:
+            return "?"
+
+        if has_pedalier and claviers_count > 1:
+            return "{}, {}/P".format(jeux_count, cr[claviers_count - 2])
+
+        elif has_pedalier and claviers_count == 1:
+            return "{}, P".format(jeux_count)
+
+        return "{}, {}".format(jeux_count, cr[claviers_count])
+
+    def calcul_facteurs(self):
+        """
+        Raptriement des facteurs stockés dans les événements pour accès rapide
+        """
+        self.facteurs.clear()
+        for evenement in self.evenements.filter(facteurs__isnull=False).prefetch_related("facteurs"):
+            for facteur in evenement.facteurs.all():
+                self.facteurs.add(facteur)
+
+
     def calcul_completion(self):
         """
         Pourcentage de remplissage de la fiche instrument
         """
         points = 0
-        champs_importants = [
-            self.designation,
-            self.resume,
-            self.proprietaire,
-            self.organisme,
-            self.lien_reference,
-            self.etat,
-            self.elevation,
-            self.buffet,
-            self.edifice,
-            self.commune,
-            self.departement,
-            self.region,
-            self.latitude,
-            self.longitude,
-            self.diapason,
-            self.sommiers,
-            self.soufflerie,
-            self.transmission_notes,
-            self.tirage_jeux,
-        ]
 
-        for champ in champs_importants:
-            if champ:
-                points += 1
-
-        if self.claviers.count():
+        if (self.commune and self.region and self.departement):
             points += 5
 
-        if self.evenements.filter(type="construction", facteurs__isnull=False):
-            points += 3
+        if len(self.edifice) > 6:
+            points += 5
+
+        if self.etat:
+            points += 10
+
+        if self.claviers.count() >= 1:
+            points += 10
 
         if self.images.filter(is_principale=True):
-            points += 5
+            points += 30
 
-        points_max = len(champs_importants) + 5 + 3 + 5
+        champs_texte_description = [
+            self.resume,
+            self.buffet,
+            self.sommiers,
+            self.soufflerie,
+        ]
 
-        return int(100 * points / points_max)
+        for champ in champs_texte_description:
+            if champ:
+                points += 10
+
+        return int(points)
 
 
 class TypeClavier(models.Model):
@@ -301,12 +333,12 @@ class Clavier(models.Model):
     Un orgue peut avoir plusieurs clavier
     """
 
-    type = models.ForeignKey(TypeClavier, null=True, on_delete=models.CASCADE)
+    type = models.ForeignKey(TypeClavier, null=True, on_delete=models.CASCADE, db_index=True)
     is_expressif = models.BooleanField(verbose_name="Cocher si expressif", default=False)
     etendue = models.CharField(validators=[validate_etendue], max_length=10, null=True, blank=True,
                                help_text="De la forme F1-G5, C1-F#5 ... ")
     # Champs automatiques
-    orgue = models.ForeignKey(Orgue, null=True, on_delete=models.CASCADE, related_name="claviers")
+    orgue = models.ForeignKey(Orgue, null=True, on_delete=models.CASCADE, related_name="claviers", db_index=True)
     created_date = models.DateTimeField(
         auto_now_add=True,
         auto_now=False,
@@ -317,6 +349,10 @@ class Clavier(models.Model):
         auto_now_add=False,
         verbose_name='Update date'
     )
+
+    def save(self, *args, **kwargs):
+        self.orgue.completion = self.orgue.calcul_completion()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return "{} | {}".format(self.type.nom, self.orgue.designation)
@@ -395,9 +431,9 @@ class Jeu(models.Model):
         ('dessus', 'Dessus'),
     )
 
-    type = models.ForeignKey(TypeJeu, on_delete=models.CASCADE, related_name='jeux')
+    type = models.ForeignKey(TypeJeu, on_delete=models.CASCADE, related_name='jeux', db_index=True)
     commentaire = models.CharField(max_length=200, null=True, blank=True)
-    clavier = models.ForeignKey(Clavier, null=True, on_delete=models.CASCADE, related_name="jeux")
+    clavier = models.ForeignKey(Clavier, null=True, on_delete=models.CASCADE, related_name="jeux", db_index=True)
     configuration = models.CharField(max_length=20, choices=CHOIX_CONFIGURATION, null=True, blank=True)
 
     def __str__(self):
@@ -469,6 +505,11 @@ class Image(models.Model):
     credit = models.CharField(max_length=200, null=True, blank=True)
 
     # Champs automatiques
+    thumbnail_principale = ProcessedImageField(upload_to=chemin_image,
+                                               processors=[ResizeToFill(400, 300)],
+                                               format='JPEG',
+                                               options={'quality': 100})
+
     thumbnail = ImageSpecField(source='image',
                                processors=[ResizeToFill(400, 300)],
                                format='JPEG',
@@ -490,6 +531,9 @@ class Image(models.Model):
         verbose_name='Update date'
     )
 
+    def save(self, *args, **kwargs):
+        self.orgue.completion = self.orgue.calcul_completion()
+        super().save(*args, **kwargs)
 
 class Accessoire(models.Model):
     """
@@ -499,3 +543,22 @@ class Accessoire(models.Model):
 
     def __str__(self):
         return self.nom
+
+
+@receiver([post_save, post_delete], sender=Clavier)
+def save_clavier_calcul_resume(sender, instance, **kwargs):
+    orgue = instance.orgue
+    orgue.resume_clavier = orgue.calcul_resume_clavier()
+    orgue.save()
+
+
+@receiver([post_save, post_delete], sender=Jeu)
+def save_jeu_calcul_resume(sender, instance, **kwargs):
+    orgue = instance.clavier.orgue
+    orgue.resume_clavier = orgue.calcul_resume_clavier()
+    orgue.save()
+
+@receiver([post_save, post_delete], sender=Evenement)
+def save_evenement_calcul_facteurs(sender, instance, **kwargs):
+    orgue = instance.orgue
+    orgue.calcul_facteurs()
