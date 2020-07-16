@@ -27,7 +27,7 @@ urlpatterns = [
     path('', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
     path('', accueil, name='accueil'),
-    path('contact/', ContactView.as_view(), name='contact'),
+    path('nous_contacter/', ContactView.as_view(), name='contact'),
     path('', include('orgues.urls')),
     path('api-auth/', include('rest_framework.urls')),
     path('api/v1/', include(('project.api_urls', 'project'), namespace='api')),
