@@ -1,5 +1,5 @@
-<form action="{% url 'orgues:orgue-list' %}" class="" method="get">
-    <div class="form-group">
+<form id="search-form" action="{% url 'orgues:orgue-list' %}" class="" method="get">
+  <div class="form-group">
     <label for="">Département</label>
     <select name="departement" id="id_departement" class="form-control" value="{{ request.GET.departement }}">
       <option value="">Choisir un departement</option>
@@ -31,8 +31,8 @@
     </select>
   </div>
   <div class="form-group text-right">
-    <button type="submit" class="btn btn-light btn-sm">
-      <i class="fa fa-search"></i>
+    <button type="submit" id="btn" class="btn btn-light btn-sm btn-slide">
+      <i id="search-btn" class="fa fa-search" style="color: #5c1c54;"></i>
     </button>
   </div>
 </form>
