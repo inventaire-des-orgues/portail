@@ -374,7 +374,7 @@ table#lexique td:first-child {
 }
 
 #orgues-illustration-enfants{
-    min-height: 350px;
+    min-height: 400px;
 }
 @media (min-width: 1000px) {
     #orgues-illustration-enfants {

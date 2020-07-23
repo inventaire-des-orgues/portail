@@ -8,14 +8,16 @@
           <div class="card ">
             <div class="card-body">
               {% include 'orgues/search_form.html' %}
+              <div class="text-center mb-4 d-none d-xl-block" style="margin-top: -30px">
+                <img src="{% static 'img/orgue_illustration_recherche.png' %}" alt="" style="width: 248px">
+              </div>
+              <hr>
+              <div class="text-center">
+                <h5>Quelques conseils pour éditer la photo principale d'une fiche d'orgue</h5>
+                <a href="{% url 'orgues:orgue-fiche-conseils' %}" class="btn btn-primary rounded-pill mt-3">voir les
+                  recommandations <i class="fa fa-chevron-right"></i> </a>
+              </div>
             </div>
-          </div>
-          <div class="text-center my-2 d-none d-lg-block">
-            <p>
-              Quelques conseils pour éditer la photo principale d'une fiche d'orgue
-            </p>
-            <a href="{% url 'orgues:orgue-fiche-conseils' %}" class="btn btn-primary rounded-pill">voir les
-              recommandations <i class="fa fa-chevron-right"></i> </a>
           </div>
         </div>
         <div class="col-xl-8">
