@@ -10,20 +10,21 @@
               {% include 'orgues/search_form.html' %}
             </div>
           </div>
-          <div class="text-center">
-                <h5>Quelques conseils pour éditer la photo principale d'une fiche d'orgue</h5>
-                <a href="{% url 'orgues:orgue-fiche-conseils' %}" class="btn btn-primary rounded-pill mt-3">voir les
-                  recommandations <i class="fa fa-chevron-right"></i> </a>
-              </div>
+          <div class="text-center my-2 d-none d-lg-block">
+            <p>
+              Quelques conseils pour éditer la photo principale d'une fiche d'orgue
+            </p>
+            <a href="{% url 'orgues:orgue-fiche-conseils' %}" class="btn btn-primary rounded-pill">voir les
+              recommandations <i class="fa fa-chevron-right"></i> </a>
+          </div>
         </div>
         <div class="col-xl-8">
           {% for orgue in object_list %}
             <div class="card shadow-sm vignette mb-lg-4 mb-sm-5"
-                 onclick="window.location = '{% url 'orgues:orgue-detail' orgue.slug %}'">
+                onclick="window.location = '{% url 'orgues:orgue-detail' orgue.slug %}'">
               <div class="row no-gutters">
                 <div class="col-md-4" style="background: #868e96;">
                   <img class="card-img-top" src="{{ orgue.vignette }}" alt="Photo orgue {{ orgue }}">
-
                 </div>
                 <div class="col-md-8">
                   <div class="card-body py-md-3">
