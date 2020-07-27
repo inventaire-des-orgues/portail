@@ -12,7 +12,7 @@
   <title>Inventaire des orgues</title>
   <link href="{% static 'polo/css/plugins.css' %}" rel="stylesheet">
   <link href="{% static 'polo/scss/style.css' %}" rel="stylesheet">
-  <link href="{% static 'polo/css/custom.css' %}" rel="stylesheet">
+  <link href="{% static 'polo/css/custom.css' %}?date={% now 'Ymd' %}" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'plugins/select2/select2.min.css' %}">
   <link rel="stylesheet" href="{% static 'plugins/toastr/toastr.min.css' %}">
   <link rel="stylesheet" href="{% static 'plugins/lightbox/css/lightbox.min.css' %}">
@@ -40,7 +40,7 @@
         <div class="col-md-6 d-none d-sm-block">
           <div class="social-icons social-icons-colored-hover">
             <ul>
-              <li class="social-en"><a href="#"><i class="fa fa-envelope"></i></a></li>
+              <li class="social-en"><a href="{% url 'contact' %}"><i class="fa fa-envelope"></i></a></li>
               <li class="social-instagram"><a href="#"><i class="fab fa-instagram"></i></a></li>
               <li class="social-twitter"><a href="#"><i class="fab fa-twitter"></i></a></li>
               <li class="social-facebook"><a href="#"><i class="fab fa-facebook-f"></i></a></li>
