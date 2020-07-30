@@ -70,15 +70,14 @@ class Orgue(models.Model):
     )
 
     # Informations générales
-    designation = models.CharField(max_length=300, verbose_name="Désignation", choices=CHOIX_DESIGNATION,
-                                   default="Orgue")
-    codification = models.CharField(max_length=100)
+    designation = models.CharField(max_length=300, null=True, verbose_name="Désignation", default="orgue", blank=True)
+    codification = models.CharField(max_length=24)
     references_palissy = models.CharField(max_length=20, null=True, blank=True,
                                           help_text="Séparer les codes par des virgules")
-    resume = models.TextField(max_length=500, verbose_name="Resumé", blank=True,
+    resume = models.TextField(max_length=500, null=True, verbose_name="Resumé", blank=True,
                               help_text="Présentation en quelques lignes de l'instrument \
                               et son originalité (max 500 caractères)")
-    proprietaire = models.CharField(max_length=20, choices=CHOIX_PROPRIETAIRE, default="commune")
+    proprietaire = models.CharField(max_length=20, null=True, choices=CHOIX_PROPRIETAIRE, default="commune")
     organisme = models.CharField(verbose_name="Organisme auquel s'adresser", max_length=100, null=True, blank=True)
     lien_reference = models.URLField(verbose_name="Lien de référence", max_length=300, null=True, blank=True)
     is_polyphone = models.BooleanField(default=False, verbose_name="Orgue polyphone de la manufacture Debierre ?")
@@ -100,8 +99,9 @@ class Orgue(models.Model):
                                         message="Renseigner un code de département valide")
 
     edifice = models.CharField(max_length=300)
+    adresse = models.CharField(max_length=300, null=True, blank=True)
     commune = models.CharField(max_length=100)
-    code_insee = models.CharField(max_length=200)
+    code_insee = models.CharField(max_length=5)
     ancienne_commune = models.CharField(max_length=100, null=True, blank=True)
     departement = models.CharField(verbose_name="Département", max_length=50)
     code_departement = models.CharField(validators=[code_dep_validator], verbose_name="Code département", max_length=3)
@@ -121,7 +121,7 @@ class Orgue(models.Model):
     tirage_jeux = models.CharField(verbose_name="Tirage des jeux", max_length=20, choices=CHOIX_TIRAGE, null=True,
                                    blank=True)
     tirage_commentaire = models.CharField(max_length=100, null=True, blank=True, help_text="Max 100 caractères")
-    commentaire_tuyauterie = models.TextField(verbose_name="Description de la tuyauterie", blank=True)
+    commentaire_tuyauterie = models.TextField(verbose_name="Description de la tuyauterie", blank=True, null=True)
     accessoires = models.ManyToManyField('Accessoire', blank=True)
 
     # Auto générés
@@ -133,7 +133,7 @@ class Orgue(models.Model):
     completion = models.IntegerField(default=False, editable=False)
     keywords = models.TextField()
     resume_clavier = models.CharField(max_length=30, null=True, blank=True, editable=False)
-    facteurs = models.ManyToManyField(Facteur,blank=True, editable=False)
+    facteurs = models.ManyToManyField(Facteur, blank=True, editable=False)
 
     def __str__(self):
         return "{} {} {}".format(self.designation, self.edifice, self.commune)
@@ -258,7 +258,7 @@ class Orgue(models.Model):
         elif has_pedalier and claviers_count == 1:
             return "{}, P".format(jeux_count)
 
-        return "{}, {}".format(jeux_count, cr[claviers_count])
+        return "{}, {}".format(jeux_count, cr[claviers_count - 1])
 
     def calcul_facteurs(self):
         """
@@ -268,7 +268,6 @@ class Orgue(models.Model):
         for evenement in self.evenements.filter(facteurs__isnull=False).prefetch_related("facteurs"):
             for facteur in evenement.facteurs.all():
                 self.facteurs.add(facteur)
-
 
     def calcul_completion(self):
         """
@@ -330,7 +329,7 @@ def validate_etendue(value):
 
 class Clavier(models.Model):
     """
-    Un orgue peut avoir plusieurs clavier
+    Un orgue peut avoir plusieurs claviers et un pédalier.
     """
 
     type = models.ForeignKey(TypeClavier, null=True, on_delete=models.CASCADE, db_index=True)
@@ -463,8 +462,8 @@ class Source(models.Model):
     )
 
     type = models.CharField(max_length=20, verbose_name="Type de source", choices=CHOIX_SOURCE)
-    description = models.CharField(max_length=100, verbose_name="Description de la source")
-    lien = models.CharField(max_length=100, verbose_name="Lien")
+    description = models.CharField(max_length=100, verbose_name="Description de la source", blank=False)
+    lien = models.CharField(max_length=100, verbose_name="Lien", blank=True)
     orgue = models.ForeignKey(Orgue, null=True, on_delete=models.CASCADE, related_name="sources")
 
     def __str__(self):
@@ -535,6 +534,7 @@ class Image(models.Model):
         self.orgue.completion = self.orgue.calcul_completion()
         super().save(*args, **kwargs)
 
+
 class Accessoire(models.Model):
     """
     Ex : Tremblant, Trémolo, Accouplement Pos./G.O.
@@ -557,6 +557,7 @@ def save_jeu_calcul_resume(sender, instance, **kwargs):
     orgue = instance.clavier.orgue
     orgue.resume_clavier = orgue.calcul_resume_clavier()
     orgue.save()
+
 
 @receiver([post_save, post_delete], sender=Evenement)
 def save_evenement_calcul_facteurs(sender, instance, **kwargs):

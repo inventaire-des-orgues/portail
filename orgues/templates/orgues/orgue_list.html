@@ -33,7 +33,7 @@
                     <h4 class="card-title mb-1">{{ orgue.edifice|capfirst }}
                       <span>| {{ orgue.commune }} ({{ orgue.departement }})</span></h4>
                     <p class="my-0 text-muted font-weight-bold">
-                      {{ orgue.get_designation_display }} - {{ orgue.resume_clavier }}
+                      {{ orgue.designation }} - {{ orgue.resume_clavier }}
                     </p>
                     {% if orgue.facteurs.count %}
                       <p class="my-1">
