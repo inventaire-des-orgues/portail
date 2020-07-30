@@ -3,6 +3,7 @@ from tqdm import tqdm
 
 from orgues.models import Orgue
 
+
 class Command(BaseCommand):
     help = 'Calcul et enregistrement en base de données du résumé clavier pour tous les orgues'
 

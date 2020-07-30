@@ -5,7 +5,7 @@ from django.core.files import File
 from django.core.management.base import BaseCommand
 from django.utils.text import slugify
 
-from orgues.models import Orgue, Accessoire, Evenement, Facteur, TypeClavier, Clavier, Jeu, TypeJeu, Image, Source
+from orgues.models import Orgue, Accessoire, Evenement, Facteur, TypeClavier, Clavier, Jeu, TypeJeu, Image, Source, Fichier
 
 
 class Command(BaseCommand):
@@ -17,22 +17,39 @@ class Command(BaseCommand):
 
         parser.add_argument('--delete', help='Supprime les orgues, jeux et claviers existants')
 
+        parser.add_argument('--delete-except',
+                            help='Supprime les orgues, jeux et claviers associés, sauf codif indiquées dans un fichier')
+
+        parser.add_argument('--codesfile', nargs=1, type=str,
+                            help='Chemin vers le dossier contenant les codifications des orgues à ne pas effacer')
+
     def handle(self, *args, **options):
 
         if not os.path.exists(options['path'][0]):
             return "Path does not exist"
         if options['delete']:
+            print('Effacement de tous les objets de la base.')
             Orgue.objects.all().delete()
             Clavier.objects.all().delete()
             Jeu.objects.all().delete()
+        if options.get('codesfiles'):
+            if not os.path.exists(options['codesfile'][0]):
+                return "Path does not exist"
+            with open(options['codesfile'][0], "r", encoding="utf-8") as f:
+                print("Traitement d'une liste d'orgues à conserver.")
+                codes = [ligne.rstrip('\n') for ligne in f.readlines()]
+                deleted = Orgue.objects.exclude(codification__in=codes)
+                count_del = deleted.count()
+                print("J'efface {} orgues et en garde {}".format(str(count_del), str(len(codes))))
+                deleted.delete()
         with open(options['path'][0], "r", encoding="utf-8") as f:
+            print('Lecture JSON et import des orgues.')
             rows = json.load(f)
             for row in tqdm(rows):
                 orgue, created = Orgue.objects.get_or_create(
                     codification=row["codification"],
                 )
                 try:
-                    assert row.get("designation") in [c[0] for c in Orgue.CHOIX_DESIGNATION]
                     assert row.get("proprietaire") in [c[0] for c in Orgue.CHOIX_PROPRIETAIRE] + [None]
                     assert row.get("etat") in [c[0] for c in Orgue.CHOIX_ETAT] + [None]
                     assert row.get("elevation") in [c[0] for c in Orgue.CHOIX_ELEVATION] + [None]
@@ -55,6 +72,7 @@ class Command(BaseCommand):
                     orgue.commune = row.get("commune")
                     orgue.code_insee = row.get("code_insee")
                     orgue.ancienne_commune = row.get("ancienne_commune")
+                    orgue.adresse = row.get("adresse")
                     orgue.departement = row.get("departement")
                     orgue.code_departement = row.get("code_departement")
                     orgue.region = row.get("region")
@@ -119,6 +137,13 @@ class Command(BaseCommand):
                             description=source.get("description"),
                             lien=source.get("lien"),
                             orgue=orgue
+                        )
+
+                    for fichier in row.get("fichiers", []):
+                        Fichier.objects.create(
+                            orgue=orgue,
+                            file=fichier.get("file"),
+                            description=fichier.get("description")
                         )
 
                 except Exception as e:
