@@ -2,6 +2,7 @@ import datetime
 import logging
 import time
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
@@ -31,6 +32,11 @@ class ContactView(FormView):
     form_class = project_forms.ContactForm
 
     def form_valid(self, form):
+
+        if not verify_captcha(self.request):
+            messages.error(self.request,"La vérification de sécurité anti-robot a échoué")
+            return redirect('contact')
+
         last_email_sent = self.request.session.get("last_email_sent")
 
         # user can send 1 message per 5 minutes max
@@ -64,3 +70,30 @@ class ContactView(FormView):
             self.request.session["last_email_sent"] = time.time()
 
         return redirect('orgues:orgue-list')
+
+
+def get_client_ip(request):
+    """
+    Method to extract IP adress from request
+    """
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+
+def verify_captcha(request):
+    """
+    Method to check google reCaptcha
+    More info : https://developers.google.com/recaptcha/docs/invisible
+    """
+    import requests
+    captcha = request.POST.get('g-recaptcha-response')
+    response = requests.post("https://www.google.com/recaptcha/api/siteverify", data={
+        "secret": settings.CAPTCHA_SECRET,
+        "response": captcha,
+        "remoteip": get_client_ip(request)
+    }).json()
+    return response.get("success", False)
