@@ -21,9 +21,9 @@ class Command(BaseCommand):
                 print("Début traitement d'une liste de codes à remplacer.")
                 couples_codes = [ligne.rstrip('\n').split(';') for ligne in f.readlines()]
                 for couple_code in couples_codes:
-                    print("Orgue {} : je remplace {} par {}".format(str(orgue), code_avant, code_apres))
                     (code_avant, code_apres) = couple_code
                     orgue = Orgue.objects.get(codification__exact=code_avant)
+                    print("Orgue {} : je remplace {} par {}".format(str(orgue), code_avant, code_apres))
                     # On met à jour le code de l'orgue
                     orgue.codification = code_apres
                     # On met à jour les fichiers images
