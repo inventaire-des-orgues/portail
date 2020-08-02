@@ -21,6 +21,7 @@ class Command(BaseCommand):
                 print("Début traitement d'une liste de codes à remplacer.")
                 couples_codes = [ligne.rstrip('\n').split(';') for ligne in f.readlines()]
                 for couple_code in couples_codes:
+                    print("Orgue {} : je remplace {} par {}".format(str(orgue), code_avant, code_apres))
                     (code_avant, code_apres) = couple_code
                     orgue = Orgue.objects.get(codification__exact=code_avant)
                     # On met à jour le code de l'orgue
@@ -44,7 +45,8 @@ class Command(BaseCommand):
                         os.rename(pathfichier_avant, pathfichier_apres)
                         fic.file.name = fic.file.name.replace(code_avant, code_apres)
                     # On efface l'ancien répertoire
-                    shutil.rmtree(os.path.join(settings.MEDIA_ROOT, orgue.code_departement, code_avant))
-                    print("Orgue {} : je remplace {} par {}".format(str(orgue), code_avant, code_apres))
+                    p = os.path.join(settings.MEDIA_ROOT, orgue.code_departement, code_avant)
+                    if os.path.exists(p):
+                        shutil.rmtree(p)
                     orgue.save()
                 print('Fin de la modification des codes.')
