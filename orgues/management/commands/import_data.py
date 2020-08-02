@@ -17,11 +17,11 @@ class Command(BaseCommand):
 
         parser.add_argument('--delete', help='Supprime les orgues, jeux et claviers existants')
 
-        parser.add_argument('--delete-except',
-                            help='Supprime les orgues, jeux et claviers associés, sauf codif indiquées dans un fichier')
-
         parser.add_argument('--codesfile', nargs=1, type=str,
                             help='Chemin vers le dossier contenant les codifications des orgues à ne pas effacer')
+
+        parser.add_argument('--delete_lazy', nargs=1, type=str,
+                            help='Efface toute les fiches peu renseignées (<20%)')
 
     def handle(self, *args, **options):
 
@@ -42,6 +42,12 @@ class Command(BaseCommand):
                 count_del = deleted.count()
                 print("J'efface {} orgues et en garde {}".format(str(count_del), str(len(codes))))
                 deleted.delete()
+        if options.get('delete_lazy'):
+            print("Efface toute les fiches peu renseignées (<20%)")
+            to_delete = Orgue.objects.filter(completion__lt=20)
+            count_to_del = to_delete.count()
+            print("J'efface {} orgues".format(str(count_to_del)))
+            to_delete.delete()
         with open(options['path'][0], "r", encoding="utf-8") as f:
             print('Lecture JSON et import des orgues.')
             rows = json.load(f)

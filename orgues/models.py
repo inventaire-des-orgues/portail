@@ -275,7 +275,7 @@ class Orgue(models.Model):
         """
         points = 0
 
-        if (self.commune and self.region and self.departement):
+        if self.commune and self.region and self.departement:
             points += 5
 
         if len(self.edifice) > 6:
