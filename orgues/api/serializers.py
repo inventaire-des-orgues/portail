@@ -54,11 +54,10 @@ class SourceSerializer(serializers.ModelSerializer):
 
 
 class FacteurSerializer(serializers.ModelSerializer):
-    facteurs = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Facteur
-        exlude = ["id"]
+        exclude = ["id"]
 
 
 class OrgueSerializer(serializers.ModelSerializer):
