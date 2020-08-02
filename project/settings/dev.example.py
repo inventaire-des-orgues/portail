@@ -60,3 +60,5 @@ LOGGING = {
         },
     },
 }
+
+CAPTCHA_SECRET  = "KJOKJLJLKJ"

@@ -1,7 +1,7 @@
 <script>
   {% if messages %}
     {% for message in messages %}
-      {%  if 'error' in message.tags %}
+      {%  if 'error' in message.tags or 'danger' in message.tags %}
         toastr.error("{{message|safe}}");
       {% elif 'warning' in message.tags %}
         toastr.warning("{{message|safe}}");
