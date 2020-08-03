@@ -22,7 +22,10 @@ class Command(BaseCommand):
                 couples_codes = [ligne.rstrip('\n').split(';') for ligne in f.readlines()]
                 for couple_code in couples_codes:
                     (code_avant, code_apres) = couple_code
-                    orgue = Orgue.objects.get(codification__exact=code_avant)
+                    try:
+                        orgue = Orgue.objects.get(codification__exact=code_avant)
+                    except Orgue.DoesNotExist:
+                        orgue = Orgue.objects.get(codification__exact=code_apres)
                     print("Orgue {} : je remplace {} par {}".format(str(orgue), code_avant, code_apres))
                     # On met à jour le code de l'orgue
                     orgue.codification = code_apres
@@ -33,8 +36,10 @@ class Command(BaseCommand):
                         # Create dir if necessary and move file
                         if not os.path.exists(os.path.dirname(pathimage_apres)):
                             os.makedirs(os.path.dirname(pathimage_apres))
-                        os.rename(pathimage_avant, pathimage_apres)
+                        if not os.path.exists(pathimage_apres):
+                            os.rename(pathimage_avant, pathimage_apres)
                         img.image.name = img.image.name.replace(code_avant, code_apres)
+                        img.image.save()
                     # On met à jour les autres fichiers
                     for fic in orgue.fichiers.all():
                         pathfichier_avant = fic.file.path
@@ -42,8 +47,10 @@ class Command(BaseCommand):
                         # Create dir if necessary and move file
                         if not os.path.exists(os.path.dirname(pathfichier_apres)):
                             os.makedirs(os.path.dirname(pathfichier_apres))
-                        os.rename(pathfichier_avant, pathfichier_apres)
+                        if not os.path.exists(pathfichier_apres):
+                            os.rename(pathfichier_avant, pathfichier_apres)
                         fic.file.name = fic.file.name.replace(code_avant, code_apres)
+                        fic.file.save()
                     # On efface l'ancien répertoire
                     p = os.path.join(settings.MEDIA_ROOT, orgue.code_departement, code_avant)
                     if os.path.exists(p):
