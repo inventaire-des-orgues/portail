@@ -26,6 +26,7 @@ class Command(BaseCommand):
                     print("Orgue {} : je remplace {} par {}".format(str(orgue), code_avant, code_apres))
                     # On met à jour le code de l'orgue
                     orgue.codification = code_apres
+
                     # On met à jour les fichiers images
                     for img in orgue.images.all():
                         pathimage_avant = img.image.path
