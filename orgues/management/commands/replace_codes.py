@@ -37,7 +37,7 @@ class Command(BaseCommand):
                         if not os.path.exists(pathimage_apres):
                             os.rename(pathimage_avant, pathimage_apres)
                         img.image.name = img.image.name.replace(code_avant, code_apres)
-                        img.image.save()
+                        img.save()
                     # On met à jour les autres fichiers
                     for fic in orgue.fichiers.all():
                         pathfichier_avant = fic.file.path
@@ -48,7 +48,7 @@ class Command(BaseCommand):
                         if not os.path.exists(pathfichier_apres):
                             os.rename(pathfichier_avant, pathfichier_apres)
                         fic.file.name = fic.file.name.replace(code_avant, code_apres)
-                        fic.file.save()
+                        fic.save()
                     # On efface l'ancien répertoire
                     p = os.path.join(settings.MEDIA_ROOT, orgue.code_departement, code_avant)
                     if os.path.exists(p):
