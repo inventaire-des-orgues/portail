@@ -45,7 +45,7 @@ class Command(BaseCommand):
                         # Create dir if necessary and move file
                         if not os.path.exists(os.path.dirname(pathfichier_apres)):
                             os.makedirs(os.path.dirname(pathfichier_apres))
-                        if not os.path.exists(pathfichier_apres):
+                        if os.path.exists(pathfichier_avant) and not os.path.exists(pathfichier_apres):
                             os.rename(pathfichier_avant, pathfichier_apres)
                         fic.file.name = fic.file.name.replace(code_avant, code_apres)
                         fic.save()
