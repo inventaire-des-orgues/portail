@@ -22,10 +22,7 @@ class Command(BaseCommand):
                 couples_codes = [ligne.rstrip('\n').split(';') for ligne in f.readlines()]
                 for couple_code in couples_codes:
                     (code_avant, code_apres) = couple_code
-                    try:
-                        orgue = Orgue.objects.get(codification__exact=code_avant)
-                    except Orgue.DoesNotExist:
-                        orgue = Orgue.objects.get(codification__exact=code_apres)
+                    orgue = Orgue.objects.get(codification__exact=code_apres)
                     print("Orgue {} : je remplace {} par {}".format(str(orgue), code_avant, code_apres))
                     # On met à jour le code de l'orgue
                     orgue.codification = code_apres
