@@ -33,11 +33,11 @@
 
 
         var popup = '<h6>' + orgues[i].commune + '</h6>' + '<h6>' + orgues[i].edifice + '</h6><p class="text-center"><a class="btn btn-outline-primary btn-xs" href="/detail/'+orgues[i].slug+'">Voir l\'orgue</a></p>';
-
-
+        var ttip = orgues[i].commune + ' ' + orgues[i].edifice    ;
         var latLng = new L.LatLng(orgues[i].latitude, orgues[i].longitude);
         var marker = new L.Marker(latLng, {title: orgues[i].pk}).bindPopup(popup);
-        ;
+        marker.bindTooltip(ttip);
+
         markersCluster.addLayer(marker);
       }
 
