@@ -21,9 +21,12 @@
           </div>
         </div>
         <div class="col-xl-8">
+          {% if request.GET %}
+            <p class="text-muted text-center" style="margin-top: -38px">{{ paginator.count }} résultats</p>
+          {% endif %}
           {% for orgue in object_list %}
             <div class="card shadow-sm vignette mb-lg-4 mb-sm-5"
-                onclick="window.location = '{% url 'orgues:orgue-detail' orgue.slug %}'">
+                 onclick="window.location = '{% url 'orgues:orgue-detail' orgue.slug %}'">
               <div class="row no-gutters">
                 <div class="col-md-4" style="background: #868e96;">
                   <img class="card-img-top" src="{{ orgue.vignette }}" alt="Photo orgue {{ orgue }}">
