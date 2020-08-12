@@ -327,6 +327,7 @@ table#lexique td:first-child {
 
 #search-form #btn > i {
     transform: none;
+    color: white;
 }
 
 #search-form .select2-container--default .select2-selection--single {
