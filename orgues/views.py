@@ -320,7 +320,7 @@ class FacteurListJS(FabListView):
     documentation : https://select2.org/data-sources/ajax
     """
     model = Facteur
-    permission_required = 'orgues.add_orgue'
+    permission_required = 'orgues.view_facteur'
     paginate_by = 30
 
     def get_queryset(self):
