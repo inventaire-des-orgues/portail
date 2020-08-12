@@ -463,7 +463,7 @@ class Source(models.Model):
 
     type = models.CharField(max_length=20, verbose_name="Type de source", choices=CHOIX_SOURCE)
     description = models.CharField(max_length=100, verbose_name="Description de la source", blank=False)
-    lien = models.CharField(max_length=100, verbose_name="Lien", blank=True)
+    lien = models.URLField(max_length=200, verbose_name="Lien", blank=True)
     orgue = models.ForeignKey(Orgue, null=True, on_delete=models.CASCADE, related_name="sources")
 
     def __str__(self):

@@ -76,6 +76,7 @@
                   {% else %}
                     <p class="text-muted">Pas de description</p>
                   {% endif %}
+                  <h2 class="titre-fiche">Images</h2>
                   {% if orgue.images.count %}
                     <h2 class="titre-fiche">Images</h2>
                     <div class="row">
@@ -94,8 +95,8 @@
                         </div>
                       {% endfor %}
                     </div>
-
-
+                  {% else %}
+                  <p class="text-muted">Aucune image</p>
                   {% endif %}
                   <h2 class="titre-fiche">Fichiers</h2>
                   {% if orgue.fichiers.count %}
@@ -115,6 +116,23 @@
                     </ul>
                   {% else %}
                     <p class="text-muted">Aucun fichier</p>
+                  {% endif %}
+                  <h2 class="titre-fiche">Sources</h2>
+                  {% if orgue.sources.count %}
+                    <ul>
+                      {% for source in orgue.sources.all %}
+                        <li>
+                          {% if source.lien %}
+                          <a href="{{ source.lien }}">{{ source.description }} ({{source.type}})</a>
+                          {% else %}
+                          {{ source.description }} ({{source.type}})
+                          {% endif %}
+                        </li>
+
+                      {% endfor %}
+                    </ul>
+                  {% else %}
+                    <p class="text-muted">Aucune source</p>
                   {% endif %}
                 </div>
                 <hr>
