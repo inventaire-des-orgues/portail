@@ -4,7 +4,7 @@
     {% if page_obj.has_previous %}
       <li class="page-item">
         <a href="?{% url_replace 'page' page_obj.previous_page_number %}" class="page-link" data-page="{{ page_obj.previous_page_number }}">
-          <span class="fa fa-arrow-left"></span>
+          <span class="fa fa-chevron-left"></span>
         </a>
       </li>
     {% endif %}
@@ -15,7 +15,7 @@
     {% if page_obj.has_next %}
       <li class="page-item">
         <a href="?{% url_replace 'page' page_obj.next_page_number %}" class="page-link" data-page="{{ page_obj.next_page_number }}">
-          <span class="fa fa-arrow-right"></span>
+          <span class="fa fa-chevron-right"></span>
         </a>
       </li>
     {% endif %}
