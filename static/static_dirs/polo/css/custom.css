@@ -120,14 +120,32 @@ span.puce-etat {
 #orgue-list .card {
     border-radius: 10px;
 }
-#orgue-list .la_vignette {
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-}
 
-#orgue-list .la_vignette img.card-img-top {
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
+#orgue-list .la_vignette {
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+        border-top-right-radius:0;
+        border-bottom-right-radius:0;
+    }
+
+    #orgue-list .la_vignette img.card-img-top {
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+        border-top-right-radius:0;
+        border-bottom-right-radius:0;
+    }
+
+@media (max-width: 767px) {
+    #orgue-list .la_vignette {
+        border-top-right-radius:10px;
+        border-bottom-left-radius: 0;
+    }
+
+    #orgue-list .la_vignette img.card-img-top {
+        border-top-right-radius:10px;
+        border-bottom-left-radius: 0;
+    }
+
 }
 
 /* CLAVIERS */
@@ -395,15 +413,16 @@ table#lexique td:first-child {
 
 /* Lexique */
 
-#lexique-input{
+#lexique-input {
     border-radius: 50px;
 }
 
 /*image enfants acceuil*/
 
-#orgues-illustration-enfants{
+#orgues-illustration-enfants {
     min-height: 400px;
 }
+
 @media (min-width: 1000px) {
     #orgues-illustration-enfants {
         min-height: 550px;
@@ -413,7 +432,7 @@ table#lexique td:first-child {
 /**/
 
 @media (min-width: 1200px) {
-    #nb-resultats{
+    #nb-resultats {
         margin-top: -38px;
     }
 }
