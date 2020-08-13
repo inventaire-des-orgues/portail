@@ -75,6 +75,7 @@ button.btn.btn-primary:hover, button.btn.btn-primary:focus, button.btn.btn-prima
 
 .form-group label:not(.error) {
     font-size: 1.1em;
+    color: #5c1c54;
 }
 
 #map svg {
@@ -115,6 +116,19 @@ span.puce-etat {
     text-align: center;
 }
 
+/* LISTE DES ORGUES */
+#orgue-list .card {
+    border-radius: 10px;
+}
+#orgue-list .la_vignette {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+#orgue-list .la_vignette img.card-img-top {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
 
 /* CLAVIERS */
 
@@ -312,11 +326,16 @@ section.triangle::before {
     height: 34px !important;
 }
 
-
 table#lexique td:first-child {
     font-weight: bold;
+    color: #5c1c54;
 }
 
+/* Formulaire de contact */
+
+#contact .card {
+    border-radius: 20px;
+}
 
 /*search form*/
 
