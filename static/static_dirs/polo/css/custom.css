@@ -409,3 +409,11 @@ table#lexique td:first-child {
         min-height: 550px;
     }
 }
+
+/**/
+
+@media (min-width: 1200px) {
+    #nb-resultats{
+        margin-top: -38px;
+    }
+}
