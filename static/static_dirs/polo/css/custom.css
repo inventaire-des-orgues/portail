@@ -393,6 +393,14 @@ table#lexique td:first-child {
     font-size: 1rem !important;
 }
 
+/* Lexique */
+
+#lexique-input{
+    border-radius: 50px;
+}
+
+/*image enfants acceuil*/
+
 #orgues-illustration-enfants{
     min-height: 400px;
 }
