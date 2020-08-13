@@ -122,13 +122,30 @@ span.puce-etat {
 }
 
 #orgue-list .la_vignette {
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-}
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+        border-top-right-radius:0;
+        border-bottom-right-radius:0;
+    }
 
-#orgue-list .la_vignette img.card-img-top {
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
+    #orgue-list .la_vignette img.card-img-top {
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+        border-top-right-radius:0;
+        border-bottom-right-radius:0;
+    }
+
+@media (max-width: 767px) {
+    #orgue-list .la_vignette {
+        border-top-right-radius:10px;
+        border-bottom-left-radius: 0;
+    }
+
+    #orgue-list .la_vignette img.card-img-top {
+        border-top-right-radius:10px;
+        border-bottom-left-radius: 0;
+    }
+
 }
 
 /* CLAVIERS */
