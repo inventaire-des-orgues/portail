@@ -294,7 +294,7 @@ class TypeJeuListJS(FabListView):
     documentation : https://select2.org/data-sources/ajax
     """
     model = TypeJeu
-    permission_required = 'orgues.add_orgue'
+    permission_required = 'orgues.view_jeu'
     paginate_by = 30
 
     def get_queryset(self):
