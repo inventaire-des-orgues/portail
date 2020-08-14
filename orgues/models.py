@@ -554,9 +554,10 @@ def save_clavier_calcul_resume(sender, instance, **kwargs):
 
 @receiver([post_save, post_delete], sender=Jeu)
 def save_jeu_calcul_resume(sender, instance, **kwargs):
-    orgue = instance.clavier.orgue
-    orgue.resume_clavier = orgue.calcul_resume_clavier()
-    orgue.save()
+    if instance.clavier and instance.clavier.orgue:
+        orgue = instance.clavier.orgue
+        orgue.resume_clavier = orgue.calcul_resume_clavier()
+        orgue.save()
 
 
 @receiver([post_save, post_delete], sender=Evenement)
