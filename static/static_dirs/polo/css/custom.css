@@ -120,14 +120,32 @@ span.puce-etat {
 #orgue-list .card {
     border-radius: 10px;
 }
-#orgue-list .la_vignette {
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-}
 
-#orgue-list .la_vignette img.card-img-top {
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
+#orgue-list .la_vignette {
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+        border-top-right-radius:0;
+        border-bottom-right-radius:0;
+    }
+
+    #orgue-list .la_vignette img.card-img-top {
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+        border-top-right-radius:0;
+        border-bottom-right-radius:0;
+    }
+
+@media (max-width: 767px) {
+    #orgue-list .la_vignette {
+        border-top-right-radius:10px;
+        border-bottom-left-radius: 0;
+    }
+
+    #orgue-list .la_vignette img.card-img-top {
+        border-top-right-radius:10px;
+        border-bottom-left-radius: 0;
+    }
+
 }
 
 /* CLAVIERS */
@@ -213,10 +231,12 @@ dt {
 }
 
 .new-clavier-btn {
+    padding-right: 1em;
+    padding-left: 1em;
+    min-width: 130px;
     text-align: center;
     margin-top: 10px;
     height: 220px;
-    line-height: 210px;
     border: 2px dashed #5c1c54;
     border-radius: 10px;
     width: 100%;
@@ -317,14 +337,6 @@ section.triangle::before {
     padding: 0;
 }
 
-/* Make Select2 boxes match Bootstrap3 heights: */
-.select2-selection__rendered {
-    line-height: 32px !important;
-}
-
-.select2-selection {
-    height: 34px !important;
-}
 
 table#lexique td:first-child {
     font-weight: bold;
@@ -339,6 +351,15 @@ table#lexique td:first-child {
 
 /*search form*/
 
+/* Make Select2 boxes match Bootstrap3 heights: */
+#search-form .select2-selection__rendered {
+    line-height: 32px !important;
+}
+
+#search-form .select2-selection {
+    height: 34px !important;
+}
+
 #search-form #btn:hover {
     width: 36px;
     color: #2e0c29;
@@ -346,13 +367,14 @@ table#lexique td:first-child {
 
 #search-form #btn > i {
     transform: none;
+    color: white;
 }
 
 #search-form .select2-container--default .select2-selection--single {
     border-radius: 50px;
 }
 
-#search-form .select2-container--default.select2-container--open.select2-container--below .select2-selection--single, .select2-container--default.select2-container--open.select2-container--below .select2-selection--multiple {
+#search-form .select2-container--default.select2-container--open.select2-container--below .select2-selection--single, #search-form .select2-container--default.select2-container--open.select2-container--below .select2-selection--multiple {
     border-radius: 25px;
 }
 
@@ -392,11 +414,28 @@ table#lexique td:first-child {
     font-size: 1rem !important;
 }
 
-#orgues-illustration-enfants{
+/* Lexique */
+
+#lexique-input {
+    border-radius: 50px;
+}
+
+/*image enfants acceuil*/
+
+#orgues-illustration-enfants {
     min-height: 400px;
 }
+
 @media (min-width: 1000px) {
     #orgues-illustration-enfants {
         min-height: 550px;
+    }
+}
+
+/**/
+
+@media (min-width: 1200px) {
+    #nb-resultats {
+        margin-top: -38px;
     }
 }

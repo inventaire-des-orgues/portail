@@ -94,15 +94,15 @@
                         </div>
                       {% endfor %}
                     </div>
-
-
+                  {% else %}
+                  <p class="text-muted">Aucune image</p>
                   {% endif %}
                   <h2 class="titre-fiche">Fichiers</h2>
                   {% if orgue.fichiers.count %}
                     <ul>
                       {% for fichier in orgue.fichiers.all %}
                         <li>
-                          <a href="{{ fichier.file.url }}">
+                          <a href="{{ fichier.file.url }}" target="_blank" rel="noopener noreferrer">
                             {% if fichier.description %}
                               {{ fichier.description }}
                             {% else %}
@@ -115,6 +115,23 @@
                     </ul>
                   {% else %}
                     <p class="text-muted">Aucun fichier</p>
+                  {% endif %}
+                  <h2 class="titre-fiche">Sources</h2>
+                  {% if orgue.sources.count %}
+                    <ul>
+                      {% for source in orgue.sources.all %}
+                        <li>
+                          {% if source.lien %}
+                          <a href="{{ source.lien }}" target="_blank" rel="noopener noreferrer">{{ source.description }} ({{source.type}})</a>
+                          {% else %}
+                          {{ source.description }} ({{source.type}})
+                          {% endif %}
+                        </li>
+
+                      {% endfor %}
+                    </ul>
+                  {% else %}
+                    <p class="text-muted">Aucune source</p>
                   {% endif %}
                 </div>
                 <hr>
@@ -162,7 +179,7 @@
                 {% if orgue.lien_reference %}
                   <dt>Lien de référence</dt>
                   <dd>
-                    <a href="{{ orgue.lien_reference }}">{{ orgue.lien_reference|truncatechars:40 }}</a>
+                    <a  href="{{ orgue.lien_reference }}" target="_blank" rel="noopener noreferrer">{{ orgue.lien_reference|truncatechars:40 }}</a>
                   </dd>
                 {% endif %}
               </dl>
@@ -173,7 +190,7 @@
                   <ul>
                     {% for lien in orgue.liens_pop %}
                       <li>
-                        <a href="{{ lien.href }}" target="_blank">{{ lien.title }}</a>
+                        <a href="{{ lien.href }}" target="_blank" rel="noopener noreferrer" >{{ lien.title }}</a>
                       </li>
                     {% endfor %}
                   </ul>

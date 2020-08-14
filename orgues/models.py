@@ -463,7 +463,7 @@ class Source(models.Model):
 
     type = models.CharField(max_length=20, verbose_name="Type de source", choices=CHOIX_SOURCE)
     description = models.CharField(max_length=100, verbose_name="Description de la source", blank=False)
-    lien = models.CharField(max_length=100, verbose_name="Lien", blank=True)
+    lien = models.URLField(max_length=200, verbose_name="Lien", blank=True)
     orgue = models.ForeignKey(Orgue, null=True, on_delete=models.CASCADE, related_name="sources")
 
     def __str__(self):
@@ -554,9 +554,10 @@ def save_clavier_calcul_resume(sender, instance, **kwargs):
 
 @receiver([post_save, post_delete], sender=Jeu)
 def save_jeu_calcul_resume(sender, instance, **kwargs):
-    orgue = instance.clavier.orgue
-    orgue.resume_clavier = orgue.calcul_resume_clavier()
-    orgue.save()
+    if instance.clavier and instance.clavier.orgue:
+        orgue = instance.clavier.orgue
+        orgue.resume_clavier = orgue.calcul_resume_clavier()
+        orgue.save()
 
 
 @receiver([post_save, post_delete], sender=Evenement)

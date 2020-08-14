@@ -4,42 +4,44 @@
 {% block source_active %}active{% endblock %}
 
 {% block card-body %}
-  {% if object_list %}
-    <table class="table table-striped table-bordered table-hover table-vcenter">
-      <thead>
-      <tr>
-        <th>Description</th>
-        <th>Type de source</th>
-        <th>Lien</th>
-        <th class="text-right" width="170px">Actions</th>
-      </tr>
-      </thead>
-      <tbody>
-      {% for source in object_list %}
-        <tr>
-          <td class="d-lg-table-cell font-size-xl font-w600">{{ source.description }}</td>
-          <td class="d-lg-table-cell">
-            <b>{{ source.type }}</b>
-          </td>
-          <td class="d-none d-lg-table-cell">{{ source.lien }}
-          <td width="140px" class="text-right">
-            <a href="{% url 'orgues:source-update' source.pk %}" class="btn btn-xs btn btn-outline">Editer</a>
-            <a href="{% url 'orgues:source-delete' source.pk %}" class="btn btn-xs  btn-danger btn-outline supprimer_evenement" data-pk="{{ source.pk }}">Supprimer</a>
-          </td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <p class="py-50 text-center">
-      Aucune source
-    </p>
-  {% endif %}
-  <p class="text-right">
-    <a href="{% url 'orgues:source-create' orgue.uuid %}" class="btn btn-sm btn-outline-primary">
-    <i class="fa fa-plus"></i>  Ajouter une source
-    </a>
-  </p>
+{% if object_list %}
+<table class="table table-striped table-bordered table-hover table-vcenter">
+  <thead>
+  <tr>
+    <th>Description</th>
+    <th>Type de source</th>
+    <th>Lien</th>
+    <th class="text-right" width="170px">Actions</th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for source in object_list %}
+  <tr>
+    <td class="d-lg-table-cell font-size-xl font-w600">{{ source.description }}</td>
+    <td class="d-lg-table-cell">
+      <b>{{ source.type }}</b>
+    </td>
+    <td class="d-none d-lg-table-cell">{{ source.lien }}
+    <td width="140px" class="text-right">
+      <a href="{% url 'orgues:source-update' source.pk %}" class="btn btn-xs btn btn-outline">Editer</a>
+      <form action="{% url 'orgues:source-delete' source.pk %}" method="post" data-pk="{{ source.pk }}">{% csrf_token %}
+        <button type="submit" class="btn btn-xs btn-outline btn-danger btn-xs">Supprimer</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="py-50 text-center">
+  Aucune source
+</p>
+{% endif %}
+<p class="text-right">
+  <a href="{% url 'orgues:source-create' orgue.uuid %}" class="btn btn-sm btn-outline-primary">
+    <i class="fa fa-plus"></i> Ajouter une source
+  </a>
+</p>
 
 {% endblock %}
 

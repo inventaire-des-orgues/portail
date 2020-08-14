@@ -4,7 +4,7 @@
 {% block content %}
   <div class="container py-3" style="min-height:700px;">
     <div class="input-group my-4"  style="max-width:400px;">
-      <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Rechercher..." class="form-control">
+      <input type="text" id="lexique-input" onkeyup="myFunction()" placeholder="Rechercher..." class="form-control">
     </div>
     <table class="table" id="lexique">
       <thead>
@@ -1432,7 +1432,7 @@
     function myFunction() {
       // Declare variables
       var input, filter, table, tr, td, i, txtValue;
-      input = document.getElementById("myInput");
+      input = document.getElementById("lexique-input");
       filter = input.value.toUpperCase();
       table = document.getElementById("lexique");
       tr = table.getElementsByTagName("tr");
