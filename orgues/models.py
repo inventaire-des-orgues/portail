@@ -383,6 +383,7 @@ class Evenement(models.Model):
         ("restauration", "Restauration"),
         ("deplacement", "Déplacement"),
         ("relevage", "Relevage"),
+        ("modifications", "Modifications"),
         ("disparition", "Disparition"),
         ("degats", "Dégâts"),
         ("classement_mh", "Classement au titre des monuments historiques"),
