@@ -78,6 +78,7 @@ class OrgueList(LoginRequiredMixin, ListView):
         context = super().get_context_data()
         context["selected_commune"] = self.selected_commune
         context["selected_departement"] = self.selected_departement
+        context["facteur"] = self.facteur
         return context
 
 

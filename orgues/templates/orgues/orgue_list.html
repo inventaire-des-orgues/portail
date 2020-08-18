@@ -76,5 +76,9 @@
 
   {% include 'orgues/search_section_script.html' %}
 
-
+  <script>
+  $("#id_departement,#id_commune,#id_facteur,#id_edifice").change(function(){
+    $("#search-form").submit()
+  })
+  </script>
 {% endblock %}
