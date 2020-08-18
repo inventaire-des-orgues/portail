@@ -32,6 +32,7 @@ class Orgue(models.Model):
         ("association_culturelle", "Association culturelle"),
         ("diocese", "Diocèse"),
         ("paroisse", "Paroisse"),
+        ("congregation", "Congrégation"),
     )
 
     CHOIX_ETAT = (
@@ -263,7 +264,7 @@ class Orgue(models.Model):
 
     def calcul_facteurs(self):
         """
-        Raptriement des facteurs stockés dans les événements pour accès rapide
+        Rapatriement des facteurs stockés dans les événements pour accès rapide
         """
         self.facteurs.clear()
         for evenement in self.evenements.filter(facteurs__isnull=False).prefetch_related("facteurs"):
