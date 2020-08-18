@@ -152,8 +152,8 @@
                     Pas d'information
                   {% endfor %}
                 </dd>
-                <dt>Elévation</dt>
-                <dd>{{ orgue.get_elevation_display|default_if_none:"Non définie" }}</dd>
+                <dt>Emplacement</dt>
+                <dd>{{ orgue.get_emplacement_display|default_if_none:"Non définie" }}</dd>
                 <dt>Etat de l'instrument</dt>
                 <dd>{{ orgue.get_etat_display|default_if_none:"Non défini" }}</dd>
                 <hr>

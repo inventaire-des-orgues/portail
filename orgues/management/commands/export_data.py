@@ -17,7 +17,7 @@ class Command(BaseCommand):
             "commentaire_admin": orgue.commentaire_admin,
             "designation": orgue.designation,
             "is_polyphone": orgue.is_polyphone,
-            "elevation": orgue.elevation,
+            "emplacement": orgue.emplacement,
             "etat": orgue.etat,
             "codification": orgue.codification,
             "edifice": orgue.edifice,

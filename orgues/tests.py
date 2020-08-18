@@ -131,7 +131,7 @@ class OrgueTestCase(TestCase):
         self.assertEqual(orgue.lien_reference, orgue_json["lien_reference"])
         self.assertEqual(orgue.is_polyphone, orgue_json["is_polyphone"])
         self.assertEqual(orgue.etat, orgue_json["etat"])
-        self.assertEqual(orgue.elevation, orgue_json["elevation"])
+        self.assertEqual(orgue.emplacement, orgue_json["emplacement"])
         self.assertEqual(orgue.buffet, orgue_json["buffet"])
         self.assertEqual(orgue.console, orgue_json["console"])
         self.assertEqual(orgue.commentaire_admin, orgue_json["commentaire_admin"])
