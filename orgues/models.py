@@ -132,7 +132,7 @@ class Orgue(models.Model):
     slug = models.SlugField(max_length=255)
     completion = models.IntegerField(default=False, editable=False)
     keywords = models.TextField()
-    resume_clavier = models.CharField(max_length=30, null=True, blank=True, editable=False)
+    resume_composition = models.CharField(max_length=30, null=True, blank=True, editable=False)
     facteurs = models.ManyToManyField(Facteur, blank=True, editable=False)
 
     def __str__(self):
@@ -238,7 +238,7 @@ class Orgue(models.Model):
     def get_delete_url(self):
         return reverse('orgues:orgue-delete', args=(self.uuid,))
 
-    def calcul_resume_clavier(self):
+    def calcul_resume_composition(self):
         """
         On stocke dans la base de données l'information Clavier et Pédale de façon commune, sous le format :
         [nombre de claviers en chiffres romains]["/P" si Pédale]
@@ -548,7 +548,7 @@ class Accessoire(models.Model):
 @receiver([post_save, post_delete], sender=Clavier)
 def save_clavier_calcul_resume(sender, instance, **kwargs):
     orgue = instance.orgue
-    orgue.resume_clavier = orgue.calcul_resume_clavier()
+    orgue.resume_composition = orgue.calcul_resume_composition()
     orgue.save()
 
 
@@ -556,7 +556,7 @@ def save_clavier_calcul_resume(sender, instance, **kwargs):
 def save_jeu_calcul_resume(sender, instance, **kwargs):
     if instance.clavier and instance.clavier.orgue:
         orgue = instance.clavier.orgue
-        orgue.resume_clavier = orgue.calcul_resume_clavier()
+        orgue.resume_composition = orgue.calcul_resume_composition()
         orgue.save()
 
 

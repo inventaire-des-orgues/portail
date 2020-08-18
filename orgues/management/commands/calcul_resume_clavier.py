@@ -10,5 +10,5 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         for orgue in tqdm(Orgue.objects.all()):
-            orgue.resume_clavier = orgue.calcul_resume_clavier()
+            orgue.resume_composition = orgue.calcul_resume_composition()
             orgue.save()
