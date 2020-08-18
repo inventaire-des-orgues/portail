@@ -427,6 +427,8 @@ class ClavierCreate(FabView):
             for jeu in jeux:
                 jeu.clavier = clavier
                 jeu.save()
+            if request.POST.get("continue") == "true":
+                return redirect(reverse('orgues:clavier-update', args=(clavier.pk,))+"#jeux")
             messages.success(self.request, "Nouveau clavier ajouté, merci !")
             return redirect('orgues:orgue-update-composition', orgue_uuid=orgue.uuid)
         else:
@@ -465,6 +467,8 @@ class ClavierUpdate(FabUpdateView):
             for jeu in jeux:
                 jeu.clavier = clavier
                 jeu.save()
+            if request.POST.get("continue") == "true":
+                return redirect(reverse('orgues:clavier-update', args=(clavier.pk,))+"#jeux")
             messages.success(self.request, "Clavier mis à jour, merci !")
             return redirect('orgues:orgue-update-composition', orgue_uuid=clavier.orgue.uuid)
         else:

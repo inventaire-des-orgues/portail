@@ -24,7 +24,7 @@
         {% include 'stack_field.html' with field=clavier_form.is_expressif %}
       </div>
     </div>
-    <h5 class="card-title">
+    <h5 class="card-title" id="jeux">
       Jeux
     </h5>
     {{ jeux_formset.management_form }}
@@ -47,6 +47,12 @@
         {% endif %}
       </div>
     {% endfor %}
+    <div>
+      <button type="submit" name="continue" value="true" class="btn btn-outline-primary btn-light btn-sm">
+        <i class="fa fa-plus"></i> Ajouter des lignes
+      </button>
+    </div>
+    <hr>
     <div class="form-group text-right">
       <a href="{% url 'orgues:orgue-update-composition' orgue.uuid %}" class="btn btn-light">Annuler</a>
       <button type="submit" class="btn btn-primary">Enregistrer</button>
