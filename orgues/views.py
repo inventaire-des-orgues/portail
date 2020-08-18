@@ -207,6 +207,13 @@ class OrgueUpdateComposition(OrgueUpdate):
     form_class = orgue_forms.OrgueCompositionForm
     template_name = "orgues/orgue_form_composition.html"
 
+    def get_object(self,queryset=None):
+        object = super().get_object()
+        object.resume_composition = object.calcul_resume_composition()
+        object.save()
+        return object
+
+
     def get_success_url(self):
         success_url = reverse('orgues:orgue-update-composition', args=(self.object.uuid,))
         return self.request.POST.get("next", success_url)
