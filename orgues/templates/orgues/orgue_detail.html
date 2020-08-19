@@ -20,7 +20,7 @@
           <h4 class="text-muted">
             {{ orgue.commune }} ({{ orgue.departement }})
             <small>
-              | {{ orgue.get_designation_display }}
+              | {{ orgue.designation }}
             </small>
           </h4>
         </div>
@@ -138,6 +138,7 @@
               </div>
             </div>
           </div>
+          <p class="text-center">Code de l'orgue : {{ orgue.codification }}</p>
         </div>
         <div class="col-lg-3 order-1 col-md-12 order-lg-2  mb-3">
           <div class="card mb-4 box-shadow">
