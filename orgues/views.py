@@ -66,7 +66,9 @@ class OrgueList(LoginRequiredMixin, ListView):
         if departement or commune or edifice or self.facteur:
             # log search
             logger = logging.getLogger("search")
-            logger.info(f"{self.request.user};{self.selected_departement};{self.selected_commune};{edifice};{self.facteur}".replace("None", ""))
+            logger.info(
+                f"{self.request.user};{self.selected_departement};{self.selected_commune};{edifice};{self.facteur}".replace(
+                    "None", ""))
 
         return queryset.order_by('-completion').prefetch_related(
             Prefetch('facteurs'),
@@ -96,7 +98,7 @@ class OrgueListJS(View):
 
     def get(self, request, *args, **kwargs):
         data = Orgue.objects.filter(latitude__isnull=False).values("pk", "slug", "commune", "edifice", "latitude",
-                                                                   "longitude",'emplacement')
+                                                                   "longitude", 'emplacement')
         return JsonResponse(list(data), safe=False)
 
 
@@ -128,6 +130,9 @@ class OrgueDetail(LoginRequiredMixin, DetailView):
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
 
+    def get_object(self, queryset=None):
+        return Orgue.objects.filter(Q(slug=self.kwargs['slug']) | Q(codification=self.kwargs['slug'])).first()
+
     def render_to_response(self, context, **response_kwargs):
         if self.request.GET.get("format") == "json":
             return JsonResponse(OrgueSerializer(self.object, context={
@@ -139,7 +144,8 @@ class OrgueDetail(LoginRequiredMixin, DetailView):
         context = super().get_context_data()
         context["claviers"] = self.object.claviers.all().prefetch_related('type', 'jeux', 'jeux__type')
         context["evenements"] = self.object.evenements.all().prefetch_related('facteurs')
-        context["facteurs_evenements"] = self.object.evenements.filter(facteurs__isnull=False).prefetch_related('facteurs')
+        context["facteurs_evenements"] = self.object.evenements.filter(facteurs__isnull=False).prefetch_related(
+            'facteurs')
         return context
 
 
@@ -207,12 +213,11 @@ class OrgueUpdateComposition(OrgueUpdate):
     form_class = orgue_forms.OrgueCompositionForm
     template_name = "orgues/orgue_form_composition.html"
 
-    def get_object(self,queryset=None):
+    def get_object(self, queryset=None):
         object = super().get_object()
         object.resume_composition = object.calcul_resume_composition()
         object.save()
         return object
-
 
     def get_success_url(self):
         success_url = reverse('orgues:orgue-update-composition', args=(self.object.uuid,))
@@ -428,7 +433,7 @@ class ClavierCreate(FabView):
                 jeu.clavier = clavier
                 jeu.save()
             if request.POST.get("continue") == "true":
-                return redirect(reverse('orgues:clavier-update', args=(clavier.pk,))+"#jeux")
+                return redirect(reverse('orgues:clavier-update', args=(clavier.pk,)) + "#jeux")
             messages.success(self.request, "Nouveau clavier ajouté, merci !")
             return redirect('orgues:orgue-update-composition', orgue_uuid=orgue.uuid)
         else:
@@ -468,7 +473,7 @@ class ClavierUpdate(FabUpdateView):
                 jeu.clavier = clavier
                 jeu.save()
             if request.POST.get("continue") == "true":
-                return redirect(reverse('orgues:clavier-update', args=(clavier.pk,))+"#jeux")
+                return redirect(reverse('orgues:clavier-update', args=(clavier.pk,)) + "#jeux")
             messages.success(self.request, "Clavier mis à jour, merci !")
             return redirect('orgues:orgue-update-composition', orgue_uuid=clavier.orgue.uuid)
         else:
