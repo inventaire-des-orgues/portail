@@ -38,7 +38,8 @@ Lorsque les claviers disposent d'un autre mode de transmission que celle génér
     "Mécanique",
     "Mécanique suspendue",
     "Mécanique Barker",
-    "Pneumatique",
+    "Pneumatique haute pression",
+    "Pneumatique basse pression",
     "Electrique",
 
 
