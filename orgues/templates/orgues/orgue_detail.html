@@ -20,7 +20,7 @@
           <h4 class="text-muted">
             {{ orgue.commune }} ({{ orgue.departement }})
             <small>
-              | {{ orgue.get_designation_display }}
+              | {{ orgue.designation }}
             </small>
           </h4>
         </div>
@@ -138,6 +138,7 @@
               </div>
             </div>
           </div>
+          <p class="text-center">Code de l'orgue : {{ orgue.codification }}</p>
         </div>
         <div class="col-lg-3 order-1 col-md-12 order-lg-2  mb-3">
           <div class="card mb-4 box-shadow">
@@ -152,14 +153,14 @@
                     Pas d'information
                   {% endfor %}
                 </dd>
-                <dt>Elévation</dt>
-                <dd>{{ orgue.get_elevation_display|default_if_none:"Non définie" }}</dd>
+                <dt>Emplacement</dt>
+                <dd>{{ orgue.get_emplacement_display|default_if_none:"Non définie" }}</dd>
                 <dt>Etat de l'instrument</dt>
                 <dd>{{ orgue.get_etat_display|default_if_none:"Non défini" }}</dd>
                 <hr>
                 <dt>Composition</dt>
                 <dd>
-                  {{ orgue.resume_clavier }}
+                  {{ orgue.resume_composition }}
                 </dd>
                 <dt>Boîte expressive</dt>
                 <dd>{% if orgue.is_expressif %}Oui{% else %}Non{% endif %}</dd>

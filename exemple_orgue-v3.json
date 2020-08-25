@@ -10,7 +10,7 @@
     "lien_reference": "https://fabdev.fr",
     "is_polyphone": false,
     "etat": "degrade",
-    "elevation": "tribune",
+    "emplacement": "tribune",
     "buffet": "exemple de description du buffet",
     "console": "exemple de description de la console",
     "commentaire_admin": "exemple de commentaire admin",

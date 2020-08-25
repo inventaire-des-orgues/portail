@@ -38,7 +38,8 @@ Lorsque les claviers disposent d'un autre mode de transmission que celle génér
     "Mécanique",
     "Mécanique suspendue",
     "Mécanique Barker",
-    "Pneumatique",
+    "Pneumatique haute pression",
+    "Pneumatique basse pression",
     "Electrique",
 
 
@@ -67,8 +68,8 @@ Valeur_par_defaut = Néant
     "Altéré : difficilement jouable",
     "Dégradé ou en ruine : injouable"
 
-## Elevation
-elevation
+## emplacement
+emplacement
 
 Valeur_par_defaut = Néant
 
@@ -77,7 +78,7 @@ Valeur_par_defaut = Néant
 
 ## Emplacement dans l'édifice
 A ce stade, aucun attribut n'est prévu pour préciser la position de l'orgue dans l'édifice.
-Dans le cas de plusieurs instruments au sein d'un même édifice, l'attribut elevation et les coordonnées géographiques permettent de positionner et distinguer précisément l'instrument.
+Dans le cas de plusieurs instruments au sein d'un même édifice, l'attribut emplacement et les coordonnées géographiques permettent de positionner et distinguer précisément l'instrument.
 
 ## Jeux
 

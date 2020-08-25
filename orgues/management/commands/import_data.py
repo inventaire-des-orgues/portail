@@ -58,7 +58,7 @@ class Command(BaseCommand):
                 try:
                     assert row.get("proprietaire") in [c[0] for c in Orgue.CHOIX_PROPRIETAIRE] + [None]
                     assert row.get("etat") in [c[0] for c in Orgue.CHOIX_ETAT] + [None]
-                    assert row.get("elevation") in [c[0] for c in Orgue.CHOIX_ELEVATION] + [None]
+                    assert row.get("emplacement") in [c[0] for c in Orgue.CHOIX_EMPLACEMENT] + [None]
                     assert row.get("tirage_jeux") in [c[0] for c in Orgue.CHOIX_TIRAGE] + [None]
                     assert row.get("transmission_notes") in [c[0] for c in Orgue.CHOIX_TRANSMISSION] + [None]
 
@@ -70,7 +70,7 @@ class Command(BaseCommand):
                     orgue.lien_reference = row.get("lien_reference")
                     orgue.is_polyphone = row.get("is_polyphone")
                     orgue.etat = row.get("etat")
-                    orgue.elevation = row.get("elevation")
+                    orgue.emplacement = row.get("emplacement")
                     orgue.buffet = row.get("buffet")
                     orgue.console = row.get("console")
                     orgue.commentaire_admin = row.get("commentaire_admin")

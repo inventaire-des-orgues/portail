@@ -81,11 +81,11 @@ class OrgueTestCase(TestCase):
 
         self.assertEqual(list(Jeu.objects.values_list("nom", flat=True)), ["A", "B", "C", "D", "E"])
 
-    def test_resume_clavier(self):
-        self.assertEqual(Template('{% load orgue_tags %}{% resume_clavier 12 3 True %}').render(Context({})),
+    def test_resume_composition(self):
+        self.assertEqual(Template('{% load orgue_tags %}{% resume_composition 12 3 True %}').render(Context({})),
                          "12, II/P")
-        self.assertEqual(Template('{% load orgue_tags %}{% resume_clavier 12 2 True %}').render(Context({})), "12, I/P")
-        self.assertEqual(Template('{% load orgue_tags %}{% resume_clavier 9 1 True %}').render(Context({})), "9, P")
+        self.assertEqual(Template('{% load orgue_tags %}{% resume_composition 12 2 True %}').render(Context({})), "12, I/P")
+        self.assertEqual(Template('{% load orgue_tags %}{% resume_composition 9 1 True %}').render(Context({})), "9, P")
 
     def test_validate_etendue(self):
         self.assertRaises(ValidationError, validate_etendue, "H1-F3")
@@ -131,7 +131,7 @@ class OrgueTestCase(TestCase):
         self.assertEqual(orgue.lien_reference, orgue_json["lien_reference"])
         self.assertEqual(orgue.is_polyphone, orgue_json["is_polyphone"])
         self.assertEqual(orgue.etat, orgue_json["etat"])
-        self.assertEqual(orgue.elevation, orgue_json["elevation"])
+        self.assertEqual(orgue.emplacement, orgue_json["emplacement"])
         self.assertEqual(orgue.buffet, orgue_json["buffet"])
         self.assertEqual(orgue.console, orgue_json["console"])
         self.assertEqual(orgue.commentaire_admin, orgue_json["commentaire_admin"])

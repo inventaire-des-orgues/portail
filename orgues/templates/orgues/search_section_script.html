@@ -2,7 +2,7 @@
   $(function () {
     $("#id_facteur").select2({
       placeholder: 'Choisir un facteur',
-            allowClear: true,
+      allowClear: true,
 
       ajax: {
         url: '{% url 'orgues:facteur-list-js' %}',
@@ -50,39 +50,13 @@
         }
       },
     });
-        $("#id_departement").select2({
+
+    $("#id_departement").select2({
       width: "100%",
       language: "fr",
       allowClear: true,
       placeholder: 'Choisir un departement',
-      ajax: {
-        delay: 250,
-        url: 'https://geo.api.gouv.fr/departements',
-        data: function (params) {
-          if (!isNaN(parseInt(params.term))){
-              return {
-                  code: parseInt(params.term),
-              }
-          }
-          else{
-              return {
-                  nom: params.term,
-              }
-          }
-
-
-        },
-        processResults: function (data) {
-            console.log(data);
-          var items = data.map(function (result) {
-            return {
-              "id":  result.nom + " (" + result.code +")" + "|" + result.code,
-              "text": result.nom + " (" + result.code +")"
-            }
-          })
-          return {results: items}
-        }
-      },
+      data: [{"id":"Ain (01)|01","text":"Ain (01)"},{"id":"Aisne (02)|02","text":"Aisne (02)"},{"id":"Allier (03)|03","text":"Allier (03)"},{"id":"Alpes-de-Haute-Provence (04)|04","text":"Alpes-de-Haute-Provence (04)"},{"id":"Hautes-Alpes (05)|05","text":"Hautes-Alpes (05)"},{"id":"Alpes-Maritimes (06)|06","text":"Alpes-Maritimes (06)"},{"id":"Ardèche (07)|07","text":"Ardèche (07)"},{"id":"Ardennes (08)|08","text":"Ardennes (08)"},{"id":"Ariège (09)|09","text":"Ariège (09)"},{"id":"Aube (10)|10","text":"Aube (10)"},{"id":"Aude (11)|11","text":"Aude (11)"},{"id":"Aveyron (12)|12","text":"Aveyron (12)"},{"id":"Bouches-du-Rhône (13)|13","text":"Bouches-du-Rhône (13)"},{"id":"Calvados (14)|14","text":"Calvados (14)"},{"id":"Cantal (15)|15","text":"Cantal (15)"},{"id":"Charente (16)|16","text":"Charente (16)"},{"id":"Charente-Maritime (17)|17","text":"Charente-Maritime (17)"},{"id":"Cher (18)|18","text":"Cher (18)"},{"id":"Corrèze (19)|19","text":"Corrèze (19)"},{"id":"Corse-du-Sud (2A)|2A","text":"Corse-du-Sud (2A)"},{"id":"Haute-Corse (2B)|2B","text":"Haute-Corse (2B)"},{"id":"Côte-d'Or (21)|21","text":"Côte-d'Or (21)"},{"id":"Côtes-d'Armor (22)|22","text":"Côtes-d'Armor (22)"},{"id":"Creuse (23)|23","text":"Creuse (23)"},{"id":"Dordogne (24)|24","text":"Dordogne (24)"},{"id":"Doubs (25)|25","text":"Doubs (25)"},{"id":"Drôme (26)|26","text":"Drôme (26)"},{"id":"Eure (27)|27","text":"Eure (27)"},{"id":"Eure-et-Loir (28)|28","text":"Eure-et-Loir (28)"},{"id":"Finistère (29)|29","text":"Finistère (29)"},{"id":"Gard (30)|30","text":"Gard (30)"},{"id":"Haute-Garonne (31)|31","text":"Haute-Garonne (31)"},{"id":"Gers (32)|32","text":"Gers (32)"},{"id":"Gironde (33)|33","text":"Gironde (33)"},{"id":"Hérault (34)|34","text":"Hérault (34)"},{"id":"Ille-et-Vilaine (35)|35","text":"Ille-et-Vilaine (35)"},{"id":"Indre (36)|36","text":"Indre (36)"},{"id":"Indre-et-Loire (37)|37","text":"Indre-et-Loire (37)"},{"id":"Isère (38)|38","text":"Isère (38)"},{"id":"Jura (39)|39","text":"Jura (39)"},{"id":"Landes (40)|40","text":"Landes (40)"},{"id":"Loir-et-Cher (41)|41","text":"Loir-et-Cher (41)"},{"id":"Loire (42)|42","text":"Loire (42)"},{"id":"Haute-Loire (43)|43","text":"Haute-Loire (43)"},{"id":"Loire-Atlantique (44)|44","text":"Loire-Atlantique (44)"},{"id":"Loiret (45)|45","text":"Loiret (45)"},{"id":"Lot (46)|46","text":"Lot (46)"},{"id":"Lot-et-Garonne (47)|47","text":"Lot-et-Garonne (47)"},{"id":"Lozère (48)|48","text":"Lozère (48)"},{"id":"Maine-et-Loire (49)|49","text":"Maine-et-Loire (49)"},{"id":"Manche (50)|50","text":"Manche (50)"},{"id":"Marne (51)|51","text":"Marne (51)"},{"id":"Haute-Marne (52)|52","text":"Haute-Marne (52)"},{"id":"Mayenne (53)|53","text":"Mayenne (53)"},{"id":"Meurthe-et-Moselle (54)|54","text":"Meurthe-et-Moselle (54)"},{"id":"Meuse (55)|55","text":"Meuse (55)"},{"id":"Morbihan (56)|56","text":"Morbihan (56)"},{"id":"Moselle (57)|57","text":"Moselle (57)"},{"id":"Nièvre (58)|58","text":"Nièvre (58)"},{"id":"Nord (59)|59","text":"Nord (59)"},{"id":"Oise (60)|60","text":"Oise (60)"},{"id":"Orne (61)|61","text":"Orne (61)"},{"id":"Pas-de-Calais (62)|62","text":"Pas-de-Calais (62)"},{"id":"Puy-de-Dôme (63)|63","text":"Puy-de-Dôme (63)"},{"id":"Pyrénées-Atlantiques (64)|64","text":"Pyrénées-Atlantiques (64)"},{"id":"Hautes-Pyrénées (65)|65","text":"Hautes-Pyrénées (65)"},{"id":"Pyrénées-Orientales (66)|66","text":"Pyrénées-Orientales (66)"},{"id":"Bas-Rhin (67)|67","text":"Bas-Rhin (67)"},{"id":"Haut-Rhin (68)|68","text":"Haut-Rhin (68)"},{"id":"Rhône (69)|69","text":"Rhône (69)"},{"id":"Haute-Saône (70)|70","text":"Haute-Saône (70)"},{"id":"Saône-et-Loire (71)|71","text":"Saône-et-Loire (71)"},{"id":"Sarthe (72)|72","text":"Sarthe (72)"},{"id":"Savoie (73)|73","text":"Savoie (73)"},{"id":"Haute-Savoie (74)|74","text":"Haute-Savoie (74)"},{"id":"Paris (75)|75","text":"Paris (75)"},{"id":"Seine-Maritime (76)|76","text":"Seine-Maritime (76)"},{"id":"Seine-et-Marne (77)|77","text":"Seine-et-Marne (77)"},{"id":"Yvelines (78)|78","text":"Yvelines (78)"},{"id":"Deux-Sèvres (79)|79","text":"Deux-Sèvres (79)"},{"id":"Somme (80)|80","text":"Somme (80)"},{"id":"Tarn (81)|81","text":"Tarn (81)"},{"id":"Tarn-et-Garonne (82)|82","text":"Tarn-et-Garonne (82)"},{"id":"Var (83)|83","text":"Var (83)"},{"id":"Vaucluse (84)|84","text":"Vaucluse (84)"},{"id":"Vendée (85)|85","text":"Vendée (85)"},{"id":"Vienne (86)|86","text":"Vienne (86)"},{"id":"Haute-Vienne (87)|87","text":"Haute-Vienne (87)"},{"id":"Vosges (88)|88","text":"Vosges (88)"},{"id":"Yonne (89)|89","text":"Yonne (89)"},{"id":"Territoire de Belfort (90)|90","text":"Territoire de Belfort (90)"},{"id":"Essonne (91)|91","text":"Essonne (91)"},{"id":"Hauts-de-Seine (92)|92","text":"Hauts-de-Seine (92)"},{"id":"Seine-Saint-Denis (93)|93","text":"Seine-Saint-Denis (93)"},{"id":"Val-de-Marne (94)|94","text":"Val-de-Marne (94)"},{"id":"Val-d'Oise (95)|95","text":"Val-d'Oise (95)"},{"id":"Guadeloupe (971)|971","text":"Guadeloupe (971)"},{"id":"Martinique (972)|972","text":"Martinique (972)"},{"id":"Guyane (973)|973","text":"Guyane (973)"},{"id":"La Réunion (974)|974","text":"La Réunion (974)"},{"id":"Mayotte (976)|976","text":"Mayotte (976)"}]
     });
 
 

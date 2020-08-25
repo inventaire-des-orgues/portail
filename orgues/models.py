@@ -40,7 +40,7 @@ class Orgue(models.Model):
         ('degrade', "Dégradé ou en ruine : injouable"),
     )
 
-    CHOIX_ELEVATION = (
+    CHOIX_EMPLACEMENT = (
         ('sol', "Au sol"),
         ('tribune', "En tribune"),
     )
@@ -50,7 +50,8 @@ class Orgue(models.Model):
         ("mecanique_suspendue", "Mécanique suspendue"),
         ("mecanique_balanciers", "Mécanique à balanciers"),
         ("mecanique_barker", "Mécanique Barker"),
-        ("pneumatique", "Pneumatique"),
+        ("pneumatique_haute_pression", "Pneumatique haute pression"),
+        ("pneumatique_basse_pression", "Pneumatique haute pression"),
         ("electrique", "Electrique"),
         ("electrique_proportionnelle", "Electrique proportionnelle"),
         ("electro_pneumatique", "Electro-pneumatique"),
@@ -77,14 +78,15 @@ class Orgue(models.Model):
     resume = models.TextField(max_length=500, null=True, verbose_name="Resumé", blank=True,
                               help_text="Présentation en quelques lignes de l'instrument \
                               et son originalité (max 500 caractères)")
-    proprietaire = models.CharField(max_length=20, null=True, choices=CHOIX_PROPRIETAIRE, default="commune", verbose_name="Propriétaire")
+    proprietaire = models.CharField(max_length=20, null=True, choices=CHOIX_PROPRIETAIRE, default="commune",
+                                    verbose_name="Propriétaire")
     organisme = models.CharField(verbose_name="Organisme auquel s'adresser", max_length=100, null=True, blank=True)
     lien_reference = models.URLField(verbose_name="Lien de référence", max_length=300, null=True, blank=True)
     is_polyphone = models.BooleanField(default=False, verbose_name="Orgue polyphone de la manufacture Debierre ?")
 
     etat = models.CharField(max_length=20, choices=CHOIX_ETAT, null=True, blank=True)
-    elevation = models.CharField(max_length=20, choices=CHOIX_ELEVATION, null=True, blank=True,
-                                 verbose_name="Elévation")
+    emplacement = models.CharField(max_length=20, choices=CHOIX_EMPLACEMENT, null=True, blank=True,
+                                   verbose_name="Emplacement")
     buffet = models.TextField(verbose_name="Description du buffet", null=True, blank=True,
                               help_text="Description du buffet et de son état.")
     console = models.TextField(verbose_name="Description de la console", null=True, blank=True,
@@ -132,7 +134,7 @@ class Orgue(models.Model):
     slug = models.SlugField(max_length=255)
     completion = models.IntegerField(default=False, editable=False)
     keywords = models.TextField()
-    resume_clavier = models.CharField(max_length=30, null=True, blank=True, editable=False)
+    resume_composition = models.CharField(max_length=30, null=True, blank=True, editable=False)
     facteurs = models.ManyToManyField(Facteur, blank=True, editable=False)
 
     def __str__(self):
@@ -238,7 +240,7 @@ class Orgue(models.Model):
     def get_delete_url(self):
         return reverse('orgues:orgue-delete', args=(self.uuid,))
 
-    def calcul_resume_clavier(self):
+    def calcul_resume_composition(self):
         """
         On stocke dans la base de données l'information Clavier et Pédale de façon commune, sous le format :
         [nombre de claviers en chiffres romains]["/P" si Pédale]
@@ -543,21 +545,6 @@ class Accessoire(models.Model):
 
     def __str__(self):
         return self.nom
-
-
-@receiver([post_save, post_delete], sender=Clavier)
-def save_clavier_calcul_resume(sender, instance, **kwargs):
-    orgue = instance.orgue
-    orgue.resume_clavier = orgue.calcul_resume_clavier()
-    orgue.save()
-
-
-@receiver([post_save, post_delete], sender=Jeu)
-def save_jeu_calcul_resume(sender, instance, **kwargs):
-    if instance.clavier and instance.clavier.orgue:
-        orgue = instance.clavier.orgue
-        orgue.resume_clavier = orgue.calcul_resume_clavier()
-        orgue.save()
 
 
 @receiver([post_save, post_delete], sender=Evenement)

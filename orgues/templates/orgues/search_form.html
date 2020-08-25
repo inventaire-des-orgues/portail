@@ -1,4 +1,4 @@
-<form id="search-form" action="{% url 'orgues:orgue-list' %}" class="" method="get">
+<form id="search-form" action="{% url 'orgues:orgue-list' %}#orgue-list" class="" method="get">
   <div class="form-group">
     <label for="">Département</label>
     <select name="departement" id="id_departement" class="form-control" value="{{ request.GET.departement }}">
@@ -19,7 +19,7 @@
   </div>
   <div class="form-group">
     <label for="">Edifice</label>
-    <input type="text" name="edifice" placeholder="Ex: Saint-Laurent" class="form-control" value="{{ request.GET.edifice }}">
+    <input type="text" id="id_edifice" name="edifice" placeholder="Ex: Saint-Laurent" class="form-control" value="{{ request.GET.edifice }}">
   </div>
   <div class="form-group">
     <label for="">Facteur</label>
