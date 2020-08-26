@@ -4,8 +4,8 @@
 {% block head_extra %}
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
-      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
-      crossorigin=""/>
+        integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+        crossorigin=""/>
 {% endblock %}
 
 {% block content %}
@@ -87,7 +87,9 @@
                               <div class="grid-image"><img alt="Image Lightbox" src="{{ image.vignette.url }}"/>
                               </div>
                               <div class="grid-description">
-                                <a title="{% if image.credit %}Crédit : {{ image.credit }}{% endif %}" data-lightbox="gallery-image" href="{{ image.image.url }}" class="btn btn-light btn-rounded">+</a>
+                                <a title="{% if image.credit %}Crédit : {{ image.credit }}{% endif %}"
+                                   data-lightbox="gallery-image" href="{{ image.image.url }}"
+                                   class="btn btn-light btn-rounded">+</a>
                               </div>
                             </div>
                           </div>
@@ -95,7 +97,7 @@
                       {% endfor %}
                     </div>
                   {% else %}
-                  <p class="text-muted">Aucune image</p>
+                    <p class="text-muted">Aucune image</p>
                   {% endif %}
                   <h2 class="titre-fiche">Fichiers</h2>
                   {% if orgue.fichiers.count %}
@@ -122,12 +124,12 @@
                       {% for source in orgue.sources.all %}
                         <li>
                           {% if source.lien %}
-                          <a href="{{ source.lien }}" target="_blank" rel="noopener noreferrer">{{ source.description }} ({{source.type}})</a>
+                            <a href="{{ source.lien }}" target="_blank"
+                               rel="noopener noreferrer">{{ source.description }} ({{ source.type }})</a>
                           {% else %}
-                          {{ source.description }} ({{source.type}})
+                            {{ source.description }} ({{ source.type }})
                           {% endif %}
                         </li>
-
                       {% endfor %}
                     </ul>
                   {% else %}
@@ -180,7 +182,8 @@
                 {% if orgue.lien_reference %}
                   <dt>Lien de référence</dt>
                   <dd>
-                    <a  href="{{ orgue.lien_reference }}" target="_blank" rel="noopener noreferrer">{{ orgue.lien_reference|truncatechars:40 }}</a>
+                    <a href="{{ orgue.lien_reference }}" target="_blank"
+                       rel="noopener noreferrer">{{ orgue.lien_reference|truncatechars:40 }}</a>
                   </dd>
                 {% endif %}
               </dl>
@@ -191,11 +194,12 @@
                   <ul>
                     {% for lien in orgue.liens_pop %}
                       <li>
-                        <a href="{{ lien.href }}" target="_blank" rel="noopener noreferrer" >{{ lien.title }}</a>
+                        <a href="{{ lien.href }}" target="_blank" rel="noopener noreferrer">{{ lien.title }}</a>
                       </li>
                     {% endfor %}
                   </ul>
                 </dd>
+                <img src="{% static "img/MH3B_simplifiee_NOIR_ET_BLANC.png" %}" class="img-fluid mb-3" alt="">
               {% endif %}
               {% if orgue.latitude and orgue.longitude %}
                 <div id="mapid" style="height:150px;margin-bottom:10px"></div>
@@ -216,7 +220,8 @@
 {% block js_extra %}
 
   <!-- 1 -->
-  <link title="timeline-styles" rel="stylesheet" href="https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css">
+  <link title="timeline-styles" rel="stylesheet"
+        href="https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css">
 
 
   <!-- 2 -->
@@ -225,42 +230,48 @@
   {% if evenements.count %}
     <!-- 3 -->
     <script type="text/javascript">
-      // The TL.Timeline constructor takes at least two arguments:
-      // the id of the Timeline container (no '#'), and
-      // the URL to your JSON data file or Google spreadsheet.
-      // the id must refer to an element "above" this code,
-      // and the element must have CSS styling to give it width and height
-      // optionally, a third argument with configuration options can be passed.
-      // See below for more about options.
-      var timeline_json = {
+        // The TL.Timeline constructor takes at least two arguments:
+        // the id of the Timeline container (no '#'), and
+        // the URL to your JSON data file or Google spreadsheet.
+        // the id must refer to an element "above" this code,
+        // and the element must have CSS styling to give it width and height
+        // optionally, a third argument with configuration options can be passed.
+        // See below for more about options.
+        var timeline_json = {
 
-        "events": [
-          {% for evenement in evenements %}
-            {"start_date": {"year": "{{evenement.annee}}"}, "text": {"headline": "<b>{{ evenement.get_type_display }}</b>", "text": "{% if evenement.resume %}{{ evenement.resume|safe|escapejs}}{% endif %}"}},
-          {% endfor %}
-        ]
-      };
+            "events": [
+                {% for evenement in evenements %}
+                    {
+                        "start_date": {"year": "{{evenement.annee}}"},
+                        "text": {
+                            "headline": "<b>{{ evenement.get_type_display }}</b>",
+                            "text": "{% if evenement.resume %}{{ evenement.resume|safe|escapejs}}{% endif %}"
+                        }
+                    },
+                {% endfor %}
+            ]
+        };
 
-      var additionalOptions = {
-        timenav_height: 130,
-        timenav_height_min: 60
-      }
-      new TL.Timeline('timeline-embed', timeline_json, additionalOptions);
+        var additionalOptions = {
+            timenav_height: 130,
+            timenav_height_min: 60
+        }
+        new TL.Timeline('timeline-embed', timeline_json, additionalOptions);
     </script>
   {% endif %}
   {% if orgue.latitude and orgue.longitude %}
     <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
-        integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
-        crossorigin=""></script>
+            integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+            crossorigin=""></script>
     <script>
-      var mymap = L.map('mapid', {
-        scrollWheelZoom: false,
-      }).setView([{{ object.latitude|safe }}, {{ object.longitude|safe }}], 15);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      }).addTo(mymap);
+        var mymap = L.map('mapid', {
+            scrollWheelZoom: false,
+        }).setView([{{ object.latitude|safe }}, {{ object.longitude|safe }}], 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(mymap);
 
-      var marker = L.marker([{{ object.latitude|safe }}, {{ object.longitude|safe }}]).addTo(mymap);
+        var marker = L.marker([{{ object.latitude|safe }}, {{ object.longitude|safe }}]).addTo(mymap);
     </script>
   {% endif %}
 
