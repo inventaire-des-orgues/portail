@@ -25,6 +25,17 @@
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(carte_orgues);
 
+    var mh_icon = L.icon({
+    iconUrl: '{% static 'img/mh_icon.png' %}',
+    shadowUrl: '{% static 'img/mh_shadow.png' %}',
+
+    iconSize:     [24, 24], // size of the icon
+    shadowSize:   [30, 28], // size of the shadow
+    iconAnchor:   [12, 7], // point of the icon which will correspond to marker's location
+    shadowAnchor: [11, 11],  // the same for the shadow
+    {#popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor#}
+});
+
     var markersCluster = new L.MarkerClusterGroup();
 
     $.getJSON("{% url 'orgues:orgue-list-js' %}", function (orgues) {
@@ -35,7 +46,12 @@
         var popup = '<p> <b>' + orgues[i].commune + '</b>' + '</br>' + orgues[i].edifice + '</br><a href="/detail/'+orgues[i].slug+'">Voir l\'orgue</a></p>';
         var ttip = orgues[i].commune + ' ' + orgues[i].edifice    ;
         var latLng = new L.LatLng(orgues[i].latitude, orgues[i].longitude);
-        var marker = new L.Marker(latLng, {title: orgues[i].pk}).bindPopup(popup);
+        if (orgues[i].references_palissy){
+            var marker = new L.marker(latLng, {title: orgues[i].pk, icon: mh_icon}).bindPopup(popup);
+        }
+        else{
+            var marker = new L.Marker(latLng, {title: orgues[i].pk}).bindPopup(popup);
+        }
         marker.bindTooltip(ttip);
 
         markersCluster.addLayer(marker);

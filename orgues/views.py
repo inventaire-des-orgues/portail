@@ -98,7 +98,7 @@ class OrgueListJS(View):
 
     def get(self, request, *args, **kwargs):
         data = Orgue.objects.filter(latitude__isnull=False).values("pk", "slug", "commune", "edifice", "latitude",
-                                                                   "longitude", 'emplacement')
+                                                                   "longitude", 'emplacement', "references_palissy")
         return JsonResponse(list(data), safe=False)
 
 
