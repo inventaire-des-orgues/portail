@@ -504,7 +504,7 @@ class Image(models.Model):
     """
     image = models.ImageField(upload_to=chemin_image)
     is_principale = models.BooleanField(default=False, editable=False)
-    credit = models.CharField(max_length=200, null=True, blank=True)
+    credit = models.CharField(max_length=200, null=True, blank=True, verbose_name='Crédit')
 
     # Champs automatiques
     thumbnail_principale = ProcessedImageField(upload_to=chemin_image,
