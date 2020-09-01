@@ -70,7 +70,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-light" data-dismiss="modal">Annuler</button>
-            <button type="submit" class="btn btn-primary">Enregistrer</button>
+            <button type="submit" class="btn btn-primary" id="savefile">Enregistrer</button>
           </div>
         </form>
       </div>
@@ -81,5 +81,16 @@
 
 
 {% block js_extra %}
+  <script type="text/javascript">
+    $('#id_file').bind('change', function () {
+      if ( this.files[0].size / 1024 / 1024 > 10 ) {
+        $("#savefile").hide();
+        $('#id_file').val("");
+        alert("Votre fichier est trop lourd, veuillez ne pas dépasser 10 Mo")
+      } else {
+        $("#savefile").show();
+      }
+    });
+  </script>
 {% endblock %}
 
