@@ -87,7 +87,7 @@
                               <div class="grid-image"><img alt="Image Lightbox" src="{{ image.thumbnail.url }}"/>
                               </div>
                               <div class="grid-description">
-                                <a title="{% if image.credit %}Crédit : {{ image.credit }}{% endif %}"
+                                <a title="{% if image.legende %}{{ image.legende }}{% endif %} {% if image.credit %}Crédit : {{ image.credit }}{% endif %}"
                                    data-lightbox="gallery-image" href="{{ image.image.url }}"
                                    class="btn btn-light btn-rounded">+</a>
                               </div>

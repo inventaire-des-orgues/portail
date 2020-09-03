@@ -3,26 +3,6 @@
 
 {% block buffet_active %}active{% endblock %}
 
-{% block card-body %}
-
-  {% if form.errors %}
-    {% for error in form.non_field_errors %}
-      <div class="alert alert-danger">
-        <strong>{{ error|escape }}</strong>
-      </div>
-    {% endfor %}
-  {% endif %}
-  <form action="" method="post" id="mainform" enctype="multipart/form-data">{% csrf_token %}
-      {% for field in form %}
-        {% include 'stack_field.html' %}
-      {% endfor %}
-    <div class="form-group text-right">
-      <button type="submit" class="btn btn-primary" id="create">Enregistrer</button>
-    </div>
-  </form>
-
-{% endblock %}
-
 
 
 

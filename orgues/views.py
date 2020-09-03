@@ -608,7 +608,7 @@ class ImageDelete(FabDeleteView):
         return reverse('orgues:image-list', args=(self.object.orgue.uuid,))
 
 
-class ImageUpdate(FabUpdateView):
+class ImagePrincipaleUpdate(FabUpdateView):
     """
     Rognage de l'image principale d'un orgue dans le but de créer une vignette (utilise ajax et cropper.js)
     """
@@ -616,6 +616,7 @@ class ImageUpdate(FabUpdateView):
     fields = ['thumbnail_principale']
     permission_required = "orgues.change_image"
     success_message = "Vignette mise à jour, merci !"
+    template_name = "orgues/image_principale_form.html"
 
     def form_valid(self, form):
         old_path = None
@@ -635,6 +636,25 @@ class ImageUpdate(FabUpdateView):
 
         messages.success(self.request, self.success_message)
         return JsonResponse({})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["orgue"] = self.object.orgue
+        return context
+
+
+class ImageUpdate(FabUpdateView):
+    """
+    Modification de la légende ou du crédit d'une image
+    """
+    model = Image
+    fields = ['credit', 'legende']
+    permission_required = "orgues.change_image"
+    success_message = "Informations mises à jour, merci"
+
+
+    def get_success_url(self):
+        return reverse('orgues:image-list', args=(self.object.orgue.uuid,))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()

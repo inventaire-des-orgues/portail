@@ -503,6 +503,7 @@ class Image(models.Model):
     """
     image = models.ImageField(upload_to=chemin_image)
     is_principale = models.BooleanField(default=False, editable=False)
+    legende = models.CharField(max_length=400, null=True, blank=True)
     credit = models.CharField(max_length=200, null=True, blank=True)
 
     # Champs automatiques

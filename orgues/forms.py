@@ -56,11 +56,6 @@ class OrgueLocalisationForm(forms.ModelForm):
         model = Orgue
         fields = LOCALISATION_COLUMNS.keys()
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field in self.fields:
-            self.fields[field].widget.attrs['columns'] = LOCALISATION_COLUMNS[field]
-
 
 class OrgueInstrumentaleForm(forms.ModelForm):
     class Meta:
@@ -74,10 +69,10 @@ class OrgueInstrumentaleForm(forms.ModelForm):
             'commentaire_tuyauterie': forms.Textarea(attrs={'rows': 6, 'cols': 15}),
         }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field in self.fields:
-            self.fields[field].widget.attrs['columns'] = INSTRUMENTALE_COLUMNS[field]
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     for field in self.fields:
+    #         self.fields[field].widget.attrs['columns'] = INSTRUMENTALE_COLUMNS[field]
 
 
 class OrgueCompositionForm(forms.ModelForm):
@@ -148,7 +143,7 @@ class FichierForm(forms.ModelForm):
 class ImageForm(forms.ModelForm):
     class Meta:
         model = Image
-        fields = ["image", "credit"]
+        fields = ["image", "legende", "credit"]
 
 
 class SourceForm(forms.ModelForm):
