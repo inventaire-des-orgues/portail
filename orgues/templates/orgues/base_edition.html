@@ -105,6 +105,7 @@
 
   <script src="{% static 'plugins/trumbowyg/trumbowyg.min.js' %}"></script>
   <script src="{% static 'plugins/trumbowyg/langs/fr.min.js' %}"></script>
+  <script src="{% static 'plugins/jquery.are-you-sure.js' %}"></script>
 
 
 
@@ -117,8 +118,17 @@
       btns: [['strong', 'em',], ['link'], ['unorderedList'], ['horizontalRule'],],
       autogrow: true,
       lang: 'fr'
+    }).on('tbwchange', function () {
+      $('form').trigger('rescan.areYouSure');
     });
-    $("select").select2()
+    $("select").select2().on("select2:selecting",function(){
+      $('form').trigger('rescan.areYouSure');
+    })
+    $('form').areYouSure();
   </script>
 
+
+  {% block js_extra_2 %}
+
+  {% endblock %}
 {% endblock %}

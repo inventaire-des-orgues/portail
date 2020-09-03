@@ -33,18 +33,7 @@
 
 {% endblock %}
 
+{% block js_extra_2 %}
+    {% include 'orgues/facteur_create_modal.html' %}
 
-{% block js_extra %}
-
-
-  {% include 'orgues/facteur_create_modal.html' %}
-
-
-  <script>
-    $('#id_resume').trumbowyg({
-      btns: [['strong', 'em',], ['link'], ['unorderedList'], ['horizontalRule'],],
-      autogrow: true,
-      lang: 'fr'
-    });
-  </script>
 {% endblock %}
