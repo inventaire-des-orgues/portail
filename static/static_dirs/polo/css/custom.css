@@ -405,12 +405,10 @@ table#lexique td:first-child {
 #search-form .form-control {
     border-radius: 50px;
     border: 1px solid #aaa;
-    color: #444;
     height: 32px;
 }
 
 #search-form .form-control:focus {
-    color: #aaa;
     -webkit-box-shadow: none;
     box-shadow: none;
 }

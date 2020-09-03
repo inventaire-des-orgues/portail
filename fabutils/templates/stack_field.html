@@ -1,10 +1,5 @@
 {% load fabform %}
-<div class="form-group{% if field.errors %} has-danger{% endif %}
-{% if field.field.widget.attrs.columns %}
-col-{{ field.field.widget.attrs.columns }}
-{% endif %}
-
-" id="group_{{ field.id_for_label }} ">
+<div class="form-group {% if field.errors %} has-danger{% endif %} {% if field.field.widget.attrs.columns %}col-{{ field.field.widget.attrs.columns }}{% endif %}" id="group_{{ field.id_for_label }} ">
   {% if field|is_hidden %}
     {{ field }}
   {% elif field|is_checkbox %}

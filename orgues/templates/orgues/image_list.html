@@ -37,7 +37,7 @@
     <tbody>
     {% for image in object_list %}
       <tr>
-        <td><a href="{{ image.image.url }}" target="_blank"><img src="{{ image.vignette.url }}" alt="" width="70px;"></a></td>
+        <td><a href="{{ image.image.url }}" target="_blank"><img src="{{ image.vignette.url }}" alt="" width="90px;"></a></td>
         <td>
           {% if image.is_principale %}
             Oui (<a href="{% url 'orgues:image-principale' image.pk %}">modifier la vignette</a>)

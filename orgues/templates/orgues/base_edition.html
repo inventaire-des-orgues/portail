@@ -68,7 +68,6 @@
               Sources
               <span class="badge badge-light badge-pill">{{ orgue.sources.count }}</span>
             </a>
-
           </div>
           <div class="my-3">
             <small style="color:#5c1c54">Avancement : {{ orgue.completion }}%</small>
@@ -77,12 +76,10 @@
               </div>
             </div>
           </div>
-        <div class="my-3">
-          <a class="my-3" href="{% url 'orgues:orgue-fiche-conseils' %}"><i class="fa fa-question-circle"></i> Quelques conseils pour bien remplir la fiche d'un orgue</a>
+          <div class="my-3">
+            <a class="my-3" href="{% url 'orgues:orgue-fiche-conseils' %}"><i class="fa fa-question-circle"></i> Quelques conseils pour bien remplir la fiche d'un orgue</a>
+          </div>
         </div>
-
-        </div>
-
         <div class="col-lg-9">
           {% if orgue.commentaire_admin %}
             <div class="alert alert-info">
@@ -101,6 +98,27 @@
     </div>
   </section>
 
+{% endblock %}
 
+
+{% block js_extra %}
+
+  <script src="{% static 'plugins/trumbowyg/trumbowyg.min.js' %}"></script>
+  <script src="{% static 'plugins/trumbowyg/langs/fr.min.js' %}"></script>
+
+
+
+  <script>
+    var facteurid = "#id_facteurs"
+  </script>
+  {% include 'orgues/facteur_create_modal.html' %}
+  <script>
+    $('textarea').trumbowyg({
+      btns: [['strong', 'em',], ['link'], ['unorderedList'], ['horizontalRule'],],
+      autogrow: true,
+      lang: 'fr'
+    });
+    $("select").select2()
+  </script>
 
 {% endblock %}

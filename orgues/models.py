@@ -10,7 +10,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 
 from imagekit.models import ImageSpecField, ProcessedImageField
-from pilkit.processors import ResizeToFill
+from pilkit.processors import ResizeToFill, ResizeToFit
 
 from accounts.models import User
 
@@ -507,16 +507,16 @@ class Image(models.Model):
 
     # Champs automatiques
     thumbnail_principale = ProcessedImageField(upload_to=chemin_image,
-                                               processors=[ResizeToFill(400, 300)],
+                                               processors=[ResizeToFill(600, 450)],
                                                format='JPEG',
                                                options={'quality': 100})
 
     thumbnail = ImageSpecField(source='image',
-                               processors=[ResizeToFill(400, 300)],
+                               processors=[ResizeToFill(600, 450)],
                                format='JPEG',
                                options={'quality': 100})
     vignette = ImageSpecField(source='image',
-                              processors=[ResizeToFill(150, 100)],
+                              processors=[ResizeToFit(150, 100)],
                               format='JPEG',
                               options={'quality': 100})
 
