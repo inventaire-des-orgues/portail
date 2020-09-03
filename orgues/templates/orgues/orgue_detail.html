@@ -20,7 +20,7 @@
           <h4 class="text-muted">
             {{ orgue.commune }} ({{ orgue.departement }})
             <small>
-              | {{ orgue.designation }}
+              | {{ orgue.designation|default_if_none:"Orgue" }}
             </small>
           </h4>
         </div>

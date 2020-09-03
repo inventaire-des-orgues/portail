@@ -36,7 +36,9 @@
                     <h4 class="card-title mb-1">{{ orgue.edifice|capfirst }}
                       <span>| {{ orgue.commune }} ({{ orgue.departement }})</span></h4>
                     <p class="my-0 text-muted font-weight-bold">
-                      {{ orgue.designation }} - {% if orgue.emplacement %}{{ orgue.get_emplacement_display }} -{% endif %} {{ orgue.resume_composition }}
+                      {{ orgue.designation|default_if_none:"Orgue" }}
+                      {% if orgue.emplacement %}- {{ orgue.get_emplacement_display }}{% endif %}
+                      {% if orgue.resume_composition %}- {{ orgue.resume_composition }}{% endif %}
                     </p>
                     {% if orgue.facteurs.count %}
                       <p class="my-1">

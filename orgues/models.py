@@ -252,7 +252,7 @@ class Orgue(models.Model):
         cr = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV",
               "XVI", "XVII", "XVIII", "XIX", "XX", "XXI", "XXII", "XXIII", "XIV", "XV"]
         if claviers_count == 0:
-            return "?"
+            return
 
         if has_pedalier and claviers_count > 1:
             return "{}, {}/P".format(jeux_count, cr[claviers_count - 2])
