@@ -156,7 +156,7 @@
                   {% endfor %}
                 </dd>
                 <dt>Emplacement</dt>
-                <dd>{{ orgue.get_emplacement_display|default_if_none:"Non définie" }}</dd>
+                <dd>{{ orgue.get_emplacement_display|default_if_none:"Non défini" }}</dd>
                 <dt>Etat de l'instrument</dt>
                 <dd>{{ orgue.get_etat_display|default_if_none:"Non défini" }}</dd>
                 <hr>
@@ -164,8 +164,6 @@
                 <dd>
                   {{ orgue.resume_composition }}
                 </dd>
-                <dt>Boîte expressive</dt>
-                <dd>{% if orgue.is_expressif %}Oui{% else %}Non{% endif %}</dd>
                 <dt>Transmission des notes</dt>
                 <dd>{{ orgue.get_transmission_notes_display |default_if_none:"Non définie" }}</dd>
                 <dt>Tirage des jeux</dt>
