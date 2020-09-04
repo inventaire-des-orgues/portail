@@ -1,14 +1,14 @@
 import os
 import re
 import uuid
+
+from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.text import slugify
-from django.core.exceptions import ValidationError
-from django.core.validators import RegexValidator
-
 from imagekit.models import ImageSpecField, ProcessedImageField
 from pilkit.processors import ResizeToFill, ResizeToFit
 
@@ -26,6 +26,13 @@ class Facteur(models.Model):
 
 
 class Orgue(models.Model):
+    CHOIX_TYPE_OSM = (
+        ("node", "Nœud"),
+        ("way", "Chemin"),
+        ("relation", "Relation"),
+    )
+
+
     CHOIX_PROPRIETAIRE = (
         ("commune", "Commune"),
         ("etat", "Etat"),
@@ -110,7 +117,7 @@ class Orgue(models.Model):
     region = models.CharField(verbose_name="Région", max_length=50)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
-    osm_type = models.CharField(verbose_name="Type open street map", max_length=20, null=True, blank=True)
+    osm_type = models.CharField(choices=CHOIX_TYPE_OSM, verbose_name="Type open street map", max_length=20, null=True, blank=True)
     osm_id = models.CharField(verbose_name="Id open street map", max_length=20, null=True, blank=True)
 
     # Partie instrumentale
@@ -142,7 +149,9 @@ class Orgue(models.Model):
 
     class Meta:
         ordering = ['-created_date']
-        permissions = [('change_localisation', "Peut modifier les informations de localisation d'un orgue")]
+        permissions = [
+            ('edition_avancee', "Peut modifier les champs structurels d'un orgue (ex : code_insee ...)")
+        ]
 
     def save(self, *args, **kwargs):
         self.completion = self.calcul_completion()
