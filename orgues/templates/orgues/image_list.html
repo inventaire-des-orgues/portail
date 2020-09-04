@@ -29,6 +29,7 @@
       <th>Image principale ?
         <i class="fa fa-info-circle" data-toggle="tooltip"
             title="L'image principale est utilisée dans les vignettes de la page d'accueil et en haut de la page de présentation d'un orgue"></i></th>
+      <th width="200px">Légende</th>
       <th>Crédit</th>
       <th width="30px">Supprimer</th>
     </tr>
@@ -37,15 +38,17 @@
     <tbody>
     {% for image in object_list %}
       <tr>
-        <td><a href="{{ image.image.url }}" target="_blank"><img src="{{ image.vignette.url }}" alt="" width="70px;"></a></td>
+        <td><a href="{{ image.image.url }}" target="_blank"><img src="{{ image.vignette.url }}" alt="" width="90px;"></a></td>
         <td>
           {% if image.is_principale %}
             Oui (<a href="{% url 'orgues:image-principale' image.pk %}">modifier la vignette</a>)
           {% else %}
             Non (<a href="{% url 'orgues:image-principale' image.pk %}">choisir & définir la vignette</a>)
           {% endif %}</td>
+        <td>{{ image.legende|default_if_none:"" }}</td>
         <td>{{ image.credit|default_if_none:"Aucun" }}</td>
         <td>
+          <a href="{% url 'orgues:image-update' image.pk %}" class="btn btn-outline btn-xs">modifier</a>
           <form action="{% url 'orgues:image-delete' image.pk %}" method="post">{% csrf_token %}
             <button type="submit" class="btn btn-outline btn-danger btn-xs">Supprimer</button>
           </form>
@@ -81,7 +84,7 @@
         <form action="{% url 'orgues:image-create' orgue.uuid %}" method="post" enctype="multipart/form-data"> {% csrf_token %}
           <div class="modal-body">
             {% for field in form %}
-              {% include 'stack_field.html'  with with_helptext='true' %}
+              {% include 'stack_field.html' %}
             {% endfor %}
           </div>
           <div class="modal-footer">
@@ -96,5 +99,20 @@
 
 
 {% block js_extra %}
+
+
+  <script type="text/javascript">
+    $('#id_image').bind('change', function () {
+      if ( this.files[0].size / 1024 / 1024 > 4 ) {
+        $("#savefile").hide();
+        $('#id_file').val("");
+        alert("Votre image est trop lourde, veuillez ne pas dépasser 4 Mo")
+      } else {
+        $("#savefile").show();
+      }
+    });
+  </script>
+
+
 {% endblock %}
 

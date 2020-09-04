@@ -3,48 +3,7 @@
 
 {% block evenement_active %}active{% endblock %}
 
-{% block card-body %}
-  <h5 class="card-title mb-4">
-    {% if form.instance.pk %}
-      Modification événement
-    {% else %}
-      Nouvel événement
-    {% endif %}
-  </h5>
+{% block js_extra_2 %}
+    {% include 'orgues/facteur_create_modal.html' %}
 
-  {% if form.errors %}
-    {% for error in user_form.non_field_errors %}
-      <div class="alert alert-danger">
-        <strong>{{ error|escape }}</strong>
-      </div>
-    {% endfor %}
-  {% endif %}
-  <form action="" method="post" id="mainform" enctype="multipart/form-data">{% csrf_token %}
-    {% for field in form %}
-      {% include 'stack_field.html' with with_helptext='true' %}
-    {% endfor %}
-    <hr>
-    <div class="form-group text-right">
-      <a href="{% url 'orgues:evenement-list' orgue.uuid %}" class="btn btn-light" id="create">Annuler</a>
-      <button type="submit" class="btn btn-primary" id="create">Enregistrer</button>
-    </div>
-  </form>
-
-
-{% endblock %}
-
-
-{% block js_extra %}
-
-
-  {% include 'orgues/facteur_create_modal.html' %}
-
-
-  <script>
-    $('#id_resume').trumbowyg({
-      btns: [['strong', 'em',], ['link'], ['unorderedList'], ['horizontalRule'],],
-      autogrow: true,
-      lang: 'fr'
-    });
-  </script>
 {% endblock %}

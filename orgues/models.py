@@ -1,16 +1,16 @@
 import os
 import re
 import uuid
+
+from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.text import slugify
-from django.core.exceptions import ValidationError
-from django.core.validators import RegexValidator
-
 from imagekit.models import ImageSpecField, ProcessedImageField
-from pilkit.processors import ResizeToFill
+from pilkit.processors import ResizeToFill, ResizeToFit
 
 from accounts.models import User
 
@@ -26,13 +26,19 @@ class Facteur(models.Model):
 
 
 class Orgue(models.Model):
+    CHOIX_TYPE_OSM = (
+        ("node", "Nœud"),
+        ("way", "Chemin"),
+        ("relation", "Relation"),
+    )
+
+
     CHOIX_PROPRIETAIRE = (
         ("commune", "Commune"),
         ("etat", "Etat"),
         ("association_culturelle", "Association culturelle"),
         ("diocese", "Diocèse"),
         ("paroisse", "Paroisse"),
-        ("congregation", "Congrégation"),
     )
 
     CHOIX_ETAT = (
@@ -111,7 +117,7 @@ class Orgue(models.Model):
     region = models.CharField(verbose_name="Région", max_length=50)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
-    osm_type = models.CharField(verbose_name="Type open street map", max_length=20, null=True, blank=True)
+    osm_type = models.CharField(choices=CHOIX_TYPE_OSM, verbose_name="Type open street map", max_length=20, null=True, blank=True)
     osm_id = models.CharField(verbose_name="Id open street map", max_length=20, null=True, blank=True)
 
     # Partie instrumentale
@@ -143,7 +149,9 @@ class Orgue(models.Model):
 
     class Meta:
         ordering = ['-created_date']
-        permissions = [('change_localisation', "Peut modifier les informations de localisation d'un orgue")]
+        permissions = [
+            ('edition_avancee', "Peut modifier les champs structurels d'un orgue (ex : code_insee ...)")
+        ]
 
     def save(self, *args, **kwargs):
         self.completion = self.calcul_completion()
@@ -253,7 +261,7 @@ class Orgue(models.Model):
         cr = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV",
               "XVI", "XVII", "XVIII", "XIX", "XX", "XXI", "XXII", "XXIII", "XIV", "XV"]
         if claviers_count == 0:
-            return "?"
+            return
 
         if has_pedalier and claviers_count > 1:
             return "{}, {}/P".format(jeux_count, cr[claviers_count - 2])
@@ -265,7 +273,7 @@ class Orgue(models.Model):
 
     def calcul_facteurs(self):
         """
-        Rapatriement des facteurs stockés dans les événements pour accès rapide
+        Raptriement des facteurs stockés dans les événements pour accès rapide
         """
         self.facteurs.clear()
         for evenement in self.evenements.filter(facteurs__isnull=False).prefetch_related("facteurs"):
@@ -384,7 +392,6 @@ class Evenement(models.Model):
         ("restauration", "Restauration"),
         ("deplacement", "Déplacement"),
         ("relevage", "Relevage"),
-        ("modifications", "Modifications"),
         ("disparition", "Disparition"),
         ("degats", "Dégâts"),
         ("classement_mh", "Classement au titre des monuments historiques"),
@@ -503,22 +510,23 @@ class Image(models.Model):
     """
     Images liées à un instrument
     """
-    image = models.ImageField(upload_to=chemin_image)
+    image = models.ImageField(upload_to=chemin_image, help_text="Taille maximale : 4Mo")
     is_principale = models.BooleanField(default=False, editable=False)
-    credit = models.CharField(max_length=200, null=True, blank=True, verbose_name='Crédit')
+    legende = models.CharField(max_length=400, null=True, blank=True)
+    credit = models.CharField(max_length=200, null=True, blank=True)
 
     # Champs automatiques
     thumbnail_principale = ProcessedImageField(upload_to=chemin_image,
-                                               processors=[ResizeToFill(400, 300)],
+                                               processors=[ResizeToFill(600, 450)],
                                                format='JPEG',
                                                options={'quality': 100})
 
     thumbnail = ImageSpecField(source='image',
-                               processors=[ResizeToFill(400, 300)],
+                               processors=[ResizeToFill(600, 450)],
                                format='JPEG',
                                options={'quality': 100})
     vignette = ImageSpecField(source='image',
-                              processors=[ResizeToFill(150, 100)],
+                              processors=[ResizeToFit(150, 100)],
                               format='JPEG',
                               options={'quality': 100})
 

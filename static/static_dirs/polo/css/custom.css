@@ -343,6 +343,9 @@ table#lexique td:first-child {
     color: #5c1c54;
 }
 
+/* Grossir un peu le texte de présentation du projet sur la page d'accueil  */
+
+
 /* Formulaire de contact */
 
 #contact .card {
@@ -350,6 +353,10 @@ table#lexique td:first-child {
 }
 
 /*search form*/
+
+#editorial div p{
+    font-size: 1.1rem;
+}
 
 /* Make Select2 boxes match Bootstrap3 heights: */
 #search-form .select2-selection__rendered {
@@ -398,12 +405,10 @@ table#lexique td:first-child {
 #search-form .form-control {
     border-radius: 50px;
     border: 1px solid #aaa;
-    color: #444;
     height: 32px;
 }
 
 #search-form .form-control:focus {
-    color: #aaa;
     -webkit-box-shadow: none;
     box-shadow: none;
 }
@@ -438,4 +443,23 @@ table#lexique td:first-child {
     #nb-resultats {
         margin-top: -38px;
     }
+}
+
+
+.mycluster {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    background-color: #5c1c54;
+    color: white;
+    text-align: center;
+    font-size: 16px;
+    line-height: 40px;
+    margin-top: -20px;
+    margin-left: -20px;
+}
+
+
+.grid-image {
+    border-radius:5px;
 }
