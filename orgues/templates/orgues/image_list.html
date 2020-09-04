@@ -29,7 +29,7 @@
       <th>Image principale ?
         <i class="fa fa-info-circle" data-toggle="tooltip"
             title="L'image principale est utilisée dans les vignettes de la page d'accueil et en haut de la page de présentation d'un orgue"></i></th>
-      <th>Légende</th>
+      <th width="200px">Légende</th>
       <th>Crédit</th>
       <th width="30px">Supprimer</th>
     </tr>
@@ -99,5 +99,20 @@
 
 
 {% block js_extra %}
+
+
+  <script type="text/javascript">
+    $('#id_image').bind('change', function () {
+      if ( this.files[0].size / 1024 / 1024 > 4 ) {
+        $("#savefile").hide();
+        $('#id_file').val("");
+        alert("Votre image est trop lourde, veuillez ne pas dépasser 4 Mo")
+      } else {
+        $("#savefile").show();
+      }
+    });
+  </script>
+
+
 {% endblock %}
 

@@ -81,13 +81,13 @@
                     <div class="row">
                       {% for image in orgue.images.all %}
 
-                        <div class="col-lg-4">
+                        <div class="col-lg-4" style="padding: 0 10px;">
                           <div class="grid-item">
                             <div class="grid-item-wrap">
                               <div class="grid-image"><img alt="Image Lightbox" src="{{ image.thumbnail.url }}"/>
                               </div>
                               <div class="grid-description">
-                                <a title="{% if image.legende %}{{ image.legende }}{% endif %} {% if image.credit %}Crédit : {{ image.credit }}{% endif %}"
+                                <a title="{% if image.legende %}<b>{{ image.legende }}</b> <br>{% endif %} {% if image.credit %}<span class='text-muted'>Crédit : {{ image.credit }}</span>{% endif %}"
                                    data-lightbox="gallery-image" href="{{ image.image.url }}"
                                    class="btn btn-light btn-rounded">+</a>
                               </div>
