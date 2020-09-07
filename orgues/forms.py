@@ -24,6 +24,12 @@ class OrgueGeneralInfoForm(forms.ModelForm):
             'commentaire_admin': forms.Textarea(attrs={'rows': 2, 'cols': 15}),
         }
 
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super().__init__(*args, **kwargs)
+        if not self.request.user.has_perm('orgues.edition_avancee'):
+            self.fields['edifice'].disabled = True
+            self.fields['edifice'].help_text = 'Cette information est figée'
 
 INSTRUMENTALE_COLUMNS = {
     "transmission_notes": 6,
@@ -55,6 +61,14 @@ class OrgueLocalisationForm(forms.ModelForm):
     class Meta:
         model = Orgue
         fields = LOCALISATION_COLUMNS.keys()
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super().__init__(*args, **kwargs)
+        if not self.request.user.has_perm('orgues.edition_avancee'):
+            for field in ['commune','code_insee','code_departement','departement','region']:
+                self.fields[field].disabled = True
+                self.fields[field].help_text = 'Cette information est figée'
 
 
 class OrgueInstrumentaleForm(forms.ModelForm):

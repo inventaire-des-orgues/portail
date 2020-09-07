@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count, Q, Prefetch
 from django.forms import modelformset_factory
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy, reverse
 from django.utils.text import slugify
@@ -131,7 +131,10 @@ class OrgueDetail(LoginRequiredMixin, DetailView):
     slug_url_kwarg = 'slug'
 
     def get_object(self, queryset=None):
-        return Orgue.objects.filter(Q(slug=self.kwargs['slug']) | Q(codification=self.kwargs['slug'])).first()
+        orgue = Orgue.objects.filter(Q(slug=self.kwargs['slug']) | Q(codification=self.kwargs['slug'])).first()
+        if not orgue:
+            raise Http404
+        return orgue
 
     def render_to_response(self, context, **response_kwargs):
         if self.request.GET.get("format") == "json":
@@ -184,6 +187,11 @@ class OrgueUpdate(FabUpdateView):
     permission_required = 'orgues.change_orgue'
     form_class = orgue_forms.OrgueGeneralInfoForm
     success_message = 'Informations générales mises à jour !'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
     def form_valid(self, form):
         form.instance.updated_by_user = self.request.user
@@ -239,6 +247,11 @@ class OrgueUpdateLocalisation(OrgueUpdate):
     permission_required = "orgues.change_localisation"
     success_message = 'Localisation mise à jour, merci !'
     template_name = "orgues/orgue_form_localisation.html"
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
     def get_success_url(self):
         success_url = reverse('orgues:orgue-update-localisation', args=(self.object.uuid,))
@@ -651,7 +664,6 @@ class ImageUpdate(FabUpdateView):
     fields = ['credit', 'legende']
     permission_required = "orgues.change_image"
     success_message = "Informations mises à jour, merci"
-
 
     def get_success_url(self):
         return reverse('orgues:image-list', args=(self.object.orgue.uuid,))
