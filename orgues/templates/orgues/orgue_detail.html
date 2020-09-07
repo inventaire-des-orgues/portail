@@ -189,15 +189,11 @@
               {% if orgue.liens_pop %}
                 <dt>Inscription ou classement</dt>
                 <dd>
-                  <ul>
                     {% for lien in orgue.liens_pop %}
-                      <li>
-                        <a href="{{ lien.href }}" target="_blank" rel="noopener noreferrer">{{ lien.title }}</a>
-                      </li>
+                        <a href="{{ lien.href }}" target="_blank" rel="noopener noreferrer">{{ lien.title }}</a> <br>
                     {% endfor %}
-                  </ul>
                 </dd>
-                <img src="{% static "img/MH3B_simplifiee_NOIR_ET_BLANC.png" %}" class="img-fluid mb-3" alt="">
+                <img src="{% static "img/MH3A_simplifiee_RVB.png" %}" class="img-fluid mb-3" alt="">
               {% endif %}
               {% if orgue.latitude and orgue.longitude %}
                 <div id="mapid" style="height:150px;margin-bottom:10px"></div>
