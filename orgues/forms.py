@@ -36,6 +36,7 @@ INSTRUMENTALE_COLUMNS = {
     "transmission_commentaire": 6,
     "tirage_jeux": 6,
     "tirage_commentaire": 6,
+    "temperament":12,
     "diapason": 4,
     "sommiers": 12,
     "soufflerie": 12,
