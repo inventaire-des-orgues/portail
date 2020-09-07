@@ -8,7 +8,7 @@
 {% block content %}
 
 
-  <section class="py-3 bg-light">
+  <section class="py-3 bg-light" id="mainsection">
     <div class="container ">
       <div class="row">
         <div class="col-lg-12 my-4 text-center text-md-left">
@@ -89,6 +89,10 @@
           {% endif %}
           <div class="card box-shadow">
             <div class="card-body">
+              <p class="text-right">
+                <a href="{% block help-link %}#{% endblock %}" target="_blank"> <i class="fa fa-info-circle"></i> Aide</a>
+              </p>
+
               {% block card-body %}
                 {% if form.errors %}
                   {% for error in form.non_field_errors %}
@@ -140,6 +144,10 @@
       $('form').trigger('rescan.areYouSure');
     })
     $('form').areYouSure();
+
+    $(document).ready(function () {
+     window.scroll(0,$('#mainsection').offset().top)
+    });
   </script>
 
 

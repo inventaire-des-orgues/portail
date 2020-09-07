@@ -38,7 +38,7 @@ class Command(BaseCommand):
                             os.makedirs(os.path.dirname(pathimage_apres))
                         if not os.path.exists(pathimage_apres):
                             os.rename(pathimage_avant, pathimage_apres)
-                            
+
                         if img.thumbnail_principale:
                             img.thumbnail_principale.name = img.thumbnail_principale.name.replace(chemin_avant, chemin_apres)
 

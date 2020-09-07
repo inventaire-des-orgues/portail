@@ -177,21 +177,11 @@ class OrgueCreate(FabCreateView):
         return super().form_valid(form)
 
 
-class OrgueUpdate(FabUpdateView):
-    """
-    Mise à jour des informations générales d'un orgue
-    """
+class OrgueUpdateMixin(FabUpdateView):
     model = Orgue
     slug_field = 'uuid'
     slug_url_kwarg = 'orgue_uuid'
     permission_required = 'orgues.change_orgue'
-    form_class = orgue_forms.OrgueGeneralInfoForm
-    success_message = 'Informations générales mises à jour !'
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs['request'] = self.request
-        return kwargs
 
     def form_valid(self, form):
         form.instance.updated_by_user = self.request.user
@@ -206,7 +196,20 @@ class OrgueUpdate(FabUpdateView):
         return context
 
 
-class OrgueUpdateInstrumentale(OrgueUpdate):
+class OrgueUpdate(OrgueUpdateMixin, FabUpdateView):
+    """
+    Mise à jour des informations générales d'un orgue
+    """
+    form_class = orgue_forms.OrgueGeneralInfoForm
+    success_message = 'Informations générales mises à jour !'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
+
+class OrgueUpdateInstrumentale(OrgueUpdateMixin):
     form_class = orgue_forms.OrgueInstrumentaleForm
     success_message = 'Tuyauterie mise à jour, merci !'
     template_name = "orgues/orgue_form_instrumentale.html"
@@ -216,10 +219,11 @@ class OrgueUpdateInstrumentale(OrgueUpdate):
         return self.request.POST.get("next", success_url)
 
 
-class OrgueUpdateComposition(OrgueUpdate):
+class OrgueUpdateComposition(OrgueUpdateMixin):
     model = Orgue
     form_class = orgue_forms.OrgueCompositionForm
     template_name = "orgues/orgue_form_composition.html"
+    success_message = 'Composition mise à jour, merci !'
 
     def get_object(self, queryset=None):
         object = super().get_object()
@@ -232,17 +236,18 @@ class OrgueUpdateComposition(OrgueUpdate):
         return self.request.POST.get("next", success_url)
 
 
-class OrgueUpdateBuffet(OrgueUpdate):
+class OrgueUpdateBuffet(OrgueUpdateMixin):
     model = Orgue
     form_class = orgue_forms.OrgueBuffetForm
     template_name = "orgues/orgue_form_buffet.html"
+    success_message = 'Buffet mis à jour, merci !'
 
     def get_success_url(self):
         success_url = reverse('orgues:orgue-update-buffet', args=(self.object.uuid,))
         return self.request.POST.get("next", success_url)
 
 
-class OrgueUpdateLocalisation(OrgueUpdate):
+class OrgueUpdateLocalisation(OrgueUpdateMixin):
     form_class = orgue_forms.OrgueLocalisationForm
     permission_required = "orgues.change_localisation"
     success_message = 'Localisation mise à jour, merci !'

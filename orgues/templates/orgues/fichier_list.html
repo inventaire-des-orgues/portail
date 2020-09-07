@@ -3,6 +3,9 @@
 
 {% block fichier_active %}active{% endblock %}
 
+{% block help-link %}https://docs.inventaire-des-orgues.fr/fiche-orgue/#fichiers{% endblock %}
+
+
 {% block card-body %}
   <h5 class="card-title mb-4">
     Fichiers
@@ -80,7 +83,7 @@
 
 
 
-{% block js_extra %}
+{% block js_extra_2 %}
   <script type="text/javascript">
     $('#id_file').bind('change', function () {
       if ( this.files[0].size / 1024 / 1024 > 10 ) {
