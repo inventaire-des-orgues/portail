@@ -39,6 +39,7 @@ class Orgue(models.Model):
         ("association_culturelle", "Association culturelle"),
         ("diocese", "Diocèse"),
         ("paroisse", "Paroisse"),
+        ("congregation", "Congrégation"),
     )
 
     CHOIX_ETAT = (
@@ -85,7 +86,7 @@ class Orgue(models.Model):
     resume = models.TextField(max_length=500, null=True, verbose_name="Resumé", blank=True,
                               help_text="Présentation en quelques lignes de l'instrument \
                               et son originalité (max 500 caractères)")
-    proprietaire = models.CharField(max_length=20, null=True, choices=CHOIX_PROPRIETAIRE, default="commune",
+    proprietaire = models.CharField(max_length=22, null=True, choices=CHOIX_PROPRIETAIRE, default="commune",
                                     verbose_name="Propriétaire")
     organisme = models.CharField(verbose_name="Organisme auquel s'adresser", max_length=100, null=True, blank=True)
     lien_reference = models.URLField(verbose_name="Lien de référence", max_length=300, null=True, blank=True)
