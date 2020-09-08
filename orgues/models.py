@@ -32,7 +32,6 @@ class Orgue(models.Model):
         ("relation", "Relation"),
     )
 
-
     CHOIX_PROPRIETAIRE = (
         ("commune", "Commune"),
         ("etat", "Etat"),
@@ -85,7 +84,7 @@ class Orgue(models.Model):
     resume = models.TextField(max_length=500, null=True, verbose_name="Resumé", blank=True,
                               help_text="Présentation en quelques lignes de l'instrument \
                               et son originalité (max 500 caractères)")
-    proprietaire = models.CharField(max_length=20, null=True, choices=CHOIX_PROPRIETAIRE, default="commune",
+    proprietaire = models.CharField(max_length=40, null=True, choices=CHOIX_PROPRIETAIRE, default="commune",
                                     verbose_name="Propriétaire")
     organisme = models.CharField(verbose_name="Organisme auquel s'adresser", max_length=100, null=True, blank=True)
     lien_reference = models.URLField(verbose_name="Lien de référence", max_length=300, null=True, blank=True)
@@ -117,7 +116,8 @@ class Orgue(models.Model):
     region = models.CharField(verbose_name="Région", max_length=50)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
-    osm_type = models.CharField(choices=CHOIX_TYPE_OSM, verbose_name="Type open street map", max_length=20, null=True, blank=True)
+    osm_type = models.CharField(choices=CHOIX_TYPE_OSM, verbose_name="Type open street map", max_length=20, null=True,
+                                blank=True)
     osm_id = models.CharField(verbose_name="Id open street map", max_length=20, null=True, blank=True)
 
     # Partie instrumentale
@@ -126,7 +126,9 @@ class Orgue(models.Model):
     sommiers = models.TextField(null=True, blank=True)
     soufflerie = models.TextField(null=True, blank=True)
     transmission_notes = models.CharField(max_length=30, choices=CHOIX_TRANSMISSION, null=True, blank=True)
-    temperament = models.CharField(max_length=50, help_text="Mention la plus précise possible. Ex: mésotonique au sixième modifié.",null=True,blank=True)
+    temperament = models.CharField(max_length=50,
+                                   help_text="Mention la plus précise possible. Ex: mésotonique au sixième modifié.",
+                                   null=True, blank=True)
     transmission_commentaire = models.CharField(max_length=100, null=True, blank=True, help_text="Max 100 caractères")
     tirage_jeux = models.CharField(verbose_name="Tirage des jeux", max_length=20, choices=CHOIX_TIRAGE, null=True,
                                    blank=True)
@@ -134,15 +136,14 @@ class Orgue(models.Model):
     commentaire_tuyauterie = models.TextField(verbose_name="Description de la tuyauterie", blank=True, null=True)
     accessoires = models.ManyToManyField('Accessoire', blank=True)
 
-
     # Auto générés
     created_date = models.DateTimeField(auto_now_add=True, auto_now=False, verbose_name='Creation date')
     modified_date = models.DateTimeField(auto_now=True, auto_now_add=False, verbose_name='Update date')
     updated_by_user = models.ForeignKey(User, null=True, editable=False, on_delete=models.SET_NULL)
     uuid = models.UUIDField(db_index=True, default=uuid.uuid4, unique=True, editable=False)
-    slug = models.SlugField(max_length=255)
+    slug = models.SlugField(max_length=255, editable=False, null=True,blank=True)
     completion = models.IntegerField(default=False, editable=False)
-    keywords = models.TextField()
+    keywords = models.TextField(editable=False,null=True,blank=True)
     resume_composition = models.CharField(max_length=30, null=True, blank=True, editable=False)
     facteurs = models.ManyToManyField(Facteur, blank=True, editable=False)
 
@@ -345,7 +346,7 @@ class Clavier(models.Model):
     Un orgue peut avoir plusieurs claviers et un pédalier.
     """
 
-    type = models.ForeignKey(TypeClavier,verbose_name="Nom", null=True, on_delete=models.CASCADE, db_index=True)
+    type = models.ForeignKey(TypeClavier, verbose_name="Nom", null=True, on_delete=models.CASCADE, db_index=True)
     is_expressif = models.BooleanField(verbose_name="Cocher si expressif", default=False)
     etendue = models.CharField(validators=[validate_etendue], max_length=10, null=True, blank=True,
                                help_text="De la forme F1-G5, C1-F#5 ... ")
