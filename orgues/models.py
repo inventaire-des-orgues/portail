@@ -38,6 +38,7 @@ class Orgue(models.Model):
         ("association_culturelle", "Association culturelle"),
         ("diocese", "Diocèse"),
         ("paroisse", "Paroisse"),
+        ("congregation", "Congrégation"),
     )
 
     CHOIX_ETAT = (
@@ -390,11 +391,13 @@ class Evenement(models.Model):
 
     CHOIX_TYPE = (
         ("construction", "Construction"),
+        ("inauguration", "Inauguration"),
         ("reconstruction", "Reconstruction"),
         ("destruction", "Destruction"),
         ("restauration", "Restauration"),
         ("deplacement", "Déplacement"),
         ("relevage", "Relevage"),
+        ("modifications", "Modifications"),
         ("disparition", "Disparition"),
         ("degats", "Dégâts"),
         ("classement_mh", "Classement au titre des monuments historiques"),

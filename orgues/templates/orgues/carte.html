@@ -52,13 +52,13 @@
 
 
         var popup = '<p> <b>' + orgues[i].commune + '</b>' + '</br>' + orgues[i].edifice + '</br><a href="/detail/' + orgues[i].slug + '">Voir l\'orgue</a></p>';
-        var ttip = orgues[i].commune + ' ' + orgues[i].edifice;
+        var ttip = '<b>' + orgues[i].commune + '</b>' + '</br>' + orgues[i].edifice;
         var latLng = new L.LatLng(orgues[i].latitude, orgues[i].longitude);
         if (orgues[i].references_palissy) {
-          var marker = new L.marker(latLng, {title: orgues[i].pk, icon: mh_icon}).bindPopup(popup);
+          var marker = new L.marker(latLng, {icon: mh_icon}).bindPopup(popup);
         }
         else {
-          var marker = new L.Marker(latLng, {title: orgues[i].pk}).bindPopup(popup);
+          var marker = new L.Marker(latLng, {}).bindPopup(popup);
         }
         marker.bindTooltip(ttip);
 
