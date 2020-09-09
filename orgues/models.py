@@ -71,6 +71,135 @@ class Orgue(models.Model):
         ("electro_pneumatique", "Electro-pneumatique"),
     )
 
+    CHOIX_REGION = (
+        ('Auvergne-Rhône-Alpes', 'Auvergne-Rhône-Alpes'),
+        ('Bourgogne-Franche-Comté', 'Bourgogne-Franche-Comté'),
+        ('Bretagne', 'Bretagne'),
+        ('Centre-Val de Loire', 'Centre-Val de Loire'),
+        ('Corse', 'Corse'),
+        ('Grand Est', 'Grand Est'),
+        ('Guadeloupe', 'Guadeloupe'),
+        ('Guyane', 'Guyane'),
+        ('Hauts-de-France', 'Hauts-de-France'),
+        ('Île-de-France', 'Île-de-France'),
+        ('La Réunion', 'La Réunion'),
+        ('Martinique', 'Martinique'),
+        ('Normandie', 'Normandie'),
+        ('Nouvelle-Aquitaine', 'Nouvelle-Aquitaine'),
+        ('Nouvelle-Calédonie', 'Nouvelle-Calédonie'),
+        ('Occitanie', 'Occitanie'),
+        ('Pays de la Loire', 'Pays de la Loire'),
+        ("Provence-Alpes-Côte d'Azur", "Provence-Alpes-Côte d'Azur"),
+        ('Saint-Pierre-et-Miquelon','Saint-Pierre-et-Miquelon')
+    )
+
+    CHOIX_DEPARTEMENT = (
+        ('Ain', 'Ain'),
+        ('Aisne', 'Aisne'),
+        ('Allier', 'Allier'),
+        ('Alpes-de-Haute-Provence', 'Alpes-de-Haute-Provence'),
+        ('Hautes-Alpes', 'Hautes-Alpes'),
+        ('Alpes-Maritimes', 'Alpes-Maritimes'),
+        ('Ardennes', 'Ardennes'),
+        ('Ardèche', 'Ardèche'),
+        ('Ariège', 'Ariège'),
+        ('Aube', 'Aube'),
+        ('Aude', 'Aude'),
+        ('Aveyron', 'Aveyron'),
+        ('Bouches-du-Rhône', 'Bouches-du-Rhône'),
+        ('Calvados', 'Calvados'),
+        ('Cantal', 'Cantal'),
+        ('Charente', 'Charente'),
+        ('Charente-Maritime', 'Charente-Maritime'),
+        ('Cher', 'Cher'),
+        ('Corrèze', 'Corrèze'),
+        ('Corse-du-Sud', 'Corse-du-Sud'),
+        ('Haute-Corse', 'Haute-Corse'),
+        ("Côte-d'Or", "Côte-d'Or"),
+        ("Côtes-d'Armor", "Côtes-d'Armor"),
+        ('Creuse', 'Creuse'),
+        ('Dordogne', 'Dordogne'),
+        ('Doubs', 'Doubs'),
+        ('Drôme', 'Drôme'),
+        ('Eure', 'Eure'),
+        ('Eure-et-Loir', 'Eure-et-Loir'),
+        ('Finistère', 'Finistère'),
+        ('Gard', 'Gard'),
+        ('Haute-Garonne', 'Haute-Garonne'),
+        ('Gers', 'Gers'),
+        ('Gironde', 'Gironde'),
+        ('Hérault', 'Hérault'),
+        ('Ille-et-Vilaine', 'Ille-et-Vilaine'),
+        ('Indre', 'Indre'),
+        ('Indre-et-Loire', 'Indre-et-Loire'),
+        ('Isère', 'Isère'),
+        ('Jura', 'Jura'),
+        ('Landes', 'Landes'),
+        ('Loir-et-Cher', 'Loir-et-Cher'),
+        ('Loire', 'Loire'),
+        ('Haute-Loire', 'Haute-Loire'),
+        ('Loire-Atlantique', 'Loire-Atlantique'),
+        ('Loiret', 'Loiret'),
+        ('Lot', 'Lot'),
+        ('Lot-et-Garonne', 'Lot-et-Garonne'),
+        ('Lozère', 'Lozère'),
+        ('Maine-et-Loire', 'Maine-et-Loire'),
+        ('Manche', 'Manche'),
+        ('Marne', 'Marne'),
+        ('Haute-Marne', 'Haute-Marne'),
+        ('Mayenne', 'Mayenne'),
+        ('Meurthe-et-Moselle', 'Meurthe-et-Moselle'),
+        ('Meuse', 'Meuse'),
+        ('Morbihan', 'Morbihan'),
+        ('Moselle', 'Moselle'),
+        ('Nièvre', 'Nièvre'),
+        ('Nord', 'Nord'),
+        ('Oise', 'Oise'),
+        ('Orne', 'Orne'),
+        ('Pas-de-Calais', 'Pas-de-Calais'),
+        ('Puy-de-Dôme', 'Puy-de-Dôme'),
+        ('Pyrénées-Atlantiques', 'Pyrénées-Atlantiques'),
+        ('Hautes-Pyrénées', 'Hautes-Pyrénées'),
+        ('Pyrénées-Orientales', 'Pyrénées-Orientales'),
+        ('Bas-Rhin', 'Bas-Rhin'),
+        ('Haut-Rhin', 'Haut-Rhin'),
+        ('Rhône', 'Rhône'),
+        ('Haute-Saône', 'Haute-Saône'),
+        ('Saône-et-Loire', 'Saône-et-Loire'),
+        ('Sarthe', 'Sarthe'),
+        ('Savoie', 'Savoie'),
+        ('Haute-Savoie', 'Haute-Savoie'),
+        ('Paris', 'Paris'),
+        ('Seine-Maritime', 'Seine-Maritime'),
+        ('Seine-et-Marne', 'Seine-et-Marne'),
+        ('Yvelines', 'Yvelines'),
+        ('Deux-Sèvres', 'Deux-Sèvres'),
+        ('Somme', 'Somme'),
+        ('Tarn', 'Tarn'),
+        ('Tarn-et-Garonne', 'Tarn-et-Garonne'),
+        ('Var', 'Var'),
+        ('Vaucluse', 'Vaucluse'),
+        ('Vendée', 'Vendée'),
+        ('Vienne', 'Vienne'),
+        ('Haute-Vienne', 'Haute-Vienne'),
+        ('Vosges', 'Vosges'),
+        ('Yonne', 'Yonne'),
+        ('Territoire de Belfort', 'Territoire de Belfort'),
+        ('Essonne', 'Essonne'),
+        ('Hauts-de-Seine', 'Hauts-de-Seine'),
+        ('Seine-Saint-Denis', 'Seine-Saint-Denis'),
+        ('Val-de-Marne', 'Val-de-Marne'),
+        ("Val-d'Oise", "Val-d'Oise"),
+        ('Guadeloupe', 'Guadeloupe'),
+        ('Martinique', 'Martinique'),
+        ('Mayotte', 'Mayotte'),
+        ('Guyane', 'Guyane'),
+        ('La Réunion', 'La Réunion'),
+        ('Nouvelle-Calédonie', 'Nouvelle-Calédonie'),
+        ('Saint-Pierre-et-Miquelon', 'Saint-Pierre-et-Miquelon'),
+
+    )
+
     CHOIX_DESIGNATION = (
         ("grand_orgue", "Grand orgue"),
         ("orgue_choeur", "Orgue de chœur"),
@@ -79,7 +208,7 @@ class Orgue(models.Model):
 
     # Informations générales
     designation = models.CharField(max_length=300, null=True, verbose_name="Désignation", default="orgue", blank=True)
-    codification = models.CharField(max_length=24, unique=True)
+    codification = models.CharField(max_length=24, unique=True, db_index=True)
     references_palissy = models.CharField(max_length=20, null=True, blank=True,
                                           help_text="Séparer les codes par des virgules")
     resume = models.TextField(max_length=500, null=True, verbose_name="Resumé", blank=True,
@@ -112,9 +241,9 @@ class Orgue(models.Model):
     commune = models.CharField(max_length=100)
     code_insee = models.CharField(max_length=5)
     ancienne_commune = models.CharField(max_length=100, null=True, blank=True)
-    departement = models.CharField(verbose_name="Département", max_length=50)
+    departement = models.CharField(verbose_name="Département", choices=CHOIX_DEPARTEMENT, max_length=50)
     code_departement = models.CharField(validators=[code_dep_validator], verbose_name="Code département", max_length=3)
-    region = models.CharField(verbose_name="Région", max_length=50)
+    region = models.CharField(verbose_name="Région", choices=CHOIX_REGION, max_length=50)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
     osm_type = models.CharField(choices=CHOIX_TYPE_OSM, verbose_name="Type open street map", max_length=20, null=True,
@@ -142,9 +271,9 @@ class Orgue(models.Model):
     modified_date = models.DateTimeField(auto_now=True, auto_now_add=False, verbose_name='Update date')
     updated_by_user = models.ForeignKey(User, null=True, editable=False, on_delete=models.SET_NULL)
     uuid = models.UUIDField(db_index=True, default=uuid.uuid4, unique=True, editable=False)
-    slug = models.SlugField(max_length=255, editable=False, null=True,blank=True)
+    slug = models.SlugField(max_length=255, editable=False, null=True, blank=True)
     completion = models.IntegerField(default=False, editable=False)
-    keywords = models.TextField(editable=False,null=True,blank=True)
+    keywords = models.TextField(editable=False, null=True, blank=True)
     resume_composition = models.CharField(max_length=30, null=True, blank=True, editable=False)
     facteurs = models.ManyToManyField(Facteur, blank=True, editable=False)
 
@@ -161,7 +290,7 @@ class Orgue(models.Model):
         self.completion = self.calcul_completion()
         self.keywords = self.build_keywords()
         if not self.slug:
-            self.slug = "orgue-{}-{}-{}".format(slugify(self.commune), slugify(self.edifice), self.pk)
+            self.slug = slugify("orgue-{}-{}-{}".format(self.commune, self.edifice, self.codification))
 
         super().save(*args, **kwargs)
 
