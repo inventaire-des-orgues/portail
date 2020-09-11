@@ -83,7 +83,7 @@ class Orgue(models.Model):
     codification = models.CharField(max_length=24, unique=True)
     references_palissy = models.CharField(max_length=20, null=True, blank=True,
                                           help_text="Séparer les codes par des virgules")
-    resume = models.TextField(max_length=500, null=True, verbose_name="Resumé", blank=True,
+    resume = models.TextField(max_length=500, null=True, verbose_name="Résumé", blank=True,
                               help_text="Présentation en quelques lignes de l'instrument \
                               et son originalité (max 500 caractères)")
     proprietaire = models.CharField(max_length=22, null=True, choices=CHOIX_PROPRIETAIRE, default="commune",
