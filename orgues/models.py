@@ -792,7 +792,7 @@ def save_evenement_calcul_facteurs(sender, instance, **kwargs):
 def update_orgue_in_index(sender, instance, **kwargs):
     if hasattr(settings,'MEILISEARCH_URL'):
         from orgues.api.serializers import OrgueResumeSerializer
-        client = meilisearch.Client(settings.MEILISEARCH_URL)
+        client = meilisearch.Client(settings.MEILISEARCH_URL,settings.MEILISEARCH_KEY)
         orgue = OrgueResumeSerializer(instance).data
         index = client.get_index(uid='orgues')
         index.add_documents([orgue])

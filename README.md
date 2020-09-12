@@ -43,6 +43,7 @@ Configurer l'url de meilisearch dans `project/settings/dev.py`, normalement :
 
 ```python
 MEILISEARCH_URL = 'http://127.0.0.1:7700'
+MEILISEARCH_KEY = ''
 ```
 
 Puis lancer la tache de création de l'index : 

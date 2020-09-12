@@ -9,7 +9,7 @@ class Command(BaseCommand):
     help = 'Build search index'
 
     def handle(self, *args, **options):
-        client = meilisearch.Client(settings.MEILISEARCH_URL)
+        client = meilisearch.Client(settings.MEILISEARCH_URL,settings.MEILISEARCH_KEY)
         try:
             index = client.get_index(uid='orgues')
         except:

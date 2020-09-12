@@ -41,7 +41,7 @@ class OrgueSearch(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         try:
-            client = meilisearch.Client(settings.MEILISEARCH_URL)
+            client = meilisearch.Client(settings.MEILISEARCH_URL,settings.MEILISEARCH_KEY)
             index = client.get_index(uid='orgues')
         except:
             return JsonResponse({'message': 'Le moteur de recherche est mal configuré'}, status=500)
