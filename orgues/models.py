@@ -47,11 +47,6 @@ class Orgue(models.Model):
         ('degrade', "Dégradé ou en ruine : injouable"),
     )
 
-    CHOIX_EMPLACEMENT = (
-        ('sol', "Au sol"),
-        ('tribune', "En tribune"),
-    )
-
     CHOIX_TRANSMISSION = (
         ("mecanique", "Mécanique"),
         ("mecanique_suspendue", "Mécanique suspendue"),
@@ -326,8 +321,7 @@ class Orgue(models.Model):
     is_polyphone = models.BooleanField(default=False, verbose_name="Orgue polyphone de la manufacture Debierre ?")
 
     etat = models.CharField(max_length=20, choices=CHOIX_ETAT, null=True, blank=True)
-    emplacement = models.CharField(max_length=20, choices=CHOIX_EMPLACEMENT, null=True, blank=True,
-                                   verbose_name="Emplacement")
+    emplacement = models.CharField(max_length=50, null=True, blank=True,verbose_name="Emplacement",help_text="Ex: sol, tribune ...")
     buffet = models.TextField(verbose_name="Description du buffet", null=True, blank=True,
                               help_text="Description du buffet et de son état.")
     console = models.TextField(verbose_name="Description de la console", null=True, blank=True,
