@@ -54,9 +54,9 @@ python manage.py build_meilisearch_index
 
 Un signal django récupère les modifications d'orgues faites directement via l'interface et met à jour l'index de recherche meilisearch.  
 Ce signal ne récupère pas les modifications faites en ligne de commande, les modifications groupées via l'admin ou encore
-les suppression d'orgues. 
-Pour mettre à jour l'index de recherche après ce type de modification, il faut lancer la commande `build_meilisearch_index`.  
-En production cette commande est lancée toutes les nuits pour s'assurer d'avoir un index toujours à jour. 
+les suppressions d'orgues. 
+Pour mettre à jour l'index de recherche après ces types de modifications, il faut lancer la commande `build_meilisearch_index`.  
+En production cette commande est lancée toutes les nuits (à 2h) pour garantir que l'index soit à jour. 
 
 
 # Faire un import de données sur le serveur : 
