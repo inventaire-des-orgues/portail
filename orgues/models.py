@@ -2,6 +2,8 @@ import os
 import re
 import uuid
 
+import meilisearch
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db import models
@@ -372,7 +374,6 @@ class Orgue(models.Model):
     uuid = models.UUIDField(db_index=True, default=uuid.uuid4, unique=True, editable=False)
     slug = models.SlugField(max_length=255, editable=False, null=True, blank=True)
     completion = models.IntegerField(default=False, editable=False)
-    keywords = models.TextField(editable=False, null=True, blank=True)
     resume_composition = models.CharField(max_length=30, null=True, blank=True, editable=False)
     facteurs = models.ManyToManyField(Facteur, blank=True, editable=False)
 
@@ -387,21 +388,10 @@ class Orgue(models.Model):
 
     def save(self, *args, **kwargs):
         self.completion = self.calcul_completion()
-        self.keywords = self.build_keywords()
         if not self.slug:
             self.slug = slugify("orgue-{}-{}-{}".format(self.commune, self.edifice, self.codification))
 
         super().save(*args, **kwargs)
-
-    def build_keywords(self):
-        keywords = [
-            self.edifice.lower(),
-            slugify(self.edifice).replace("-", " "),
-            slugify(self.commune).replace("-", " "),
-            self.commune,
-        ]
-        keywords_str = " ".join(keywords)
-        return keywords_str
 
     @property
     def is_expressif(self):
@@ -795,3 +785,14 @@ class Accessoire(models.Model):
 def save_evenement_calcul_facteurs(sender, instance, **kwargs):
     orgue = instance.orgue
     orgue.calcul_facteurs()
+
+
+
+@receiver(post_save, sender=Orgue)
+def update_orgue_in_index(sender, instance, **kwargs):
+    if hasattr(settings,'MEILISEARCH_URL'):
+        from orgues.api.serializers import OrgueResumeSerializer
+        client = meilisearch.Client(settings.MEILISEARCH_URL)
+        orgue = OrgueResumeSerializer(instance).data
+        index = client.get_index(uid='orgues')
+        index.add_documents([orgue])

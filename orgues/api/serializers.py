@@ -15,7 +15,6 @@ class FichierSerializer(serializers.ModelSerializer):
 
 
 class TypeJeuSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = TypeJeu
         exclude = ["id"]
@@ -47,14 +46,12 @@ class ClavierSerializer(serializers.ModelSerializer):
 
 
 class SourceSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Source
         exclude = ["id", "orgue"]
 
 
 class FacteurSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Facteur
         exclude = ["id"]
@@ -73,4 +70,37 @@ class OrgueSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Orgue
-        exclude = ["uuid", "id", "slug", "completion", "created_date", "keywords"]
+        exclude = ["uuid", "id", "slug", "completion", "created_date"]
+
+
+class OrgueResumeSerializer(serializers.ModelSerializer):
+    """
+    Serializers utilisé pour constuire l'index de recherche
+    """
+    facteurs = serializers.SerializerMethodField()
+    url = serializers.SerializerMethodField()
+
+
+    class Meta:
+        model = Orgue
+        fields = [
+            "id",
+            "designation",
+            "edifice",
+            "commune",
+            "ancienne_commune",
+            "departement",
+            "region",
+            "completion",
+            "vignette",
+            "emplacement",
+            "resume_composition",
+            "facteurs",
+            "url"
+        ]
+
+    def get_url(self,obj):
+        return obj.get_absolute_url()
+
+    def get_facteurs(self, obj):
+        return ", ".join(obj.facteurs.values_list("nom",flat=True))

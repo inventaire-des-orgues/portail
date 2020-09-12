@@ -122,27 +122,27 @@ span.puce-etat {
 }
 
 #orgue-list .la_vignette {
-        border-top-left-radius: 10px;
-        border-bottom-left-radius: 10px;
-        border-top-right-radius:0;
-        border-bottom-right-radius:0;
-    }
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
 
-    #orgue-list .la_vignette img.card-img-top {
-        border-top-left-radius: 10px;
-        border-bottom-left-radius: 10px;
-        border-top-right-radius:0;
-        border-bottom-right-radius:0;
-    }
+#orgue-list .la_vignette img.card-img-top {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
 
 @media (max-width: 767px) {
     #orgue-list .la_vignette {
-        border-top-right-radius:10px;
+        border-top-right-radius: 10px;
         border-bottom-left-radius: 0;
     }
 
     #orgue-list .la_vignette img.card-img-top {
-        border-top-right-radius:10px;
+        border-top-right-radius: 10px;
         border-bottom-left-radius: 0;
     }
 
@@ -354,7 +354,7 @@ table#lexique td:first-child {
 
 /*search form*/
 
-#editorial div p{
+#editorial div p {
     font-size: 1.1rem;
 }
 
@@ -461,5 +461,23 @@ table#lexique td:first-child {
 
 
 .grid-image {
-    border-radius:5px;
+    border-radius: 5px;
+}
+
+
+.orgue-card span > em {
+    color: hsl(204, 86%, 25%);
+    font-style: inherit;
+    background-color: #daedf8;
+}
+
+.orgue-card h4.card-title {
+    font-size: 1.2em;
+}
+
+#searchinput input {
+  outline: none;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  box-shadow: none !important;
 }
