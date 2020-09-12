@@ -105,10 +105,10 @@
 
   <script type="text/javascript">
     $('#id_image').bind('change', function () {
-      if ( this.files[0].size / 1024 / 1024 > 4 ) {
+      if ( this.files[0].size / 1024 / 1024 > 2 ) {
         $("#savefile").hide();
         $('#id_file').val("");
-        alert("Votre image est trop lourde, veuillez ne pas dépasser 4 Mo")
+        alert("Votre image est trop lourde, veuillez ne pas dépasser 2 Mo")
       } else {
         $("#savefile").show();
       }
