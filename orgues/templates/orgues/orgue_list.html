@@ -41,8 +41,9 @@
               <div class="col-lg-8">
                 <div class="card-body py-md-3">
                   <h4 class="card-title mb-0">
-                    <span class="text-capitalize" v-html="orgue._formatted.edifice"></span>
-                    | <span v-html="orgue._formatted.commune"></span>, <span v-html="orgue.departement"></span></h4>
+                    <span v-html="orgue._formatted.edifice"></span>
+                    | <span v-html="orgue._formatted.commune"></span>, <span v-html="orgue.departement"></span>
+                  </h4>
                   <p class=" my-0">
                     <span v-html="orgue.designation"></span>
                     <span v-if="orgue.emplacement">, ((orgue.emplacement))</span>

@@ -475,6 +475,10 @@ table#lexique td:first-child {
     font-size: 1.2em;
 }
 
+.orgue-card h4.card-title:first-letter{
+  text-transform: capitalize
+}
+
 #searchinput input {
   outline: none;
   -webkit-box-shadow: none !important;
