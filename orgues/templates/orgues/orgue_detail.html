@@ -50,7 +50,7 @@
                   {% endif %}
                   <hr>
                   <h2 class="titre-fiche">Description</h2>
-                  <div id="resume"></div>
+                  <div id="resume">{{ orgue.resume|safe }}</div>
                   <p class="soustitre-fiche">Buffet</p>
                   {% if orgue.buffet %}
                     <div id="buffet">{{ orgue.buffet|safe }}</div>
