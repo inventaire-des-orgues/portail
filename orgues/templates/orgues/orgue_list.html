@@ -4,7 +4,7 @@
   <div class="container" id="app">
     <section id="orgue-list">
       <div class="row">
-        <div class="col-xl-3">
+        <div class="col-xl-4">
           <div class="card">
             <div class="card-body" id="search-form">
               <div class="form-group">
@@ -18,8 +18,8 @@
                 <label for="query">Recherche <i class="fa fa-info-circle tex-primary" data-toggle="tooltip" data-title="Rechercher une commune, une église, un facteur ..."></i></label>
                 <input id="query" v-model="query" placeholder="Commune, facteur, église ..." class="form-control" value="{{ request.GET.facteur }}"/>
               </div>
-              <div class="text-center mb-4 d-none d-xl-block" >
-                <img src="{% static 'img/orgue_illustration_recherche.png' %}" alt="" style="width: 100%">
+              <div class="text-center d-none d-xl-block" >
+                <img src="{% static 'img/conseil_image_principale.png' %}" alt="" style="width: 100%">
               </div>
 
               <div class="text-center d-none d-xl-block">
@@ -31,7 +31,7 @@
             </div>
           </div>
         </div>
-        <div class="col-xl-9">
+        <div class="col-xl-8">
           <p class="text-muted text-center">((hits)) résultat<span v-if="hits>0">s</span></p>
           <div v-for="orgue in orgues" class="card shadow-sm vignette mb-lg-4 mb-sm-5 orgue-card" @click="select(orgue)">
             <div class="row no-gutters">
