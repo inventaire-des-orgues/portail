@@ -3,6 +3,7 @@ import logging
 import os
 from collections import Counter, deque
 
+import meilisearch
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count, Q, Prefetch
@@ -16,72 +17,44 @@ from django.views.generic.base import View
 
 import orgues.forms as orgue_forms
 from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdateView, FabView, FabCreateViewJS
-from orgues.api.serializers import OrgueSerializer
+from orgues.api.serializers import OrgueSerializer, OrgueResumeSerializer
 from project import settings
 from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source
 
 
-class OrgueList(LoginRequiredMixin, ListView):
+class OrgueList(LoginRequiredMixin, TemplateView):
     """
     Listing des orgues
     """
-    model = Orgue
-    paginate_by = 20
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        departement = self.request.GET.get("departement")
-        commune = self.request.GET.get("commune")
-        edifice = self.request.GET.get("edifice")
-        facteur_pk = self.request.GET.get("facteur")
-
-        if departement:
-            self.selected_departement, code_departement = departement.split("|")
-        else:
-            self.selected_departement = None
-            code_departement = None
-        if commune:
-            self.selected_commune, code_insee = commune.split("|")
-        else:
-            self.selected_commune = None
-            code_insee = None
-        if facteur_pk:
-            self.facteur = Facteur.objects.get(pk=facteur_pk)
-            queryset = queryset.filter(facteurs=self.facteur)
-        else:
-            self.facteur = None
-        if code_departement:
-            queryset = queryset.filter(code_departement=code_departement)
-        if code_insee:
-            queryset = queryset.filter(code_insee=code_insee)
-        if edifice:
-            terms = [slugify(term) for term in edifice.split(" ") if term]
-            query = Q()
-            for term in terms:
-                query = query & Q(keywords__icontains=term)
-            queryset = queryset.filter(query)
-
-        queryset = queryset.annotate(clavier_count=Count('claviers'))
-
-        if departement or commune or edifice or self.facteur:
-            # log search
-            logger = logging.getLogger("search")
-            logger.info(
-                f"{self.request.user};{self.selected_departement};{self.selected_commune};{edifice};{self.facteur}".replace(
-                    "None", ""))
-
-        return queryset.order_by('-completion').prefetch_related(
-            Prefetch('facteurs'),
-            Prefetch("images", queryset=Image.objects.filter(is_principale=True))
-
-        )
+    template_name = "orgues/orgue_list.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context["selected_commune"] = self.selected_commune
-        context["selected_departement"] = self.selected_departement
-        context["facteur"] = self.facteur
+        context["departements"] = [d[0] for d in Orgue.CHOIX_DEPARTEMENT]
+        context["departement"] = self.request.GET.get("departement")
+        context["query"] = self.request.GET.get("query")
+        context["limit"] = self.request.GET.get("limit")
         return context
+
+
+class OrgueSearch(LoginRequiredMixin, View):
+
+    def post(self, request, *args, **kwargs):
+        try:
+            client = meilisearch.Client(settings.MEILISEARCH_URL,settings.MEILISEARCH_KEY)
+            index = client.get_index(uid='orgues')
+        except:
+            return JsonResponse({'message': 'Le moteur de recherche est mal configuré'}, status=500)
+        query = request.POST.get('query')
+        limit = request.POST.get('limit', 20)
+        if not query:
+            query = None
+        departement = request.POST.get('departement')
+        options = {'attributesToHighlight': ['*'], 'limit': int(limit)}
+        if departement:
+            options['facetFilters'] = ['departement:{}'.format(departement)]
+        results = index.search(query, options)
+        return JsonResponse(results)
 
 
 class OrgueCarte(LoginRequiredMixin, TemplateView):

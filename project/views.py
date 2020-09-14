@@ -13,6 +13,7 @@ from django.utils.html import strip_tags
 from django.views.generic import FormView
 
 import project.forms as project_forms
+from orgues.models import Orgue
 from project.settings import ADMIN_EMAILS
 
 logger = logging.getLogger("fabaccess")
@@ -23,7 +24,9 @@ def accueil(request):
     """
     Page d'accueil
     """
-    context = {}
+    context = {
+       "departements":[d[0] for d in Orgue.CHOIX_DEPARTEMENT]
+    }
     return render(request, "accueil.html", context)
 
 

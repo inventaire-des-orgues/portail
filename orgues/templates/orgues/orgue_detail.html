@@ -18,7 +18,7 @@
             {{ orgue.edifice|capfirst }} <br>
           </h2>
           <h4 class="text-muted">
-            {{ orgue.commune }} ({{ orgue.departement }})
+            {{ orgue.commune }} {% if orgue.ancienne_commune %}(anciennement {{ orgue.ancienne_commune }}){% endif %}, {{ orgue.departement }}
             <small>
               | {{ orgue.designation|default_if_none:"Orgue" }}
             </small>
@@ -50,7 +50,7 @@
                   {% endif %}
                   <hr>
                   <h2 class="titre-fiche">Description</h2>
-                  <div id="resume"></div>
+                  <div id="resume">{{ orgue.resume|safe }}</div>
                   <p class="soustitre-fiche">Buffet</p>
                   {% if orgue.buffet %}
                     <div id="buffet">{{ orgue.buffet|safe }}</div>
@@ -156,7 +156,7 @@
                   {% endfor %}
                 </dd>
                 <dt>Emplacement</dt>
-                <dd>{{ orgue.get_emplacement_display|default_if_none:"Non défini" }}</dd>
+                <dd>{{ orgue.emplacement|default_if_none:"Non défini" }}</dd>
                 <dt>Etat de l'instrument</dt>
                 <dd>{{ orgue.get_etat_display|default_if_none:"Non défini" }}</dd>
                 <hr>

@@ -33,6 +33,30 @@ python manage.py calcul_facteurs
 ```
 Normalement les facteurs d'un orgue sont recalculés automatiquement à chaque ajout/suppression d'un evenement. 
 
+# Installation du moteur de recherche 
+
+Suivre la documentation pour installer meilisearch : 
+
+[https://docs.meilisearch.com/](https://docs.meilisearch.com/)
+
+Configurer l'url de meilisearch dans `project/settings/dev.py`, normalement : 
+
+```python
+MEILISEARCH_URL = 'http://127.0.0.1:7700'
+MEILISEARCH_KEY = ''
+```
+
+Puis lancer la tache de création de l'index : 
+
+```python
+python manage.py build_meilisearch_index
+```
+
+Un signal django récupère les modifications d'orgues faites directement via l'interface et met à jour l'index de recherche meilisearch.  
+Ce signal ne récupère pas les modifications faites en ligne de commande, les modifications groupées via l'admin ou encore
+les suppressions d'orgues. 
+Pour mettre à jour l'index de recherche après ces types de modifications, il faut lancer la commande `build_meilisearch_index`.  
+En production cette commande est lancée toutes les nuits (à 2h) pour garantir que l'index soit à jour. 
 
 
 # Faire un import de données sur le serveur : 

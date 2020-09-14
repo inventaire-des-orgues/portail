@@ -2,6 +2,8 @@ import os
 import re
 import uuid
 
+import meilisearch
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db import models
@@ -42,15 +44,9 @@ class Orgue(models.Model):
     )
 
     CHOIX_ETAT = (
-        ('très bon', "Très bon : tout à fait jouable")
-        ('bon', "Bon : jouable mais défauts récurrents"),
+        ('bon', "Très bon ou bon : tout à fait jouable"),
         ('altere', "Altéré : difficilement jouable"),
         ('degrade', "Dégradé ou en ruine : injouable"),
-    )
-
-    CHOIX_EMPLACEMENT = (
-        ('sol', "Au sol"),
-        ('tribune', "En tribune"),
     )
 
     CHOIX_TRANSMISSION = (
@@ -327,7 +323,8 @@ class Orgue(models.Model):
     is_polyphone = models.BooleanField(default=False, verbose_name="Orgue polyphone de la manufacture Debierre ?")
 
     etat = models.CharField(max_length=20, choices=CHOIX_ETAT, null=True, blank=True)
-    emplacement = models.CharField(verbose_name="Emplacement", max_length=50, null=True, blank=True)
+    emplacement = models.CharField(max_length=50, null=True, blank=True, verbose_name="Emplacement",
+                                   help_text="Ex: sol, tribune ...")
     buffet = models.TextField(verbose_name="Description du buffet", null=True, blank=True,
                               help_text="Description du buffet et de son état.")
     console = models.TextField(verbose_name="Description de la console", null=True, blank=True,
@@ -378,7 +375,6 @@ class Orgue(models.Model):
     uuid = models.UUIDField(db_index=True, default=uuid.uuid4, unique=True, editable=False)
     slug = models.SlugField(max_length=255, editable=False, null=True, blank=True)
     completion = models.IntegerField(default=False, editable=False)
-    keywords = models.TextField(editable=False, null=True, blank=True)
     resume_composition = models.CharField(max_length=30, null=True, blank=True, editable=False)
     facteurs = models.ManyToManyField(Facteur, blank=True, editable=False)
 
@@ -393,21 +389,10 @@ class Orgue(models.Model):
 
     def save(self, *args, **kwargs):
         self.completion = self.calcul_completion()
-        self.keywords = self.build_keywords()
         if not self.slug:
             self.slug = slugify("orgue-{}-{}-{}".format(self.commune, self.edifice, self.codification))
 
         super().save(*args, **kwargs)
-
-    def build_keywords(self):
-        keywords = [
-            self.edifice.lower(),
-            slugify(self.edifice).replace("-", " "),
-            slugify(self.commune).replace("-", " "),
-            self.commune,
-        ]
-        keywords_str = " ".join(keywords)
-        return keywords_str
 
     @property
     def is_expressif(self):
@@ -801,3 +786,23 @@ class Accessoire(models.Model):
 def save_evenement_calcul_facteurs(sender, instance, **kwargs):
     orgue = instance.orgue
     orgue.calcul_facteurs()
+
+
+@receiver(post_save, sender=Orgue)
+def update_orgue_in_index(sender, instance, **kwargs):
+    if hasattr(settings, 'MEILISEARCH_URL'):
+        from orgues.api.serializers import OrgueResumeSerializer
+        client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
+        orgue = OrgueResumeSerializer(instance).data
+        index = client.get_index(uid='orgues')
+        index.add_documents([orgue])
+
+
+@receiver(post_save, sender=Image)
+def update_image_in_index(sender, instance, **kwargs):
+    if hasattr(settings, 'MEILISEARCH_URL') and instance.is_principale:
+        from orgues.api.serializers import OrgueResumeSerializer
+        client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
+        orgue = OrgueResumeSerializer(instance.orgue).data
+        index = client.get_index(uid='orgues')
+        index.add_documents([orgue])
