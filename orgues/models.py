@@ -323,7 +323,8 @@ class Orgue(models.Model):
     is_polyphone = models.BooleanField(default=False, verbose_name="Orgue polyphone de la manufacture Debierre ?")
 
     etat = models.CharField(max_length=20, choices=CHOIX_ETAT, null=True, blank=True)
-    emplacement = models.CharField(max_length=50, null=True, blank=True,verbose_name="Emplacement",help_text="Ex: sol, tribune ...")
+    emplacement = models.CharField(max_length=50, null=True, blank=True, verbose_name="Emplacement",
+                                   help_text="Ex: sol, tribune ...")
     buffet = models.TextField(verbose_name="Description du buffet", null=True, blank=True,
                               help_text="Description du buffet et de son état.")
     console = models.TextField(verbose_name="Description de la console", null=True, blank=True,
@@ -787,12 +788,21 @@ def save_evenement_calcul_facteurs(sender, instance, **kwargs):
     orgue.calcul_facteurs()
 
 
-
 @receiver(post_save, sender=Orgue)
 def update_orgue_in_index(sender, instance, **kwargs):
-    if hasattr(settings,'MEILISEARCH_URL'):
+    if hasattr(settings, 'MEILISEARCH_URL'):
         from orgues.api.serializers import OrgueResumeSerializer
-        client = meilisearch.Client(settings.MEILISEARCH_URL,settings.MEILISEARCH_KEY)
+        client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
         orgue = OrgueResumeSerializer(instance).data
+        index = client.get_index(uid='orgues')
+        index.add_documents([orgue])
+
+
+@receiver(post_save, sender=Image)
+def update_image_in_index(sender, instance, **kwargs):
+    if hasattr(settings, 'MEILISEARCH_URL') and instance.is_principale:
+        from orgues.api.serializers import OrgueResumeSerializer
+        client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
+        orgue = OrgueResumeSerializer(instance.orgue).data
         index = client.get_index(uid='orgues')
         index.add_documents([orgue])
