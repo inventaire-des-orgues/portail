@@ -239,7 +239,7 @@
                         "start_date": {"year": "{{evenement.annee}}"},
                         "text": {
                             "headline": "<b>{{ evenement.get_type_display }}</b>",
-                            "text": "{% if evenement.resume %}{{ evenement.resume|safe|escapejs}}{% endif %}"
+                            "text": "{% if evenement.resume %}{{ evenement.resume|safe|escapejs}}{% endif %}{% if evenement.facteurs.count %}<p>Facteur(s) : {{ evenement.facteurs.all|join:', ' }}</p>{% endif %}"
                         }
                     },
                 {% endfor %}
