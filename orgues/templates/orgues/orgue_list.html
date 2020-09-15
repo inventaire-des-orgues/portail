@@ -46,6 +46,7 @@
                   </h4>
                   <p class=" my-0">
                     <span v-html="orgue.designation"></span>
+                    <span v-if="!orgue.designation">Orgue</span>
                     <span v-if="orgue.emplacement">, ((orgue.emplacement))</span>
                     <span v-if="orgue.resume_composition">, ((orgue.resume_composition))</span>
                   </p>
