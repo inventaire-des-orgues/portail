@@ -9,7 +9,7 @@
 
 {% block card-body %}
 
-  <b>Résumé :</b> {{ form.instance.resume_composition }}
+  <b>Résumé :</b> {{ form.instance.resume_composition|default_if_none:"Aucun plan sonores" }}
 
   {% if form.errors %}
     {% for error in form.non_field_errors %}
@@ -19,19 +19,20 @@
     {% endfor %}
   {% endif %}
   <form action="" method="post" id="mainform" enctype="multipart/form-data">{% csrf_token %}
-    <div class="row">
+    <div class="carousel mb-5" data-drag="true" data-autoplay="true" data-items-lg="4" data-items-md="2" data-items-sm="1" data-loop="false">
       {% for clavier in orgue.claviers.all %}
         {% include 'orgues/clavier_detail.html' with editable='true' %}
       {% endfor %}
-      <div class="col-3">
-        <button type="submit" name="next" value="{% url 'orgues:clavier-create' orgue.uuid %}" class="new-clavier-btn">
-          Ajouter un plan sonore</button>
-      </div>
     </div>
+    <p class="text-right">
+      <button type="submit" name="next" value="{% url 'orgues:clavier-create' orgue.uuid %}" class="btn btn-primary">
+       <i class="fa fa-plus"></i> Ajouter un plan sonore
+      </button>
+    </p>
     <hr>
     {% for field in form %}
-        {% include 'stack_field.html' with with_helptext='true' %}
-      {% endfor %}
+      {% include 'stack_field.html' with with_helptext='true' %}
+    {% endfor %}
     <div class="form-group text-right">
       <button type="submit" class="btn btn-primary" id="create">Enregistrer</button>
     </div>
