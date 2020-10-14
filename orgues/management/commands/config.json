@@ -29,6 +29,8 @@
     "Tirasse Réc.",
     "Tirasse G.O.",
     "Tirasse G.Ch.",
+    "Tirasse permanente G.O.",
+    "Tirasse permanente Réc.",
     "Anches G.O.",
     "Anches Pos.",
     "Anches Réc.",
@@ -48,6 +50,9 @@
     "Accouplement -8 Pos./G.O.",
     "Accouplement +8 Réc./G.O.",
     "Accouplement -8 Réc./G.O.",
+    "Expression Réc. par bascule",
+    "Expression Réc. par cuillère",
+    "Expression Pos. par cuillère"
   ],
   "transposition": [
     "16",
