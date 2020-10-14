@@ -10,7 +10,7 @@
               <div class="form-group">
                 <label for="">Département</label>
                 <select v-model="departement" class="form-control">
-                  <option value="">Choisir un departement</option>
+                  <option value="">Tous les départements</option>
                   <option v-for="departement in departements" :value="departement">((departement))</option>
                 </select>
               </div>
@@ -18,10 +18,9 @@
                 <label for="query">Recherche <i class="fa fa-info-circle tex-primary" data-toggle="tooltip" data-title="Rechercher une commune, une église, un facteur ..."></i></label>
                 <input id="query" v-model="query" placeholder="Commune, facteur, église ..." class="form-control" value="{{ request.GET.facteur }}"/>
               </div>
-              <div class="text-center d-none d-xl-block" >
+              <div class="text-center d-none d-xl-block">
                 <img src="{% static 'img/conseil_image_principale.png' %}" alt="" style="width: 100%">
               </div>
-
               <div class="text-center d-none d-xl-block">
                 <hr>
                 <h5>Quelques conseils pour éditer la photo principale d'une fiche d'orgue</h5>
@@ -75,9 +74,21 @@
               </div>
             </div>
           </div>
-          <div v-if="orgues.length < hits" class="text-center my-5" @click="limit += 20">
-            <button class="btn btn-primary btn-rounded">Voir plus</button>
-          </div>
+          <ul class="pagination" v-if="hits > 0 && page <=pages">
+            <li class="page-item">
+              <button class="page-link" @click="previous_page" v-if="page > 1">
+                <span class="fa fa-chevron-left"></span>
+              </button>
+            </li>
+            <li class="page-item">
+              <span class="page-link" style="background:transparent;border:none;width:130px;  ">Page ((page))  / ((pages))</span>
+            </li>
+            <li class="page-item" v-if="page < pages">
+              <button class="page-link" @click="next_page">
+                <span class="fa fa-chevron-right"></span>
+              </button>
+            </li>
+          </ul>
           <p class="text-center lead py-50" v-if="orgues.length == 0">
             L'orgue que vous recherchez n'est pas répertorié ? <br>
             Si cela est le cas vous pouvez le signaler ici <br>
@@ -100,7 +111,8 @@
       data: {
         query: '{{ query|default_if_none:'' }}',
         hits: 0,
-        limit: {{limit|default_if_none:20}},
+        page:{% if page %}{{ page}}{% else %}1{% endif %},
+        pages:0,
         orgues: [],
         departement: '{{ departement|default_if_none:'' }}',
         departements: departements
@@ -110,50 +122,63 @@
       },
       watch: {
         query: function () {
-          this.limit = 20
+          this.page = 1
           this.fetchData()
         },
         departement: function () {
-          this.limit = 20
+          this.page = 1
           this.fetchData()
         },
-        limit: function () {
-          this.fetchData()
-        }
       },
       methods: {
         fetchData: function () {
           var self = this;
-          var scrolltop = $(document).scrollTop()
           var query = self.query
           var departement = self.departement
-          var limit = self.limit
+          var page = self.page
           $.ajax({
             type: "POST",
             url: "{% url 'orgues:orgue-search' %}",
             data: {
               csrfmiddlewaretoken: '{{ csrf_token }}',
               query: query,
-              limit: limit,
+              page: page,
               departement: departement
             },
-            error: function(resp){
+            error: function (resp) {
               toastr.error(resp.responseJSON.message)
             },
             success: function (results) {
-              console.log(results)
               self.orgues = results.hits
               self.hits = results.nbHits
-              self.$nextTick(function () {
-                $(document).scrollTop(scrolltop)
-              })
-
+              self.pages = results.pages
+              window.scrollTo(0,0)
+              var pageUrl = '?page=' + self.page;
+              if (self.departement) {
+                pageUrl += '&departement=' + self.departement
+              }
+              if (self.query) {
+                pageUrl += '&query=' + self.query
+              }
+              window.history.pushState('', '', pageUrl);
             },
           });
         },
+        previous_page: function(){
+          if (this.page <= 0) {
+            return
+          }
+          this.page -=1;
+          this.fetchData();
+        },
+        next_page: function(){
+          if (this.page >= this.pages) {
+            return
+          }
+          this.page +=1;
+          this.fetchData();
+        },
         select: function (orgue) {
-          var pageUrl = '?departement=' + this.departement + '&query=' + this.query + '&limit='+this.limit;
-          window.history.pushState('', '', pageUrl);
           window.location.href = orgue.url;
         }
       },

@@ -34,10 +34,12 @@ class OrgueList(LoginRequiredMixin, TemplateView):
         context["departement"] = self.request.GET.get("departement")
         context["query"] = self.request.GET.get("query")
         context["limit"] = self.request.GET.get("limit")
+        context["page"] = self.request.GET.get("page")
         return context
 
 
 class OrgueSearch(LoginRequiredMixin, View):
+    paginate_by = 20
 
     def post(self, request, *args, **kwargs):
         try:
@@ -46,14 +48,18 @@ class OrgueSearch(LoginRequiredMixin, View):
         except:
             return JsonResponse({'message': 'Le moteur de recherche est mal configuré'}, status=500)
         query = request.POST.get('query')
-        limit = request.POST.get('limit', 20)
+        try:
+            offset = (int(request.POST['page']) - 1)*self.paginate_by
+        except:
+            offset = 0
         if not query:
             query = None
         departement = request.POST.get('departement')
-        options = {'attributesToHighlight': ['*'], 'limit': int(limit)}
+        options = {'attributesToHighlight': ['*'], 'offset': offset,'limit':self.paginate_by}
         if departement:
             options['facetFilters'] = ['departement:{}'.format(departement)]
         results = index.search(query, options)
+        results['pages'] = 1 + results['nbHits'] // 20
         return JsonResponse(results)
 
 
