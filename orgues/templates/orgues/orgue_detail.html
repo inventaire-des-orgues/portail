@@ -70,6 +70,12 @@
                   {% else %}
                     <p class="text-muted">Pas de description</p>
                   {% endif %}
+                  <p class="soustitre-fiche">Transmission</p>
+                  <div id="transmission">
+                    <p>
+                      {{ orgue.get_transmission_notes_display|default_if_none:"Non définie" }}. {% if orgue.transmission_commentaire %}{{ orgue.transmission_commentaire }} {% endif %}
+                    </p>
+                  </div>
                   <p class="soustitre-fiche">Soufflerie</p>
                   {% if orgue.soufflerie %}
                     <div id="soufflerie">{{ orgue.soufflerie|safe }}</div>
