@@ -737,8 +737,8 @@ class Image(models.Model):
     """
     image = models.ImageField(upload_to=chemin_image, help_text="Taille maximale : 2 Mo")
     is_principale = models.BooleanField(default=False, editable=False)
-    legende = models.CharField(max_length=400, null=True, blank=True)
-    credit = models.CharField(max_length=200, null=True, blank=True)
+    legende = models.CharField(verbose_name="Légende", max_length=400, null=True, blank=True)
+    credit = models.CharField(verbose_name="Crédit", max_length=200, null=True, blank=True)
 
     # Champs automatiques
     thumbnail_principale = ProcessedImageField(upload_to=chemin_image,
