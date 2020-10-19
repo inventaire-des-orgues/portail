@@ -18,7 +18,7 @@
             {{ orgue.edifice|capfirst }} <br>
           </h2>
           <h4 class="text-muted">
-            {{ orgue.commune }} {% if orgue.ancienne_commune %}(anciennement {{ orgue.ancienne_commune }}){% endif %}, {{ orgue.departement }}
+            {{ orgue.commune }}{% if orgue.ancienne_commune %} (anciennement {{ orgue.ancienne_commune }}){% endif %}, {{ orgue.departement }}
             <small>
               | {{ orgue.designation|default_if_none:"Orgue" }}
             </small>
