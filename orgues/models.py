@@ -504,50 +504,65 @@ class Orgue(models.Model):
                 self.facteurs.add(facteur)
 
     def infos_completions(self):
+        """
+        Informations et liens pour comprendre le calcul du taux d'avancement
+        :return:
+        """
         return {
             "Commune définie": {
                 "points": 5,
-                "logique": bool(self.commune)
+                "logique": bool(self.commune),
+                "lien": reverse('orgues:orgue-update-localisation',args=(self.uuid,))
             },
             "Région définie": {
                 "points": 5,
-                "logique": bool(self.region)
+                "logique": bool(self.region),
+                "lien": reverse('orgues:orgue-update-localisation', args=(self.uuid,)),
             },
             "Département défini": {
                 "points": 5,
-                "logique": bool(self.departement)
+                "logique": bool(self.departement),
+                "lien": reverse('orgues:orgue-update-localisation',args=(self.uuid,))
             },
             "Nom de l'édifice défini": {
                 "points": 5,
-                "logique": len(self.edifice) > 6
+                "logique": len(self.edifice) > 6,
+                "lien": reverse('orgues:orgue-update',args=(self.uuid,)) + "#id_edifice"
             },
             "Etat de l'orgue défini": {
                 "points": 10,
-                "logique": bool(self.etat)
+                "logique": bool(self.etat),
+                "lien": reverse('orgues:orgue-update-localisation',args=(self.uuid,)) + "#id_etat"
             },
             "Image principale définie": {
                 "points": 30,
-                "logique": self.images.filter(is_principale=True).exists()
+                "logique": self.images.filter(is_principale=True).exists(),
+                "lien": reverse('orgues:image-list',args=(self.uuid,))
             },
             "Au moins un clavier": {
                 "points": 10,
-                "logique": self.claviers.count() >= 1
+                "logique": self.claviers.count() >= 1,
+                "lien": reverse('orgues:orgue-update-composition',args=(self.uuid,))
             },
             "Résumé de l'orgue complété": {
                 "points": 10,
-                "logique": bool(self.resume)
+                "logique": bool(self.resume),
+                "lien": reverse('orgues:orgue-update',args=(self.uuid,)) + "#id_resume"
             },
             "Informations sur le buffet présentes": {
                 "points": 10,
-                "logique": bool(self.buffet)
+                "logique": bool(self.buffet),
+                "lien": reverse('orgues:orgue-update-buffet',args=(self.uuid,))
             },
             "Informations sur les sommiers présentes": {
                 "points": 10,
-                "logique": bool(self.sommiers)
+                "logique": bool(self.sommiers),
+                "lien": reverse('orgues:orgue-update-instrumentale',args=(self.uuid,)) + "#id_sommiers"
             },
             "Informations sur la soufflerie présentes": {
                 "points": 10,
-                "logique": bool(self.soufflerie)
+                "logique": bool(self.soufflerie),
+                "lien": reverse('orgues:orgue-update-instrumentale',args=(self.uuid,)) + "#id_soufflerie "
             }
         }
 

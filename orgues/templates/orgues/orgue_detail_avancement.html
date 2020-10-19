@@ -12,6 +12,7 @@
     <tr>
       <th>Critère</th>
       <th>Points</th>
+      <th></th>
     </tr>
     </thead>
     <tbody>
@@ -22,9 +23,12 @@
           {% if resultat.logique %}
             <span class="text-success">{{ resultat.points }}/{{ resultat.points }}</span>
           {% else %}
-            <em class="text-warning">0/{{ resultat.points }}</em>
+            <span class="text-warning">0/{{ resultat.points }}</span>
           {% endif %}
         </td>
+      <td>
+        <a href="{{ resultat.lien }}">lien</a>
+      </td>
       </tr>
     {% endfor %}
     </tbody>

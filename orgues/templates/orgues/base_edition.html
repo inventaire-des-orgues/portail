@@ -71,7 +71,7 @@
           </div>
           <div class="my-3">
             <small style="color:#5c1c54">Avancement : {{ orgue.completion }}%
-              <a href="{% url 'orgues:orgue-detail-avancement' orgue.uuid %}" class="pl-4">voir détail</a>
+              <a href="{% url 'orgues:orgue-detail-avancement' orgue.uuid %}" class="pl-1">voir détail</a>
             </small>
             <div class="progress" style="height:5px">
               <div class="progress-bar" role="progressbar" style="width: {{ orgue.completion }}%;background-color:#5c1c54" aria-valuenow="{{ orgue.completion }}" aria-valuemin="0" aria-valuemax="100">
