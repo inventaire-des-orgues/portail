@@ -1,0 +1,40 @@
+{% extends 'orgues/base_edition.html' %}
+{% load static %}
+
+{% block help-link %}#{% endblock %}
+
+
+
+{% block card-body %}
+
+  <table class="table table-bordered">
+    <thead>
+    <tr>
+      <th>Critère</th>
+      <th>Points</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for critere,resultat in orgue.infos_completions.items %}
+      <tr>
+        <td>{{ critere }}</td>
+        <td>
+          {% if resultat.logique %}
+            <span class="text-success">{{ resultat.points }}/{{ resultat.points }}</span>
+          {% else %}
+            <em class="text-warning">0/{{ resultat.points }}</em>
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+
+{% endblock %}
+
+
+
+
+
+

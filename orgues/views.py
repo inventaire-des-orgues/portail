@@ -16,7 +16,8 @@ from django.views.generic import ListView, DetailView, TemplateView
 from django.views.generic.base import View
 
 import orgues.forms as orgue_forms
-from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdateView, FabView, FabCreateViewJS
+from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdateView, FabView, FabCreateViewJS, \
+    FabDetailView
 from orgues.api.serializers import OrgueSerializer, OrgueResumeSerializer
 from project import settings
 from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source
@@ -43,19 +44,19 @@ class OrgueSearch(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         try:
-            client = meilisearch.Client(settings.MEILISEARCH_URL,settings.MEILISEARCH_KEY)
+            client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
             index = client.get_index(uid='orgues')
         except:
             return JsonResponse({'message': 'Le moteur de recherche est mal configuré'}, status=500)
         query = request.POST.get('query')
         try:
-            offset = (int(request.POST['page']) - 1)*self.paginate_by
+            offset = (int(request.POST['page']) - 1) * self.paginate_by
         except:
             offset = 0
         if not query:
             query = None
         departement = request.POST.get('departement')
-        options = {'attributesToHighlight': ['*'], 'offset': offset,'limit':self.paginate_by}
+        options = {'attributesToHighlight': ['*'], 'offset': offset, 'limit': self.paginate_by}
         if departement:
             options['facetFilters'] = ['departement:{}'.format(departement)]
         results = index.search(query, options)
@@ -171,6 +172,20 @@ class OrgueUpdateMixin(FabUpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
+        context["orgue"] = self.object
+        return context
+
+
+class OrgueDetailAvancement(FabDetailView):
+    model = Orgue
+    slug_field = 'uuid'
+    slug_url_kwarg = 'orgue_uuid'
+    permission_required = 'orgues.change_orgue'
+    template_name = "orgues/orgue_detail_avancement.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        self.object.save()  # on recalcule l'avancement pour être sûr
         context["orgue"] = self.object
         return context
 
