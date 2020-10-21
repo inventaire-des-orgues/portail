@@ -85,7 +85,7 @@
         <div class="col-lg-9">
           {% if orgue.commentaire_admin %}
             <div class="alert alert-info">
-              <b>Commentaire rédacteurs :</b> {{ orgue.commentaire_admin|linebreaksbr }}
+              <b>Commentaire rédacteurs :</b> {{ orgue.commentaire_admin|safe }}
             </div>
 
           {% endif %}
