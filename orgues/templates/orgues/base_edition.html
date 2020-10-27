@@ -16,7 +16,7 @@
             {{ orgue.edifice|capfirst }} <br>
           </h2>
           <h4 class="text-muted">
-            {{ orgue.commune }} {% if orgue.ancienne_commune %}(anciennement {{ orgue.ancienne_commune }}){% endif %}, {{ orgue.departement }}
+            {{ orgue.commune }}{% if orgue.ancienne_commune %} (anciennement {{ orgue.ancienne_commune }}){% endif %}, {{ orgue.departement }}
             <small>
               | {{ orgue.designation|default_if_none:"Orgue" }}
             </small>
@@ -70,7 +70,9 @@
             </a>
           </div>
           <div class="my-3">
-            <small style="color:#5c1c54">Avancement : {{ orgue.completion }}%</small>
+            <small style="color:#5c1c54">Avancement : {{ orgue.completion }}%
+              <a href="{% url 'orgues:orgue-detail-avancement' orgue.uuid %}" class="pl-1">voir détail</a>
+            </small>
             <div class="progress" style="height:5px">
               <div class="progress-bar" role="progressbar" style="width: {{ orgue.completion }}%;background-color:#5c1c54" aria-valuenow="{{ orgue.completion }}" aria-valuemin="0" aria-valuemax="100">
               </div>
@@ -83,7 +85,7 @@
         <div class="col-lg-9">
           {% if orgue.commentaire_admin %}
             <div class="alert alert-info">
-              <b>Commentaire rédacteurs :</b> {{ orgue.commentaire_admin|linebreaksbr }}
+              <b>Commentaire rédacteurs :</b> {{ orgue.commentaire_admin|safe }}
             </div>
 
           {% endif %}
@@ -146,7 +148,7 @@
     $('form').areYouSure();
 
     $(document).ready(function () {
-     window.scroll(0,$('#mainsection').offset().top)
+      window.scroll(0, $('#mainsection').offset().top)
     });
   </script>
 

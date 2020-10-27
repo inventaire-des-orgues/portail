@@ -18,7 +18,7 @@
             {{ orgue.edifice|capfirst }} <br>
           </h2>
           <h4 class="text-muted">
-            {{ orgue.commune }} {% if orgue.ancienne_commune %}(anciennement {{ orgue.ancienne_commune }}){% endif %}, {{ orgue.departement }}
+            {{ orgue.commune }}{% if orgue.ancienne_commune %} (anciennement {{ orgue.ancienne_commune }}){% endif %}, {{ orgue.departement }}
             <small>
               | {{ orgue.designation|default_if_none:"Orgue" }}
             </small>
@@ -70,11 +70,45 @@
                   {% else %}
                     <p class="text-muted">Pas de description</p>
                   {% endif %}
-                  <p class="soustitre-fiche">Soufflerie</p>
+                  <p class="soustitre-fiche">Transmission</p>
+                  <div id="transmission">
+                    <p>
+                      {{ orgue.get_transmission_notes_display|default_if_none:"Non définie" }}. {% if orgue.transmission_commentaire %}{{ orgue.transmission_commentaire }} {% endif %}
+                    </p>
+                  </div>
+                  <p class="soustitre-fiche">Tirage des jeux</p>
+                  <div id="tirage">
+                    <p>
+                      {{ orgue.get_tirage_jeux_display|default_if_none:"Non défini" }}. {% if orgue.tirage_commentaire %}{{ orgue.tirage_commentaire }} {% endif %}
+                    </p>
+                  </div>
+                  {% if orgue.temperament %}
+                    <p class="soustitre-fiche">Tempérament</p>
+                    <div id="temperament">
+                      <p>
+                        {{ orgue.temperament }}
+                      </p>
+                    </div>
+                  {% endif %}
+                  {% if orgue.diapason %}
+                    <p class="soustitre-fiche">Diapason</p>
+                    <div id="diapason">
+                      <p>
+                        {{ orgue.diapason }}
+                      </p>
+                    </div>
+                  {% endif %}
                   {% if orgue.soufflerie %}
-                    <div id="soufflerie">{{ orgue.soufflerie|safe }}</div>
-                  {% else %}
-                    <p class="text-muted">Pas de description</p>
+                    <p class="soustitre-fiche">Soufflerie</p>
+                    <div id="soufflerie">
+                      {{ orgue.soufflerie|safe }}
+                    </div>
+                  {% endif %}
+                  {% if orgue.commentaire_tuyauterie %}
+                    <p class="soustitre-fiche">Commentaire tuyauterie</p>
+                    <div id="tuyauterie">
+                      {{ orgue.commentaire_tuyauterie|safe }}
+                    </div>
                   {% endif %}
                   {% if orgue.images.count %}
                     <h2 class="titre-fiche">Images</h2>
@@ -237,10 +271,9 @@
           {% for evenement in evenements %}
             {
               "start_date": {"year": "{{evenement.annee}}"},
-              "end_date": {"year": "1880"},
               "text": {
                 "headline": "<b>{{ evenement.get_type_display }}</b>",
-                "text": "{% if evenement.resume %}{{ evenement.resume|safe|escapejs}}{% endif %}{% if evenement.facteurs.count %}<p>Facteur(s) : {{ evenement.facteurs.all|join:', ' }}</p>{% endif %}"
+                "text": "{% if evenement.resume %}{{ evenement.resume|linebreaksbr|safe|escapejs}}{% endif %}{% if evenement.facteurs.count %}<p>Facteur(s) : {{ evenement.facteurs.all|join:', ' }}</p>{% endif %}"
               }
             },
           {% endfor %}

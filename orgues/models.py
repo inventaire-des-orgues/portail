@@ -503,39 +503,80 @@ class Orgue(models.Model):
             for facteur in evenement.facteurs.all():
                 self.facteurs.add(facteur)
 
+    def infos_completions(self):
+        """
+        Informations et liens pour comprendre le calcul du taux d'avancement
+        :return:
+        """
+        return {
+            "Commune définie": {
+                "points": 5,
+                "logique": bool(self.commune),
+                "lien": reverse('orgues:orgue-update-localisation',args=(self.uuid,))
+            },
+            "Région définie": {
+                "points": 5,
+                "logique": bool(self.region),
+                "lien": reverse('orgues:orgue-update-localisation', args=(self.uuid,)),
+            },
+            "Département défini": {
+                "points": 5,
+                "logique": bool(self.departement),
+                "lien": reverse('orgues:orgue-update-localisation',args=(self.uuid,))
+            },
+            "Nom de l'édifice défini": {
+                "points": 5,
+                "logique": len(self.edifice) > 6,
+                "lien": reverse('orgues:orgue-update',args=(self.uuid,)) + "#id_edifice"
+            },
+            "Etat de l'orgue défini": {
+                "points": 10,
+                "logique": bool(self.etat),
+                "lien": reverse('orgues:orgue-update-localisation',args=(self.uuid,)) + "#id_etat"
+            },
+            "Image principale définie": {
+                "points": 30,
+                "logique": self.images.filter(is_principale=True).exists(),
+                "lien": reverse('orgues:image-list',args=(self.uuid,))
+            },
+            "Au moins un clavier": {
+                "points": 10,
+                "logique": self.claviers.count() >= 1,
+                "lien": reverse('orgues:orgue-update-composition',args=(self.uuid,))
+            },
+            "Résumé de l'orgue complété": {
+                "points": 10,
+                "logique": bool(self.resume),
+                "lien": reverse('orgues:orgue-update',args=(self.uuid,)) + "#id_resume"
+            },
+            "Informations sur le buffet présentes": {
+                "points": 10,
+                "logique": bool(self.buffet),
+                "lien": reverse('orgues:orgue-update-buffet',args=(self.uuid,))
+            },
+            "Informations sur les sommiers présentes": {
+                "points": 10,
+                "logique": bool(self.sommiers),
+                "lien": reverse('orgues:orgue-update-instrumentale',args=(self.uuid,)) + "#id_sommiers"
+            },
+            "Informations sur la soufflerie présentes": {
+                "points": 10,
+                "logique": bool(self.soufflerie),
+                "lien": reverse('orgues:orgue-update-instrumentale',args=(self.uuid,)) + "#id_soufflerie "
+            }
+        }
+
     def calcul_completion(self):
         """
         Pourcentage de remplissage de la fiche instrument
         """
-        points = 0
-
-        if self.commune and self.region and self.departement:
-            points += 5
-
-        if len(self.edifice) > 6:
-            points += 5
-
-        if self.etat:
-            points += 10
-
-        if self.claviers.count() >= 1:
-            points += 10
-
-        if self.images.filter(is_principale=True):
-            points += 30
-
-        champs_texte_description = [
-            self.resume,
-            self.buffet,
-            self.sommiers,
-            self.soufflerie,
-        ]
-
-        for champ in champs_texte_description:
-            if champ:
-                points += 10
-
-        return int(points)
+        score_max = 0
+        score_courant = 0
+        for key, value in self.infos_completions().items():
+            if value["logique"]:
+                score_courant += value["points"]
+            score_max += value["points"]
+        return int(100 * score_courant / score_max)
 
 
 class TypeClavier(models.Model):
@@ -557,7 +598,7 @@ class TypeClavier(models.Model):
 
 
 def validate_etendue(value):
-    if not re.match("^[A-G]#?[1-7]-[A-G]#?[1-7]$", value):
+    if not re.match("^([A-G]|CD)#?[1-7]-([A-G]|CD)#?[1-7]$", value):
         raise ValidationError("L'étendue doit être de la forme F1-G5, C1-F#5 ...")
 
 
@@ -737,8 +778,8 @@ class Image(models.Model):
     """
     image = models.ImageField(upload_to=chemin_image, help_text="Taille maximale : 2 Mo")
     is_principale = models.BooleanField(default=False, editable=False)
-    legende = models.CharField(max_length=400, null=True, blank=True, verbose_name="Légende")
-    credit = models.CharField(max_length=200, null=True, blank=True, verbose_name="Crédit")
+    legende = models.CharField(verbose_name="Légende", max_length=400, null=True, blank=True)
+    credit = models.CharField(verbose_name="Crédit", max_length=200, null=True, blank=True)
 
     # Champs automatiques
     thumbnail_principale = ProcessedImageField(upload_to=chemin_image,

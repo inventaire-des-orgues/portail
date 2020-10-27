@@ -18,6 +18,7 @@ urlpatterns = [
     path('edition/<uuid:orgue_uuid>/', v.OrgueUpdate.as_view(), name='orgue-update'),
     path('edition/instrumentale/<uuid:orgue_uuid>/', v.OrgueUpdateInstrumentale.as_view(), name='orgue-update-instrumentale'),
     path('edition/composition/<uuid:orgue_uuid>/', v.OrgueUpdateComposition.as_view(), name='orgue-update-composition'),
+    path('edition/avancement/<uuid:orgue_uuid>/', v.OrgueDetailAvancement.as_view(), name='orgue-detail-avancement'),
     path('edition/buffet/<uuid:orgue_uuid>/', v.OrgueUpdateBuffet.as_view(), name='orgue-update-buffet'),
     path('edition/localisation/<uuid:orgue_uuid>/', v.OrgueUpdateLocalisation.as_view(), name='orgue-update-localisation'),
     path('suppression/<uuid:orgue_uuid>/', v.OrgueDelete.as_view(), name='orgue-delete'),

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Orgue, Clavier, TypeClavier, TypeJeu, Jeu, Fichier, Image
+from .models import Orgue, Clavier, TypeClavier, TypeJeu, Jeu, Fichier, Image, Evenement
 
 
 class ClavierInline(admin.StackedInline):
@@ -45,6 +45,15 @@ class ClavierAdmin(admin.ModelAdmin):
 class TypeClavierAdmin(admin.ModelAdmin):
     list_display = ('nom',)
 
+
+@admin.register(Evenement)
+class EvenementAdmin(admin.ModelAdmin):
+    list_display = (
+        'annee',
+        'type',
+        'resume',
+    )
+    list_editable = ['resume']
 
 @admin.register(Orgue)
 class OrgueAdmin(admin.ModelAdmin):

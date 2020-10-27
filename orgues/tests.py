@@ -23,46 +23,6 @@ class OrgueTestCase(TestCase):
         self.admin_user.groups.add(Group.objects.get(name=settings.GROUP_ADMIN_USER))
         self.admin_user.save()
 
-    def test_Completion(self):
-        orgue = Orgue.objects.create(commune='',
-                                     region='Region',
-                                     departement='Departement')
-        orgue_id = orgue.id
-        self.assertEqual(Orgue.objects.get(id=orgue_id).completion, 0)
-
-        orgue.commune = 'Versailles'
-        orgue.save()
-        self.assertEqual(Orgue.objects.get(id=orgue_id).completion, 5)
-
-        orgue.edifice = 'eglise'
-        orgue.save()
-        self.assertEqual(Orgue.objects.get(id=orgue_id).completion, 5)
-        orgue.edifice = 'Cathédrale Saint-Louis'
-        orgue.save()
-        self.assertEqual(Orgue.objects.get(id=orgue_id).completion, 10)
-
-        orgue.etat = 'bon'
-        orgue.save()
-        self.assertEqual(Orgue.objects.get(id=orgue_id).completion, 20)
-
-        Clavier.objects.create(orgue=orgue)
-        orgue.save()
-        self.assertEqual(Orgue.objects.get(id=orgue_id).completion, 30)
-
-        Image.objects.create(orgue=orgue, is_principale=True)
-        orgue.save()
-        self.assertEqual(Orgue.objects.get(id=orgue_id).completion, 60)
-
-        orgue.buffet = 'Description du buffet'
-        orgue.save()
-        self.assertEqual(Orgue.objects.get(id=orgue_id).completion, 70)
-        orgue.resume = 'Resumé'
-        orgue.save()
-        self.assertEqual(Orgue.objects.get(id=orgue_id).completion, 80)
-        orgue.soufflerie = 'Description soufflerie'
-        orgue.sommiers = 'Desciption sommier'
-        orgue.save()
-        self.assertEqual(Orgue.objects.get(id=orgue_id).completion, 100)
 
     def test_OrgueCreate(self):
         self.client.login(username='admin_user@fabdev.fr', password='123456TEST')
