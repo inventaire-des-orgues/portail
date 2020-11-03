@@ -358,7 +358,8 @@ class Orgue(models.Model):
     sommiers = models.TextField(null=True, blank=True)
     soufflerie = models.TextField(null=True, blank=True)
     transmission_notes = models.CharField(max_length=30, choices=CHOIX_TRANSMISSION, null=True, blank=True)
-    temperament = models.CharField(max_length=50,
+    temperament = models.CharField(verbose_name="Tempérament",
+                                   max_length=50,
                                    help_text="Mention la plus précise possible. Ex: mésotonique au sixième modifié.",
                                    null=True, blank=True)
     transmission_commentaire = models.CharField(max_length=100, null=True, blank=True, help_text="Max 100 caractères")
