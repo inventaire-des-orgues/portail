@@ -311,7 +311,7 @@ class Orgue(models.Model):
     # Informations générales
     designation = models.CharField(max_length=300, null=True, verbose_name="Désignation", default="orgue", blank=True)
     codification = models.CharField(max_length=24, unique=True, db_index=True)
-    references_palissy = models.CharField(max_length=20, null=True, blank=True,
+    references_palissy = models.CharField(max_length=60, null=True, blank=True,
                                           help_text="Séparer les codes par des virgules")
     resume = models.TextField(max_length=500, null=True, verbose_name="Résumé", blank=True,
                               help_text="Présentation en quelques lignes de l'instrument \
