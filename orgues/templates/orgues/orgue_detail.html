@@ -188,7 +188,7 @@
                 <dd>
                   {% for evenement in facteurs_evenements %}
                     <span>{{ evenement.facteurs.all|join:' & ' }} ({{ evenement.type }} - {{ evenement.annee }})</span>
-                    {% if not forloop.last %},{% endif %}
+                    {% if not forloop.last %}<br/>{% endif %}
                   {% empty %}
                     Pas d'information
                   {% endfor %}
@@ -277,7 +277,7 @@
               "start_date": {"year": "{{evenement.annee}}"},
               "text": {
                 "headline": "<b>{{ evenement.get_type_display }}</b>",
-                "text": "{% if evenement.resume %}{{ evenement.resume|linebreaksbr|safe|escapejs}}{% endif %}{% if evenement.facteurs.count %}<p>Facteur(s) : {{ evenement.facteurs.all|join:',<br/>' }}</p>{% endif %}"
+                "text": "{% if evenement.resume %}{{ evenement.resume|linebreaksbr|safe|escapejs}}{% endif %}{% if evenement.facteurs.count %}<p>Facteur(s) : {{ evenement.facteurs.all|join:', ' }}</p>{% endif %}"
               }
             },
           {% endfor %}
