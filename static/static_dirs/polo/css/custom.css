@@ -150,6 +150,19 @@ span.puce-etat {
 
 /* CLAVIERS */
 
+#claviers {
+    overflow:scroll !important;
+    white-space: nowrap;
+    margin-top:20px;
+}
+
+.clavier {
+    width:300px;
+    margin:0 10px;
+    display:inline-block;
+}
+
+
 .clavier div.card > ul.list-group > li.list-group-item {
     padding: .35rem 1.25rem !important;
     font-size: 0.9rem;
@@ -260,7 +273,7 @@ dt {
     color: black;
 }
 
-.clavier, .evenement {
+.evenement {
     margin: 10px 0;
 }
 
