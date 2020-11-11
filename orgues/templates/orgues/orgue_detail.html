@@ -33,8 +33,12 @@
               <div class="row">
                 <div class="col-md-12 order-md-1 py-20">
                   <h2 class="titre-fiche">Composition</h2>
+
                   {% if claviers.count %}
-                    <div class="carousel" data-drag="true" data-autoplay="true" data-items-lg="4" data-items-md="2" data-items-sm="1" data-loop="false">
+                    <h4>
+                      {{ claviers.count }} clavier{{ claviers.count|pluralize }} <small>(glisser vers la droite)</small>
+                    </h4>
+                    <div id="claviers">
                       {% for clavier in claviers %}
                         {% include 'orgues/clavier_detail.html' %}
                       {% endfor %}

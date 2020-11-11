@@ -43,19 +43,20 @@ class OrgueSearch(LoginRequiredMixin, View):
     paginate_by = 20
 
     def post(self, request, *args, **kwargs):
+        page = request.POST.get('page', 1)
         try:
             client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
             index = client.get_index(uid='orgues')
         except:
             return JsonResponse({'message': 'Le moteur de recherche est mal configuré'}, status=500)
-        query = request.POST.get('query')
+        query = request.POST.get('query', '')
         try:
-            offset = (int(request.POST['page']) - 1) * self.paginate_by
+            offset = (int(page) - 1) * self.paginate_by
         except:
             offset = 0
         if not query:
             query = None
-        departement = request.POST.get('departement')
+        departement = request.POST.get('departement', '')
         options = {'attributesToHighlight': ['*'], 'offset': offset, 'limit': self.paginate_by}
         if departement:
             options['facetFilters'] = ['departement:{}'.format(departement)]

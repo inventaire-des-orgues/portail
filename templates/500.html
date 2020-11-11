@@ -3,24 +3,23 @@
 {% block title %}Error 500{% endblock %}
 
 {% block body %}
-  <div id="page-container" class="main-content-boxed side-trans-enabled">
-    <main id="main-container" style="min-height: 732px;">
-      <div class="hero bg-white">
-        <div class="hero-inner">
-          <div class="content content-full">
-            <div class="py-30 text-center">
-              <div class="display-3 text-flat">
-                <i class="fa fa-times-circle-o"></i> 500
-              </div>
-              <h1 class="h2 font-w700 mt-30 mb-10">Oops.. You just found an error page..</h1>
-              <h2 class="h3 font-w400 text-muted mb-50">We are sorry but your request contains bad syntax and cannot be fulfilled..</h2>
-              <a class="btn btn-hero btn-rounded btn-alt-secondary" href="/">
-                <i class="fa fa-arrow-left mr-10"></i> Back to home
-              </a>
+    <section class="m-t-80 p-b-150">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="page-error-404">500</div>
+        </div>
+        <div class="col-lg-6">
+          <div class="text-left">
+            <h1 class="text-medium">Oups ...</h1>
+            <p class="lead">Il y a eu une erreur serveur</p>
+            <div class="seperator m-t-20 m-b-20"></div>
+            <div class="search-form">
+              <a href="/" class="btn btn-primary">Retour à l'accueil</a>
             </div>
           </div>
         </div>
       </div>
-    </main>
-  </div>
+    </div>
+  </section>
 {% endblock %}
