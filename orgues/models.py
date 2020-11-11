@@ -668,7 +668,7 @@ class Evenement(models.Model):
     annee = models.IntegerField(verbose_name="Année")
     type = models.CharField(max_length=20, choices=CHOIX_TYPE)
     facteurs = models.ManyToManyField(Facteur, blank=True, related_name="evenements")
-    resume = models.TextField(max_length=700, blank=True, null=True, help_text="700 caractères max")
+    resume = models.TextField(verbose_name="Résumé", max_length=700, blank=True, null=True, help_text="700 caractères max")
 
     # Champs automatiques
     orgue = models.ForeignKey(Orgue, on_delete=models.CASCADE, related_name="evenements")
