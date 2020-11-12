@@ -66,7 +66,6 @@ class OrgueSerializer(serializers.ModelSerializer):
     fichiers = FichierSerializer(many=True)
     evenements = EvenementSerializer(many=True)
     sources = SourceSerializer(many=True)
-    facteurs = FacteurSerializer(many=True)
 
     class Meta:
         model = Orgue
@@ -102,8 +101,12 @@ class OrgueResumeSerializer(serializers.ModelSerializer):
         return obj.get_absolute_url()
 
     def get_facteurs(self, obj):
-        facteurs = set()
-        evenements = obj.evenements.filter(facteurs__isnull=False).prefetch_related('facteurs').order_by('annee')
+        facteurs = []
+        seen_facteurs = set()
+        evenements = Evenement.objects.filter(orgue=obj, facteurs__isnull=False).prefetch_related('facteurs').order_by('annee')
         for evenement in evenements:
-            facteurs.add(" & ".join(evenement.facteurs.values_list('nom',flat=True)))
+            nouveau_facteur = " & ".join(evenement.facteurs.values_list('nom',flat=True))
+            if nouveau_facteur not in seen_facteurs:
+                seen_facteurs.add(nouveau_facteur)
+                facteurs.append(nouveau_facteur)
         return ", ".join(facteurs)

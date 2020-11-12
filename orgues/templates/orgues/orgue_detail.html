@@ -36,7 +36,8 @@
 
                   {% if claviers.count %}
                     <h4>
-                      {{ claviers.count }} clavier{{ claviers.count|pluralize }} <small>(glisser vers la droite)</small>
+                      {{ claviers.count }} clavier{{ claviers.count|pluralize }}
+                      <small>(glisser vers la droite)</small>
                     </h4>
                     <div id="claviers" class="row flew-row flex-nowrap">
                       {% for clavier in claviers %}
