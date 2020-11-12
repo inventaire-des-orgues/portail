@@ -128,8 +128,7 @@ class OrgueDetail(LoginRequiredMixin, DetailView):
         context = super().get_context_data()
         context["claviers"] = self.object.claviers.all().prefetch_related('type', 'jeux', 'jeux__type')
         context["evenements"] = self.object.evenements.all().prefetch_related('facteurs')
-        context["facteurs_evenements"] = self.object.evenements.filter(facteurs__isnull=False).prefetch_related(
-            'facteurs')
+        context["facteurs_evenements"] = self.object.evenements.filter(facteurs__isnull=False).prefetch_related('facteurs').distinct()
         return context
 
 

@@ -186,12 +186,15 @@
               <dl>
                 <dt>Facteurs</dt>
                 <dd>
-                  {% for evenement in facteurs_evenements %}
-                    <span>{{ evenement.facteurs.all|join:' & ' }} ({{ evenement.type }} - {{ evenement.annee }})</span>
-                    {% if not forloop.last %},{% endif %}
-                  {% empty %}
+                  {% if facteurs_evenements %}
+                    <ul>
+                      {% for evenement in facteurs_evenements %}
+                        <li>{{ evenement.facteurs.all|join:' & ' }} ({{ evenement.type }} - {{ evenement.annee }})</li>
+                      {% endfor %}
+                    </ul>
+                  {% else %}
                     Pas d'information
-                  {% endfor %}
+                  {% endif %}
                 </dd>
                 <dt>Emplacement</dt>
                 <dd>{{ orgue.emplacement|default_if_none:"Non défini" }}</dd>

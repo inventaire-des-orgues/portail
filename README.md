@@ -26,13 +26,6 @@ python manage.py calcul_resume_composition
 ```  
 Normalement le résumé clavier est recalculé automatiquement à chaque modification de la composition d'un orgue.
 
-
-Pour rapatrier les facteurs d'un orgue stockés dans ses divers évenements, lancer : 
-```
-python manage.py calcul_facteurs
-```
-Normalement les facteurs d'un orgue sont recalculés automatiquement à chaque ajout/suppression d'un evenement. 
-
 # Installation du moteur de recherche 
 
 Suivre la documentation pour installer meilisearch : 

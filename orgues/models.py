@@ -377,7 +377,6 @@ class Orgue(models.Model):
     slug = models.SlugField(max_length=255, editable=False, null=True, blank=True)
     completion = models.IntegerField(default=False, editable=False)
     resume_composition = models.CharField(max_length=30, null=True, blank=True, editable=False)
-    facteurs = models.ManyToManyField(Facteur, blank=True, editable=False)
 
     def __str__(self):
         return "{} {} {}".format(self.designation, self.edifice, self.commune)
@@ -494,15 +493,6 @@ class Orgue(models.Model):
             return "{}, P".format(jeux_count)
 
         return "{}, {}".format(jeux_count, cr[claviers_count - 1])
-
-    def calcul_facteurs(self):
-        """
-        Raptriement des facteurs stockés dans les événements pour accès rapide
-        """
-        self.facteurs.clear()
-        for evenement in self.evenements.filter(facteurs__isnull=False).prefetch_related("facteurs"):
-            for facteur in evenement.facteurs.all():
-                self.facteurs.add(facteur)
 
     def infos_completions(self):
         """
@@ -679,10 +669,6 @@ class Evenement(models.Model):
     class Meta:
         ordering = ["annee"]
 
-    @property
-    def facteurs_str(self):
-        return ", ".join(self.facteurs.values_list("nom", flat=True))
-
 
 class TypeJeu(models.Model):
     """
@@ -827,7 +813,7 @@ class Accessoire(models.Model):
 @receiver([post_save, post_delete], sender=Evenement)
 def save_evenement_calcul_facteurs(sender, instance, **kwargs):
     orgue = instance.orgue
-    orgue.calcul_facteurs()
+    orgue.save()
 
 
 @receiver(post_save, sender=Orgue)

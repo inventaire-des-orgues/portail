@@ -80,7 +80,6 @@ class OrgueResumeSerializer(serializers.ModelSerializer):
     facteurs = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField()
 
-
     class Meta:
         model = Orgue
         fields = [
@@ -99,8 +98,12 @@ class OrgueResumeSerializer(serializers.ModelSerializer):
             "url"
         ]
 
-    def get_url(self,obj):
+    def get_url(self, obj):
         return obj.get_absolute_url()
 
     def get_facteurs(self, obj):
-        return ", ".join(obj.facteurs.values_list("nom",flat=True))
+        facteurs = []
+        evenements = obj.evenements.filter(facteurs__isnull=False).prefetch_related('facteurs').distinct()
+        for evenement in evenements:
+            facteurs.append(" & ".join(evenement.facteurs.values_list('nom',flat=True)))
+        return ", ".join(list(set(facteurs)))
