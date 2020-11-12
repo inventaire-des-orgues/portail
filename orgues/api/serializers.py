@@ -102,8 +102,8 @@ class OrgueResumeSerializer(serializers.ModelSerializer):
         return obj.get_absolute_url()
 
     def get_facteurs(self, obj):
-        facteurs = []
-        evenements = obj.evenements.filter(facteurs__isnull=False).prefetch_related('facteurs').distinct().order_by('-annee')
+        facteurs = set()
+        evenements = obj.evenements.filter(facteurs__isnull=False).prefetch_related('facteurs').order_by('annee')
         for evenement in evenements:
-            facteurs.append(" & ".join(evenement.facteurs.values_list('nom',flat=True)))
-        return ", ".join(list(set(facteurs)))
+            facteurs.add(" & ".join(evenement.facteurs.values_list('nom',flat=True)))
+        return ", ".join(facteurs)
