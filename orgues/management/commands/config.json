@@ -1033,7 +1033,23 @@
     },
     {
       "nom": "Cymbale",
+      "hauteur": "II"
+    },
+    {
+      "nom": "Cymbale",
       "hauteur": "III"
+    },
+    {
+      "nom": "Cymbale",
+      "hauteur": "IV"
+    },
+    {
+      "nom": "Cymbale",
+      "hauteur": "V"
+    },
+    {
+      "nom": "Cymbale",
+      "hauteur": "II-V"
     },
     {
       "nom": "Diapason",
@@ -1146,6 +1162,10 @@
     {
       "nom": "Fourniture",
       "hauteur": "V"
+    },
+    {
+      "nom": "Fourniture",
+      "hauteur": "II-V"
     },
     {
       "nom": "Fugara",
@@ -1270,6 +1290,10 @@
     {
       "nom": "Plein-jeu",
       "hauteur": "V"
+    },
+    {
+      "nom": "Plein-jeu",
+      "hauteur": "III-IV"
     },
     {
       "nom": "Prestant",
