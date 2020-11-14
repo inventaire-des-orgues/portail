@@ -23,7 +23,7 @@
     </td>
     <td class="d-none d-lg-table-cell">{{ source.lien }}
     <td width="140px" class="text-right">
-      <a href="{% url 'orgues:source-update' source.pk %}" class="btn btn-xs btn btn-outline">Editer</a>
+      <a href="{% url 'orgues:source-update' source.pk %}" class="btn btn-xs btn btn-outline">Modifier</a>
       <form action="{% url 'orgues:source-delete' source.pk %}" method="post" data-pk="{{ source.pk }}">{% csrf_token %}
         <button type="submit" class="btn btn-xs btn-outline btn-danger btn-xs">Supprimer</button>
       </form>
