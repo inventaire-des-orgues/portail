@@ -357,7 +357,10 @@ class Orgue(models.Model):
                                 help_text="Hauteur en Hertz du A2 joué par le prestant 4, à une température donnée")
     sommiers = models.TextField(null=True, blank=True)
     soufflerie = models.TextField(null=True, blank=True)
-    transmission_notes = models.CharField(max_length=30, choices=CHOIX_TRANSMISSION, null=True, blank=True)
+    transmission_notes = models.CharField(verbose_name="Transmission des notes",
+                                          max_length=30,
+                                          choices=CHOIX_TRANSMISSION,
+                                          null=True, blank=True)
     temperament = models.CharField(verbose_name="Tempérament",
                                    max_length=50,
                                    help_text="Mention la plus précise possible. Ex: mésotonique au sixième modifié.",
