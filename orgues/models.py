@@ -44,7 +44,8 @@ class Orgue(models.Model):
     )
 
     CHOIX_ETAT = (
-        ('bon', "Très bon ou bon : tout à fait jouable"),
+        ('tres_bon', "Très bon, tout à fait jouable"),
+        ('bon', "Bon : jouable, défauts mineurs"),
         ('altere', "Altéré : difficilement jouable"),
         ('degrade', "Dégradé ou en ruine : injouable"),
     )
