@@ -57,6 +57,7 @@ class EvenementAdmin(admin.ModelAdmin):
 
 @admin.register(Orgue)
 class OrgueAdmin(admin.ModelAdmin):
+    fields = ['codification', 'code_insee', 'commune', 'edifice', 'region', 'departement', 'code_departement']
     list_display = ('codification','designation','commune','edifice','departement','commentaire_admin','updated_by_user','modified_date')
     inlines = [ClavierInline]
     list_filter = ('updated_by_user',)
