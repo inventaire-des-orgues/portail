@@ -303,12 +303,6 @@ class Orgue(models.Model):
 
     )
 
-    CHOIX_DESIGNATION = (
-        ("grand_orgue", "Grand orgue"),
-        ("orgue_choeur", "Orgue de chœur"),
-        ("orgue", "Orgue")
-    )
-
     # Informations générales
     designation = models.CharField(max_length=300, null=True, verbose_name="Désignation", default="orgue", blank=True)
     codification = models.CharField(max_length=24, unique=True, db_index=True)
