@@ -58,7 +58,6 @@ class Command(BaseCommand):
                 try:
                     assert row.get("proprietaire") in [c[0] for c in Orgue.CHOIX_PROPRIETAIRE] + [None]
                     assert row.get("etat") in [c[0] for c in Orgue.CHOIX_ETAT] + [None]
-                    assert row.get("emplacement") in [c[0] for c in Orgue.CHOIX_EMPLACEMENT] + [None]
                     assert row.get("tirage_jeux") in [c[0] for c in Orgue.CHOIX_TIRAGE] + [None]
                     assert row.get("transmission_notes") in [c[0] for c in Orgue.CHOIX_TRANSMISSION] + [None]
 
