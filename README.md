@@ -9,7 +9,7 @@ pip install -r requirements.txt
 ```
 Lancer les commandes suivantes :  
  
-```
+```shell script
 python manage.py makemigrations
 python manage.py migrate
 python manage.py init_groups
@@ -21,7 +21,7 @@ python manage.py runserver
 
 Certaines données sont mises en cache pour améliorer la perfomance des requêtes.  
 Pour forcer le recalcul des "résumés clavier" il faut lancer la commande : 
-```
+```shell script
 python manage.py calcul_resume_composition
 ```  
 Normalement le résumé clavier est recalculé automatiquement à chaque modification de la composition d'un orgue.
@@ -41,7 +41,7 @@ MEILISEARCH_KEY = ''
 
 Puis lancer la tache de création de l'index : 
 
-```python
+```shell script
 python manage.py build_meilisearch_index
 ```
 
@@ -61,13 +61,35 @@ de les mettre à jour.
 
 Lancer :
 
-```
+```shell script
 source /var/www/pythonenv/bin/activate
 cd /var/www/portail
 python manage.py import_data chemin/vers/exemple_orgue-v3.json
 ```
 
 Optionel : ajouter `--delete` pour supprimer les orgues existants avant l'importation
+
+# Travailler directement sur la base de données
+
+```python
+source /var/www/pythonenv/bin/activate
+cd /var/www/portail
+python manage.py shell
+
+from orgues.models import Orgue
+Orgue.objects.all()
+Orgue.objects.filter(departement="Ardennes")
+```
+
+Se référer à la [documentation Django](https://docs.djangoproject.com/fr/3.1/topics/db/queries/) pour des requêtes plus poussées, avec usage notamment des commandes comme :
+`exclude()`, `get()` et des suffixes : `__startwith`, `__lte`, etc. `update()` permet les mises à jour simultanées.
+Exemple : corriger les noms erronés du champ ancienne_commune :
+
+```python
+Orgue.objects.filter(ancienne_commune="/").update(ancienne_commune="")
+```
+
+
 
 
 # Api : 
