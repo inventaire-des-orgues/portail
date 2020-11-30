@@ -55,16 +55,16 @@ class Orgue(models.Model):
         ("mecanique_suspendue", "Mécanique suspendue"),
         ("mecanique_balanciers", "Mécanique à balanciers"),
         ("mecanique_barker", "Mécanique Barker"),
-        ("pneumatique_haute_pression", "Pneumatique haute pression"),
-        ("pneumatique_basse_pression", "Pneumatique haute pression"),
         ("electrique", "Electrique"),
         ("electrique_proportionnelle", "Electrique proportionnelle"),
         ("electro_pneumatique", "Electro-pneumatique"),
+        ("pneumatique", "Pneumatique"),
     )
 
     CHOIX_TIRAGE = (
         ("mecanique", "Mécanique"),
-        ("pneumatique", "Pneumatique"),
+        ("pneumatique_haute_pression", "Pneumatique haute pression"),
+        ("pneumatique_basse_pression", "Pneumatique basse pression"),
         ("electrique", "Electrique"),
         ("electro_pneumatique", "Electro-pneumatique"),
     )
