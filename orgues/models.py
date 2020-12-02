@@ -361,7 +361,7 @@ class Orgue(models.Model):
                                    help_text="Mention la plus précise possible. Ex: mésotonique au sixième modifié.",
                                    null=True, blank=True)
     transmission_commentaire = models.CharField(max_length=100, null=True, blank=True, help_text="Max 100 caractères")
-    tirage_jeux = models.CharField(verbose_name="Tirage des jeux", max_length=20, choices=CHOIX_TIRAGE, null=True,
+    tirage_jeux = models.CharField(verbose_name="Tirage des jeux", max_length=30, choices=CHOIX_TIRAGE, null=True,
                                    blank=True)
     tirage_commentaire = models.CharField(max_length=100, null=True, blank=True, help_text="Max 100 caractères")
     commentaire_tuyauterie = models.TextField(verbose_name="Description de la tuyauterie", blank=True, null=True)
