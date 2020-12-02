@@ -89,7 +89,13 @@ Exemple : corriger les noms erronés du champ ancienne_commune :
 Orgue.objects.filter(ancienne_commune="/").update(ancienne_commune="")
 ```
 
+# Renouveler manuellement le certificat
 
+```python
+sudo service nginx stop
+sudo certbot renew
+sudo service nginx start
+```
 
 
 # Api : 
