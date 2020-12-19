@@ -43,12 +43,14 @@
                     <span v-html="orgue._formatted.edifice"></span>
                     | <span v-html="orgue._formatted.commune"></span>, <span v-html="orgue.departement"></span>
                   </h4>
+                  {% spaceless %}
                   <p class=" my-0">
                     <span v-html="orgue.designation"></span>
                     <span v-if="!orgue.designation">Orgue</span>
                     <span v-if="orgue.emplacement">, ((orgue.emplacement))</span>
                     <span v-if="orgue.resume_composition">, ((orgue.resume_composition))</span>
                   </p>
+                  {% endspaceless %}
                   <p class="my-0">
                     <b>Localisation :</b>
                     <span v-html="orgue._formatted.commune"></span>
