@@ -51,6 +51,7 @@
                     <span v-if="orgue.resume_composition">, ((orgue.resume_composition))</span>
                   </p>
                   {% endspaceless %}
+                  {% spaceless %}
                   <p class="my-0">
                     <b>Localisation :</b>
                     <span v-html="orgue._formatted.commune"></span>
@@ -60,6 +61,7 @@
                     <span v-html="orgue._formatted.departement"></span>
                     (<span v-html="orgue._formatted.region"></span>)
                   </p>
+                  {% endspaceless %}
                   <p class="my-0" v-if="orgue.facteurs.length > 0">
                     <b>Facteurs :</b> <span v-html="orgue._formatted.facteurs"></span>
                   </p>
