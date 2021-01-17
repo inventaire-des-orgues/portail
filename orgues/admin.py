@@ -32,13 +32,16 @@ class TypeJeuAdmin(admin.ModelAdmin):
 
 @admin.register(Jeu)
 class JeuAdmin(admin.ModelAdmin):
-    list_display = ('type', 'type_hauteur', 'clavier_orgue')
-    search_fields = ('type',)
+    list_display = ('type', 'nom_du_jeu', 'hauteur_du_jeu', 'dans_orgue')
+    search_fields = ('nom_du_jeu',)
 
-    def type_hauteur(self, _jeu):
+    def nom_du_jeu(self, _jeu):
+        return _jeu.type.nom
+
+    def hauteur_du_jeu(self, _jeu):
         return _jeu.type.hauteur
 
-    def clavier_orgue(self, _jeu):
+    def dans_orgue(self, _jeu):
         return _jeu.clavier.orgue
 
 
