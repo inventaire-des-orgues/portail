@@ -33,8 +33,10 @@ class TypeJeuAdmin(admin.ModelAdmin):
 @admin.register(Jeu)
 class JeuAdmin(admin.ModelAdmin):
     list_display = ('type', 'type_hauteur', 'clavier_orgue')
-    def type_haute(self, _jeu):
+
+    def type_hauteur(self, _jeu):
         return _jeu.type.hauteur
+
     def clavier_orgue(self, _jeu):
         return _jeu.clavier.orgue
 
