@@ -501,7 +501,7 @@ class Orgue(models.Model):
             "Commune définie": {
                 "points": 5,
                 "logique": bool(self.commune),
-                "lien": reverse('orgues:orgue-update-localisation',args=(self.uuid,))
+                "lien": reverse('orgues:orgue-update-localisation', args=(self.uuid,))
             },
             "Région définie": {
                 "points": 5,
@@ -511,47 +511,47 @@ class Orgue(models.Model):
             "Département défini": {
                 "points": 5,
                 "logique": bool(self.departement),
-                "lien": reverse('orgues:orgue-update-localisation',args=(self.uuid,))
+                "lien": reverse('orgues:orgue-update-localisation', args=(self.uuid,))
             },
             "Nom de l'édifice défini": {
                 "points": 5,
                 "logique": len(self.edifice) > 6,
-                "lien": reverse('orgues:orgue-update',args=(self.uuid,)) + "#id_edifice"
+                "lien": reverse('orgues:orgue-update', args=(self.uuid,)) + "#id_edifice"
             },
             "Etat de l'orgue défini": {
                 "points": 10,
                 "logique": bool(self.etat),
-                "lien": reverse('orgues:orgue-update-localisation',args=(self.uuid,)) + "#id_etat"
+                "lien": reverse('orgues:orgue-update-localisation', args=(self.uuid,)) + "#id_etat"
             },
             "Image principale définie": {
                 "points": 30,
                 "logique": self.images.filter(is_principale=True).exists(),
-                "lien": reverse('orgues:image-list',args=(self.uuid,))
+                "lien": reverse('orgues:image-list', args=(self.uuid,))
             },
             "Au moins un clavier": {
                 "points": 10,
                 "logique": self.claviers.count() >= 1,
-                "lien": reverse('orgues:orgue-update-composition',args=(self.uuid,))
+                "lien": reverse('orgues:orgue-update-composition', args=(self.uuid,))
             },
             "Résumé de l'orgue complété": {
                 "points": 10,
                 "logique": bool(self.resume),
-                "lien": reverse('orgues:orgue-update',args=(self.uuid,)) + "#id_resume"
+                "lien": reverse('orgues:orgue-update', args=(self.uuid,)) + "#id_resume"
             },
             "Informations sur le buffet présentes": {
                 "points": 10,
                 "logique": bool(self.buffet),
-                "lien": reverse('orgues:orgue-update-buffet',args=(self.uuid,))
+                "lien": reverse('orgues:orgue-update-buffet', args=(self.uuid,))
             },
             "Informations sur les sommiers présentes": {
                 "points": 10,
                 "logique": bool(self.sommiers),
-                "lien": reverse('orgues:orgue-update-instrumentale',args=(self.uuid,)) + "#id_sommiers"
+                "lien": reverse('orgues:orgue-update-instrumentale', args=(self.uuid,)) + "#id_sommiers"
             },
             "Informations sur la soufflerie présentes": {
                 "points": 10,
                 "logique": bool(self.soufflerie),
-                "lien": reverse('orgues:orgue-update-instrumentale',args=(self.uuid,)) + "#id_soufflerie "
+                "lien": reverse('orgues:orgue-update-instrumentale', args=(self.uuid,)) + "#id_soufflerie "
             }
         }
 
@@ -656,7 +656,8 @@ class Evenement(models.Model):
     annee = models.IntegerField(verbose_name="Année")
     type = models.CharField(max_length=20, choices=CHOIX_TYPE)
     facteurs = models.ManyToManyField(Facteur, blank=True, related_name="evenements")
-    resume = models.TextField(verbose_name="Résumé", max_length=700, blank=True, null=True, help_text="700 caractères max")
+    resume = models.TextField(verbose_name="Résumé", max_length=700, blank=True, null=True,
+                              help_text="700 caractères max")
 
     # Champs automatiques
     orgue = models.ForeignKey(Orgue, on_delete=models.CASCADE, related_name="evenements")
