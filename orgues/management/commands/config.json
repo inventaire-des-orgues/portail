@@ -36,8 +36,10 @@
     "Anches Pos.",
     "Anches Réc.",
     "Anches Péd.",
+    "Fonds",
     "Orage",
     "Grêle",
+    "Zimbelstern",
     "Rossignol",
     "Tremblant",
     "Tremblant Pos.",
@@ -61,11 +63,7 @@
     "Expression Réc. par cuillère",
     "Expression Pos. par bascule"
   ],
-  "transposition": [
-    "16",
-    "8",
-    "4"
-  ],
+
   "facteurs": [
     "Abbey Alfred",
     "Abbey Eugène",
