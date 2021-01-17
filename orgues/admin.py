@@ -21,13 +21,22 @@ class ImageAdmin(admin.ModelAdmin):
 
 @admin.register(Facteur)
 class FacteurAdmin(admin.ModelAdmin):
-    list_display = ('nom', 'updated_by_user')
+    list_display = ('nom',)
 
 
 @admin.register(TypeJeu)
 class TypeJeuAdmin(admin.ModelAdmin):
     list_display = ('nom', 'hauteur')
-    search_fields = ('nom', 'updated_by_user')
+    search_fields = ('nom',)
+
+
+@admin.register(Jeu)
+class JeuAdmin(admin.ModelAdmin):
+    list_display = ('type', 'type_hauteur', 'clavier_orgue')
+    def type_haute(self, _jeu):
+        return _jeu.type.hauteur
+    def clavier_orgue(self, _jeu):
+        return _jeu.clavier.orgue
 
 
 @admin.register(TypeClavier)
