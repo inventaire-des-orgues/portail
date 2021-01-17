@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Orgue, Clavier, TypeClavier, TypeJeu, Fichier, Image, Evenement, Facteur, Accessoire
+from .models import Orgue, Clavier, TypeClavier, TypeJeu, Fichier, Image, Evenement, Facteur, Accessoire, Jeu
 
 
 class ClavierInline(admin.StackedInline):
