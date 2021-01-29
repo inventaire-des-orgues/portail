@@ -61,7 +61,7 @@ class OrgueSearch(LoginRequiredMixin, View):
         if departement:
             options['facetFilters'] = ['departement:{}'.format(departement)]
         results = index.search(query, options)
-        results['pages'] = 1 + results['nbHits'] // 20
+        results['pages'] = 1 + results['nbHits'] // self.paginate_by
         return JsonResponse(results)
 
 
