@@ -770,7 +770,7 @@ class Image(models.Model):
 
     # Champs automatiques
     thumbnail_principale = ProcessedImageField(upload_to=chemin_image,
-                                               processors=[ResizeToFill(600, 450)],
+                                               processors=[Transpose(),ResizeToFill(600, 450)],
                                                format='JPEG',
                                                options={'quality': 100})
 
