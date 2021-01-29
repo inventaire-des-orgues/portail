@@ -69,7 +69,7 @@ class OrgueSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Orgue
-        exclude = ["uuid", "id", "slug", "completion", "created_date"]
+        exclude = ["uuid", "id", "slug", "created_date"]
 
 
 class OrgueResumeSerializer(serializers.ModelSerializer):

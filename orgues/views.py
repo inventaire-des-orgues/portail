@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count, Q, Prefetch
 from django.forms import modelformset_factory
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy, reverse
 from django.utils.text import slugify
@@ -760,3 +760,40 @@ class SearchLogView(LoginRequiredMixin, TemplateView):
 
 class ConseilsFicheView(TemplateView):
     template_name = 'orgues/conseils_fiche.html'
+
+
+def export_orgues_csv(request):
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="orgues-de-France.csv"'
+
+    writer = csv.writer(response, delimiter=';')
+    writer.writerow(['Code',
+                     'Code_département',
+                     'Département',
+                     'Code_INSEE',
+                     'Commune',
+                     "Complément d'adresse",
+                     'Désignation',
+                     'Edifice',
+                     'Références_Palissy',
+                     'Etat',
+                     'Emplacement',
+                     "Taux_d'avancement",
+                     'Résumé_composition'])
+    for orgue in Orgue.objects.all():
+        writer.writerow([orgue.codification,
+                         orgue.code_departement,
+                         orgue.departement,
+                         orgue.code_insee,
+                         orgue.commune,
+                         orgue.ancienne_commune,
+                         orgue.designation,
+                         orgue.edifice,
+                         orgue.references_palissy,
+                         orgue.etat,
+                         orgue.emplacement,
+                         orgue.completion,
+                         orgue.resume_composition])
+
+    return response

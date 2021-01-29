@@ -17,7 +17,7 @@
     </ul>
     {% if editable %}
       <div class="card-footer bg-transparent">
-        <a href="{% url 'orgues:clavier-update' clavier.pk %}" class="btn btn-xs btn-outline editer_clavier">Editer</a>
+        <a href="{% url 'orgues:clavier-update' clavier.pk %}" class="btn btn-xs btn-outline editer_clavier">Modifier</a>
         <a href="{% url 'orgues:clavier-delete' clavier.pk %}" class="btn btn-xs btn-outline btn-danger supprimer_clavier">Supprimer</a>
       </div>
     {% endif %}

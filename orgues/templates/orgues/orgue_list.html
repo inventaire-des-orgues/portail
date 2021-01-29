@@ -43,14 +43,17 @@
                     <span v-html="orgue._formatted.edifice"></span>
                     | <span v-html="orgue._formatted.commune"></span>, <span v-html="orgue.departement"></span>
                   </h4>
+                  {% spaceless %}
                   <p class=" my-0">
                     <span v-html="orgue.designation"></span>
                     <span v-if="!orgue.designation">Orgue</span>
                     <span v-if="orgue.emplacement">, ((orgue.emplacement))</span>
                     <span v-if="orgue.resume_composition">, ((orgue.resume_composition))</span>
                   </p>
+                  {% endspaceless %}
+                  {% spaceless %}
                   <p class="my-0">
-                    <b>Localisation :</b>
+                    <b>Localisation : </b>
                     <span v-html="orgue._formatted.commune"></span>
                     <span v-if="orgue.ancienne_commune">(anciennement </span>
                     <span v-html="orgue._formatted.ancienne_commune" v-if="orgue.ancienne_commune"></span>
@@ -58,6 +61,7 @@
                     <span v-html="orgue._formatted.departement"></span>
                     (<span v-html="orgue._formatted.region"></span>)
                   </p>
+                  {% endspaceless %}
                   <p class="my-0" v-if="orgue.facteurs.length > 0">
                     <b>Facteurs :</b> <span v-html="orgue._formatted.facteurs"></span>
                   </p>

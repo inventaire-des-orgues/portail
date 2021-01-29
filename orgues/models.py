@@ -44,7 +44,8 @@ class Orgue(models.Model):
     )
 
     CHOIX_ETAT = (
-        ('bon', "Très bon ou bon : tout à fait jouable"),
+        ('tres_bon', "Très bon, tout à fait jouable"),
+        ('bon', "Bon : jouable, défauts mineurs"),
         ('altere', "Altéré : difficilement jouable"),
         ('degrade', "Dégradé ou en ruine : injouable"),
     )
@@ -54,16 +55,16 @@ class Orgue(models.Model):
         ("mecanique_suspendue", "Mécanique suspendue"),
         ("mecanique_balanciers", "Mécanique à balanciers"),
         ("mecanique_barker", "Mécanique Barker"),
-        ("pneumatique_haute_pression", "Pneumatique haute pression"),
-        ("pneumatique_basse_pression", "Pneumatique haute pression"),
         ("electrique", "Electrique"),
         ("electrique_proportionnelle", "Electrique proportionnelle"),
         ("electro_pneumatique", "Electro-pneumatique"),
+        ("pneumatique", "Pneumatique"),
     )
 
     CHOIX_TIRAGE = (
         ("mecanique", "Mécanique"),
-        ("pneumatique", "Pneumatique"),
+        ("pneumatique_haute_pression", "Pneumatique haute pression"),
+        ("pneumatique_basse_pression", "Pneumatique basse pression"),
         ("electrique", "Electrique"),
         ("electro_pneumatique", "Electro-pneumatique"),
     )
@@ -302,12 +303,6 @@ class Orgue(models.Model):
 
     )
 
-    CHOIX_DESIGNATION = (
-        ("grand_orgue", "Grand orgue"),
-        ("orgue_choeur", "Orgue de chœur"),
-        ("orgue", "Orgue")
-    )
-
     # Informations générales
     designation = models.CharField(max_length=300, null=True, verbose_name="Désignation", default="orgue", blank=True)
     codification = models.CharField(max_length=24, unique=True, db_index=True)
@@ -357,13 +352,16 @@ class Orgue(models.Model):
                                 help_text="Hauteur en Hertz du A2 joué par le prestant 4, à une température donnée")
     sommiers = models.TextField(null=True, blank=True)
     soufflerie = models.TextField(null=True, blank=True)
-    transmission_notes = models.CharField(max_length=30, choices=CHOIX_TRANSMISSION, null=True, blank=True)
+    transmission_notes = models.CharField(verbose_name="Transmission des notes",
+                                          max_length=30,
+                                          choices=CHOIX_TRANSMISSION,
+                                          null=True, blank=True)
     temperament = models.CharField(verbose_name="Tempérament",
                                    max_length=50,
                                    help_text="Mention la plus précise possible. Ex: mésotonique au sixième modifié.",
                                    null=True, blank=True)
     transmission_commentaire = models.CharField(max_length=100, null=True, blank=True, help_text="Max 100 caractères")
-    tirage_jeux = models.CharField(verbose_name="Tirage des jeux", max_length=20, choices=CHOIX_TIRAGE, null=True,
+    tirage_jeux = models.CharField(verbose_name="Tirage des jeux", max_length=30, choices=CHOIX_TIRAGE, null=True,
                                    blank=True)
     tirage_commentaire = models.CharField(max_length=100, null=True, blank=True, help_text="Max 100 caractères")
     commentaire_tuyauterie = models.TextField(verbose_name="Description de la tuyauterie", blank=True, null=True)
@@ -503,7 +501,7 @@ class Orgue(models.Model):
             "Commune définie": {
                 "points": 5,
                 "logique": bool(self.commune),
-                "lien": reverse('orgues:orgue-update-localisation',args=(self.uuid,))
+                "lien": reverse('orgues:orgue-update-localisation', args=(self.uuid,))
             },
             "Région définie": {
                 "points": 5,
@@ -513,47 +511,47 @@ class Orgue(models.Model):
             "Département défini": {
                 "points": 5,
                 "logique": bool(self.departement),
-                "lien": reverse('orgues:orgue-update-localisation',args=(self.uuid,))
+                "lien": reverse('orgues:orgue-update-localisation', args=(self.uuid,))
             },
             "Nom de l'édifice défini": {
                 "points": 5,
                 "logique": len(self.edifice) > 6,
-                "lien": reverse('orgues:orgue-update',args=(self.uuid,)) + "#id_edifice"
+                "lien": reverse('orgues:orgue-update', args=(self.uuid,)) + "#id_edifice"
             },
             "Etat de l'orgue défini": {
                 "points": 10,
                 "logique": bool(self.etat),
-                "lien": reverse('orgues:orgue-update-localisation',args=(self.uuid,)) + "#id_etat"
+                "lien": reverse('orgues:orgue-update-localisation', args=(self.uuid,)) + "#id_etat"
             },
             "Image principale définie": {
                 "points": 30,
                 "logique": self.images.filter(is_principale=True).exists(),
-                "lien": reverse('orgues:image-list',args=(self.uuid,))
+                "lien": reverse('orgues:image-list', args=(self.uuid,))
             },
             "Au moins un clavier": {
                 "points": 10,
                 "logique": self.claviers.count() >= 1,
-                "lien": reverse('orgues:orgue-update-composition',args=(self.uuid,))
+                "lien": reverse('orgues:orgue-update-composition', args=(self.uuid,))
             },
             "Résumé de l'orgue complété": {
                 "points": 10,
                 "logique": bool(self.resume),
-                "lien": reverse('orgues:orgue-update',args=(self.uuid,)) + "#id_resume"
+                "lien": reverse('orgues:orgue-update', args=(self.uuid,)) + "#id_resume"
             },
             "Informations sur le buffet présentes": {
                 "points": 10,
                 "logique": bool(self.buffet),
-                "lien": reverse('orgues:orgue-update-buffet',args=(self.uuid,))
+                "lien": reverse('orgues:orgue-update-buffet', args=(self.uuid,))
             },
             "Informations sur les sommiers présentes": {
                 "points": 10,
                 "logique": bool(self.sommiers),
-                "lien": reverse('orgues:orgue-update-instrumentale',args=(self.uuid,)) + "#id_sommiers"
+                "lien": reverse('orgues:orgue-update-instrumentale', args=(self.uuid,)) + "#id_sommiers"
             },
             "Informations sur la soufflerie présentes": {
                 "points": 10,
                 "logique": bool(self.soufflerie),
-                "lien": reverse('orgues:orgue-update-instrumentale',args=(self.uuid,)) + "#id_soufflerie "
+                "lien": reverse('orgues:orgue-update-instrumentale', args=(self.uuid,)) + "#id_soufflerie "
             }
         }
 
@@ -658,7 +656,8 @@ class Evenement(models.Model):
     annee = models.IntegerField(verbose_name="Année")
     type = models.CharField(max_length=20, choices=CHOIX_TYPE)
     facteurs = models.ManyToManyField(Facteur, blank=True, related_name="evenements")
-    resume = models.TextField(verbose_name="Résumé", max_length=700, blank=True, null=True, help_text="700 caractères max")
+    resume = models.TextField(verbose_name="Résumé", max_length=700, blank=True, null=True,
+                              help_text="700 caractères max")
 
     # Champs automatiques
     orgue = models.ForeignKey(Orgue, on_delete=models.CASCADE, related_name="evenements")
@@ -763,7 +762,8 @@ class Image(models.Model):
     """
     Images liées à un instrument
     """
-    image = models.ImageField(upload_to=chemin_image, help_text="Taille maximale : 2 Mo")
+    image = models.ImageField(upload_to=chemin_image,
+                              help_text="Taille maximale : 2 Mo. Les images doivent être libres de droits.")
     is_principale = models.BooleanField(default=False, editable=False)
     legende = models.CharField(verbose_name="Légende", max_length=400, null=True, blank=True)
     credit = models.CharField(verbose_name="Crédit", max_length=200, null=True, blank=True)
