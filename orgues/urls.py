@@ -5,7 +5,7 @@ import orgues.views as v
 app_name = 'orgues'
 urlpatterns = [
     path('orgues/', v.OrgueList.as_view(), name='orgue-list'),
-    path('orgues/csv/', v.export_orgues_csv, name='orgue-csv'),
+    path('orgues/csv/', v.OrgueExport.as_view(), name='orgue-csv'),
     path('recherche/', v.OrgueSearch.as_view(), name='orgue-search'),
     path('liste.json', v.OrgueListJS.as_view(), name='orgue-list-js'),
     path('etats.json', v.OrgueEtatsJS.as_view(), name='orgue-etats-js'),

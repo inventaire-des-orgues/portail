@@ -2,6 +2,7 @@ import csv
 import logging
 import os
 from collections import Counter, deque
+from datetime import datetime
 
 import meilisearch
 from django.contrib import messages
@@ -762,38 +763,35 @@ class ConseilsFicheView(TemplateView):
     template_name = 'orgues/conseils_fiche.html'
 
 
-def export_orgues_csv(request):
-    # Create the HttpResponse object with the appropriate CSV header.
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="orgues-de-France.csv"'
 
-    writer = csv.writer(response, delimiter=';')
-    writer.writerow(['Code',
-                     'Code_département',
-                     'Département',
-                     'Code_INSEE',
-                     'Commune',
-                     "Complément d'adresse",
-                     'Désignation',
-                     'Edifice',
-                     'Références_Palissy',
-                     'Etat',
-                     'Emplacement',
-                     "Taux_d'avancement",
-                     'Résumé_composition'])
-    for orgue in Orgue.objects.all():
-        writer.writerow([orgue.codification,
-                         orgue.code_departement,
-                         orgue.departement,
-                         orgue.code_insee,
-                         orgue.commune,
-                         orgue.ancienne_commune,
-                         orgue.designation,
-                         orgue.edifice,
-                         orgue.references_palissy,
-                         orgue.etat,
-                         orgue.emplacement,
-                         orgue.completion,
-                         orgue.resume_composition])
+class OrgueExport(FabView):
+    permission_required = 'orgues.add_orgue'
 
-    return response
+    def get(self,request,*args,**kwargs):
+        response = HttpResponse(content_type='text/csv')
+        response.write(u'\ufeff'.encode('utf8'))
+        response['Content-Disposition'] = 'attachment;filename=orgues-de-France_{}.csv'.format(
+            datetime.today().strftime("%Y-%m-%d"))
+        columns = [
+            "codification",
+            "code_departement",
+            "departement",
+            "code_insee",
+            "commune",
+            "ancienne_commune",
+            "designation",
+            "edifice",
+            "references_palissy",
+            "etat",
+            "emplacement",
+            "completion",
+            "resume_composition",
+        ]
+        writer = csv.DictWriter(response, delimiter=';',fieldnames=columns)
+
+        # header from verbose_names
+        writer.writerow({column:Orgue._meta.get_field(column).verbose_name for column in columns})
+        # data
+        writer.writerows(Orgue.objects.values(*columns))
+
+        return response
