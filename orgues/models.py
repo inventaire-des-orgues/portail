@@ -317,7 +317,8 @@ class Orgue(models.Model):
     lien_reference = models.URLField(verbose_name="Lien de référence", max_length=300, null=True, blank=True)
     is_polyphone = models.BooleanField(default=False, verbose_name="Orgue polyphone de la manufacture Debierre ?")
 
-    etat = models.CharField(max_length=20, choices=CHOIX_ETAT, null=True, blank=True)
+    etat = models.CharField(max_length=20, choices=CHOIX_ETAT, null=True, blank=True,
+                            help_text="Se rapporte au fait que l'orgue est jouable ou non.")
     emplacement = models.CharField(max_length=50, null=True, blank=True, verbose_name="Emplacement",
                                    help_text="Ex: sol, tribune ...")
     buffet = models.TextField(verbose_name="Description du buffet", null=True, blank=True,
