@@ -12,7 +12,7 @@ class OrgueGeneralInfoForm(forms.ModelForm):
             "emplacement",
             "etat",
             "proprietaire",
-            "references_palissy"
+            "references_palissy",
             "organisme",
             "lien_reference",
             "resume",
