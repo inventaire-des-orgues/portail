@@ -12,7 +12,7 @@ from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.text import slugify
 from imagekit.models import ImageSpecField, ProcessedImageField
-from pilkit.processors import ResizeToFill, ResizeToFit
+from pilkit.processors import ResizeToFill, ResizeToFit,Transpose
 
 from accounts.models import User
 
@@ -770,16 +770,16 @@ class Image(models.Model):
 
     # Champs automatiques
     thumbnail_principale = ProcessedImageField(upload_to=chemin_image,
-                                               processors=[ResizeToFill(600, 450)],
+                                               processors=[Transpose(),ResizeToFill(600, 450)],
                                                format='JPEG',
                                                options={'quality': 100})
 
     thumbnail = ImageSpecField(source='image',
-                               processors=[ResizeToFill(600, 450)],
+                               processors=[Transpose(),ResizeToFill(600, 450)],
                                format='JPEG',
                                options={'quality': 100})
     vignette = ImageSpecField(source='image',
-                              processors=[ResizeToFit(150, 100)],
+                              processors=[Transpose(), ResizeToFit(150, 100)],
                               format='JPEG',
                               options={'quality': 100})
 

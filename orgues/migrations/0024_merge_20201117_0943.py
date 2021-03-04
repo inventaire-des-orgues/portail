@@ -7,7 +7,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('orgues', '0023_auto_20201112_1724'),
-        ('orgues', '0021_merge_20200914_1025'),
+        ('orgues', '0021_auto_20200912_1505'),
     ]
 
     operations = [
