@@ -505,7 +505,7 @@ class Orgue(models.Model):
                 "lien": reverse('orgues:orgue-update-localisation', args=(self.uuid,))
             },
             "Région définie": {
-                "points": 5,
+                "points": 0,
                 "logique": bool(self.region),
                 "lien": reverse('orgues:orgue-update-localisation', args=(self.uuid,)),
             },
@@ -515,12 +515,12 @@ class Orgue(models.Model):
                 "lien": reverse('orgues:orgue-update-localisation', args=(self.uuid,))
             },
             "Nom de l'édifice défini": {
-                "points": 5,
+                "points": 15,
                 "logique": len(self.edifice) > 6,
                 "lien": reverse('orgues:orgue-update', args=(self.uuid,)) + "#id_edifice"
             },
             "Etat de l'orgue défini": {
-                "points": 10,
+                "points": 20,
                 "logique": bool(self.etat),
                 "lien": reverse('orgues:orgue-update-localisation', args=(self.uuid,)) + "#id_etat"
             },
@@ -530,7 +530,7 @@ class Orgue(models.Model):
                 "lien": reverse('orgues:image-list', args=(self.uuid,))
             },
             "Au moins un clavier": {
-                "points": 10,
+                "points": 20,
                 "logique": self.claviers.count() >= 1,
                 "lien": reverse('orgues:orgue-update-composition', args=(self.uuid,))
             },
@@ -545,7 +545,7 @@ class Orgue(models.Model):
                 "lien": reverse('orgues:orgue-update-buffet', args=(self.uuid,))
             },
             "Informations sur les sommiers présentes": {
-                "points": 10,
+                "points": 0,
                 "logique": bool(self.sommiers),
                 "lien": reverse('orgues:orgue-update-instrumentale', args=(self.uuid,)) + "#id_sommiers"
             },
