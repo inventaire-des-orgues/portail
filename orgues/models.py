@@ -767,7 +767,7 @@ class Image(models.Model):
                               help_text="Taille maximale : 2 Mo. Les images doivent être libres de droits.")
     is_principale = models.BooleanField(default=False, editable=False)
     legende = models.CharField(verbose_name="Légende", max_length=400, null=True, blank=True)
-    credit = models.CharField(verbose_name="Crédit", max_length=200, null=True, blank=True)
+    credit = models.CharField(verbose_name="Crédit", max_length=200)
 
     # Champs automatiques
     thumbnail_principale = ProcessedImageField(upload_to=chemin_image,
