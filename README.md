@@ -1,7 +1,7 @@
 # Installation :
 
-Installer python 3.4+   
-Installer les librairies listées dans le fichier `requirements.txt`.  
+Installer python 3.4+
+Installer les librairies listées dans le fichier `requirements.txt`.
 Créer un fichier `project/settings/dev.py` inspiré de `project/settings/dev.example.py` avec les settings de dev.
 
 ```
@@ -19,7 +19,7 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-Certaines données sont mises en cache pour améliorer la perfomance des requêtes.  
+Certaines données sont mises en cache pour améliorer la perfomance des requêtes.
 Pour forcer le recalcul des "résumés clavier" il faut lancer la commande : 
 ```shell script
 python manage.py calcul_resume_composition
@@ -45,11 +45,11 @@ Puis lancer la tache de création de l'index :
 python manage.py build_meilisearch_index
 ```
 
-Un signal django récupère les modifications d'orgues faites directement via l'interface et met à jour l'index de recherche meilisearch.  
+Un signal django récupère les modifications d'orgues faites directement via l'interface et met à jour l'index de recherche meilisearch.
 Ce signal ne récupère pas les modifications faites en ligne de commande, les modifications groupées via l'admin ou encore
 les suppressions d'orgues. 
-Pour mettre à jour l'index de recherche après ces types de modifications, il faut lancer la commande `build_meilisearch_index`.  
-En production cette commande est lancée toutes les nuits (à 2h) pour garantir que l'index soit à jour. 
+Pour mettre à jour l'index de recherche après ces types de modifications, il faut lancer la commande `build_meilisearch_index`.
+En production cette commande est lancée toutes les nuits (à 2 h) pour garantir que l'index soit à jour. 
 
 
 # Faire un import de données sur le serveur : 
@@ -82,7 +82,8 @@ Orgue.objects.filter(departement="Ardennes")
 ```
 
 Se référer à la [documentation Django](https://docs.djangoproject.com/fr/3.1/topics/db/queries/) pour des requêtes plus poussées, avec usage notamment des commandes comme :
-`exclude()`, `get()` et des suffixes : `__startwith`, `__lte`, etc. `update()` permet les mises à jour simultanées.
+`exclude()`, `get()` et des suffixes : `__startwith`, `__lte`, etc.
+`update()` permet les mises à jour simultanées.
 Exemple : corriger les noms erronés du champ ancienne_commune :
 
 ```python
@@ -97,6 +98,22 @@ sudo certbot renew
 sudo service nginx start
 ```
 
+# Export CSV
+
+Bien pratique pour travailler sur un tableur type OpenOffice ou Excel...
+https://inventaire-des-orgues.fr/orgues/csv
+
+# Création d'un diagramme UML à partir du modèle de données Django
+
+Installer si nécessaire django-extensions et pydotplus (toutefois ces deux modules sont dans `requirements.txt`, donc l'installation n'est normalement pas nécessaire).
+
+Créer un fichier de graphe (.dot) à l'aide de :
+```python
+python manage.py graph_models orgues -a -g > orgue.dot
+```
+
+Puis générer un diagramme .svg (ou .png) en ligne :
+https://dreampuf.github.io/GraphvizOnline
 
 # Api : 
-[voir la doc](documentation/doc_api.md)
+[Voir la documentation](https://docs.inventaire-des-orgues.fr/api)
