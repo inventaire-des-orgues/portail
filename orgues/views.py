@@ -23,6 +23,8 @@ from orgues.api.serializers import OrgueSerializer, OrgueResumeSerializer
 from project import settings
 from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source
 
+from django.db.models.functions import Lower
+
 
 class OrgueList(LoginRequiredMixin, TemplateView):
     """
@@ -329,7 +331,7 @@ class TypeJeuListJS(FabListView):
         query = self.request.GET.get("q")
         if query:
             queryset = queryset.filter(nom__icontains=query)
-        return queryset.order_by('-claviers_count')
+        return queryset.order_by(Lower('nom'))
 
     def render_to_response(self, context, **response_kwargs):
         results = []
