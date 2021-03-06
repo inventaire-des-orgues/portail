@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from .models import Orgue, Clavier, TypeClavier, TypeJeu, Fichier, Image, Evenement, Facteur, Accessoire, Jeu
+from django.utils.html import format_html
 
 
 class ClavierInline(admin.StackedInline):
@@ -33,7 +34,10 @@ class TypeJeuAdmin(admin.ModelAdmin):
 @admin.register(Jeu)
 class JeuAdmin(admin.ModelAdmin):
     list_display = ('type', 'nom_du_jeu', 'hauteur_du_jeu', 'dans_orgue')
-    search_fields = ('nom_du_jeu',)
+    search_fields = ('type__nom',)
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('type', 'clavier', 'clavier__orgue')
 
     def nom_du_jeu(self, _jeu):
         return _jeu.type.nom
@@ -43,6 +47,11 @@ class JeuAdmin(admin.ModelAdmin):
 
     def dans_orgue(self, _jeu):
         return _jeu.clavier.orgue
+
+    def dans_orgue(self, _jeu):
+        orgue = _jeu.clavier.orgue
+        return format_html(
+            '<a href="{}" target="_blank">{}</a>'.format(reversed('orgues:orgue-update', args=(orgue.uuid,)), orgue))
 
 
 @admin.register(TypeClavier)
