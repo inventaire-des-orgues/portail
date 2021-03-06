@@ -27,12 +27,23 @@
 
     var mh_icon = L.icon({
       iconUrl: '{% static 'img/mh_icon.png' %}',
-      shadowUrl: '{% static 'img/mh_shadow.png' %}',
+      shadowUrl: '{% static 'img/marker-shadow.png' %}',
 
-      iconSize: [24, 24], // size of the icon
-      shadowSize: [30, 28], // size of the shadow
-      iconAnchor: [12, 7], // point of the icon which will correspond to marker's location
-      shadowAnchor: [11, 11],  // the same for the shadow
+      iconSize: [25, 41], // size of the icon
+      shadowSize: [41, 41], // size of the shadow
+      iconAnchor: [12, 41], // point of the icon which will correspond to marker's location
+      shadowAnchor: [12, 41],  // the same for the shadow
+      {#popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor#}
+    });
+
+    var nonmh_icon = L.icon({
+      iconUrl: '{% static 'img/nonmh_icon.png' %}',
+      shadowUrl: '{% static 'img/marker-shadow.png' %}',
+
+      iconSize: [25, 41], // size of the icon
+      shadowSize: [41, 41], // size of the shadow
+      iconAnchor: [12, 41], // point of the icon which will correspond to marker's location
+      shadowAnchor: [12, 41],  // the same for the shadow
       {#popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor#}
     });
 
@@ -58,7 +69,7 @@
           var marker = new L.marker(latLng, {icon: mh_icon}).bindPopup(popup);
         }
         else {
-          var marker = new L.Marker(latLng, {}).bindPopup(popup);
+          var marker = new L.Marker(latLng, {icon:nonmh_icon}).bindPopup(popup);
         }
         marker.bindTooltip(ttip);
 
