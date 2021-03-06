@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from .models import Orgue, Clavier, TypeClavier, TypeJeu, Fichier, Image, Evenement, Facteur, Accessoire, Jeu
 from django.utils.html import format_html
+from django.urls import reverse
 
 
 class ClavierInline(admin.StackedInline):
@@ -46,12 +47,9 @@ class JeuAdmin(admin.ModelAdmin):
         return _jeu.type.hauteur
 
     def dans_orgue(self, _jeu):
-        return _jeu.clavier.orgue
-
-    def dans_orgue(self, _jeu):
         orgue = _jeu.clavier.orgue
         return format_html(
-            '<a href="{}" target="_blank">{}</a>'.format(reversed('orgues:orgue-update', args=(orgue.uuid,)), orgue))
+            '<a href="{}" target="_blank">{}</a>'.format(reverse('orgues:orgue-update', args=(orgue.uuid,)), orgue))
 
 
 @admin.register(TypeClavier)
