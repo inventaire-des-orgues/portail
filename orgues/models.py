@@ -22,9 +22,11 @@ class Facteur(models.Model):
     Pas celui qui distribue le courrier
     """
     nom = models.CharField(max_length=100)
-
     def __str__(self):
         return self.nom
+
+    latitude_atelier = models.FloatField(null=True, blank=True, verbose_name="Latitude de l'atelier")
+    longitude_atelier = models.FloatField(null=True, blank=True, verbose_name="Longitude de l'atelier")
 
 
 class Orgue(models.Model):
