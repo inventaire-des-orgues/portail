@@ -23,7 +23,7 @@ class ImageAdmin(admin.ModelAdmin):
 
 @admin.register(Facteur)
 class FacteurAdmin(admin.ModelAdmin):
-    list_display = ('nom',)
+    list_display = ('nom', 'latitude_atelier', 'longitude_atelier',)
 
 
 @admin.register(TypeJeu)
