@@ -29,9 +29,9 @@ class Facteur(models.Model):
 
 class Orgue(models.Model):
     CHOIX_TYPE_OSM = (
-        ("node", "Nœud"),
-        ("way", "Chemin"),
-        ("relation", "Relation"),
+        ("node", "Nœud (Node)"),
+        ("way", "Chemin (Way)"),
+        ("relation", "Relation (Relation)"),
     )
 
     CHOIX_PROPRIETAIRE = (
