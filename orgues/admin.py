@@ -30,8 +30,11 @@ class FacteurAdmin(admin.ModelAdmin):
 
 @admin.register(TypeJeu)
 class TypeJeuAdmin(admin.ModelAdmin):
-    list_display = ('nom', 'hauteur')
+    list_display = ('nom_hauteur', 'nom', 'hauteur')
     search_fields = ('nom',)
+
+    def nom_hauteur(self, _typejeu):
+        return _typejeu
 
 
 @admin.register(Jeu)
