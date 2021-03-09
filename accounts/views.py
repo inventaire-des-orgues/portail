@@ -67,8 +67,8 @@ class AccessLogs(FabView):
     permission_required = "accounts.add_user"
 
     def get(self, request, *args, **kwargs):
-        rows = int(request.GET.get("rows",300))
+        rows = int(request.GET.get("rows",500))
         with open(settings.FABACCESSLOG_FILE) as f:
             reader = csv.reader(deque(f, maxlen=rows), delimiter=";")
-            access_logs = reversed(list(reader))
+            access_logs = list(reader)
         return render(request, "accounts/access_logs.html", {"access_logs": access_logs})
