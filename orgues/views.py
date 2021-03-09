@@ -166,6 +166,9 @@ class OrgueUpdateMixin(FabUpdateView):
 
     def form_valid(self, form):
         form.instance.updated_by_user = self.request.user
+        if isinstance(form, orgue_forms.OrgueLocalisationForm):
+            if self.object.osm_id!=None and self.object.osm_type!=None:
+                self.object.idOSM_lonlat()
         return super().form_valid(form)
 
     def get_success_url(self):
