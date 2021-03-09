@@ -1,80 +1,43 @@
+from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate, login
 from django.contrib.auth.forms import AdminPasswordChangeForm
 from django.contrib.auth.models import Group
-from django.db.models import Q
 from django.shortcuts import redirect
 from django.urls import reverse_lazy, reverse
+from django.views.generic import CreateView
 
-from fabutils.mixins import FabListView, FabCreateView, FabUpdateView, FabDeleteView, FabView
+from accounts.forms import InscriptionForm
+from fabutils.mixins import FabUpdateView, FabView
+from project.views import verify_captcha
 
 User = get_user_model()
 
 
-class UserList(FabListView):
+
+class Inscription(CreateView):
     """
-    Admin only
-    List and search all users.
-    """
-    model = User
-    permission_required = 'accounts.view_user'
-    paginate_by = 30
-
-    def get_queryset(self):
-        queryset = User.objects.all().order_by("last_name")
-        query = self.request.GET.get("query")
-        group = self.request.GET.get("group")
-
-        if group:
-            queryset = Group.objects.get(name=group).user_set.all()
-        if query:
-            queryset = queryset.filter(
-                Q(email__icontains=query) | Q(first_name__icontains=query) | Q(last_name__icontains=query)).distinct()
-
-        return queryset
-
-
-class UserCreate(FabCreateView):
-    """
-    Admin only
+    Les utilisateurs peuvent s'inscrire eux-mêmes ici.
+    Ils sont ajoutés par défaut dans le groupe des utilisateurs standards.
     """
     model = User
-    permission_required = "accounts.add_user"
-    success_message = "User created"
-    success_url = reverse_lazy("accounts:user-list")
-    fields = ["first_name", "last_name", "email", "password", "groups"]
+    success_message = "Votre compte a bien été créé, vous êtes connecté(e) !"
+    success_url = reverse_lazy("orgues:orgue-list")
+    form_class = InscriptionForm
+    template_name = "accounts/inscription.html"
 
     def form_valid(self, form):
+        if not verify_captcha(self.request):
+            messages.error(self.request,"La vérification de sécurité anti-robot a échoué")
+            return redirect('accounts:inscription')
         user = form.save()
-        user.set_password(form.cleaned_data["password"])
         user.save()
+        user.groups.add(Group.objects.get(name=settings.GROUP_STANDARD_USER))
         messages.success(self.request, self.success_message)
-        return redirect(self.success_url)
-
-
-class UserUpdate(FabUpdateView):
-    """
-    Admin only
-    """
-    model = User
-    permission_required = "accounts.change_user"
-    slug_field = "uuid"
-    slug_url_kwarg = "user_uuid"
-    success_message = "User updated"
-    success_url = reverse_lazy("accounts:user-list")
-    fields = ["first_name", "last_name", "email", "groups"]
-
-
-class UserDelete(FabDeleteView):
-    """
-    Admin only
-    """
-    model = User
-    permission_required = "accounts.delete_user"
-    slug_field = "uuid"
-    slug_url_kwarg = "user_uuid"
-    success_message = "User deleted"
-    success_url = reverse_lazy("accounts:user-list")
+        next = self.request.GET.get("next", self.success_url)
+        user = authenticate(username=user.email, password=form.cleaned_data["password1"])
+        login(self.request, user)
+        return redirect(next)
 
 
 class UserUpdatePassword(FabUpdateView):
@@ -95,7 +58,6 @@ class UserUpdatePassword(FabUpdateView):
 
     def get_success_url(self):
         return reverse('accounts:user-update', args=(self.object.uuid,))
-
 
 
 class AccessLogs(FabView):

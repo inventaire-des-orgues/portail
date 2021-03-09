@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+  <section class="bg-primary pt-5" id="contact">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-12">
+          <h3 class="text-center text-white mb-5">Inscription</h3>
+        </div>
+        <div class="col-lg-9">
+          <div class="card">
+            <div class="card-body">
+            <div class="alert-primary p-20 my-2">
+              La création de compte permet de modifier les fiches des orgues. <br>
+              Tout contributeur qui ne se connecte pas dans l'année aura son compte automatiquement supprimé.
+            </div>
+              <form action="" method="post" id="inscription-form">{% csrf_token %}
+                {% if form.errors %}
+                  {% for error in user_form.non_field_errors %}
+                    <div class="alert alert-danger">
+                      <strong>{{ error|escape }}</strong>
+                    </div>
+                  {% endfor %}
+                {% endif %}
+                {% for field in form %}
+                  {% include 'stack_field.html' with with_helptext='true' %}
+                {% endfor %}
+
+                <div class="form-group">
+                  <div class="form-check">
+                    <input class="form-check-input" id="charte" type="checkbox" required>
+                    <label class="form-check-label" for="charte">
+                      J'ai lu et j'accepte <a href="https://docs.inventaire-des-orgues.fr/charte-du-contributeur/" target="_blank">la charte du contributeur</a>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <button type="submit" class="btn btn-primary rounded-pill g-recaptcha"
+{#                      data-sitekey="6LcJ1rgZAAAAABsMEd0iPcdTLq8w92B5S0CJUSG_"#}
+{#                      data-callback='onSubmit'#}
+{#                      data-action='submit'#}
+                  >Créer le compte
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+
+
+{% block js_extra %}
+
+  <script src="https://www.google.com/recaptcha/api.js"></script>
+  <script>
+    function onSubmit(token) {
+      document.getElementById("inscription-form").submit();
+    }
+  </script>
+{% endblock %}
