@@ -24,6 +24,7 @@ from project import settings
 from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source
 
 from django.db.models.functions import Lower
+logger = logging.getLogger("fabaccess")
 
 
 class OrgueList(TemplateView):
@@ -115,6 +116,10 @@ class OrgueDetail(DetailView):
     slug_url_kwarg = 'slug'
 
     def get_object(self, queryset=None):
+
+        logger.info("{user};{method};{get_full_path};200".format(user=self.request.user,
+                                                                 method=self.request.method,
+                                                                 get_full_path=self.request.META.get('HTTP_REFERER')))
         orgue = Orgue.objects.filter(Q(slug=self.kwargs['slug']) | Q(codification=self.kwargs['slug'])).first()
         if not orgue:
             raise Http404

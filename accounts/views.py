@@ -1,9 +1,12 @@
+import csv
+from collections import deque
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model, authenticate, login
 from django.contrib.auth.forms import AdminPasswordChangeForm
 from django.contrib.auth.models import Group
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView
 
@@ -64,8 +67,8 @@ class AccessLogs(FabView):
     permission_required = "accounts.add_user"
 
     def get(self, request, *args, **kwargs):
-        rows = int(request.GET.get("rows",100))
+        rows = int(request.GET.get("rows",300))
         with open(settings.FABACCESSLOG_FILE) as f:
             reader = csv.reader(deque(f, maxlen=rows), delimiter=";")
-            access_logs = list(reader)
+            access_logs = reversed(list(reader))
         return render(request, "accounts/access_logs.html", {"access_logs": access_logs})

@@ -48,6 +48,11 @@
               <li>
                 <a href="{% url 'accueil' %}">Accueil</a>
               </li>
+              {% if user.is_staff %}
+              <li>
+                <a href="{% url 'accounts:access-logs' %}">Logs</a>
+              </li>
+              {% endif %}
               <li>
                 <a href="{% url 'orgues:orgue-carte' %}">Carte</a>
               </li>
