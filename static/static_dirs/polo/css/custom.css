@@ -494,4 +494,7 @@ table#lexique td:first-child {
 #id_first_name, #id_last_name {
     text-transform: capitalize;
 }
+
+ul {
+    padding-left: 15px;
 }
