@@ -7,7 +7,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_extensions',
 
     'imagekit',  # https://github.com/matthewwithanm/django-imagekit
     'rest_framework',  # https://www.django-rest-framework.org/

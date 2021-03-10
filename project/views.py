@@ -19,7 +19,6 @@ from project.settings import ADMIN_EMAILS
 logger = logging.getLogger("fabaccess")
 
 
-@login_required
 def accueil(request):
     """
     Page d'accueil

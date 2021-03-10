@@ -41,9 +41,11 @@
                 </div>
                 <div class="form-group">
                   <button class="btn btn-primary" type="submit">Connexion</button>
-
                 </div>
               </form>
+              <p>
+                Vous n'avez pas de compte ? <a href="{% url 'accounts:inscription' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}">inscrivez-vous ici</a>.
+              </p>
             </div>
           </div>
         </div>

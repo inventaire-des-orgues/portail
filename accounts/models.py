@@ -28,7 +28,11 @@ class User(AbstractUser):
 
     class Meta:
         ordering = ["last_name"]
+        verbose_name = "Utilisateur"
 
+    def save(self, *args, **kwargs):
+        self.username = self.email
+        super().save(*args, **kwargs)
 
     def get_full_name(self):
         """

@@ -24,9 +24,10 @@ from project import settings
 from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source
 
 from django.db.models.functions import Lower
+logger = logging.getLogger("fabaccess")
 
 
-class OrgueList(LoginRequiredMixin, TemplateView):
+class OrgueList(TemplateView):
     """
     Listing des orgues
     """
@@ -42,7 +43,7 @@ class OrgueList(LoginRequiredMixin, TemplateView):
         return context
 
 
-class OrgueSearch(LoginRequiredMixin, View):
+class OrgueSearch(View):
     paginate_by = 20
 
     def post(self, request, *args, **kwargs):
@@ -68,7 +69,7 @@ class OrgueSearch(LoginRequiredMixin, View):
         return JsonResponse(results)
 
 
-class OrgueCarte(LoginRequiredMixin, TemplateView):
+class OrgueCarte(TemplateView):
     """
     Cartographie des orgues (gérée par Leaflet)
     """
@@ -106,7 +107,7 @@ class OrgueEtatsJS(View):
         return JsonResponse(etats, safe=False)
 
 
-class OrgueDetail(LoginRequiredMixin, DetailView):
+class OrgueDetail(DetailView):
     """
     Vue de détail (lecture seule) d'un orgue
     """
@@ -115,6 +116,10 @@ class OrgueDetail(LoginRequiredMixin, DetailView):
     slug_url_kwarg = 'slug'
 
     def get_object(self, queryset=None):
+
+        logger.info("{user};{method};{get_full_path};200".format(user=self.request.user,
+                                                                 method=self.request.method,
+                                                                 get_full_path=self.request.META.get('HTTP_REFERER')))
         orgue = Orgue.objects.filter(Q(slug=self.kwargs['slug']) | Q(codification=self.kwargs['slug'])).first()
         if not orgue:
             raise Http404
@@ -681,7 +686,7 @@ class SourceList(FabListView):
     Voir et éditer la liste des sources
     """
     model = Source
-    permission_required = "orgues.add_source"
+    permission_required = "orgues.view_source"
 
     def get_queryset(self):
         self.orgue = get_object_or_404(Orgue, uuid=self.kwargs["orgue_uuid"])
