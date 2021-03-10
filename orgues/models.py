@@ -417,19 +417,7 @@ class Orgue(models.Model):
                     sum_latitude+=latitude*coef
                     sum_longitude+=longitude*coef
                     sum_coef+=coef
-        return sum_latitude/sum_coef, sum_longitude/sum_coef, sum_coef
-
-    def idOSM_lonlat(self):
-        """
-        Requête pour calculer la longitude et la latitude du barycentre de l'identifiant du bâtiment OSM.
-        """
-        overpass_url = "http://overpass-api.de/api/interpreter"
-        overpass_query = """[out:json];{}({});(._;>;);out;""".format(self.osm_type, self.osm_id)
-        response = requests.get(overpass_url,params={'data': overpass_query})
-        if response.status_code==200:
-            data=response.json()
-            if len(data['elements'])>0:
-                self.latitude, self.longitude, coef=self.calcul_barycentre(data['elements'], self.osm_type)    
+        return sum_latitude/sum_coef, sum_longitude/sum_coef, sum_coef    
 
     @property
     def is_expressif(self):
