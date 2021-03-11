@@ -6,6 +6,12 @@ import requests
 
 
 class Command(BaseCommand):
+    """
+    Dans le terminal :  
+    python manage.py barycentre_osm True : pour calculer le barycentre de l'ensemble des orgues dont les champs osm_type et osm_id est défini
+    python manage.py barycentre_osm False : pour calculer le barycentre des orgues dont les champs osm_type et osm_id sont définis mais pas longitude et latitude.
+    L'API Overpass ne peut recevoir plus de 10000 requêtes par jour.
+    """
     help = 'Calcul barycenters of osm object'
 
     def add_arguments(self, parser):
