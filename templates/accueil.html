@@ -466,6 +466,34 @@
         }
       })
     }
+    
+    var update_states2 = function (dep){
+      var dep = dep;
+      $.ajax({
+        type: "GET",
+        url: "{% url 'orgues:orgue-etats-js2' %}",
+        data: {"departement": dep},
+        success: function (data) {
+          var total = data.total || 0;
+          
+          if (total > 0) {
+            var bons = Math.round(100 * (data.bon || 0) / total) + " %";
+            var alteres = Math.round(100 * (data.altere || 0) / total) + " %";
+            var degrades = Math.round(100 * (data.degrade || 0) / total) + " %";
+            var inconnus = Math.round(100 * (data.inconnu || 0) / total) + "%";
+          } else {
+            var bons, alteres, degrades, inconnus = "0 %"
+          }
+          $("#nb-etat-bon .puce-etat").html(bons);
+          $("#nb-etat-altere .puce-etat").html(alteres);
+          $("#nb-etat-degrade .puce-etat").html(degrades);
+          $("#nb-etat-inconnu .puce-etat").html(inconnus);
+          $("#nb-etat-total .puce-etat").html(total);
+        },
+        error: function () {
+        }
+      })
+    }
 
     update_states()
     $("[data-action=filter]").click(function () {
@@ -505,18 +533,18 @@
     $("[data-action=filter2]").click(function () {
       if ($(this).hasClass('active')) {
         $(this).removeClass('active');
-        var region = $(this).parents('svg').attr('data-value'); //on recupere le data value du svg parent
-        $("#selected-region").html(region); //on affiche le nom de la region
-        var regApp = $(this).parents('svg').attr('class'); //on recupere la classe du svg
-        $("."+regApp).hide(); //cache des dep
-        $(".REGIONS").show(); //on repasse a la vue région
-        update_states(region); //on redemande les données de la region
+        var region = $(this).parents('svg').attr('data-value'); 
+        $("#selected-region").html(region); 
+        var regApp = $(this).parents('svg').attr('class'); 
+        $("."+regApp).hide(); 
+        $(".REGIONS").show(); 
+        update_states(region); 
       }else{
         $("[data-action=filter2]").removeClass('active')
         $(this).addClass('active');
-        dep = $(this).data("value"); //on recupere le nom du departement
-        $("#selected-region").html(dep); //nom du departement
-        update_states(dep); //reste requete ajax niveau dep
+        dep = $(this).data("value");
+        $("#selected-region").html(dep); 
+        update_states2(dep); 
       }
     })
   </script>
