@@ -32,6 +32,9 @@ Suivre la documentation pour installer meilisearch :
 
 [https://docs.meilisearch.com/](https://docs.meilisearch.com/)
 
+Pour Windows, le script d'installation via curl ne fonctionnera pas, mais un binaire existe ici :
+https://github.com/meilisearch/MeiliSearch/releases
+
 Configurer l'url de meilisearch dans `project/settings/dev.py`, normalement : 
 
 ```python
@@ -117,3 +120,12 @@ https://dreampuf.github.io/GraphvizOnline
 
 # Api : 
 [Voir la documentation](https://docs.inventaire-des-orgues.fr/api)
+
+# Pense-bête Python
+
+Pour installer un fichier Wheel depuis la console Python.
+```python
+import pip
+from pip._internal import main as pipmain
+pipmain(['install', "Chemin\\vers\\fichier.whl"])
+```
