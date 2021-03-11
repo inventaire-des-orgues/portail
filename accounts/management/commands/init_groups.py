@@ -58,6 +58,8 @@ class Command(BaseCommand):
             'change_source',
             'delete_source',
 
+            'view_facteur',
+
 
         ]
 
