@@ -105,7 +105,25 @@ class OrgueEtatsJS(View):
             etats["inconnu"] = etats.get(None, 0)
             del etats[None]
         return JsonResponse(etats, safe=False)
-
+    
+class OrgueEtatsJSDep(View):
+    """
+    JSON décrivant les états des orgues pour une région
+    Si pas de région alors envoie les infos aggrégées pour toutes les régions
+    """
+    def get(self, request, *args, **kwargs):
+        """Un if ou deux fonctions"""
+        departement = request.GET.get("departement")
+        queryset = Orgue.objects.all()
+        if departement:
+            queryset = queryset.filter(departement=departement)
+        valeurs = queryset.values_list("etat", flat=True)
+        etats = dict(Counter(valeurs))
+        etats["total"] = sum(list(etats.values()))
+        if None in etats.keys():
+            etats["inconnu"] = etats.get(None, 0)
+            del etats[None]
+        return JsonResponse(etats, safe=False)
 
 class OrgueDetail(DetailView):
     """
