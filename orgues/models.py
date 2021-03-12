@@ -43,6 +43,8 @@ class Orgue(models.Model):
         ("diocese", "Diocèse"),
         ("paroisse", "Paroisse"),
         ("congregation", "Congrégation"),
+        ("etablissement_scolaire", "Etablissement scolaire"),
+        ("conservatoire", "Conservatoire ou Ecole de musique"),
     )
 
     CHOIX_ETAT = (
