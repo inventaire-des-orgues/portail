@@ -21,7 +21,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         compte_changer=0
         for orgue in Orgue.objects.all():
-            if options['replaceall'][0] or orgue.latitude==None or orgue.longitude==None:
+            if options['replaceall'][0]=='True' or orgue.latitude==None or orgue.longitude==None:
                 if (orgue.osm_type and orgue.osm_id):
                     overpass_url = "http://overpass-api.de/api/interpreter"
                     overpass_query = """[out:json];{}({});(._;>;);out;""".format(orgue.osm_type, orgue.osm_id)
