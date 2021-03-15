@@ -32,10 +32,10 @@
             </a>
             {% if perms.orgues.change_localisation %}
               <a class="list-group-item d-flex justify-content-between align-items-center
-              {% block localisation_active %}{% endblock %}" href="{% url 'orgues:orgue-update-localisation' orgue.uuid %}">Localisation
+              {% block localisation_active %}{% endblock %}" href="{% url 'orgues:orgue-update-localisation' orgue.uuid %}">
+              Localisation
               </a>
             {% endif %}
-
             <a class="list-group-item d-flex justify-content-between align-items-center
               {% block evenement_active %}{% endblock %}" href="{% url 'orgues:evenement-list' orgue.uuid %}">
               Historique
@@ -46,11 +46,11 @@
               Buffet / Console
             </a>
             <a class="list-group-item d-flex justify-content-between align-items-center
-                        {% block instrumentale_active %}{% endblock %}" href="{% url 'orgues:orgue-update-instrumentale' orgue.uuid %}">
+              {% block instrumentale_active %}{% endblock %}" href="{% url 'orgues:orgue-update-instrumentale' orgue.uuid %}">
               Partie instrumentale
             </a>
             <a class="list-group-item d-flex justify-content-between align-items-center
-                        {% block composition_active %}{% endblock %}" href="{% url 'orgues:orgue-update-composition' orgue.uuid %}">
+              {% block composition_active %}{% endblock %}" href="{% url 'orgues:orgue-update-composition' orgue.uuid %}">
               Composition
             </a>
             <a class="list-group-item d-flex justify-content-between align-items-center
