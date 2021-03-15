@@ -50,6 +50,11 @@
                         </div>
                       {% endfor %}
                     </div>
+                      <div id="accessoires">
+                      {% for accessoire in accessoires %}
+                          {{ accessoire.all|join:', ' }}
+                      {% endfor %}
+                      </div>
                   {% else %}
                     <p class="text-muted">Aucun clavier</p>
                   {% endif %}
