@@ -16,7 +16,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-light" data-dismiss="modal">Annuler</button>
-          <button type="submit" class="btn btn-primary">Enregister</button>
+          <button type="submit" class="btn btn-primary">Enregistrer</button>
         </div>
       </form>
     </div>
@@ -74,9 +74,16 @@
         return markup;
       },
       language: {
+    {% if perms.orgues.add_facteur %}
         noResults: function () {
           return "Aucun facteur trouvé ...  <a href='javascript:openfacteurmodal()'>cliquez ici</a> pour en créer un nouveau";
         }
+    {% else %}
+        noResults: function () {
+          return "Aucun facteur trouvé ... contactez-nous si vous souhaitez ajouter un nouveau facteur.";
+        }
+
+    {% endif %}
       },
       width: '100%'
     });

@@ -122,33 +122,38 @@ span.puce-etat {
 }
 
 #orgue-list .la_vignette {
-        border-top-left-radius: 10px;
-        border-bottom-left-radius: 10px;
-        border-top-right-radius:0;
-        border-bottom-right-radius:0;
-    }
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
 
-    #orgue-list .la_vignette img.card-img-top {
-        border-top-left-radius: 10px;
-        border-bottom-left-radius: 10px;
-        border-top-right-radius:0;
-        border-bottom-right-radius:0;
-    }
+#orgue-list .la_vignette img.card-img-top {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
 
 @media (max-width: 767px) {
     #orgue-list .la_vignette {
-        border-top-right-radius:10px;
+        border-top-right-radius: 10px;
         border-bottom-left-radius: 0;
     }
 
     #orgue-list .la_vignette img.card-img-top {
-        border-top-right-radius:10px;
+        border-top-right-radius: 10px;
         border-bottom-left-radius: 0;
     }
 
 }
 
 /* CLAVIERS */
+
+#claviers {
+    overflow-x: scroll;
+    margin-top: 20px;
+}
 
 .clavier div.card > ul.list-group > li.list-group-item {
     padding: .35rem 1.25rem !important;
@@ -260,7 +265,7 @@ dt {
     color: black;
 }
 
-.clavier, .evenement {
+.evenement {
     margin: 10px 0;
 }
 
@@ -354,7 +359,7 @@ table#lexique td:first-child {
 
 /*search form*/
 
-#editorial div p{
+#editorial div p {
     font-size: 1.1rem;
 }
 
@@ -443,4 +448,53 @@ table#lexique td:first-child {
     #nb-resultats {
         margin-top: -38px;
     }
+}
+
+
+.mycluster {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    background-color: #5c1c54;
+    color: white;
+    text-align: center;
+    font-size: 16px;
+    line-height: 40px;
+    margin-top: -20px;
+    margin-left: -20px;
+}
+
+
+.grid-image {
+    border-radius: 5px;
+}
+
+
+.orgue-card span > em {
+    color: hsl(204, 86%, 25%);
+    font-style: inherit;
+    background-color: #daedf8;
+}
+
+.orgue-card h4.card-title {
+    font-size: 1.2em;
+}
+
+.orgue-card h4.card-title:first-letter {
+    text-transform: capitalize
+}
+
+#searchinput input {
+    outline: none;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    box-shadow: none !important;
+}
+
+#id_first_name, #id_last_name {
+    text-transform: capitalize;
+}
+
+ul {
+    padding-left: 15px;
 }

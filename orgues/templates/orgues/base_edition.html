@@ -8,7 +8,7 @@
 {% block content %}
 
 
-  <section class="py-3 bg-light">
+  <section class="py-3 bg-light" id="mainsection">
     <div class="container ">
       <div class="row">
         <div class="col-lg-12 my-4 text-center text-md-left">
@@ -16,9 +16,9 @@
             {{ orgue.edifice|capfirst }} <br>
           </h2>
           <h4 class="text-muted">
-            {{ orgue.commune }} ({{ orgue.departement }})
+            {{ orgue.commune }}{% if orgue.ancienne_commune %} (anciennement {{ orgue.ancienne_commune }}){% endif %}, {{ orgue.departement }}
             <small>
-              | {{ orgue.designation }}
+              | {{ orgue.designation|default_if_none:"Orgue" }}
             </small>
           </h4>
         </div>
@@ -70,7 +70,9 @@
             </a>
           </div>
           <div class="my-3">
-            <small style="color:#5c1c54">Avancement : {{ orgue.completion }}%</small>
+            <small style="color:#5c1c54">Avancement : {{ orgue.completion }}%
+              <a href="{% url 'orgues:orgue-detail-avancement' orgue.uuid %}" class="pl-1">voir détail</a>
+            </small>
             <div class="progress" style="height:5px">
               <div class="progress-bar" role="progressbar" style="width: {{ orgue.completion }}%;background-color:#5c1c54" aria-valuenow="{{ orgue.completion }}" aria-valuemin="0" aria-valuemax="100">
               </div>
@@ -83,13 +85,32 @@
         <div class="col-lg-9">
           {% if orgue.commentaire_admin %}
             <div class="alert alert-info">
-              <b>Commentaire admin :</b> {{ orgue.commentaire_admin|linebreaksbr }}
+              <b>Commentaire rédacteurs :</b> {{ orgue.commentaire_admin|safe }}
             </div>
 
           {% endif %}
           <div class="card box-shadow">
             <div class="card-body">
+              <p class="text-right">
+                <a href="{% block help-link %}#{% endblock %}" target="_blank"> <i class="fa fa-info-circle"></i> Aide</a>
+              </p>
+
               {% block card-body %}
+                {% if form.errors %}
+                  {% for error in form.non_field_errors %}
+                    <div class="alert alert-danger">
+                      <strong>{{ error|escape }}</strong>
+                    </div>
+                  {% endfor %}
+                {% endif %}
+                <form action="" method="post" id="mainform" enctype="multipart/form-data">{% csrf_token %}
+                  {% for field in form %}
+                    {% include 'stack_field.html' %}
+                  {% endfor %}
+                  <div class="form-group text-right">
+                    <button type="submit" class="btn btn-primary" id="create">Enregistrer</button>
+                  </div>
+                </form>
               {% endblock %}
             </div>
           </div>
@@ -105,6 +126,7 @@
 
   <script src="{% static 'plugins/trumbowyg/trumbowyg.min.js' %}"></script>
   <script src="{% static 'plugins/trumbowyg/langs/fr.min.js' %}"></script>
+  <script src="{% static 'plugins/jquery.are-you-sure.js' %}"></script>
 
 
 
@@ -117,8 +139,21 @@
       btns: [['strong', 'em',], ['link'], ['unorderedList'], ['horizontalRule'],],
       autogrow: true,
       lang: 'fr'
+    }).on('tbwchange', function () {
+      $('form').trigger('rescan.areYouSure');
     });
-    $("select").select2()
+    $("select").select2().on("select2:selecting", function () {
+      $('form').trigger('rescan.areYouSure');
+    })
+    $('form').areYouSure();
+
+    $(document).ready(function () {
+      window.scroll(0, $('#mainsection').offset().top)
+    });
   </script>
 
+
+  {% block js_extra_2 %}
+
+  {% endblock %}
 {% endblock %}

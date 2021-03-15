@@ -28,8 +28,9 @@ REST_FRAMEWORK = {
     ],
 
     # or allow read-only access for unauthenticated users.
+    # https://www.django-rest-framework.org/api-guide/permissions/
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAdminUser'
+        'rest_framework.permissions.IsAuthenticated'
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 50

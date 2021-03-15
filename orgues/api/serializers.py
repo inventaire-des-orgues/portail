@@ -15,7 +15,6 @@ class FichierSerializer(serializers.ModelSerializer):
 
 
 class TypeJeuSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = TypeJeu
         exclude = ["id"]
@@ -47,14 +46,12 @@ class ClavierSerializer(serializers.ModelSerializer):
 
 
 class SourceSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Source
         exclude = ["id", "orgue"]
 
 
 class FacteurSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Facteur
         exclude = ["id"]
@@ -69,8 +66,47 @@ class OrgueSerializer(serializers.ModelSerializer):
     fichiers = FichierSerializer(many=True)
     evenements = EvenementSerializer(many=True)
     sources = SourceSerializer(many=True)
-    facteurs = FacteurSerializer(many=True)
 
     class Meta:
         model = Orgue
-        exclude = ["uuid", "id", "slug", "completion", "created_date", "keywords"]
+        exclude = ["uuid", "id", "slug", "created_date"]
+
+
+class OrgueResumeSerializer(serializers.ModelSerializer):
+    """
+    Serializers utilisé pour constuire l'index de recherche
+    """
+    facteurs = serializers.SerializerMethodField()
+    url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Orgue
+        fields = [
+            "id",
+            "designation",
+            "edifice",
+            "commune",
+            "ancienne_commune",
+            "departement",
+            "region",
+            "completion",
+            "vignette",
+            "emplacement",
+            "resume_composition",
+            "facteurs",
+            "url"
+        ]
+
+    def get_url(self, obj):
+        return obj.get_absolute_url()
+
+    def get_facteurs(self, obj):
+        facteurs = []
+        seen_facteurs = set()
+        evenements = Evenement.objects.filter(orgue=obj, facteurs__isnull=False).prefetch_related('facteurs').order_by('annee')
+        for evenement in evenements:
+            nouveau_facteur = " & ".join(evenement.facteurs.values_list('nom',flat=True))
+            if nouveau_facteur not in seen_facteurs:
+                seen_facteurs.add(nouveau_facteur)
+                facteurs.append(nouveau_facteur)
+        return ", ".join(facteurs)

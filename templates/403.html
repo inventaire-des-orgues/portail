@@ -1,26 +1,75 @@
-{% extends 'base.html' %}
 
-{% block title %}Error 403{% endblock %}
 
-{% block body %}
-  <div id="page-container" class="main-content-boxed">
-    <main id="main-container">
-      <div class="hero bg-white">
-        <div class="hero-inner">
-          <div class="content content-full">
-            <div class="py-30 text-center">
-              <div class="display-3 text-corporate">
-                <i class="fa fa-ban"></i> 403
-              </div>
-              <h1 class="h2 font-w700 mt-30 mb-10">Oops.. You just found an error page..</h1>
-              <h2 class="h3 font-w400 text-muted mb-50">We are sorry but you do not have permission to access this page..</h2>
-              <a class="btn btn-hero btn-rounded btn-alt-secondary" href="">
-                <i class="fa fa-arrow-left mr-10"></i> Back to home
-              </a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <meta name="author" content="INSPIRO"/>
+  <meta name="description" content="Themeforest Template Polo, html template">
+  <link rel="shortcut icon" href="/static/img/favicon.ico" type='image/x-icon'>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Inventaire des orgues</title>
+  <link href="/static/polo/css/plugins.css" rel="stylesheet">
+  <link href="/static/polo/scss/style.css" rel="stylesheet">
+  <link href="/static/polo/css/custom.css?date=20210309" rel="stylesheet">
+  <link rel="stylesheet" href="/static/plugins/select2/select2.min.css">
+  <link rel="stylesheet" href="/static/plugins/toastr/toastr.min.css">
+  <link rel="stylesheet" href="/static/plugins/lightbox/css/lightbox.min.css">
+  <link rel="stylesheet" href="/static/plugins/trumbowyg/ui/trumbowyg.min.css">
+
+  
+  
+</head>
+<body>
+
+     <section class="m-t-80 p-b-150">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="page-error-404">403</div>
+        </div>
+        <div class="col-lg-6">
+          <div class="text-left">
+            <h1 class="text-medium">Oups ...</h1>
+            <p class="lead">Vous n'êtes pas autorisé(e) à accéder à cette page.</p>
+            <div class="seperator m-t-20 m-b-20"></div>
+            <div class="search-form">
+              <a href="/" class="btn btn-primary">Retour à l'accueil</a>
             </div>
           </div>
         </div>
       </div>
-    </main>
-  </div>
-{% endblock %}
+    </div>
+  </section>
+
+<script src="/static/polo/js/jquery.js"></script>
+<script src="/static/plugins/popper/popper.min.js"></script>
+<script src="/static/polo/js/plugins.js"></script>
+<script src="/static/polo/js/functions.js"></script>
+<script src="/static/plugins/select2/select2.min.js"></script>
+<script src="/static/plugins/select2/i18n/fr.js"></script>
+<script src="/static/plugins/toastr/toastr.min.js"></script>
+<script src="/static/plugins/lightbox/js/lightbox.min.js"></script>
+<script>
+  
+</script>
+
+<script>
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  })
+</script>
+<script>
+  $(".menu-outline ul li a").each(function () {
+    if ($(this).attr("href") === window.location.pathname) {
+      $(this).parent().addClass("active")
+    }
+  })
+</script>
+
+
+
+
+</body>
+</html>

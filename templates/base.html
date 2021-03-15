@@ -28,22 +28,27 @@
       <div class="row">
         <div class="col-md-6">
           <ul class="top-menu">
-            <li>
-              {% if request.user.is_authenticated %}
+            <li><a href="https://inventaire-des-orgues.fr/admin/"><i class="fa fa-cog"></i></a></li>
+            <li><a href="https://github.com/inventaire-des-orgues/portail/projects/1"><i class="fa fa-columns"></i></a></li>
+            {% if request.user.is_authenticated %}
+              <li>
                 <a href="{% url 'logout' %}">Déconnexion</a>
-              {% else %}
+              </li>
+            {% else %}
+              <li>
                 <a href="{% url 'login' %}">Connexion</a>
-              {% endif %}
-            </li>
+              </li>
+              <li>
+                <a href="{% url 'accounts:inscription' %}">Inscription</a>
+              </li>
+            {% endif %}
           </ul>
         </div>
         <div class="col-md-6 d-none d-sm-block">
           <div class="social-icons social-icons-colored-hover">
             <ul>
               <li class="social-en"><a href="{% url 'contact' %}"><i class="fa fa-envelope"></i></a></li>
-              <li class="social-instagram"><a href="#"><i class="fab fa-instagram"></i></a></li>
-              <li class="social-twitter"><a href="#"><i class="fab fa-twitter"></i></a></li>
-              <li class="social-facebook"><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+              <li class="social-facebook"><a href="https://fr-fr.facebook.com/orgueenfrance/"><i class="fab fa-facebook-f"></i></a></li>
             </ul>
           </div>
         </div>
@@ -53,7 +58,7 @@
 
 
   <section id="logo-header">
-    <a class="" href="https://docs.inventaire-des-orgues.fr" id="lien-documentation">
+    <a class="" href="https://docs.inventaire-des-orgues.fr" id="lien-documentation" target="_blank" rel="noopener noreferrer">
       <i class="far text-dark fa-question-circle"></i>
     </a>
     <div class="container">
@@ -97,7 +102,7 @@
   {% block modal %}
   {% endblock %}
 
-{% include 'footer.html' %}
+  {% include 'footer.html' %}
 {% endblock %}
 <script src="{% static 'polo/js/jquery.js' %}"></script>
 <script src="{% static 'plugins/popper/popper.min.js' %}"></script>
@@ -107,8 +112,6 @@
 <script src="{% static 'plugins/select2/i18n/fr.js' %}"></script>
 <script src="{% static 'plugins/toastr/toastr.min.js' %}"></script>
 <script src="{% static 'plugins/lightbox/js/lightbox.min.js' %}"></script>
-
-
 {% include 'messages.html' %}
 <script>
   $(function () {
@@ -126,6 +129,5 @@
 
 {% block js_extra %}
 {% endblock %}
-
 </body>
 </html>

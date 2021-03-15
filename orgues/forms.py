@@ -12,6 +12,7 @@ class OrgueGeneralInfoForm(forms.ModelForm):
             "emplacement",
             "etat",
             "proprietaire",
+            "references_palissy",
             "organisme",
             "lien_reference",
             "resume",
@@ -24,12 +25,19 @@ class OrgueGeneralInfoForm(forms.ModelForm):
             'commentaire_admin': forms.Textarea(attrs={'rows': 2, 'cols': 15}),
         }
 
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super().__init__(*args, **kwargs)
+        if not self.request.user.has_perm('orgues.edition_avancee'):
+            self.fields['edifice'].disabled = True
+            self.fields['edifice'].help_text = 'Cette information est figée'
 
 INSTRUMENTALE_COLUMNS = {
     "transmission_notes": 6,
     "transmission_commentaire": 6,
     "tirage_jeux": 6,
     "tirage_commentaire": 6,
+    "temperament":12,
     "diapason": 4,
     "sommiers": 12,
     "soufflerie": 12,
@@ -57,9 +65,12 @@ class OrgueLocalisationForm(forms.ModelForm):
         fields = LOCALISATION_COLUMNS.keys()
 
     def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
         super().__init__(*args, **kwargs)
-        for field in self.fields:
-            self.fields[field].widget.attrs['columns'] = LOCALISATION_COLUMNS[field]
+        if not self.request.user.has_perm('orgues.edition_avancee'):
+            for field in ['commune','code_insee','code_departement','departement','region']:
+                self.fields[field].disabled = True
+                self.fields[field].help_text = 'Cette information est figée'
 
 
 class OrgueInstrumentaleForm(forms.ModelForm):
@@ -74,10 +85,10 @@ class OrgueInstrumentaleForm(forms.ModelForm):
             'commentaire_tuyauterie': forms.Textarea(attrs={'rows': 6, 'cols': 15}),
         }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field in self.fields:
-            self.fields[field].widget.attrs['columns'] = INSTRUMENTALE_COLUMNS[field]
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     for field in self.fields:
+    #         self.fields[field].widget.attrs['columns'] = INSTRUMENTALE_COLUMNS[field]
 
 
 class OrgueCompositionForm(forms.ModelForm):
@@ -148,7 +159,7 @@ class FichierForm(forms.ModelForm):
 class ImageForm(forms.ModelForm):
     class Meta:
         model = Image
-        fields = ["image", "credit"]
+        fields = ["image", "legende", "credit"]
 
 
 class SourceForm(forms.ModelForm):

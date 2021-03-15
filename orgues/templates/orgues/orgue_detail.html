@@ -4,8 +4,8 @@
 {% block head_extra %}
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
-        integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
-        crossorigin=""/>
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin=""/>
 {% endblock %}
 
 {% block content %}
@@ -18,9 +18,9 @@
             {{ orgue.edifice|capfirst }} <br>
           </h2>
           <h4 class="text-muted">
-            {{ orgue.commune }} ({{ orgue.departement }})
+            {{ orgue.commune }}{% if orgue.ancienne_commune %} (anciennement {{ orgue.ancienne_commune }}){% endif %}, {{ orgue.departement }}
             <small>
-              | {{ orgue.designation }}
+              | {{ orgue.designation|default_if_none:"Orgue" }}
             </small>
           </h4>
         </div>
@@ -33,15 +33,31 @@
               <div class="row">
                 <div class="col-md-12 order-md-1 py-20">
                   <h2 class="titre-fiche">Composition</h2>
-                  <div class="row">
-                    {% for clavier in claviers %}
-                      {% include 'orgues/clavier_detail.html' %}
-                    {% empty %}
-                      <div class="col-12">
-                        <p class="text-muted">Aucun clavier</p>
+
+                  {% if claviers.count %}
+                    <h4>
+                        {% if claviers.count <= 1 %}
+                            {{ claviers.count }} plan sonore
+                        {% else %}
+                            {{ claviers.count }} plans sonores
+                        {% endif %}
+                      <small>(glisser vers la droite)</small>
+                    </h4>
+                    <div id="claviers" class="row flew-row flex-nowrap">
+                      {% for clavier in claviers %}
+                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
+                        {% include 'orgues/clavier_detail.html' %}
+                        </div>
+                      {% endfor %}
+                    </div>
+                      <div id="accessoires">
+                      {% for accessoire in accessoires %}
+                          {{ accessoire.all|join:', ' }}
+                      {% endfor %}
                       </div>
-                    {% endfor %}
-                  </div>
+                  {% else %}
+                    <p class="text-muted">Aucun clavier</p>
+                  {% endif %}
                   <h2 class="titre-fiche">Frise chronologique</h2>
                   {% if evenements.count %}
                     <div id='timeline-embed' style="width: 100%; height: 400px"></div>
@@ -50,7 +66,7 @@
                   {% endif %}
                   <hr>
                   <h2 class="titre-fiche">Description</h2>
-                  <div id="resume"></div>
+                  <div id="resume">{{ orgue.resume|safe }}</div>
                   <p class="soustitre-fiche">Buffet</p>
                   {% if orgue.buffet %}
                     <div id="buffet">{{ orgue.buffet|safe }}</div>
@@ -70,26 +86,60 @@
                   {% else %}
                     <p class="text-muted">Pas de description</p>
                   {% endif %}
-                  <p class="soustitre-fiche">Soufflerie</p>
+                  <p class="soustitre-fiche">Transmission</p>
+                  <div id="transmission">
+                    <p>
+                      {{ orgue.get_transmission_notes_display|default_if_none:"Non définie" }}. {% if orgue.transmission_commentaire %}{{ orgue.transmission_commentaire }} {% endif %}
+                    </p>
+                  </div>
+                  <p class="soustitre-fiche">Tirage des jeux</p>
+                  <div id="tirage">
+                    <p>
+                      {{ orgue.get_tirage_jeux_display|default_if_none:"Non défini" }}. {% if orgue.tirage_commentaire %}{{ orgue.tirage_commentaire }} {% endif %}
+                    </p>
+                  </div>
+                  {% if orgue.temperament %}
+                    <p class="soustitre-fiche">Tempérament</p>
+                    <div id="temperament">
+                      <p>
+                        {{ orgue.temperament }}
+                      </p>
+                    </div>
+                  {% endif %}
+                  {% if orgue.diapason %}
+                    <p class="soustitre-fiche">Diapason</p>
+                    <div id="diapason">
+                      <p>
+                        {{ orgue.diapason }}
+                      </p>
+                    </div>
+                  {% endif %}
                   {% if orgue.soufflerie %}
-                    <div id="soufflerie">{{ orgue.soufflerie|safe }}</div>
-                  {% else %}
-                    <p class="text-muted">Pas de description</p>
+                    <p class="soustitre-fiche">Soufflerie</p>
+                    <div id="soufflerie">
+                      {{ orgue.soufflerie|safe }}
+                    </div>
+                  {% endif %}
+                  {% if orgue.commentaire_tuyauterie %}
+                    <p class="soustitre-fiche">Commentaire tuyauterie</p>
+                    <div id="tuyauterie">
+                      {{ orgue.commentaire_tuyauterie|safe }}
+                    </div>
                   {% endif %}
                   {% if orgue.images.count %}
                     <h2 class="titre-fiche">Images</h2>
                     <div class="row">
                       {% for image in orgue.images.all %}
 
-                        <div class="col-lg-4">
+                        <div class="col-lg-4" style="padding: 0 10px;">
                           <div class="grid-item">
                             <div class="grid-item-wrap">
-                              <div class="grid-image"><img alt="Image Lightbox" src="{{ image.vignette.url }}"/>
+                              <div class="grid-image"><img alt="Image Lightbox" src="{{ image.thumbnail.url }}"/>
                               </div>
                               <div class="grid-description">
-                                <a title="{% if image.credit %}Crédit : {{ image.credit }}{% endif %}"
-                                   data-lightbox="gallery-image" href="{{ image.image.url }}"
-                                   class="btn btn-light btn-rounded">+</a>
+                                <a title="{% if image.legende %}{{ image.legende }}{% endif %} {% if image.credit %}Crédit : {{ image.credit }}{% endif %}"
+                                    data-lightbox="gallery-image" href="{{ image.image.url }}"
+                                    class="btn btn-light btn-rounded">+</a>
                               </div>
                             </div>
                           </div>
@@ -125,7 +175,7 @@
                         <li>
                           {% if source.lien %}
                             <a href="{{ source.lien }}" target="_blank"
-                               rel="noopener noreferrer">{{ source.description }} ({{ source.type }})</a>
+                                rel="noopener noreferrer">{{ source.description }} ({{ source.type }})</a>
                           {% else %}
                             {{ source.description }} ({{ source.type }})
                           {% endif %}
@@ -148,15 +198,18 @@
               <dl>
                 <dt>Facteurs</dt>
                 <dd>
-                  {% for evenement in facteurs_evenements %}
-                    <span>{{ evenement.facteurs.all|join:' & ' }} ({{ evenement.type }} - {{ evenement.annee }})</span>
-                    {% if not forloop.last %},{% endif %}
-                  {% empty %}
+                  {% if facteurs_evenements %}
+                    <ul>
+                      {% for evenement in facteurs_evenements %}
+                        <li>{{ evenement.facteurs.all|join:' & ' }} ({{ evenement.type }} - {{ evenement.annee }})</li>
+                      {% endfor %}
+                    </ul>
+                  {% else %}
                     Pas d'information
-                  {% endfor %}
+                  {% endif %}
                 </dd>
                 <dt>Emplacement</dt>
-                <dd>{{ orgue.get_emplacement_display|default_if_none:"Non définie" }}</dd>
+                <dd>{{ orgue.emplacement|default_if_none:"Non défini" }}</dd>
                 <dt>Etat de l'instrument</dt>
                 <dd>{{ orgue.get_etat_display|default_if_none:"Non défini" }}</dd>
                 <hr>
@@ -164,8 +217,6 @@
                 <dd>
                   {{ orgue.resume_composition }}
                 </dd>
-                <dt>Boîte expressive</dt>
-                <dd>{% if orgue.is_expressif %}Oui{% else %}Non{% endif %}</dd>
                 <dt>Transmission des notes</dt>
                 <dd>{{ orgue.get_transmission_notes_display |default_if_none:"Non définie" }}</dd>
                 <dt>Tirage des jeux</dt>
@@ -183,7 +234,7 @@
                   <dt>Lien de référence</dt>
                   <dd>
                     <a href="{{ orgue.lien_reference }}" target="_blank"
-                       rel="noopener noreferrer">{{ orgue.lien_reference|truncatechars:40 }}</a>
+                        rel="noopener noreferrer">{{ orgue.lien_reference|truncatechars:40 }}</a>
                   </dd>
                 {% endif %}
               </dl>
@@ -191,15 +242,11 @@
               {% if orgue.liens_pop %}
                 <dt>Inscription ou classement</dt>
                 <dd>
-                  <ul>
-                    {% for lien in orgue.liens_pop %}
-                      <li>
-                        <a href="{{ lien.href }}" target="_blank" rel="noopener noreferrer">{{ lien.title }}</a>
-                      </li>
-                    {% endfor %}
-                  </ul>
+                  {% for lien in orgue.liens_pop %}
+                    <a href="{{ lien.href }}" target="_blank" rel="noopener noreferrer">{{ lien.title }}</a> <br>
+                  {% endfor %}
                 </dd>
-                <img src="{% static "img/MH3B_simplifiee_NOIR_ET_BLANC.png" %}" class="img-fluid mb-3" alt="">
+                <img src="{% static "img/MH3A_simplifiee_RVB.png" %}" class="img-fluid mb-3" alt="">
               {% endif %}
               {% if orgue.latitude and orgue.longitude %}
                 <div id="mapid" style="height:150px;margin-bottom:10px"></div>
@@ -221,7 +268,7 @@
 
   <!-- 1 -->
   <link title="timeline-styles" rel="stylesheet"
-        href="https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css">
+      href="https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css">
 
 
   <!-- 2 -->
@@ -230,48 +277,48 @@
   {% if evenements.count %}
     <!-- 3 -->
     <script type="text/javascript">
-        // The TL.Timeline constructor takes at least two arguments:
-        // the id of the Timeline container (no '#'), and
-        // the URL to your JSON data file or Google spreadsheet.
-        // the id must refer to an element "above" this code,
-        // and the element must have CSS styling to give it width and height
-        // optionally, a third argument with configuration options can be passed.
-        // See below for more about options.
-        var timeline_json = {
+      // The TL.Timeline constructor takes at least two arguments:
+      // the id of the Timeline container (no '#'), and
+      // the URL to your JSON data file or Google spreadsheet.
+      // the id must refer to an element "above" this code,
+      // and the element must have CSS styling to give it width and height
+      // optionally, a third argument with configuration options can be passed.
+      // See below for more about options.
+      var timeline_json = {
 
-            "events": [
-                {% for evenement in evenements %}
-                    {
-                        "start_date": {"year": "{{evenement.annee}}"},
-                        "text": {
-                            "headline": "<b>{{ evenement.get_type_display }}</b>",
-                            "text": "{% if evenement.resume %}{{ evenement.resume|safe|escapejs}}{% endif %}"
-                        }
-                    },
-                {% endfor %}
-            ]
-        };
+        "events": [
+          {% for evenement in evenements %}
+            {
+              "start_date": {"year": "{{evenement.annee}}"},
+              "text": {
+                "headline": "<b>{{ evenement.get_type_display }}</b>",
+                "text": "{% if evenement.resume %}{{ evenement.resume|linebreaksbr|safe|escapejs}}{% endif %}{% if evenement.facteurs.count %}<p>Facteur(s) : {{ evenement.facteurs.all|join:', ' }}</p>{% endif %}"
+              }
+            },
+          {% endfor %}
+        ]
+      };
 
-        var additionalOptions = {
-            timenav_height: 130,
-            timenav_height_min: 60
-        }
-        new TL.Timeline('timeline-embed', timeline_json, additionalOptions);
+      var additionalOptions = {
+        timenav_height: 130,
+        timenav_height_min: 60
+      }
+      new TL.Timeline('timeline-embed', timeline_json, additionalOptions);
     </script>
   {% endif %}
   {% if orgue.latitude and orgue.longitude %}
     <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
-            integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
-            crossorigin=""></script>
+        integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+        crossorigin=""></script>
     <script>
-        var mymap = L.map('mapid', {
-            scrollWheelZoom: false,
-        }).setView([{{ object.latitude|safe }}, {{ object.longitude|safe }}], 15);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(mymap);
+      var mymap = L.map('mapid', {
+        scrollWheelZoom: false,
+      }).setView([{{ object.latitude|safe }}, {{ object.longitude|safe }}], 15);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(mymap);
 
-        var marker = L.marker([{{ object.latitude|safe }}, {{ object.longitude|safe }}]).addTo(mymap);
+      var marker = L.marker([{{ object.latitude|safe }}, {{ object.longitude|safe }}]).addTo(mymap);
     </script>
   {% endif %}
 

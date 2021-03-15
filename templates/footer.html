@@ -21,6 +21,18 @@
         <div class="col-lg-2 mt-4">
           <img src="{% static 'img/FFAO.png' %}" alt="" style="width:160px;">
         </div>
+        <div class="col-lg-2 mt-4">
+          <img src="{% static 'img/logo_OPL.png' %}" alt="" style="width:240px;">
+        </div>
+        <div class="col-lg-2 mt-4">
+          <img src="{% static 'img/logo_bretagne.png' %}" alt="" style="width:160px;">
+        </div>
+        <div class="col-lg-2 mt-4">
+          <img src="{% static 'img/logo_CVL.png' %}" alt="" style="width:160px;">
+        </div>
+        <div class="col-lg-2 mt-4">
+          <img src="{% static 'img/logo_bourgogne.png' %}" alt="" style="width:160px;">
+        </div>
       </div>
     </div>
   </div>
@@ -36,6 +48,11 @@
               <li>
                 <a href="{% url 'accueil' %}">Accueil</a>
               </li>
+              {% if user.is_staff %}
+              <li>
+                <a href="{% url 'accounts:access-logs' %}">Logs</a>
+              </li>
+              {% endif %}
               <li>
                 <a href="{% url 'orgues:orgue-carte' %}">Carte</a>
               </li>
@@ -53,16 +70,11 @@
         </div>
         <div class="col-lg-3 mt-4">
           <div class="widget">
-            <div class="widget-title">Participer</div>
+            <div class="widget-title">Contribuer</div>
             {% if request.user.is_authenticated %}
               Vous êtes connecté(e) en temps que "{{ request.user }}"
             {% endif %}
             <ul class="list">
-              {% if request.user.is_authenticated %}
-                <li>
-                  <a href="{% url 'orgues:search-log' %}">Historique des recherches</a>
-                </li>
-              {% endif %}
               <li>
                 {% if request.user.is_authenticated %}
                   <a href="{% url 'logout' %}">Déconnexion</a>
@@ -71,7 +83,32 @@
                 {% endif %}
               </li>
               <li>
-                <a class="" href="https://docs.inventaire-des-orgues.fr">Aide</a>
+                <a class="" href="https://docs.inventaire-des-orgues.fr" target="_blank" rel="noopener noreferrer">Aide</a>
+              </li>
+              <li>
+                <a href="https://docs.inventaire-des-orgues.fr/charte-du-contributeur/">Charte du contributeur</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-lg-3 mt-4">
+          <div class="widget">
+            <div class="widget-title">Développer</div>
+            <ul class="list">
+              <li>
+                <a href="https://github.com/inventaire-des-orgues/portail/projects/1" target="_blank" rel="noopener noreferrer">Projet Github du portail</a>
+              </li>
+              <li>
+                <a href="https://github.com/inventaire-des-orgues/portail/issues">Tickets Github du portail</a>
+              </li>
+              <li>
+                <a href="https://github.com/orgs/inventaire-des-orgues/projects/1">Projet Inventaire sur Github</a>
+              </li>
+                <li>
+                <a href="https://github.com/inventaire-des-orgues/docs/issues">Tickets Github de la doc</a>
+              </li>
+                <li>
+                <a href="https://github.com/inventaire-des-orgues/indexes/issues">Tickets Github des données</a>
               </li>
             </ul>
           </div>
@@ -83,8 +120,8 @@
   </div>
   <div class="copyright-content">
     <div class="container">
-      <div class="copyright-text text-center text-light">© 2020 Inventaire des orgues - Tous droits réservés - Développement :
-        <a href="https://fabdev.fr">FABDEV</a> - Design : Guillaume Lechevalier-Boissel & FABDEV
+      <div class="copyright-text text-center text-light">Inventaire des orgues - <a href="https://docs.inventaire-des-orgues.fr/mentions-legales/" target="_blank" rel="noopener noreferrer">Mentions légales</a> - Développement :
+        <a href="https://fabdev.fr" target="_blank" rel="noopener noreferrer">FABDEV</a> et contributeurs - Design : Guillaume Lechevalier-Boissel & FABDEV - <a href="https://github.com/inventaire-des-orgues/portail" target="_blank" rel="noopener noreferrer">Code source</a>
       </div>
     </div>
   </div>

@@ -22,7 +22,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-light" data-dismiss="modal">Annuler</button>
-          <button type="submit" class="btn btn-primary">Enregister</button>
+          <button type="submit" class="btn btn-primary">Enregistrer</button>
         </div>
       </form>
     </div>
@@ -61,9 +61,17 @@
       return markup;
     },
     language: {
-      noResults: function () {
+       {% if perms.orgues.add_typejeu %}
+        noResults: function () {
         return "Aucun jeu trouvé ...  <a href='javascript:openjeumodal()'>cliquez ici</a> pour en créer un nouveau";
       }
+    {% else %}
+        noResults: function () {
+          return "Aucun jeu trouvé ... contactez-nous si vous souhaitez ajouter un nouveau jeu.";
+        }
+
+    {% endif %}
+
     },
     width: '100%'
   });

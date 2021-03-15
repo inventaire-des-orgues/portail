@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+
+{% block head_extra %}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4-4.1.1/dt-1.10.24/datatables.min.css"/>
+
+{% endblock %}
+{% block content %}
+  <div class="container py-50">
+    <h2>
+      Log des requêtes
+    </h2>
+    <p>A chaque fois qu'un utilisateur affiche une page, une ligne de log est ajoutée.</p>
+    <div class="card">
+      <!-- /.card-header -->
+      <div class="card-body p-0">
+        <table class="table" id="logtable">
+          <thead>
+          <tr>
+            <th>Date</th>
+            <th>Utilisateur</th>
+            <th>Methode</th>
+            <th>Url</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for access_log in access_logs %}
+            <tr>
+              <td>{{ access_log.0 }}</td>
+              <td>{{ access_log.2 }}</td>
+              <td>{{ access_log.3 }}</td>
+              <td><a href="{{ access_log.4 }}">{{ access_log.4 }}</a></td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <!-- /.card-body -->
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block js_extra %}
+
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4-4.1.1/dt-1.10.24/datatables.min.js"></script>
+
+  <script>
+    $(document).ready(function () {
+      $('#logtable').DataTable({
+        paging: false,
+        "order": [0, "desc" ]
+      });
+    });
+  </script>
+{% endblock %}

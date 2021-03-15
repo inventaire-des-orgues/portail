@@ -1,4 +1,4 @@
-<div class="col-md-4 clavier">
+<div class="clavier">
   <div class="card">
     <div class="card-header p-3 bg-light">
       <h4 class="my-0">{{ clavier.type }} {% if clavier.is_expressif %}expressif {% endif %}</h4>
@@ -17,7 +17,7 @@
     </ul>
     {% if editable %}
       <div class="card-footer bg-transparent">
-        <a href="{% url 'orgues:clavier-update' clavier.pk %}" class="btn btn-xs btn-outline editer_clavier">Editer</a>
+        <a href="{% url 'orgues:clavier-update' clavier.pk %}" class="btn btn-xs btn-outline editer_clavier">Modifier</a>
         <a href="{% url 'orgues:clavier-delete' clavier.pk %}" class="btn btn-xs btn-outline btn-danger supprimer_clavier">Supprimer</a>
       </div>
     {% endif %}

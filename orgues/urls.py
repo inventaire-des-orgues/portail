@@ -5,6 +5,8 @@ import orgues.views as v
 app_name = 'orgues'
 urlpatterns = [
     path('orgues/', v.OrgueList.as_view(), name='orgue-list'),
+    path('orgues/csv/', v.OrgueExport.as_view(), name='orgue-csv'),
+    path('recherche/', v.OrgueSearch.as_view(), name='orgue-search'),
     path('liste.json', v.OrgueListJS.as_view(), name='orgue-list-js'),
     path('etats.json', v.OrgueEtatsJS.as_view(), name='orgue-etats-js'),
     path('carte/', v.OrgueCarte.as_view(), name='orgue-carte'),
@@ -17,6 +19,7 @@ urlpatterns = [
     path('edition/<uuid:orgue_uuid>/', v.OrgueUpdate.as_view(), name='orgue-update'),
     path('edition/instrumentale/<uuid:orgue_uuid>/', v.OrgueUpdateInstrumentale.as_view(), name='orgue-update-instrumentale'),
     path('edition/composition/<uuid:orgue_uuid>/', v.OrgueUpdateComposition.as_view(), name='orgue-update-composition'),
+    path('edition/avancement/<uuid:orgue_uuid>/', v.OrgueDetailAvancement.as_view(), name='orgue-detail-avancement'),
     path('edition/buffet/<uuid:orgue_uuid>/', v.OrgueUpdateBuffet.as_view(), name='orgue-update-buffet'),
     path('edition/localisation/<uuid:orgue_uuid>/', v.OrgueUpdateLocalisation.as_view(), name='orgue-update-localisation'),
     path('suppression/<uuid:orgue_uuid>/', v.OrgueDelete.as_view(), name='orgue-delete'),
@@ -49,8 +52,9 @@ urlpatterns = [
     # images
     path('images/<uuid:orgue_uuid>/', v.ImageList.as_view(), name='image-list'),
     path('images/creation/<uuid:orgue_uuid>/', v.ImageCreate.as_view(), name='image-create'),
+    path('images/update/<int:pk>/', v.ImageUpdate.as_view(), name='image-update'),
     path('images/suppression/<int:pk>/', v.ImageDelete.as_view(), name='image-delete'),
-    path('images/principale/<int:pk>/', v.ImageUpdate.as_view(), name='image-principale'),
+    path('images/principale/<int:pk>/', v.ImagePrincipaleUpdate.as_view(), name='image-principale'),
 
     # Sources
     path('sources/<uuid:orgue_uuid>/', v.SourceList.as_view(), name='source-list'),

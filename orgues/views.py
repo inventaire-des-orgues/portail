@@ -2,12 +2,14 @@ import csv
 import logging
 import os
 from collections import Counter, deque
+from datetime import datetime
 
+import meilisearch
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count, Q, Prefetch
 from django.forms import modelformset_factory
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy, reverse
 from django.utils.text import slugify
@@ -15,76 +17,59 @@ from django.views.generic import ListView, DetailView, TemplateView
 from django.views.generic.base import View
 
 import orgues.forms as orgue_forms
-from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdateView, FabView, FabCreateViewJS
-from orgues.api.serializers import OrgueSerializer
+from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdateView, FabView, FabCreateViewJS, \
+    FabDetailView
+from orgues.api.serializers import OrgueSerializer, OrgueResumeSerializer
 from project import settings
 from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source
 
+from django.db.models.functions import Lower
+logger = logging.getLogger("fabaccess")
 
-class OrgueList(LoginRequiredMixin, ListView):
+
+class OrgueList(TemplateView):
     """
     Listing des orgues
     """
-    model = Orgue
-    paginate_by = 20
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        departement = self.request.GET.get("departement")
-        commune = self.request.GET.get("commune")
-        edifice = self.request.GET.get("edifice")
-        facteur_pk = self.request.GET.get("facteur")
-
-        if departement:
-            self.selected_departement, code_departement = departement.split("|")
-        else:
-            self.selected_departement = None
-            code_departement = None
-        if commune:
-            self.selected_commune, code_insee = commune.split("|")
-        else:
-            self.selected_commune = None
-            code_insee = None
-        if facteur_pk:
-            self.facteur = Facteur.objects.get(pk=facteur_pk)
-            queryset = queryset.filter(facteurs=self.facteur)
-        else:
-            self.facteur = None
-        if code_departement:
-            queryset = queryset.filter(code_departement=code_departement)
-        if code_insee:
-            queryset = queryset.filter(code_insee=code_insee)
-        if edifice:
-            terms = [slugify(term) for term in edifice.split(" ") if term]
-            query = Q()
-            for term in terms:
-                query = query & Q(keywords__icontains=term)
-            queryset = queryset.filter(query)
-
-        queryset = queryset.annotate(clavier_count=Count('claviers'))
-
-        if departement or commune or edifice or self.facteur:
-            # log search
-            logger = logging.getLogger("search")
-            logger.info(
-                f"{self.request.user};{self.selected_departement};{self.selected_commune};{edifice};{self.facteur}".replace(
-                    "None", ""))
-
-        return queryset.order_by('-completion').prefetch_related(
-            Prefetch('facteurs'),
-            Prefetch("images", queryset=Image.objects.filter(is_principale=True))
-
-        )
+    template_name = "orgues/orgue_list.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context["selected_commune"] = self.selected_commune
-        context["selected_departement"] = self.selected_departement
-        context["facteur"] = self.facteur
+        context["departements"] = [d[0] for d in Orgue.CHOIX_DEPARTEMENT]
+        context["departement"] = self.request.GET.get("departement")
+        context["query"] = self.request.GET.get("query")
+        context["limit"] = self.request.GET.get("limit")
+        context["page"] = self.request.GET.get("page")
         return context
 
 
-class OrgueCarte(LoginRequiredMixin, TemplateView):
+class OrgueSearch(View):
+    paginate_by = 20
+
+    def post(self, request, *args, **kwargs):
+        page = request.POST.get('page', 1)
+        try:
+            client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
+            index = client.get_index(uid='orgues')
+        except:
+            return JsonResponse({'message': 'Le moteur de recherche est mal configuré'}, status=500)
+        query = request.POST.get('query', '')
+        try:
+            offset = (int(page) - 1) * self.paginate_by
+        except:
+            offset = 0
+        if not query:
+            query = None
+        departement = request.POST.get('departement', '')
+        options = {'attributesToHighlight': ['*'], 'offset': offset, 'limit': self.paginate_by}
+        if departement:
+            options['facetFilters'] = ['departement:{}'.format(departement)]
+        results = index.search(query, options)
+        results['pages'] = 1 + results['nbHits'] // self.paginate_by
+        return JsonResponse(results)
+
+
+class OrgueCarte(TemplateView):
     """
     Cartographie des orgues (gérée par Leaflet)
     """
@@ -97,7 +82,7 @@ class OrgueListJS(View):
     """
 
     def get(self, request, *args, **kwargs):
-        data = Orgue.objects.filter(latitude__isnull=False).values("pk", "slug", "commune", "edifice", "latitude",
+        data = Orgue.objects.filter(latitude__isnull=False).values("slug", "commune", "edifice", "latitude",
                                                                    "longitude", 'emplacement', "references_palissy")
         return JsonResponse(list(data), safe=False)
 
@@ -122,7 +107,7 @@ class OrgueEtatsJS(View):
         return JsonResponse(etats, safe=False)
 
 
-class OrgueDetail(LoginRequiredMixin, DetailView):
+class OrgueDetail(DetailView):
     """
     Vue de détail (lecture seule) d'un orgue
     """
@@ -131,7 +116,14 @@ class OrgueDetail(LoginRequiredMixin, DetailView):
     slug_url_kwarg = 'slug'
 
     def get_object(self, queryset=None):
-        return Orgue.objects.filter(Q(slug=self.kwargs['slug']) | Q(codification=self.kwargs['slug'])).first()
+
+        logger.info("{user};{method};{get_full_path};200".format(user=self.request.user,
+                                                                 method=self.request.method,
+                                                                 get_full_path=self.request.META.get('HTTP_REFERER')))
+        orgue = Orgue.objects.filter(Q(slug=self.kwargs['slug']) | Q(codification=self.kwargs['slug'])).first()
+        if not orgue:
+            raise Http404
+        return orgue
 
     def render_to_response(self, context, **response_kwargs):
         if self.request.GET.get("format") == "json":
@@ -144,8 +136,7 @@ class OrgueDetail(LoginRequiredMixin, DetailView):
         context = super().get_context_data()
         context["claviers"] = self.object.claviers.all().prefetch_related('type', 'jeux', 'jeux__type')
         context["evenements"] = self.object.evenements.all().prefetch_related('facteurs')
-        context["facteurs_evenements"] = self.object.evenements.filter(facteurs__isnull=False).prefetch_related(
-            'facteurs')
+        context["facteurs_evenements"] = self.object.evenements.filter(facteurs__isnull=False).prefetch_related('facteurs').distinct()
         return context
 
 
@@ -174,16 +165,11 @@ class OrgueCreate(FabCreateView):
         return super().form_valid(form)
 
 
-class OrgueUpdate(FabUpdateView):
-    """
-    Mise à jour des informations générales d'un orgue
-    """
+class OrgueUpdateMixin(FabUpdateView):
     model = Orgue
     slug_field = 'uuid'
     slug_url_kwarg = 'orgue_uuid'
     permission_required = 'orgues.change_orgue'
-    form_class = orgue_forms.OrgueGeneralInfoForm
-    success_message = 'Informations générales mises à jour !'
 
     def form_valid(self, form):
         form.instance.updated_by_user = self.request.user
@@ -198,7 +184,34 @@ class OrgueUpdate(FabUpdateView):
         return context
 
 
-class OrgueUpdateInstrumentale(OrgueUpdate):
+class OrgueDetailAvancement(FabDetailView):
+    model = Orgue
+    slug_field = 'uuid'
+    slug_url_kwarg = 'orgue_uuid'
+    permission_required = 'orgues.change_orgue'
+    template_name = "orgues/orgue_detail_avancement.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        self.object.save()  # on recalcule l'avancement pour être sûr
+        context["orgue"] = self.object
+        return context
+
+
+class OrgueUpdate(OrgueUpdateMixin, FabUpdateView):
+    """
+    Mise à jour des informations générales d'un orgue
+    """
+    form_class = orgue_forms.OrgueGeneralInfoForm
+    success_message = 'Informations générales mises à jour !'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
+
+class OrgueUpdateInstrumentale(OrgueUpdateMixin):
     form_class = orgue_forms.OrgueInstrumentaleForm
     success_message = 'Tuyauterie mise à jour, merci !'
     template_name = "orgues/orgue_form_instrumentale.html"
@@ -208,10 +221,11 @@ class OrgueUpdateInstrumentale(OrgueUpdate):
         return self.request.POST.get("next", success_url)
 
 
-class OrgueUpdateComposition(OrgueUpdate):
+class OrgueUpdateComposition(OrgueUpdateMixin):
     model = Orgue
     form_class = orgue_forms.OrgueCompositionForm
     template_name = "orgues/orgue_form_composition.html"
+    success_message = 'Composition mise à jour, merci !'
 
     def get_object(self, queryset=None):
         object = super().get_object()
@@ -224,21 +238,27 @@ class OrgueUpdateComposition(OrgueUpdate):
         return self.request.POST.get("next", success_url)
 
 
-class OrgueUpdateBuffet(OrgueUpdate):
+class OrgueUpdateBuffet(OrgueUpdateMixin):
     model = Orgue
     form_class = orgue_forms.OrgueBuffetForm
     template_name = "orgues/orgue_form_buffet.html"
+    success_message = 'Buffet mis à jour, merci !'
 
     def get_success_url(self):
         success_url = reverse('orgues:orgue-update-buffet', args=(self.object.uuid,))
         return self.request.POST.get("next", success_url)
 
 
-class OrgueUpdateLocalisation(OrgueUpdate):
+class OrgueUpdateLocalisation(OrgueUpdateMixin):
     form_class = orgue_forms.OrgueLocalisationForm
     permission_required = "orgues.change_localisation"
     success_message = 'Localisation mise à jour, merci !'
     template_name = "orgues/orgue_form_localisation.html"
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
     def get_success_url(self):
         success_url = reverse('orgues:orgue-update-localisation', args=(self.object.uuid,))
@@ -316,7 +336,7 @@ class TypeJeuListJS(FabListView):
         query = self.request.GET.get("q")
         if query:
             queryset = queryset.filter(nom__icontains=query)
-        return queryset.order_by('-claviers_count')
+        return queryset.order_by(Lower('nom'))
 
     def render_to_response(self, context, **response_kwargs):
         results = []
@@ -608,7 +628,7 @@ class ImageDelete(FabDeleteView):
         return reverse('orgues:image-list', args=(self.object.orgue.uuid,))
 
 
-class ImageUpdate(FabUpdateView):
+class ImagePrincipaleUpdate(FabUpdateView):
     """
     Rognage de l'image principale d'un orgue dans le but de créer une vignette (utilise ajax et cropper.js)
     """
@@ -616,6 +636,7 @@ class ImageUpdate(FabUpdateView):
     fields = ['thumbnail_principale']
     permission_required = "orgues.change_image"
     success_message = "Vignette mise à jour, merci !"
+    template_name = "orgues/image_principale_form.html"
 
     def form_valid(self, form):
         old_path = None
@@ -642,12 +663,30 @@ class ImageUpdate(FabUpdateView):
         return context
 
 
+class ImageUpdate(FabUpdateView):
+    """
+    Modification de la légende ou du crédit d'une image
+    """
+    model = Image
+    fields = ['credit', 'legende']
+    permission_required = "orgues.change_image"
+    success_message = "Informations mises à jour, merci"
+
+    def get_success_url(self):
+        return reverse('orgues:image-list', args=(self.object.orgue.uuid,))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["orgue"] = self.object.orgue
+        return context
+
+
 class SourceList(FabListView):
     """
     Voir et éditer la liste des sources
     """
     model = Source
-    permission_required = "orgues.add_source"
+    permission_required = "orgues.view_source"
 
     def get_queryset(self):
         self.orgue = get_object_or_404(Orgue, uuid=self.kwargs["orgue_uuid"])
@@ -729,3 +768,37 @@ class SearchLogView(LoginRequiredMixin, TemplateView):
 
 class ConseilsFicheView(TemplateView):
     template_name = 'orgues/conseils_fiche.html'
+
+
+
+class OrgueExport(FabView):
+    permission_required = 'orgues.add_orgue'
+
+    def get(self,request,*args,**kwargs):
+        response = HttpResponse(content_type='text/csv')
+        response.write(u'\ufeff'.encode('utf8'))
+        response['Content-Disposition'] = 'attachment;filename=orgues-de-France_{}.csv'.format(
+            datetime.today().strftime("%Y-%m-%d"))
+        columns = [
+            "codification",
+            "code_departement",
+            "departement",
+            "code_insee",
+            "commune",
+            "ancienne_commune",
+            "designation",
+            "edifice",
+            "references_palissy",
+            "etat",
+            "emplacement",
+            "completion",
+            "resume_composition",
+        ]
+        writer = csv.DictWriter(response, delimiter=';',fieldnames=columns)
+
+        # header from verbose_names
+        writer.writerow({column:Orgue._meta.get_field(column).verbose_name for column in columns})
+        # data
+        writer.writerows(Orgue.objects.values(*columns))
+
+        return response
