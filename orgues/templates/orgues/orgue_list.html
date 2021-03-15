@@ -135,7 +135,8 @@
         },
       },
       methods: {
-        fetchData: function () {
+        fetchData: function (scrolltop) {
+          var scrolltop = scrolltop || false;
           var self = this;
           var query = self.query
           var departement = self.departement
@@ -156,7 +157,7 @@
               self.orgues = results.hits
               self.hits = results.nbHits
               self.pages = results.pages
-              window.scrollTo(0,0)
+              if (scrolltop) window.scrollTo(0,0);
               var pageUrl = '?page=' + self.page;
               if (self.departement) {
                 pageUrl += '&departement=' + self.departement
@@ -173,14 +174,14 @@
             return
           }
           this.page -=1;
-          this.fetchData();
+          this.fetchData(true);
         },
         next_page: function(){
           if (this.page >= this.pages) {
             return
           }
           this.page +=1;
-          this.fetchData();
+          this.fetchData(true);
         },
         select: function (orgue) {
           window.location.href = orgue.url;
