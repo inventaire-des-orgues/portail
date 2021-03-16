@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+  <div class="container py-3">
+    <canvas id="bar-chart" width="800" height="450"></canvas>
+    <table class="table" id="lexique">
+      <thead>
+      <tr>
+        <th>Département</th>
+        <th>Avancement moyen</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for departement in departements %}
+        <tr>
+          <td>{{ departement.code_departement }}</td>
+          <td>{{ departement.avg_completion }} %</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
+
+
+{% block js_extra %}
+
+{% endblock %}
