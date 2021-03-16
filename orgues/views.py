@@ -47,6 +47,7 @@ class OrgueSearch(View):
     paginate_by = 20
 
     def post(self, request, *args, **kwargs):
+        request.session['orgues_url'] = "{}{}".format(reverse('orgues:orgue-list'),request.POST.get('pageUrl'))
         page = request.POST.get('page', 1)
         try:
             client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
