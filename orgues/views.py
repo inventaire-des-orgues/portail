@@ -820,7 +820,7 @@ class Dashboard(FabView):
         columns = ['departement', 'region', 'modified_date', 'updated_by_user__first_name',
                    'updated_by_user__last_name', 'completion']
         df = pd.DataFrame(Orgue.objects.values(*columns), columns=columns)
-        df["user"] = df["updated_by_user__first_name"] + df["updated_by_user__last_name"]
+        df["user"] = df["updated_by_user__first_name"] + " " + df["updated_by_user__last_name"]
 
         # stats générales
         context["users_count"] = User.objects.count()
