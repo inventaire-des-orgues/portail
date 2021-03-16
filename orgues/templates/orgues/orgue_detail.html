@@ -257,6 +257,7 @@
             <a href="{% url 'orgues:orgue-update' object.uuid %}" class="btn btn-primary  btn-block">
               <i class="fa fa-edit"></i> Compléter la fiche
             </a>
+          <small class="text-justify">Modifié le {{ orgue.modified_date|date:'d/m/Y' }} par {{ orgue.updated_by_user }}</small>
           </div>
         </div>
       </div>
