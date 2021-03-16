@@ -306,6 +306,9 @@ class TypeJeuCreateJS(FabCreateViewJS):
         nom = request.POST.get("nom")
         hauteur = request.POST.get("hauteur")
         typejeu, created = TypeJeu.objects.get_or_create(nom=nom, hauteur=hauteur)
+        if created:
+            typejeu.updated_by_user = self.request.user
+            typejeu.save()
         return JsonResponse(
             {'message': self.success_message, 'facteur': {'id': typejeu.id, 'nom': str(typejeu)}})
 
