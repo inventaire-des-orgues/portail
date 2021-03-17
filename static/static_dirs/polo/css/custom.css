@@ -498,3 +498,9 @@ table#lexique td:first-child {
 ul {
     padding-left: 15px;
 }
+
+.alert.alert-info {
+    color: #0c5460;
+    background-color: #dceef1;
+    border-color: #bee5eb;
+}

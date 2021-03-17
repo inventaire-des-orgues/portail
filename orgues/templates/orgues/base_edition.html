@@ -12,6 +12,16 @@
     <div class="container ">
       <div class="row">
         <div class="col-lg-12 my-4 text-center text-md-left">
+          <div class="mb-3">
+            <a href="{% if request.session.orgues_url %}{{ request.session.orgues_url }}{% else %}{% url 'orgues:orgue-list' %}{% endif %}">
+              Résultats de recherche
+            </a> <span class="px-2 font-weight-600 text">></span>
+            <a href="{% url 'orgues:orgue-detail' orgue.slug %}">
+            Fiche orgue
+            </a> <span class="px-2 font-weight-600 text">></span> Compléter la fiche
+          </div>
+
+
           <h2 class="mb-0">
             {{ orgue.edifice|capfirst }} <br>
           </h2>
@@ -24,18 +34,16 @@
         </div>
         <div class="col-lg-3">
           <div class="list-group">
-            <a class="list-group-item" href="{% url 'orgues:orgue-detail' orgue.slug %}">
-              <i class="fa fa-arrow-left"></i> Retour</a>
             <a class="list-group-item d-flex justify-content-between align-items-center
               {% block information_active %}{% endblock %}" href="{% url 'orgues:orgue-update' orgue.uuid %}">
               Informations générales
             </a>
             {% if perms.orgues.change_localisation %}
               <a class="list-group-item d-flex justify-content-between align-items-center
-              {% block localisation_active %}{% endblock %}" href="{% url 'orgues:orgue-update-localisation' orgue.uuid %}">Localisation
+              {% block localisation_active %}{% endblock %}" href="{% url 'orgues:orgue-update-localisation' orgue.uuid %}">
+              Localisation
               </a>
             {% endif %}
-
             <a class="list-group-item d-flex justify-content-between align-items-center
               {% block evenement_active %}{% endblock %}" href="{% url 'orgues:evenement-list' orgue.uuid %}">
               Historique
@@ -46,11 +54,11 @@
               Buffet / Console
             </a>
             <a class="list-group-item d-flex justify-content-between align-items-center
-                        {% block instrumentale_active %}{% endblock %}" href="{% url 'orgues:orgue-update-instrumentale' orgue.uuid %}">
+              {% block instrumentale_active %}{% endblock %}" href="{% url 'orgues:orgue-update-instrumentale' orgue.uuid %}">
               Partie instrumentale
             </a>
             <a class="list-group-item d-flex justify-content-between align-items-center
-                        {% block composition_active %}{% endblock %}" href="{% url 'orgues:orgue-update-composition' orgue.uuid %}">
+              {% block composition_active %}{% endblock %}" href="{% url 'orgues:orgue-update-composition' orgue.uuid %}">
               Composition
             </a>
             <a class="list-group-item d-flex justify-content-between align-items-center

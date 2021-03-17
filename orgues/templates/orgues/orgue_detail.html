@@ -14,6 +14,11 @@
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-lg-12 my-4 text-center text-md-left">
+          <div class="mb-3">
+            <a href="{% if request.session.orgues_url %}{{ request.session.orgues_url }}{% else %}{% url 'orgues:orgue-list' %}{% endif %}">
+              Résultats de recherche
+            </a> <span class="px-2 font-weight-600 text">></span> Fiche orgue
+          </div>
           <h2 class="mb-0">
             {{ orgue.edifice|capfirst }} <br>
           </h2>
@@ -36,25 +41,20 @@
 
                   {% if claviers.count %}
                     <h4>
-                        {% if claviers.count <= 1 %}
-                            {{ claviers.count }} plan sonore
-                        {% else %}
-                            {{ claviers.count }} plans sonores
-                        {% endif %}
+                      {% if claviers.count <= 1 %}
+                        {{ claviers.count }} plan sonore
+                      {% else %}
+                        {{ claviers.count }} plans sonores
+                      {% endif %}
                       <small>(glisser vers la droite)</small>
                     </h4>
                     <div id="claviers" class="row flew-row flex-nowrap">
                       {% for clavier in claviers %}
                         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-                        {% include 'orgues/clavier_detail.html' %}
+                          {% include 'orgues/clavier_detail.html' %}
                         </div>
                       {% endfor %}
                     </div>
-                      <div id="accessoires">
-                      {% for accessoire in accessoires %}
-                          {{ accessoire.all|join:', ' }}
-                      {% endfor %}
-                      </div>
                   {% else %}
                     <p class="text-muted">Aucun clavier</p>
                   {% endif %}
@@ -257,6 +257,7 @@
             <a href="{% url 'orgues:orgue-update' object.uuid %}" class="btn btn-primary  btn-block">
               <i class="fa fa-edit"></i> Compléter la fiche
             </a>
+          <small class="text-justify">Modifié le {{ orgue.modified_date|date:'d/m/Y' }} par {{ orgue.updated_by_user }}</small>
           </div>
         </div>
       </div>

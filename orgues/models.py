@@ -45,6 +45,7 @@ class Orgue(models.Model):
         ("congregation", "Congrégation"),
         ("etablissement_scolaire", "Etablissement scolaire"),
         ("conservatoire", "Conservatoire ou Ecole de musique"),
+        ("hopital", "Hôpital"),
     )
 
     CHOIX_ETAT = (
@@ -686,6 +687,10 @@ class TypeJeu(models.Model):
                                          "sans précision de l'unité. La nombre de rangs des fournitures, plein-jeux,"
                                          " cornet, etc. est indiqué en chiffres romains,"
                                          " sans précision du terme \"rangs\" (ni \"rgs\").")
+
+    created_date = models.DateTimeField(auto_now_add=True, auto_now=False, verbose_name='Creation date')
+    modified_date = models.DateTimeField(auto_now=True, auto_now_add=False, verbose_name='Update date')
+    updated_by_user = models.ForeignKey(User, null=True, editable=False, on_delete=models.SET_NULL)
 
     def __str__(self):
         return "{} {}".format(self.nom, self.hauteur)

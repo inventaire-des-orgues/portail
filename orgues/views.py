@@ -2,12 +2,12 @@ import csv
 import logging
 import os
 from collections import Counter, deque
-from datetime import datetime
-
+from datetime import datetime, timedelta
+import pandas as pd
 import meilisearch
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Count, Q, Prefetch
+from django.db.models import Count, Q, Prefetch, Avg
 from django.forms import modelformset_factory
 from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -17,6 +17,8 @@ from django.views.generic import ListView, DetailView, TemplateView
 from django.views.generic.base import View
 
 import orgues.forms as orgue_forms
+from accounts.models import User
+from fabutils.fablog import load_fabaccess_logs
 from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdateView, FabView, FabCreateViewJS, \
     FabDetailView
 from orgues.api.serializers import OrgueSerializer, OrgueResumeSerializer
@@ -24,6 +26,7 @@ from project import settings
 from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source
 
 from django.db.models.functions import Lower
+
 logger = logging.getLogger("fabaccess")
 
 
@@ -47,6 +50,7 @@ class OrgueSearch(View):
     paginate_by = 20
 
     def post(self, request, *args, **kwargs):
+        request.session['orgues_url'] = "{}{}".format(reverse('orgues:orgue-list'), request.POST.get('pageUrl'))
         page = request.POST.get('page', 1)
         try:
             client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
@@ -136,7 +140,8 @@ class OrgueDetail(DetailView):
         context = super().get_context_data()
         context["claviers"] = self.object.claviers.all().prefetch_related('type', 'jeux', 'jeux__type')
         context["evenements"] = self.object.evenements.all().prefetch_related('facteurs')
-        context["facteurs_evenements"] = self.object.evenements.filter(facteurs__isnull=False).prefetch_related('facteurs').distinct()
+        context["facteurs_evenements"] = self.object.evenements.filter(facteurs__isnull=False).prefetch_related(
+            'facteurs').distinct()
         return context
 
 
@@ -306,6 +311,9 @@ class TypeJeuCreateJS(FabCreateViewJS):
         nom = request.POST.get("nom")
         hauteur = request.POST.get("hauteur")
         typejeu, created = TypeJeu.objects.get_or_create(nom=nom, hauteur=hauteur)
+        if created:
+            typejeu.updated_by_user = self.request.user
+            typejeu.save()
         return JsonResponse(
             {'message': self.success_message, 'facteur': {'id': typejeu.id, 'nom': str(typejeu)}})
 
@@ -770,11 +778,10 @@ class ConseilsFicheView(TemplateView):
     template_name = 'orgues/conseils_fiche.html'
 
 
-
 class OrgueExport(FabView):
     permission_required = 'orgues.add_orgue'
 
-    def get(self,request,*args,**kwargs):
+    def get(self, request, *args, **kwargs):
         response = HttpResponse(content_type='text/csv')
         response.write(u'\ufeff'.encode('utf8'))
         response['Content-Disposition'] = 'attachment;filename=orgues-de-France_{}.csv'.format(
@@ -794,11 +801,58 @@ class OrgueExport(FabView):
             "completion",
             "resume_composition",
         ]
-        writer = csv.DictWriter(response, delimiter=';',fieldnames=columns)
+        writer = csv.DictWriter(response, delimiter=';', fieldnames=columns)
 
         # header from verbose_names
-        writer.writerow({column:Orgue._meta.get_field(column).verbose_name for column in columns})
+        writer.writerow({column: Orgue._meta.get_field(column).verbose_name for column in columns})
         # data
         writer.writerows(Orgue.objects.values(*columns))
 
         return response
+
+
+class Dashboard(FabView):
+    permission_required = 'orgues.add_orgue'
+
+    def get(self, request, *args, **kwargs):
+        context = {}
+        pd.options.display.html.border = 0
+        columns = ['departement', 'region', 'modified_date', 'updated_by_user__first_name',
+                   'updated_by_user__last_name', 'completion']
+        df = pd.DataFrame(Orgue.objects.values(*columns), columns=columns)
+        df["user"] = df["updated_by_user__first_name"] + " " + df["updated_by_user__last_name"]
+
+        # stats générales
+        context["users_count"] = User.objects.count()
+        context["image_count"] = Image.objects.count()
+        context["jeu_count"] = Jeu.objects.count()
+
+        # departements
+        departements = df.groupby('departement').agg({'completion': ['count', 'mean']}).reset_index().round()
+        departements.columns = ["Département", "Orgues", "Avancement (%)"]
+        departements.sort_values("Avancement (%)", inplace=True)
+        context["departments"] = departements.to_html(classes=['departments table table-sm'], index=False)
+
+        # regions
+        regions = df.groupby('region').agg({'completion': ['count', 'mean']}).reset_index().round()
+        regions.columns = ["Region", "Orgues", "Avancement (%)"]
+        regions.sort_values("Avancement (%)", inplace=True)
+        context["regions"] = regions.to_html(classes=['regions table table-sm'], index=False)
+
+        # utilisateurs
+        utilisateurs = df.groupby('user').agg({'departement': 'count'}).reset_index().round()
+        utilisateurs.columns = ["Utilisateur", "Orgues modifiés"]
+        utilisateurs.sort_values("Orgues modifiés", inplace=True)
+        context["users"] = utilisateurs.to_html(classes=['users table table-sm'], index=False)
+
+        # Activité
+        df = load_fabaccess_logs()
+        df = df.loc[df["Date"] > datetime.now() - timedelta(days=30), :]
+        df["strdate"] = df["Date"].dt.strftime("%Y-%m-%d")
+        users_per_day = df.groupby("strdate").agg({"User": lambda x: x.nunique()})
+        context["users_per_day"] = {
+            "dates": list(users_per_day.index),
+            "users": list(users_per_day["User"].values)
+        }
+
+        return render(request, 'orgues/dashboard.html', context=context)
