@@ -1,6 +1,8 @@
 from django.contrib import admin
 
 from .models import Orgue, Clavier, TypeClavier, TypeJeu, Fichier, Image, Evenement, Facteur, Accessoire, Jeu
+from django.utils.html import format_html
+from django.urls import reverse
 
 
 class ClavierInline(admin.StackedInline):
@@ -21,19 +23,27 @@ class ImageAdmin(admin.ModelAdmin):
 
 @admin.register(Facteur)
 class FacteurAdmin(admin.ModelAdmin):
-    list_display = ('nom',)
+    list_display = ('nom', 'latitude_atelier', 'longitude_atelier',)
+    list_editable = ('latitude_atelier', 'longitude_atelier',)
+    search_fields = ('nom',)
 
 
 @admin.register(TypeJeu)
 class TypeJeuAdmin(admin.ModelAdmin):
-    list_display = ('nom', 'hauteur')
-    search_fields = ('nom',)
+    list_display = ('nom_hauteur', 'nom', 'hauteur','created_date','updated_by_user')
+    search_fields = ('nom','updated_by_user__first_name','updated_by_user__last_name')
+
+    def nom_hauteur(self, _typejeu):
+        return _typejeu
 
 
 @admin.register(Jeu)
 class JeuAdmin(admin.ModelAdmin):
     list_display = ('type', 'nom_du_jeu', 'hauteur_du_jeu', 'dans_orgue')
-    search_fields = ('nom_du_jeu',)
+    search_fields = ('type__nom',)
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('type', 'clavier', 'clavier__orgue')
 
     def nom_du_jeu(self, _jeu):
         return _jeu.type.nom
@@ -42,7 +52,9 @@ class JeuAdmin(admin.ModelAdmin):
         return _jeu.type.hauteur
 
     def dans_orgue(self, _jeu):
-        return _jeu.clavier.orgue
+        orgue = _jeu.clavier.orgue
+        return format_html(
+            '<a href="{}" target="_blank">{}</a>'.format(reverse('orgues:orgue-update', args=(orgue.uuid,)), orgue))
 
 
 @admin.register(TypeClavier)
@@ -68,7 +80,7 @@ class AccessoireAdmin(admin.ModelAdmin):
 @admin.register(Orgue)
 class OrgueAdmin(admin.ModelAdmin):
     fields = ['codification', 'code_insee', 'commune', 'edifice', 'region', 'departement', 'code_departement',
-              'references_palissy']
+              'designation', 'references_palissy']
     list_display = ('codification', 'designation', 'commune', 'edifice',
                     'departement', 'commentaire_admin', 'updated_by_user', 'modified_date')
     inlines = [ClavierInline]

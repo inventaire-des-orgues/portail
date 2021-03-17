@@ -152,7 +152,7 @@ span.puce-etat {
 
 #claviers {
     overflow-x: scroll;
-    margin-top:20px;
+    margin-top: 20px;
 }
 
 .clavier div.card > ul.list-group > li.list-group-item {
@@ -480,13 +480,27 @@ table#lexique td:first-child {
     font-size: 1.2em;
 }
 
-.orgue-card h4.card-title:first-letter{
-  text-transform: capitalize
+.orgue-card h4.card-title:first-letter {
+    text-transform: capitalize
 }
 
 #searchinput input {
-  outline: none;
-  -webkit-box-shadow: none !important;
-  -moz-box-shadow: none !important;
-  box-shadow: none !important;
+    outline: none;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    box-shadow: none !important;
+}
+
+#id_first_name, #id_last_name {
+    text-transform: capitalize;
+}
+
+ul {
+    padding-left: 15px;
+}
+
+.alert.alert-info {
+    color: #0c5460;
+    background-color: #dceef1;
+    border-color: #bee5eb;
 }

@@ -22,9 +22,11 @@ class Facteur(models.Model):
     Pas celui qui distribue le courrier
     """
     nom = models.CharField(max_length=100)
-
     def __str__(self):
         return self.nom
+
+    latitude_atelier = models.FloatField(null=True, blank=True, verbose_name="Latitude de l'atelier")
+    longitude_atelier = models.FloatField(null=True, blank=True, verbose_name="Longitude de l'atelier")
 
 
 class Orgue(models.Model):
@@ -41,6 +43,9 @@ class Orgue(models.Model):
         ("diocese", "Diocèse"),
         ("paroisse", "Paroisse"),
         ("congregation", "Congrégation"),
+        ("etablissement_scolaire", "Etablissement scolaire"),
+        ("conservatoire", "Conservatoire ou Ecole de musique"),
+        ("hopital", "Hôpital"),
     )
 
     CHOIX_ETAT = (
@@ -305,6 +310,7 @@ class Orgue(models.Model):
 
     # Informations générales
     designation = models.CharField(max_length=300, null=True, verbose_name="Désignation", default="orgue", blank=True)
+    is_polyphone = models.BooleanField(default=False, verbose_name="Orgue polyphone de la manufacture Debierre ?")
     codification = models.CharField(max_length=24, unique=True, db_index=True)
     references_palissy = models.CharField(max_length=60, null=True, verbose_name="Référence(s) Palissy", blank=True,
                                           help_text="Séparer les codes par des virgules")
@@ -315,7 +321,8 @@ class Orgue(models.Model):
                                     verbose_name="Propriétaire")
     organisme = models.CharField(verbose_name="Organisme auquel s'adresser", max_length=100, null=True, blank=True)
     lien_reference = models.URLField(verbose_name="Lien de référence", max_length=300, null=True, blank=True)
-    is_polyphone = models.BooleanField(default=False, verbose_name="Orgue polyphone de la manufacture Debierre ?")
+
+    entretien = models.ManyToManyField(Facteur, blank=True, verbose_name="Facteur en charge de l'entretien")
 
     etat = models.CharField(max_length=20, choices=CHOIX_ETAT, null=True, blank=True,
                             help_text="Se rapporte au fait que l'orgue est jouable ou non.")
@@ -531,7 +538,7 @@ class Orgue(models.Model):
                 "lien": reverse('orgues:orgue-update-localisation', args=(self.uuid,))
             },
             "Région définie": {
-                "points": 5,
+                "points": 0,
                 "logique": bool(self.region),
                 "lien": reverse('orgues:orgue-update-localisation', args=(self.uuid,)),
             },
@@ -541,12 +548,12 @@ class Orgue(models.Model):
                 "lien": reverse('orgues:orgue-update-localisation', args=(self.uuid,))
             },
             "Nom de l'édifice défini": {
-                "points": 5,
+                "points": 15,
                 "logique": len(self.edifice) > 6,
                 "lien": reverse('orgues:orgue-update', args=(self.uuid,)) + "#id_edifice"
             },
             "Etat de l'orgue défini": {
-                "points": 10,
+                "points": 20,
                 "logique": bool(self.etat),
                 "lien": reverse('orgues:orgue-update-localisation', args=(self.uuid,)) + "#id_etat"
             },
@@ -556,7 +563,7 @@ class Orgue(models.Model):
                 "lien": reverse('orgues:image-list', args=(self.uuid,))
             },
             "Au moins un clavier": {
-                "points": 10,
+                "points": 20,
                 "logique": self.claviers.count() >= 1,
                 "lien": reverse('orgues:orgue-update-composition', args=(self.uuid,))
             },
@@ -571,7 +578,7 @@ class Orgue(models.Model):
                 "lien": reverse('orgues:orgue-update-buffet', args=(self.uuid,))
             },
             "Informations sur les sommiers présentes": {
-                "points": 10,
+                "points": 0,
                 "logique": bool(self.sommiers),
                 "lien": reverse('orgues:orgue-update-instrumentale', args=(self.uuid,)) + "#id_sommiers"
             },
@@ -707,6 +714,10 @@ class TypeJeu(models.Model):
                                          " cornet, etc. est indiqué en chiffres romains,"
                                          " sans précision du terme \"rangs\" (ni \"rgs\").")
 
+    created_date = models.DateTimeField(auto_now_add=True, auto_now=False, verbose_name='Creation date')
+    modified_date = models.DateTimeField(auto_now=True, auto_now_add=False, verbose_name='Update date')
+    updated_by_user = models.ForeignKey(User, null=True, editable=False, on_delete=models.SET_NULL)
+
     def __str__(self):
         return "{} {}".format(self.nom, self.hauteur)
 
@@ -793,7 +804,7 @@ class Image(models.Model):
                               help_text="Taille maximale : 2 Mo. Les images doivent être libres de droits.")
     is_principale = models.BooleanField(default=False, editable=False)
     legende = models.CharField(verbose_name="Légende", max_length=400, null=True, blank=True)
-    credit = models.CharField(verbose_name="Crédit", max_length=200, null=True, blank=True)
+    credit = models.CharField(verbose_name="Crédit", max_length=200)
 
     # Champs automatiques
     thumbnail_principale = ProcessedImageField(upload_to=chemin_image,

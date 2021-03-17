@@ -26,6 +26,7 @@ from project.views import accueil, ContactView
 urlpatterns = [
     path('', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
+    path('comptes/', include('accounts.urls')),
     path('', accueil, name='accueil'),
     path('nous_contacter/', ContactView.as_view(), name='contact'),
     path('', include('orgues.urls')),

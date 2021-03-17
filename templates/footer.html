@@ -4,7 +4,7 @@
     <div class="container">
       <div class="row align-items-top">
         <div class="col-lg-2 mt-4">
-          <img src="{% static 'img/logo-nb.png' %}" alt="" style="width:120px;">
+          <img src="{% static 'img/logo-nb.png' %}" alt="" style="width:150px;">
         </div>
         <div class="col-lg-2 mt-4">
           <p style="font-size: 14px;letter-spacing: 1px;font-weight: 600;color:white;">
@@ -19,16 +19,19 @@
           <img src="{% static 'img/logo-facteurs-neg.png' %}" alt="" style="width:160px;">
         </div>
         <div class="col-lg-2 mt-4">
-          <img src="{% static 'img/logo_bourgogne.png' %}" alt="" style="width:160px;">
+          <img src="{% static 'img/FFAO.png' %}" alt="" style="width:160px;">
         </div>
         <div class="col-lg-2 mt-4">
-          <img src="{% static 'img/FFAO.png' %}" alt="" style="width:160px;">
+          <img src="{% static 'img/logo_OPL.png' %}" alt="" style="width:240px;">
         </div>
         <div class="col-lg-2 mt-4">
           <img src="{% static 'img/logo_bretagne.png' %}" alt="" style="width:160px;">
         </div>
         <div class="col-lg-2 mt-4">
           <img src="{% static 'img/logo_CVL.png' %}" alt="" style="width:160px;">
+        </div>
+        <div class="col-lg-2 mt-4">
+          <img src="{% static 'img/logo_bourgogne.png' %}" alt="" style="width:160px;">
         </div>
       </div>
     </div>
@@ -45,6 +48,11 @@
               <li>
                 <a href="{% url 'accueil' %}">Accueil</a>
               </li>
+              {% if user.is_staff %}
+              <li>
+                <a href="{% url 'accounts:access-logs' %}">Logs</a>
+              </li>
+              {% endif %}
               <li>
                 <a href="{% url 'orgues:orgue-carte' %}">Carte</a>
               </li>
@@ -62,7 +70,7 @@
         </div>
         <div class="col-lg-3 mt-4">
           <div class="widget">
-            <div class="widget-title">Participer</div>
+            <div class="widget-title">Contribuer</div>
             {% if request.user.is_authenticated %}
               Vous êtes connecté(e) en temps que "{{ request.user }}"
             {% endif %}
@@ -79,6 +87,28 @@
               </li>
               <li>
                 <a href="https://docs.inventaire-des-orgues.fr/charte-du-contributeur/">Charte du contributeur</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-lg-3 mt-4">
+          <div class="widget">
+            <div class="widget-title">Développer</div>
+            <ul class="list">
+              <li>
+                <a href="https://github.com/inventaire-des-orgues/portail/projects/1" target="_blank" rel="noopener noreferrer">Projet Github du portail</a>
+              </li>
+              <li>
+                <a href="https://github.com/inventaire-des-orgues/portail/issues">Tickets Github du portail</a>
+              </li>
+              <li>
+                <a href="https://github.com/orgs/inventaire-des-orgues/projects/1">Projet Inventaire sur Github</a>
+              </li>
+                <li>
+                <a href="https://github.com/inventaire-des-orgues/docs/issues">Tickets Github de la doc</a>
+              </li>
+                <li>
+                <a href="https://github.com/inventaire-des-orgues/indexes/issues">Tickets Github des données</a>
               </li>
             </ul>
           </div>

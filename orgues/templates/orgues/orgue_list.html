@@ -44,23 +44,23 @@
                     | <span v-html="orgue._formatted.commune"></span>, <span v-html="orgue.departement"></span>
                   </h4>
                   {% spaceless %}
-                  <p class=" my-0">
-                    <span v-html="orgue.designation"></span>
-                    <span v-if="!orgue.designation">Orgue</span>
-                    <span v-if="orgue.emplacement">, ((orgue.emplacement))</span>
-                    <span v-if="orgue.resume_composition">, ((orgue.resume_composition))</span>
-                  </p>
+                    <p class=" my-0">
+                      <span v-html="orgue.designation"></span>
+                      <span v-if="!orgue.designation">Orgue</span>
+                      <span v-if="orgue.emplacement">, ((orgue.emplacement))</span>
+                      <span v-if="orgue.resume_composition">, ((orgue.resume_composition))</span>
+                    </p>
                   {% endspaceless %}
                   {% spaceless %}
-                  <p class="my-0">
-                    <b>Localisation : </b>
-                    <span v-html="orgue._formatted.commune"></span>
-                    <span v-if="orgue.ancienne_commune">(anciennement </span>
-                    <span v-html="orgue._formatted.ancienne_commune" v-if="orgue.ancienne_commune"></span>
-                    <span v-if="orgue.ancienne_commune">)</span>,
-                    <span v-html="orgue._formatted.departement"></span>
-                    (<span v-html="orgue._formatted.region"></span>)
-                  </p>
+                    <p class="my-0">
+                      <b>Localisation : </b>
+                      <span v-html="orgue._formatted.commune"></span>
+                      <span v-if="orgue.ancienne_commune">(anciennement </span>
+                      <span v-html="orgue._formatted.ancienne_commune" v-if="orgue.ancienne_commune"></span>
+                      <span v-if="orgue.ancienne_commune">)</span>,
+                      <span v-html="orgue._formatted.departement"></span>
+                      (<span v-html="orgue._formatted.region"></span>)
+                    </p>
                   {% endspaceless %}
                   <p class="my-0" v-if="orgue.facteurs.length > 0">
                     <b>Facteurs :</b> <span v-html="orgue._formatted.facteurs"></span>
@@ -115,8 +115,8 @@
       data: {
         query: '{{ query|default_if_none:'' }}',
         hits: 0,
-        page:{% if page %}{{ page}}{% else %}1{% endif %},
-        pages:0,
+        page: {% if page %}{{ page}}{% else %}1{% endif %},
+        pages: 0,
         orgues: [],
         departement: '{{ departement|default_if_none:'' }}',
         departements: departements
@@ -135,17 +135,28 @@
         },
       },
       methods: {
-        fetchData: function () {
+        fetchData: function (scrolltop) {
+          var scrolltop = scrolltop || false;
           var self = this;
           var query = self.query
           var departement = self.departement
           var page = self.page
+
+          var pageUrl = '?page=' + page;
+          if (departement) {
+            pageUrl += '&departement=' + departement
+          }
+          if (query) {
+            pageUrl += '&query=' + query
+          }
+
           $.ajax({
             type: "POST",
             url: "{% url 'orgues:orgue-search' %}",
             data: {
               csrfmiddlewaretoken: '{{ csrf_token }}',
               query: query,
+              pageUrl:pageUrl,
               page: page,
               departement: departement
             },
@@ -156,31 +167,24 @@
               self.orgues = results.hits
               self.hits = results.nbHits
               self.pages = results.pages
-              window.scrollTo(0,0)
-              var pageUrl = '?page=' + self.page;
-              if (self.departement) {
-                pageUrl += '&departement=' + self.departement
-              }
-              if (self.query) {
-                pageUrl += '&query=' + self.query
-              }
+              if (scrolltop) window.scrollTo(0, 0);
               window.history.pushState('', '', pageUrl);
             },
           });
         },
-        previous_page: function(){
+        previous_page: function () {
           if (this.page <= 0) {
             return
           }
-          this.page -=1;
-          this.fetchData();
+          this.page -= 1;
+          this.fetchData(true);
         },
-        next_page: function(){
+        next_page: function () {
           if (this.page >= this.pages) {
             return
           }
-          this.page +=1;
-          this.fetchData();
+          this.page += 1;
+          this.fetchData(true);
         },
         select: function (orgue) {
           window.location.href = orgue.url;
