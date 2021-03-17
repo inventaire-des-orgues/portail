@@ -203,12 +203,15 @@
           var total = data.total || 0;
 
           if (total > 0) {
-            var bons = Math.round(100 * (data.bon || 0) / total) + " %";
+            var bons = Math.round(100 * ((data.bon || 0)+(data.tres_bon || 0)) / total) + " %";
             var alteres = Math.round(100 * (data.altere || 0) / total) + " %";
             var degrades = Math.round(100 * (data.degrade || 0) / total) + " %";
             var inconnus = Math.round(100 * (data.inconnu || 0) / total) + "%";
           } else {
-            var bons, alteres, degrades, inconnus = "0 %"
+            var bons = "0 %";
+			var alteres = "0 %";
+			var degrades = "0 %";
+			var inconnus = "0 %";
           }
           $("#nb-etat-bon .puce-etat").html(bons);
           $("#nb-etat-altere .puce-etat").html(alteres);
