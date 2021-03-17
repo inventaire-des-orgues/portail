@@ -41,6 +41,12 @@ class Command(BaseCommand):
                 evenement.facteurs.add(facteur_replace[0])
                 print("Changement effectué pour l'orgue de {} pour l'événement {}.".format(evenement.orgue, evenement))
                 evenement.save()
+            orgues=Orgue.objects.filter(entretien=facteur_delete[0])
+            for orgue in orgues:
+                orgue.entretien.remove(facteur_delete[0])
+                orgue.entretien.add(facteur_replace[0])
+                print("Changement effectué pour l'entretien de l'orgue de {}.".format(orgue))
+                orgue.save()
             if options['delete'][0]=='True':
                 facteur_delete[0].delete()
                 print("Le facteur {} a été retiré de la liste.".format(options['name_delete'][0]))
