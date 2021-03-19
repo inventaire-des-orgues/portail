@@ -126,6 +126,12 @@
                       {{ orgue.commentaire_tuyauterie|safe }}
                     </div>
                   {% endif %}
+                  {% if orgue.accessoires.count %}
+                    <p class="soustitre-fiche">Accessoires</p>
+                    <div id="accessoires">
+                      {{ orgue.accessoires.all|join:', ' }}
+                    </div>
+                  {% endif %}
                   {% if orgue.images.count %}
                     <h2 class="titre-fiche">Images</h2>
                     <div class="row">
@@ -257,7 +263,7 @@
             <a href="{% url 'orgues:orgue-update' object.uuid %}" class="btn btn-primary  btn-block">
               <i class="fa fa-edit"></i> Compléter la fiche
             </a>
-          <small class="text-justify">Actualisé par le {{ orgue.modified_date|date:'d/m/Y' }} par {{ orgue.updated_by_user }}</small>
+            <small class="text-justify">Actualisé par le {{ orgue.modified_date|date:'d/m/Y' }} par {{ orgue.updated_by_user }}</small>
           </div>
         </div>
       </div>
