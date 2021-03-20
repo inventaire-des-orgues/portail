@@ -399,32 +399,6 @@ class Orgue(models.Model):
             self.slug = slugify("orgue-{}-{}-{}".format(self.commune, self.edifice, self.codification))
 
         super().save(*args, **kwargs)
-        
-    def calcul_barycentre(self, list_osm, osm_type):
-        """
-        Calcule le barycentre d'un objet osm de type osm_type. list_osm est la liste des éléments constituant cet objet.
-        """
-        if osm_type=='way' or osm_type=='relation':
-            list_osm=list_osm[0:-1]
-        sum_latitude=0
-        sum_longitude=0
-        sum_coef=0
-        for element in list_osm:
-            if element['type']=="node":
-                sum_latitude+=element['lat']
-                sum_longitude+=element['lon']
-                sum_coef+=1
-            else:
-                overpass_url = "http://overpass-api.de/api/interpreter"
-                overpass_query = """[out:json];{}({});(._;>;);out;""".format(element['type'], element['id'])
-                response = requests.get(overpass_url,params={'data': overpass_query})
-                if response.status_code==200:
-                    data=response.json()
-                    latitude, longitude, coef=self.calcul_barycentre(data['elements'], element['type'])
-                    sum_latitude+=latitude*coef
-                    sum_longitude+=longitude*coef
-                    sum_coef+=coef
-        return sum_latitude/sum_coef, sum_longitude/sum_coef, sum_coef    
 
     @property
     def is_expressif(self):
