@@ -1,6 +1,17 @@
 {% extends 'base.html' %}
 {% load static %}
 
+
+{% block meta_tags %}
+  <title>{{ orgue.designation }} {{ orgue.edifice }} - {{ orgue.commune }}, {{ orgue.departement }}</title>
+  <meta property="og:title" content="{{ orgue.designation }} {{ orgue.edifice }} - {{ orgue.commune }}, {{ orgue.departement }}">
+  <meta name="description" content="{{ orgue.designation }} {{ orgue.edifice }} - {{ orgue.commune }}, {{ orgue.departement }}">
+  <meta property="og:description" content="{{ orgue.designation }} {{ orgue.edifice }} - {{ orgue.commune }}, {{ orgue.departement }}">
+  {% if object.image_principale %}
+    <meta property="og:image" content="{{ orgue.image_principale.image.url }}">
+  {% endif %}
+{% endblock %}
+
 {% block head_extra %}
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
