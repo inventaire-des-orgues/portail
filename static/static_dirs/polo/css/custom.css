@@ -504,3 +504,9 @@ ul {
     background-color: #dceef1;
     border-color: #bee5eb;
 }
+
+[v-cloak] > * {
+  display: none;
+}
+
+[v-cloak]::before { content: "loading…" }
