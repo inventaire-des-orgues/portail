@@ -78,6 +78,9 @@ button.btn.btn-primary:hover, button.btn.btn-primary:focus, button.btn.btn-prima
     color: #5c1c54;
 }
 
+.form-check {
+    padding-left:0;
+}
 #map svg {
     position: absolute;
     width: 100%;

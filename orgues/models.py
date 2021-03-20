@@ -661,7 +661,9 @@ class Evenement(models.Model):
         ("inscription_mh", "Inscription au titre des monuments historiques"),
     )
 
-    annee = models.IntegerField(verbose_name="Année")
+    annee = models.IntegerField(verbose_name="Année de début de l'évènement")
+    annee_fin = models.IntegerField(verbose_name="Année de fin de l'évènement", null=True, blank=True, help_text="Optionnelle")
+    circa = models.BooleanField(default=False, verbose_name="Cocher si dates approximatives")
     type = models.CharField(max_length=20, choices=CHOIX_TYPE)
     facteurs = models.ManyToManyField(Facteur, blank=True, related_name="evenements")
     resume = models.TextField(verbose_name="Résumé", max_length=700, blank=True, null=True,
@@ -670,8 +672,20 @@ class Evenement(models.Model):
     # Champs automatiques
     orgue = models.ForeignKey(Orgue, on_delete=models.CASCADE, related_name="evenements")
 
+    @property
+    def dates(self):
+        """
+        Logique d'affichage des dates
+        """
+        result = str(self.annee)
+        if self.circa:
+            result = "~" + result
+        if self.annee_fin and self.annee_fin != self.annee:
+            result += "-{}".format(self.annee_fin)
+        return result
+
     def __str__(self):
-        return "{} ({})".format(self.type, self.annee)
+        return "{} ({})".format(self.type, self.dates)
 
     class Meta:
         ordering = ["annee"]

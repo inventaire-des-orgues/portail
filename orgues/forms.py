@@ -123,6 +123,8 @@ class EvenementForm(forms.ModelForm):
         model = Evenement
         fields = [
             "annee",
+            "annee_fin",
+            "circa",
             "type",
             "facteurs",
             "resume",
