@@ -145,19 +145,18 @@
                   {% endif %}
                   {% if orgue.images.count %}
                     <h2 class="titre-fiche">Images</h2>
-                    <div class="row">
+                    <div class="grid-layout portfolio-3-columns">
                       {% for image in orgue.images.all %}
-
-                        <div class="col-lg-4" style="padding: 0 10px;">
-                          <div class="grid-item">
-                            <div class="grid-item-wrap">
-                              <div class="grid-image"><img alt="Image Lightbox" src="{{ image.thumbnail.url }}"/>
-                              </div>
-                              <div class="grid-description">
-                                <a title="{% if image.legende %}{{ image.legende }}{% endif %} {% if image.credit %}Crédit : {{ image.credit }}{% endif %}"
-                                    data-lightbox="gallery-image" href="{{ image.image.url }}"
-                                    class="btn btn-light btn-rounded">+</a>
-                              </div>
+                        <div class="portfolio-item img-zoom">
+                          <div class="portfolio-item-wrap">
+                            <div class="portfolio-image">
+                              <a href="#"><img src="{{ image.thumbnail.url }}" alt=""></a>
+                            </div>
+                            <div class="portfolio-description">
+                              <a title="{% if image.legende %}{{ image.legende }}{% endif %} {% if image.credit %}Crédit : {{ image.credit }}{% endif %}"
+                                  data-lightbox="gallery-image" href="{{ image.image.url }}">
+                                <i class="icon-zoom-in"></i>
+                              </a>
                             </div>
                           </div>
                         </div>
@@ -311,7 +310,7 @@
               {% if evenement.annee_fin %}
                 "end_date": {"year": "{{evenement.annee_fin}}"},
               {% endif %}
-            "display_date":"{{evenement.dates}}",
+              "display_date": "{{evenement.dates}}",
               "text": {
                 "headline": "<b>{{ evenement.get_type_display }}</b>",
                 "text": "{% if evenement.resume %}{{ evenement.resume|linebreaksbr|safe|escapejs}}{% endif %}{% if evenement.facteurs.count %}<p>Facteur(s) : {{ evenement.facteurs.all|join:', ' }}</p>{% endif %}"

@@ -158,11 +158,6 @@ class FichierForm(forms.ModelForm):
         fields = ["file", "description"]
 
 
-class ImageForm(forms.ModelForm):
-    class Meta:
-        model = Image
-        fields = ["image", "legende", "credit"]
-
 
 class SourceForm(forms.ModelForm):
     class Meta:

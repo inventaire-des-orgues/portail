@@ -786,14 +786,18 @@ def chemin_image(instance, filename):
 
 class Image(models.Model):
     """
-    Images liées à un instrument
+    Images liées à un instrument.
+    La variable MAX_PIXEL_WIDTH définie la largeur maximale en pixels qu'une image peut avoir.
+    Une librairie javascript (filepond) s'occupe de faire le redimensionnement directement
+    dans le naviguateur.
     """
+    MAX_PIXEL_WIDTH = 2000
     image = models.ImageField(upload_to=chemin_image,
                               help_text="Taille maximale : 2 Mo. Les images doivent être libres de droits.")
     is_principale = models.BooleanField(default=False, editable=False)
     legende = models.CharField(verbose_name="Légende", max_length=400, null=True, blank=True)
-    credit = models.CharField(verbose_name="Crédit", max_length=200)
-
+    credit = models.CharField(verbose_name="Crédit", max_length=200, null=True, blank=True)
+    order = models.IntegerField(default=0,verbose_name="Ordre d'affichage")
     # Champs automatiques
     thumbnail_principale = ProcessedImageField(upload_to=chemin_image,
                                                processors=[Transpose(),ResizeToFill(600, 450)],
@@ -810,6 +814,7 @@ class Image(models.Model):
                               options={'quality': 100})
 
     orgue = models.ForeignKey(Orgue, null=True, on_delete=models.CASCADE, related_name="images")
+    user = models.ForeignKey(User,null=True, blank=True, on_delete=models.SET_NULL)
     created_date = models.DateTimeField(
         auto_now_add=True,
         auto_now=False,
@@ -825,6 +830,14 @@ class Image(models.Model):
         self.orgue.completion = self.orgue.calcul_completion()
         super().save(*args, **kwargs)
 
+    def delete(self):
+        if self.image:
+            self.image.delete()
+            self.thumbnail_principale.delete()
+        return super().delete()
+
+    class Meta:
+        ordering = ['order','-created_date']
 
 class Accessoire(models.Model):
     """

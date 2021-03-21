@@ -1,0 +1,19 @@
+{% extends 'orgues/base_edition.html' %}
+{% load static %}
+
+{% block evenement_active %}active{% endblock %}
+
+{% block card-body %}
+  <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <p>
+      Etes-vous sûr(e) de vouloir supprimer l'image <b>"{{ object.image.name }}"</b> ?
+    </p>
+    <form action="" method="post">{% csrf_token %}
+      <div class="form-group">
+        <a href="{% url 'orgues:image-list' orgue.uuid %}" class="btn btn-light btn-sm">Annuler</a>
+        <button type="submit" class="btn btn-danger btn-sm">Oui</button>
+      </div>
+    </form>
+  </form>
+
+{% endblock %}

@@ -7,6 +7,7 @@ import pandas as pd
 import meilisearch
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
 from django.db.models import Count, Q, Prefetch, Avg
 from django.forms import modelformset_factory
 from django.http import JsonResponse, Http404, HttpResponse
@@ -588,46 +589,63 @@ class FichierDelete(FabDeleteView):
 
 
 class ImageList(FabListView):
+    """
+    Liste des images de l'orgue.
+    Un POST sur cette vue permet de réordonner les images.
+    """
     model = Image
-    permission_required = "orgues.add_image"
+    permission_required = "orgues.view_image"
     paginate_by = 50
+
+    def post(self,request,*args,**kwargs):
+        orgue = get_object_or_404(Orgue, uuid=self.kwargs["orgue_uuid"])
+        image_pks = request.POST.getlist('image_pks[]')
+        with transaction.atomic():
+            for image in orgue.images.all():
+                image.order = image_pks.index(str(image.pk))
+                image.save()
+        return JsonResponse({"message": "success"})
 
     def get_queryset(self):
         self.orgue = get_object_or_404(Orgue, uuid=self.kwargs["orgue_uuid"])
-        return Image.objects.filter(orgue=self.orgue).prefetch_related('orgue')
+        return self.orgue.images.all()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context["orgue"] = self.orgue
-        context["form"] = orgue_forms.ImageForm()
         return context
 
 
-class ImageCreate(FabCreateView):
-    model = Image
+class ImageCreate(FabView):
+    """
+    Vue de chargement d'une image.
+    Les images sont chargées et redimensionnée automatique en javascript côté client.
+    """
     permission_required = "orgues.add_image"
-    form_class = orgue_forms.ImageForm
-    template_name = "orgues/image_list.html"
+    template_name = "orgues/image_create.html"
 
-    def form_valid(self, form):
+    def get(self, request, *args, **kwargs):
         orgue = get_object_or_404(Orgue, uuid=self.kwargs["orgue_uuid"])
-        image = form.save(commit=False)
-        if not orgue.images.exists():
-            image.is_principale = True
-        image.orgue = orgue
+        return render(request,self.template_name,{"orgue":orgue,"MAX_PIXEL_WIDTH":Image.MAX_PIXEL_WIDTH})
+
+    def post(self, request, *args, **kwargs):
+        """
+        Vue appelée par filepond https://pqina.nl/filepond/docs/patterns/api/server/
+        """
+        image = self.request.FILES['filepond']
+        credit = self.request.POST['credit']
+        orgue = get_object_or_404(Orgue, uuid=self.kwargs["orgue_uuid"])
+        image = Image.objects.create(orgue=orgue, image=image, is_principale=not orgue.images.exists())
+        image.user = request.user
+        image.credit = credit
         image.save()
-        messages.success(self.request, "Image créée, merci !")
-        return redirect('orgues:image-list', orgue_uuid=orgue.uuid)
-
-    def get_context_data(self, **kwargs):
-        orgue = get_object_or_404(Orgue, uuid=self.kwargs["orgue_uuid"])
-        context = super().get_context_data()
-        context["orgue"] = orgue
-        context["object_list"] = Image.objects.filter(orgue=orgue)
-        return context
+        return JsonResponse({'ok': True})
 
 
 class ImageDelete(FabDeleteView):
+    """
+    Suppression d'une image
+    """
     model = Image
     permission_required = "orgues.delete_image"
     success_message = "Image supprimée, merci !"
@@ -635,6 +653,10 @@ class ImageDelete(FabDeleteView):
     def get_success_url(self):
         return reverse('orgues:image-list', args=(self.object.orgue.uuid,))
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["orgue"] = self.object.orgue
+        return context
 
 class ImagePrincipaleUpdate(FabUpdateView):
     """
