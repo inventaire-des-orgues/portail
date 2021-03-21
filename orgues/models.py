@@ -53,6 +53,7 @@ class Orgue(models.Model):
         ('bon', "Bon : jouable, défauts mineurs"),
         ('altere', "Altéré : difficilement jouable"),
         ('degrade', "Dégradé ou en ruine : injouable"),
+        ('restauration', "En restauration (ou projet initié)")
     )
 
     CHOIX_TRANSMISSION = (
