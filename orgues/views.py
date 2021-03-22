@@ -340,30 +340,35 @@ class TypeJeuUpdate(FabUpdateView):
         return reverse('orgues:typejeu-update', args=(self.object.pk,))
 
 
-class TypeJeuListJS(FabListView):
+class TypeJeuListJS(FabView):
     """
     Liste dynamique utilisée pour filtrer les jeux d'orgues dans les menus déroulants select2.
     Les jeux sont triés par nombre d'apparitions dans les claviers (jeux les plus populaires apparaissent en premier)
     documentation : https://select2.org/data-sources/ajax
     """
-    model = TypeJeu
-    permission_required = 'orgues.view_jeu'
-    paginate_by = 30
+    permission_required = "orgues.view_jeu"
+    paginate_by = 20
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        queryset = queryset.annotate(claviers_count=Count('jeux'))
-        query = self.request.GET.get("q")
-        if query:
-            queryset = queryset.filter(nom__icontains=query)
-        return queryset.order_by(Lower('nom'))
-
-    def render_to_response(self, context, **response_kwargs):
-        results = []
-        more = context["page_obj"].number < context["paginator"].num_pages
-        if context["object_list"]:
-            results = [{"id": t.id, "text": str(t)} for t in context["object_list"]]
-        return JsonResponse({"results": results, "pagination": {"more": more}})
+    def get(self, request, *args, **kwargs):
+        page = request.GET.get('page', 1)
+        try:
+            client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
+            index = client.get_index(uid='types_jeux')
+        except:
+            return JsonResponse({'message': 'Le moteur de recherche est mal configuré'}, status=500)
+        query = request.GET.get('q', '')
+        try:
+            offset = (int(page) - 1) * self.paginate_by
+        except:
+            offset = 0
+        if not query:
+            query = None
+        options = {'offset': offset, 'limit': self.paginate_by}
+        results = index.search(query, options)
+        return JsonResponse({
+            "results": [{'id': r['id'], 'text': r['nom']} for r in results['hits']],
+            "pagination": {"more": results['nbHits'] > self.paginate_by}
+        })
 
 
 class FacteurListJS(FabListView):
@@ -608,7 +613,7 @@ class ImageList(FabListView):
     permission_required = "orgues.view_image"
     paginate_by = 50
 
-    def post(self,request,*args,**kwargs):
+    def post(self, request, *args, **kwargs):
         orgue = get_object_or_404(Orgue, uuid=self.kwargs["orgue_uuid"])
         image_pks = request.POST.getlist('image_pks[]')
         with transaction.atomic():
@@ -637,7 +642,7 @@ class ImageCreate(FabView):
 
     def get(self, request, *args, **kwargs):
         orgue = get_object_or_404(Orgue, uuid=self.kwargs["orgue_uuid"])
-        return render(request,self.template_name,{"orgue":orgue,"MAX_PIXEL_WIDTH":Image.MAX_PIXEL_WIDTH})
+        return render(request, self.template_name, {"orgue": orgue, "MAX_PIXEL_WIDTH": Image.MAX_PIXEL_WIDTH})
 
     def post(self, request, *args, **kwargs):
         """
@@ -668,6 +673,7 @@ class ImageDelete(FabDeleteView):
         context = super().get_context_data()
         context["orgue"] = self.object.orgue
         return context
+
 
 class ImagePrincipaleUpdate(FabUpdateView):
     """

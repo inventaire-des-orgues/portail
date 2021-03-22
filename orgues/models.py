@@ -760,6 +760,13 @@ def update_orgue_in_index(sender, instance, **kwargs):
         index = client.get_index(uid='orgues')
         index.add_documents([orgue])
 
+@receiver(post_save, sender=TypeJeu)
+def update_type_jeu_in_index(sender, instance, **kwargs):
+    if hasattr(settings, 'MEILISEARCH_URL'):
+        client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
+        index = client.get_index(uid='types_jeux')
+        index.add_documents([{"id":instance.id,"nom":str(instance)}])
+
 
 @receiver(post_save, sender=Image)
 def update_image_in_index(sender, instance, **kwargs):
