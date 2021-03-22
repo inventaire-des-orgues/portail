@@ -188,7 +188,6 @@
               toastr.error(resp.responseJSON.message)
             },
             success: function (results) {
-              console.log(results)
               self.loading = false
               self.orgues = results.hits
               self.hits = results.nbHits
