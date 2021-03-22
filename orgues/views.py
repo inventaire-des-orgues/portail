@@ -114,6 +114,8 @@ class OrgueSearch(View):
         options = {'attributesToHighlight': ['*'], 'offset': offset, 'limit': OrgueSearch.paginate_by}
         if departement:
             options['facetFilters'] = ['departement:{}'.format(departement)]
+        if not query:
+            query = None
         results = index.search(query, options)
         results['pages'] = 1 + results['nbHits'] // OrgueSearch.paginate_by
         return results
