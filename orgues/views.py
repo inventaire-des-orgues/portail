@@ -8,6 +8,7 @@ import meilisearch
 import pandas as pd
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Q
 from django.forms import modelformset_factory
@@ -22,7 +23,7 @@ from accounts.models import User
 from fabutils.fablog import load_fabaccess_logs
 from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdateView, FabView, FabCreateViewJS, \
     FabDetailView
-from orgues.api.serializers import OrgueSerializer
+from orgues.api.serializers import OrgueSerializer, OrgueResumeSerializer
 from project import settings
 from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source
 
@@ -50,33 +51,72 @@ class OrgueList(TemplateView):
 class OrgueSearch(View):
     """
     Vue de recherche d'orgue.
-    Cette vue est branchée au moteur de recherche meilisearch.
-    Elle est principalement appelée par du code javascript dans orgues/orgue_list.html
+    Principalement appelée par du code javascript dans orgues/orgue_list.html
+    Cette vue utilise le moteur de recherche "meilisearch" ou un moteur de recherche SQL dégradé quand meilisearch
+    n'est pas disponible (settings.MEILISEARCH_URL=False)
     """
     paginate_by = 20
 
     def post(self, request, *args, **kwargs):
         request.session['orgues_url'] = "{}{}".format(reverse('orgues:orgue-list'), request.POST.get('pageUrl'))
         page = request.POST.get('page', 1)
+        departement = request.POST.get('departement', '')
+        query = request.POST.get('query')
+        if settings.MEILISEARCH_URL:
+            results = self.search_meilisearch(page, departement, query)
+        else:
+            results = self.search_sql(page, departement, query)
+        return JsonResponse(results)
+
+    @staticmethod
+    def search_sql(page, departement, query):
+        """
+        Moteur de recherche dégradé.
+        Imite un résultat au format meilisearch pour être compatible avec la template de rendu
+        """
+        queryset = Orgue.objects.all()
+        if departement:
+            queryset = queryset.filter(departement=departement)
+        if query:
+            terms = [term.lower() for term in query.split(" ") if term]
+            query = Q()
+            for term in terms:
+                query = query & (Q(region__icontains=term) | Q(commune__icontains=term) | Q(edifice__icontains=term))
+            queryset = queryset.filter(query)
+        paginator = Paginator(queryset, OrgueSearch.paginate_by)
+        object_list = paginator.page(page).object_list
+        hits = []
+        for result in OrgueResumeSerializer(object_list, many=True).data:
+            hit = result.copy()
+            hit['_formatted'] = result
+            hits.append(hit)
+        return {
+            'hits': hits,
+            'pages': paginator.num_pages,
+            'nbHits': paginator.count
+        }
+
+    @staticmethod
+    def search_meilisearch(page, departement, query):
+        """
+        Moteur de recherche avancé
+        """
         try:
             client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
             index = client.get_index(uid='orgues')
         except:
             return JsonResponse({'message': 'Le moteur de recherche est mal configuré'}, status=500)
-        query = request.POST.get('query', '')
+
         try:
-            offset = (int(page) - 1) * self.paginate_by
+            offset = (int(page) - 1) * OrgueSearch.paginate_by
         except:
             offset = 0
-        if not query:
-            query = None
-        departement = request.POST.get('departement', '')
-        options = {'attributesToHighlight': ['*'], 'offset': offset, 'limit': self.paginate_by}
+        options = {'attributesToHighlight': ['*'], 'offset': offset, 'limit': OrgueSearch.paginate_by}
         if departement:
             options['facetFilters'] = ['departement:{}'.format(departement)]
         results = index.search(query, options)
-        results['pages'] = 1 + results['nbHits'] // self.paginate_by
-        return JsonResponse(results)
+        results['pages'] = 1 + results['nbHits'] // OrgueSearch.paginate_by
+        return results
 
 
 class OrgueCarte(TemplateView):
@@ -156,6 +196,7 @@ class OrgueDetailExemple(View):
     """
     Redirige vers la fiche la mieux complétée du site
     """
+
     def get(self, request, *args, **kwargs):
         orgue = Orgue.objects.order_by('-completion').first()
         return redirect(orgue.get_absolute_url())
@@ -375,7 +416,10 @@ class TypeJeuUpdate(FabUpdateView):
 class TypeJeuListJS(FabView):
     """
     Liste dynamique utilisée pour filtrer les jeux d'orgues dans les menus déroulants select2.
-    On utilise le moteur de recherche meilisearch pour chercher les jeux
+
+    Cette vue utilise le moteur de recherche "meilisearch" ou un moteur de recherche SQL dégradé quand meilisearch
+    n'est pas disponible (settings.MEILISEARCH_URL=False)
+
     documentation : https://select2.org/data-sources/ajax
     """
     permission_required = "orgues.view_jeu"
@@ -383,24 +427,55 @@ class TypeJeuListJS(FabView):
 
     def get(self, request, *args, **kwargs):
         page = request.GET.get('page', 1)
+        query = request.GET.get('q', '')
+        if settings.MEILISEARCH_URL:
+            results = self.search_meilisearch(page, query)
+        else:
+            results = self.search_sql(page, query)
+        return JsonResponse(results)
+
+    @staticmethod
+    def search_sql(page, query):
+        """
+        Moteur de recherche dégradé.
+        Imite un résultat au format meilisearch pour être compatible avec la template de rendu
+        """
+        queryset = TypeJeu.objects.all()
+        if query:
+            terms = [term.lower() for term in query.split(" ") if term]
+            query = Q()
+            for term in terms:
+                query = query & (Q(nom__icontains=term) | Q(hauteur__icontains=term))
+            queryset = queryset.filter(query)
+        paginator = Paginator(queryset, TypeJeuListJS.paginate_by)
+        object_list = paginator.page(page).object_list
+        return {
+            "results": [{'id': jeu.id, 'text': str(jeu)} for jeu in object_list],
+            "pagination": {"more": int(page) < paginator.num_pages}
+        }
+
+    @staticmethod
+    def search_meilisearch(page, query):
+        """
+        Moteur de recherche avancé
+        """
         try:
             client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
             index = client.get_index(uid='types_jeux')
         except:
             return JsonResponse({'message': 'Le moteur de recherche est mal configuré'}, status=500)
-        query = request.GET.get('q', '')
+
         try:
-            offset = (int(page) - 1) * self.paginate_by
+            offset = (int(page) - 1) * TypeJeuListJS.paginate_by
         except:
             offset = 0
-        if not query:
-            query = None
-        options = {'offset': offset, 'limit': self.paginate_by}
+        options = {'offset': offset, 'limit': TypeJeuListJS.paginate_by}
         results = index.search(query, options)
-        return JsonResponse({
+
+        return {
             "results": [{'id': r['id'], 'text': r['nom']} for r in results['hits']],
-            "pagination": {"more": results['nbHits'] > self.paginate_by}
-        })
+            "pagination": {"more": results['nbHits'] > TypeJeuListJS.paginate_by}
+        }
 
 
 class FacteurListJS(FabListView):

@@ -9,6 +9,9 @@ class Command(BaseCommand):
     help = 'Build search index'
 
     def handle(self, *args, **options):
+        if not settings.MEILISEARCH_URL:
+            print("Moteur meilisearch non configuré")
+            return
         client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
         # orgues
         try:
