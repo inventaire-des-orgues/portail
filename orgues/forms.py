@@ -49,7 +49,6 @@ LOCALISATION_COLUMNS = {
     "code_insee": 12,
     "ancienne_commune": 12,
     "adresse": 12,
-    "code_departement": 3,
     "departement": 4,
     "region": 5,
     "latitude": 6,
@@ -68,7 +67,7 @@ class OrgueLocalisationForm(forms.ModelForm):
         self.request = kwargs.pop('request', None)
         super().__init__(*args, **kwargs)
         if not self.request.user.has_perm('orgues.edition_avancee'):
-            for field in ['commune','code_insee','code_departement','departement','region']:
+            for field in ['commune','code_insee','departement','region']:
                 self.fields[field].disabled = True
                 self.fields[field].help_text = 'Cette information est figée'
 

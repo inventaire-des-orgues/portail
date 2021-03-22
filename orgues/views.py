@@ -39,7 +39,7 @@ class OrgueList(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context["departements"] = [d[0] for d in Orgue.CHOIX_DEPARTEMENT]
+        context["departements"] = [d[1] for d in Orgue.CHOIX_DEPARTEMENT]
         context["departement"] = self.request.GET.get("departement")
         context["query"] = self.request.GET.get("query")
         context["limit"] = self.request.GET.get("limit")
