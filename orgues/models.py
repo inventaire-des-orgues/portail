@@ -22,11 +22,13 @@ class Facteur(models.Model):
     Pas celui qui distribue le courrier
     """
     nom = models.CharField(max_length=100)
+    latitude_atelier = models.FloatField(null=True, blank=True, verbose_name="Latitude de l'atelier")
+    longitude_atelier = models.FloatField(null=True, blank=True, verbose_name="Longitude de l'atelier")
+
     def __str__(self):
         return self.nom
 
-    latitude_atelier = models.FloatField(null=True, blank=True, verbose_name="Latitude de l'atelier")
-    longitude_atelier = models.FloatField(null=True, blank=True, verbose_name="Longitude de l'atelier")
+
 
 
 class Orgue(models.Model):
@@ -291,10 +293,12 @@ class Orgue(models.Model):
         ]
 
     def save(self, *args, **kwargs):
+        """
+        Le calcul de l'avancement se fait à chaque nouvel enregistrement
+        """
         self.completion = self.calcul_completion()
         if not self.slug:
             self.slug = slugify("orgue-{}-{}-{}".format(self.commune, self.edifice, self.codification))
-
         super().save(*args, **kwargs)
 
     @property
@@ -307,7 +311,7 @@ class Orgue(models.Model):
     @property
     def vignette(self):
         """
-        Récupère l'image principale de l'instrument
+        Récupère la vignette l'instrument, ou une vignette par défaut si elle n'existe pas
         """
         image_principale = self.image_principale
         if not image_principale:
@@ -400,7 +404,6 @@ class Orgue(models.Model):
     def infos_completions(self):
         """
         Informations et liens pour comprendre le calcul du taux d'avancement
-        :return:
         """
         return {
             "Commune définie": {
@@ -611,6 +614,9 @@ class TypeJeu(models.Model):
 
 
 class Jeu(models.Model):
+    """
+    Un Jeu est un TypeJeu associé à un clavier
+    """
     CHOIX_CONFIGURATION = (
         ('basse', 'Basse'),
         ('dessus', 'Dessus'),
@@ -749,12 +755,19 @@ class Accessoire(models.Model):
 
 @receiver([post_save, post_delete], sender=Evenement)
 def save_evenement_calcul_facteurs(sender, instance, **kwargs):
+    """
+    La modification d'un événement doit entrainement le recalcul du taux d'avancement.
+    On passe par la meéthode orgue.save() pour relancer le calcul
+    """
     orgue = instance.orgue
     orgue.save()
 
 
 @receiver(post_save, sender=Orgue)
 def update_orgue_in_index(sender, instance, **kwargs):
+    """
+    Quand un orgue est modifié, on met à jour l'index des orgues
+    """
     if hasattr(settings, 'MEILISEARCH_URL'):
         from orgues.api.serializers import OrgueResumeSerializer
         client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
@@ -764,6 +777,9 @@ def update_orgue_in_index(sender, instance, **kwargs):
 
 @receiver(post_save, sender=TypeJeu)
 def update_type_jeu_in_index(sender, instance, **kwargs):
+    """
+    Quand un type de jeu est modifié, on met à jour l'index des types de jeux
+    """
     if hasattr(settings, 'MEILISEARCH_URL'):
         client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
         index = client.get_index(uid='types_jeux')
@@ -772,6 +788,9 @@ def update_type_jeu_in_index(sender, instance, **kwargs):
 
 @receiver(post_save, sender=Image)
 def update_image_in_index(sender, instance, **kwargs):
+    """
+    Quand une vignette est modifiée, on met à jour l'index des orgues
+    """
     if hasattr(settings, 'MEILISEARCH_URL') and instance.is_principale:
         from orgues.api.serializers import OrgueResumeSerializer
         client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
