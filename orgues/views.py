@@ -266,6 +266,17 @@ class OrgueUpdateLocalisation(OrgueUpdateMixin):
         kwargs['request'] = self.request
         return kwargs
 
+    def form_valid(self, form):
+        """
+        Enregistrement automatique du code du département
+        """
+        departement = form.cleaned_data['departement']
+        for code_departement, nom_departement in Orgue.CHOIX_DEPARTEMENT:
+            if departement == nom_departement:
+                form.instance.code_departement = code_departement
+                break
+        return super().form_valid(form)
+
     def get_success_url(self):
         success_url = reverse('orgues:orgue-update-localisation', args=(self.object.uuid,))
         return self.request.POST.get("next", success_url)
