@@ -69,6 +69,12 @@
                   {% else %}
                     <p class="text-muted">Aucun clavier</p>
                   {% endif %}
+                  {% if orgue.accessoires.count %}
+                    <p class="soustitre-fiche">Accessoires</p>
+                    <div id="accessoires">
+                      {{ orgue.accessoires.all|join:', ' }}
+                    </div>
+                  {% endif %}
                   <h2 class="titre-fiche">Frise chronologique</h2>
                   {% if evenements.count %}
                     <div id='timeline-embed' style="width: 100%; height: 400px"></div>
@@ -135,12 +141,6 @@
                     <p class="soustitre-fiche">Commentaire tuyauterie</p>
                     <div id="tuyauterie">
                       {{ orgue.commentaire_tuyauterie|safe }}
-                    </div>
-                  {% endif %}
-                  {% if orgue.accessoires.count %}
-                    <p class="soustitre-fiche">Accessoires</p>
-                    <div id="accessoires">
-                      {{ orgue.accessoires.all|join:', ' }}
                     </div>
                   {% endif %}
                   {% if orgue.images.count %}
