@@ -29,8 +29,6 @@ class Facteur(models.Model):
         return self.nom
 
 
-
-
 class Orgue(models.Model):
     CHOIX_TYPE_OSM = (
         ("node", "Nœud"),
