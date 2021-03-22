@@ -3,18 +3,18 @@ import logging
 import os
 from collections import Counter, deque
 from datetime import datetime, timedelta
-import pandas as pd
+
 import meilisearch
+import pandas as pd
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
-from django.db.models import Count, Q, Prefetch, Avg
+from django.db.models import Q
 from django.forms import modelformset_factory
 from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy, reverse
-from django.utils.text import slugify
-from django.views.generic import ListView, DetailView, TemplateView
+from django.views.generic import DetailView, TemplateView
 from django.views.generic.base import View
 
 import orgues.forms as orgue_forms
@@ -22,18 +22,18 @@ from accounts.models import User
 from fabutils.fablog import load_fabaccess_logs
 from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdateView, FabView, FabCreateViewJS, \
     FabDetailView
-from orgues.api.serializers import OrgueSerializer, OrgueResumeSerializer
+from orgues.api.serializers import OrgueSerializer
 from project import settings
 from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source
-
-from django.db.models.functions import Lower
 
 logger = logging.getLogger("fabaccess")
 
 
 class OrgueList(TemplateView):
     """
-    Listing des orgues
+    Liste des orgues.
+    Cette page est vide au démarrage, la récupération des orgues se fait après coup en javascript via
+    la vue OrgueSearch.
     """
     template_name = "orgues/orgue_list.html"
 
@@ -48,6 +48,11 @@ class OrgueList(TemplateView):
 
 
 class OrgueSearch(View):
+    """
+    Vue de recherche d'orgue.
+    Cette vue est branchée au moteur de recherche meilisearch.
+    Elle est principalement appelée par du code javascript dans orgues/orgue_list.html
+    """
     paginate_by = 20
 
     def post(self, request, *args, **kwargs):
@@ -76,14 +81,15 @@ class OrgueSearch(View):
 
 class OrgueCarte(TemplateView):
     """
-    Cartographie des orgues (gérée par Leaflet)
+    Cartographie des orgues (gérée par Leaflet).
+    La page est vide initialement et les orgues sont récupérés après coup en javascript via la vue OrgueListJS
     """
     template_name = "orgues/carte.html"
 
 
 class OrgueListJS(View):
     """
-    Cette vue est requêtée par Leaflet lors de l'affichage de la carte de France
+    Cette vue est requêtée par Leaflet lors de l'affichage de la carte de France dans "orgues/carte.html"
     """
 
     def get(self, request, *args, **kwargs):
@@ -150,7 +156,6 @@ class OrgueDetailExemple(View):
     """
     Redirige vers la fiche la mieux complétée du site
     """
-
     def get(self, request, *args, **kwargs):
         orgue = Orgue.objects.order_by('-completion').first()
         return redirect(orgue.get_absolute_url())
@@ -172,6 +177,12 @@ class OrgueCreate(FabCreateView):
 
 
 class OrgueUpdateMixin(FabUpdateView):
+    """
+    Mixin de modification d'un orgue qui permet de systématiquement:
+     - vérifier la permission
+     - enregistrer l'utilisateur qui a fait la modification
+     - inclure l'instance 'orgue' dans la template html
+    """
     model = Orgue
     slug_field = 'uuid'
     slug_url_kwarg = 'orgue_uuid'
@@ -191,6 +202,10 @@ class OrgueUpdateMixin(FabUpdateView):
 
 
 class OrgueDetailAvancement(FabDetailView):
+    """
+    Vue de détail du score d'avancement d'un orgue.
+    Toutes les règles de calcul sont définies dans la méthode Orgue.infos_completions
+    """
     model = Orgue
     slug_field = 'uuid'
     slug_url_kwarg = 'orgue_uuid'
@@ -218,6 +233,9 @@ class OrgueUpdate(OrgueUpdateMixin, FabUpdateView):
 
 
 class OrgueUpdateInstrumentale(OrgueUpdateMixin):
+    """
+    Mise à jour de la partie instrumentale d'un orgue
+    """
     form_class = orgue_forms.OrgueInstrumentaleForm
     success_message = 'Tuyauterie mise à jour, merci !'
     template_name = "orgues/orgue_form_instrumentale.html"
@@ -228,6 +246,9 @@ class OrgueUpdateInstrumentale(OrgueUpdateMixin):
 
 
 class OrgueUpdateComposition(OrgueUpdateMixin):
+    """
+    Mise à jour de la composition d'un orgue
+    """
     model = Orgue
     form_class = orgue_forms.OrgueCompositionForm
     template_name = "orgues/orgue_form_composition.html"
@@ -245,6 +266,9 @@ class OrgueUpdateComposition(OrgueUpdateMixin):
 
 
 class OrgueUpdateBuffet(OrgueUpdateMixin):
+    """
+    Mise à jour du buffet d'un orgue
+    """
     model = Orgue
     form_class = orgue_forms.OrgueBuffetForm
     template_name = "orgues/orgue_form_buffet.html"
@@ -256,6 +280,9 @@ class OrgueUpdateBuffet(OrgueUpdateMixin):
 
 
 class OrgueUpdateLocalisation(OrgueUpdateMixin):
+    """
+    Mise à jour de la localisation d'un orgue
+    """
     form_class = orgue_forms.OrgueLocalisationForm
     permission_required = "orgues.change_localisation"
     success_message = 'Localisation mise à jour, merci !'
@@ -296,16 +323,14 @@ class OrgueDelete(FabDeleteView):
 
 class EvenementList(FabListView):
     """
-    Voir et éditer la liste des évenements d'un orgue
+    Liste des évenements associés à un orgue
     """
     model = Evenement
     permission_required = "orgues.add_evenement"
 
     def get_queryset(self):
         self.orgue = get_object_or_404(Orgue, uuid=self.kwargs["orgue_uuid"])
-        queryset = super().get_queryset()
-        queryset = queryset.filter(orgue=self.orgue)
-        return queryset
+        return self.orgue.evenements.all()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
@@ -314,6 +339,10 @@ class EvenementList(FabListView):
 
 
 class TypeJeuCreateJS(FabCreateViewJS):
+    """
+    Création d'un nouveau type de jeu.
+    Cette vue est appelée par du code javascript.
+    """
     model = TypeJeu
     permission_required = "orgues.add_typejeu"
     fields = ["nom"]
@@ -331,6 +360,9 @@ class TypeJeuCreateJS(FabCreateViewJS):
 
 
 class TypeJeuUpdate(FabUpdateView):
+    """
+    Mise à jour d'un type de jeu
+    """
     model = TypeJeu
     permission_required = "orgues.change_typejeu"
     fields = ["nom"]
@@ -343,7 +375,7 @@ class TypeJeuUpdate(FabUpdateView):
 class TypeJeuListJS(FabView):
     """
     Liste dynamique utilisée pour filtrer les jeux d'orgues dans les menus déroulants select2.
-    Les jeux sont triés par nombre d'apparitions dans les claviers (jeux les plus populaires apparaissent en premier)
+    On utilise le moteur de recherche meilisearch pour chercher les jeux
     documentation : https://select2.org/data-sources/ajax
     """
     permission_required = "orgues.view_jeu"
@@ -374,7 +406,6 @@ class TypeJeuListJS(FabView):
 class FacteurListJS(FabListView):
     """
     Liste dynamique utilisée pour filtrer les facteurs d'orgue dans les menus déroulants select2.
-
     documentation : https://select2.org/data-sources/ajax
     """
     model = Facteur
@@ -397,6 +428,9 @@ class FacteurListJS(FabListView):
 
 
 class EvenementCreate(FabCreateView):
+    """
+    Création d'un nouvel évenement associé à un orgue
+    """
     model = Evenement
     permission_required = "orgues.add_evenement"
     form_class = orgue_forms.EvenementForm
@@ -417,6 +451,9 @@ class EvenementCreate(FabCreateView):
 
 
 class EvenementUpdate(FabUpdateView):
+    """
+    Mise à jour d'un évenement
+    """
     model = Evenement
     permission_required = "orgues.change_evenement"
     form_class = orgue_forms.EvenementForm
@@ -436,6 +473,9 @@ class EvenementUpdate(FabUpdateView):
 
 
 class EvenementDelete(FabDeleteView):
+    """
+    Suppression d'un événement
+    """
     model = Evenement
     permission_required = "orgues.delete_evenement"
     success_message = "Evenement supprimé, merci !"
@@ -450,6 +490,9 @@ class EvenementDelete(FabDeleteView):
 
 
 class ClavierCreate(FabView):
+    """
+    Ajout d'un clavier
+    """
     model = Clavier
     permission_required = "orgues.add_clavier"
     form_class = orgue_forms.ClavierForm
@@ -491,6 +534,9 @@ class ClavierCreate(FabView):
 
 
 class ClavierUpdate(FabUpdateView):
+    """
+    Mise à jour d'un clavier
+    """
     model = Clavier
     permission_required = "orgues.change_clavier"
     form_class = orgue_forms.ClavierForm
@@ -531,6 +577,9 @@ class ClavierUpdate(FabUpdateView):
 
 
 class ClavierDelete(FabDeleteView):
+    """
+    Suppression d'un clavier
+    """
     model = Clavier
     permission_required = "orgues.delete_clavier"
     success_message = "Clavier supprimé, merci !"
@@ -545,6 +594,10 @@ class ClavierDelete(FabDeleteView):
 
 
 class FacteurCreateJS(FabCreateViewJS):
+    """
+    Création d'un nouveau facteur.
+    Vue appelée par du code javascript
+    """
     model = Facteur
     permission_required = "orgues.add_facteur"
     fields = "__all__"
@@ -557,6 +610,9 @@ class FacteurCreateJS(FabCreateViewJS):
 
 
 class FichierList(FabListView):
+    """
+    Liste des facteurs
+    """
     model = Fichier
     permission_required = "orgues.add_fichier"
     paginate_by = 50
@@ -573,6 +629,9 @@ class FichierList(FabListView):
 
 
 class FichierCreate(FabCreateView):
+    """
+    Création d'un fichier associé à un orgue
+    """
     model = Fichier
     permission_required = "orgues.add_fichier"
     form_class = orgue_forms.FichierForm
@@ -596,6 +655,9 @@ class FichierCreate(FabCreateView):
 
 
 class FichierDelete(FabDeleteView):
+    """
+    Suppression d'un fichier associé à un orgue
+    """
     model = Fichier
     permission_required = "orgues.delete_fichier"
     success_message = "Fichier supprimé, merci !"
@@ -607,7 +669,7 @@ class FichierDelete(FabDeleteView):
 class ImageList(FabListView):
     """
     Liste des images de l'orgue.
-    Un POST sur cette vue permet de réordonner les images.
+    Un POST sur cette vue permet de réordonner les images
     """
     model = Image
     permission_required = "orgues.view_image"
@@ -635,7 +697,7 @@ class ImageList(FabListView):
 class ImageCreate(FabView):
     """
     Vue de chargement d'une image.
-    Les images sont chargées et redimensionnée automatique en javascript côté client.
+    Les images sont chargées et redimensionnée automatiquement en javascript côté client.
     """
     permission_required = "orgues.add_image"
     template_name = "orgues/image_create.html"
@@ -677,7 +739,7 @@ class ImageDelete(FabDeleteView):
 
 class ImagePrincipaleUpdate(FabUpdateView):
     """
-    Rognage de l'image principale d'un orgue dans le but de créer une vignette (utilise ajax et cropper.js)
+    Séléction et rognage de l'image principale d'un orgue dans le but de créer une vignette (utilise ajax et cropper.js)
     """
     model = Image
     fields = ['thumbnail_principale']
@@ -851,6 +913,9 @@ class OrgueExport(FabView):
 
 
 class Dashboard(FabView):
+    """
+    Dashboard d'avancement réservé aux admins
+    """
     permission_required = 'orgues.add_orgue'
 
     def get(self, request, *args, **kwargs):

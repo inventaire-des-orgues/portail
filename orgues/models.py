@@ -677,6 +677,7 @@ class Fichier(models.Model):
     )
 
 
+
 def chemin_image(instance, filename):
     return os.path.join(str(instance.orgue.code_departement), instance.orgue.codification, "images", filename)
 
