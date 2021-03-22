@@ -54,6 +54,11 @@ les suppressions d'orgues.
 Pour mettre à jour l'index de recherche après ces types de modifications, il faut lancer la commande `build_meilisearch_index`.
 En production cette commande est lancée toutes les nuits (à 2 h) pour garantir que l'index soit à jour. 
 
+Si l'installation de meilisearch ne fonctionne pas, on peut utiliser un moteur de recherche dégradé en paramétrant : 
+
+```python
+MEILISEARCH_URL = False
+```
 
 # Faire un import de données sur le serveur : 
 

@@ -768,7 +768,7 @@ def update_orgue_in_index(sender, instance, **kwargs):
     """
     Quand un orgue est modifié, on met à jour l'index des orgues
     """
-    if hasattr(settings, 'MEILISEARCH_URL'):
+    if settings.MEILISEARCH_URL:
         from orgues.api.serializers import OrgueResumeSerializer
         client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
         orgue = OrgueResumeSerializer(instance).data
@@ -780,7 +780,7 @@ def update_type_jeu_in_index(sender, instance, **kwargs):
     """
     Quand un type de jeu est modifié, on met à jour l'index des types de jeux
     """
-    if hasattr(settings, 'MEILISEARCH_URL'):
+    if settings.MEILISEARCH_URL:
         client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
         index = client.get_index(uid='types_jeux')
         index.add_documents([{"id":instance.id,"nom":str(instance)}])
@@ -791,7 +791,7 @@ def update_image_in_index(sender, instance, **kwargs):
     """
     Quand une vignette est modifiée, on met à jour l'index des orgues
     """
-    if hasattr(settings, 'MEILISEARCH_URL') and instance.is_principale:
+    if settings.MEILISEARCH_URL and instance.is_principale:
         from orgues.api.serializers import OrgueResumeSerializer
         client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
         orgue = OrgueResumeSerializer(instance.orgue).data
