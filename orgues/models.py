@@ -29,8 +29,6 @@ class Facteur(models.Model):
         return self.nom
 
 
-
-
 class Orgue(models.Model):
     CHOIX_TYPE_OSM = (
         ("node", "Nœud"),
@@ -741,7 +739,8 @@ class Image(models.Model):
         return super().delete()
 
     class Meta:
-        ordering = ['order','-created_date']
+        ordering = ['order', '-created_date']
+
 
 class Accessoire(models.Model):
     """
