@@ -31,13 +31,16 @@ class OrgueGeneralInfoForm(forms.ModelForm):
         if not self.request.user.has_perm('orgues.edition_avancee'):
             self.fields['edifice'].disabled = True
             self.fields['edifice'].help_text = 'Cette information est figée'
+            self.fields['references_palissy'].disabled = True
+            self.fields['references_palissy'].help_text = 'Cette information est figée'
+
 
 INSTRUMENTALE_COLUMNS = {
     "transmission_notes": 6,
     "transmission_commentaire": 6,
     "tirage_jeux": 6,
     "tirage_commentaire": 6,
-    "temperament":12,
+    "temperament": 12,
     "diapason": 4,
     "sommiers": 12,
     "soufflerie": 12,
@@ -49,7 +52,6 @@ LOCALISATION_COLUMNS = {
     "code_insee": 12,
     "ancienne_commune": 12,
     "adresse": 12,
-    "code_departement": 3,
     "departement": 4,
     "region": 5,
     "latitude": 6,
@@ -68,7 +70,7 @@ class OrgueLocalisationForm(forms.ModelForm):
         self.request = kwargs.pop('request', None)
         super().__init__(*args, **kwargs)
         if not self.request.user.has_perm('orgues.edition_avancee'):
-            for field in ['commune','code_insee','code_departement','departement','region']:
+            for field in ['commune', 'code_insee', 'departement', 'region']:
                 self.fields[field].disabled = True
                 self.fields[field].help_text = 'Cette information est figée'
 
@@ -156,12 +158,6 @@ class FichierForm(forms.ModelForm):
     class Meta:
         model = Fichier
         fields = ["file", "description"]
-
-
-class ImageForm(forms.ModelForm):
-    class Meta:
-        model = Image
-        fields = ["image", "legende", "credit"]
 
 
 class SourceForm(forms.ModelForm):

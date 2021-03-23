@@ -5,114 +5,82 @@
 
 {% block help-link %}https://docs.inventaire-des-orgues.fr/fiche-orgue/#images{% endblock %}
 
+
+
 {% block card-body %}
-  <h5 class="card-title mb-4">
-    Images
-  </h5>
-  {% if form.errors %}
-    {% for field in form %}
-      {% for error in field.errors %}
-        <div class="alert alert-danger">
-          <strong>{{ field.label }} : {{ error|escape }}</strong>
-        </div>
-      {% endfor %}
-    {% endfor %}
-    {% for error in form.non_field_errors %}
-      <div class="alert alert-danger">
-        <strong>{{ error|escape }}</strong>
-      </div>
-    {% endfor %}
-  {% endif %}
-  <table class="table table-bordered">
-  {% if object_list %}
-    <thead>
-    <tr>
-      <th>Image</th>
-      <th>Image principale ?
-        <i class="fa fa-info-circle" data-toggle="tooltip"
-            title="L'image principale est utilisée dans les vignettes de la page d'accueil et en haut de la page de présentation d'un orgue"></i></th>
-      <th width="200px">Légende</th>
-      <th>Crédit</th>
-      <th width="30px">Supprimer</th>
-    </tr>
-    </thead>
-  {% endif %}
-    <tbody>
-    {% for image in object_list %}
-      <tr>
-        <td><a href="{{ image.image.url }}" target="_blank"><img src="{{ image.vignette.url }}" alt="" width="90px;"></a></td>
-        <td>
-          {% if image.is_principale %}
-            Oui (<a href="{% url 'orgues:image-principale' image.pk %}">modifier la vignette</a>)
-          {% else %}
-            Non (<a href="{% url 'orgues:image-principale' image.pk %}">choisir & définir la vignette</a>)
-          {% endif %}</td>
-        <td>{{ image.legende|default_if_none:"" }}</td>
-        <td>{{ image.credit|default_if_none:"Aucun" }}</td>
-        <td>
-          <a href="{% url 'orgues:image-update' image.pk %}" class="btn btn-outline btn-xs">modifier</a>
-          <form action="{% url 'orgues:image-delete' image.pk %}" method="post">{% csrf_token %}
-            <button type="submit" class="btn btn-outline btn-danger btn-xs">Supprimer</button>
-          </form>
-        </td>
-      </tr>
-    {% empty %}
-      <tr>
-        <td colspan="10">Aucune image</td>
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-  <p class="text-right">
-    <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#exampleModal">
-      <i class="fa fa-plus"></i> Ajouter une image
-    </button>
+  <p>
+    Cliquer sur <i class="icon icon-edit"></i> pour modifier le crédit ou la légende d'une image<br>
+    Cliquer sur <i class="icon icon-star"></i> pour définir une image comme vignette principale <br>
+    Cliquer sur <i class="icon icon-trash"></i> pour supprimer une image <br>
+    Cliquer sur <i class="icon icon-move"></i> pour déplacer les images et les réordonner
   </p>
-  <!-- Modal -->
-{% endblock %}
 
-
-
-{% block modal %}
-  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Nouvelle image</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
+  <div class="row" id="image_list">
+    {% for image in object_list %}
+      <div class="col-lg-4 image" data-imagepk="{{ image.pk }}">
+        <div class="card">
+          <div class="portfolio-item img-zoom pb-0">
+            <div class="portfolio-item-wrap border-radius-top-5 ">
+              <div class="portfolio-image">
+                <a href="#"><img src="{{ image.thumbnail.url }}" alt=""></a>
+              </div>
+              <div class="portfolio-description p-0">
+                <a href="{% url 'orgues:image-update' image.pk %}">
+                  <i class="icon icon-edit"></i>
+                </a>
+                <a href="{% url 'orgues:image-principale' image.pk %}">
+                  <i class="icon icon-star"></i>
+                </a>
+                <a href="{% url 'orgues:image-delete' image.pk %}">
+                  <i class="icon icon-trash-2"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="card-body py-2 px-3">
+            {% if image.is_principale %}
+              <i class="fa fa-star fa-2x text-warning" style="position:absolute;z-index:100;top:10px;right:10px;"></i>
+            {% endif %}
+            <small>
+              {% if image.legende %}{{ image.legende|truncatechars:30 }} {% else %}Pas de légende {% endif %}<br>
+              Crédit : {{ image.credit|default_if_none:"?" }} <br>
+            </small>
+            <i class="icon-move" style="position:absolute;z-index:100;bottom:10px;right:10px;"></i>
+          </div>
         </div>
-        <form action="{% url 'orgues:image-create' orgue.uuid %}" method="post" enctype="multipart/form-data"> {% csrf_token %}
-          <div class="modal-body">
-            {% for field in form %}
-              {% include 'stack_field.html' %}
-            {% endfor %}
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-light" data-dismiss="modal">Annuler</button>
-            <button type="submit" class="btn btn-primary">Enregistrer</button>
-          </div>
-        </form>
       </div>
-    </div>
+    {% endfor %}
   </div>
+  <p>
+    <a href="{% url 'orgues:image-create' orgue.uuid %}" class="btn btn-sm btn-primary">
+      <i class="fa fa-plus"></i> Ajouter des images</a>
+  </p>
+
 {% endblock %}
 
 
 {% block js_extra_2 %}
 
-
-  <script type="text/javascript">
-    $('#id_image').bind('change', function () {
-      if ( this.files[0].size / 1024 / 1024 > 2 ) {
-        $("#savefile").hide();
-        $('#id_file').val("");
-        alert("Votre image est trop lourde, veuillez ne pas dépasser 2 Mo")
-      } else {
-        $("#savefile").show();
-      }
+  <script src="{% static 'plugins/sortable/sortable.min.js' %}"></script>
+  <script>
+    $(function(){
+      Sortable.create(image_list, {
+      handle: '.card-body',
+      onSort: function () {
+        var image_pks = $('#image_list .image').map(function () {
+          return $(this).data('imagepk');
+        }).get();
+        $.ajax({
+          method: "post",
+          url: "",
+          data: {image_pks: image_pks, csrfmiddlewaretoken: '{{ csrf_token }}'},
+          success: function (res) {
+            toastr.success('Nouvel ordre des images enregistré')
+          }
+        })
+      },
     });
+    })
   </script>
 
 
