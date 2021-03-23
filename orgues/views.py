@@ -269,6 +269,7 @@ class OrgueUpdate(OrgueUpdateMixin, FabUpdateView):
     form_class = orgue_forms.OrgueGeneralInfoForm
     success_message = 'Informations générales mises à jour !'
 
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['request'] = self.request
