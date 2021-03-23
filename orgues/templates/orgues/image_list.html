@@ -20,7 +20,7 @@
       <div class="col-lg-4 image" data-imagepk="{{ image.pk }}">
         <div class="card">
           <div class="portfolio-item img-zoom pb-0">
-            <div class="portfolio-item-wrap">
+            <div class="portfolio-item-wrap border-radius-top-5 ">
               <div class="portfolio-image">
                 <a href="#"><img src="{{ image.thumbnail.url }}" alt=""></a>
               </div>
@@ -63,7 +63,8 @@
 
   <script src="{% static 'plugins/sortable/sortable.min.js' %}"></script>
   <script>
-    Sortable.create(image_list, {
+    $(function(){
+      Sortable.create(image_list, {
       handle: '.card-body',
       onSort: function () {
         var image_pks = $('#image_list .image').map(function () {
@@ -79,6 +80,7 @@
         })
       },
     });
+    })
   </script>
 
 
