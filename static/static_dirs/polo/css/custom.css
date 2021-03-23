@@ -514,3 +514,8 @@ ul {
 
 [v-cloak]::before { content: "loading…" }
 
+/* Liens pour nagiguer entre les fiches d'orgues */
+a.link, a.link:visited, a.link:active {
+    color: inherit;
+    cursor: pointer;
+}
