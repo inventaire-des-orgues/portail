@@ -34,9 +34,10 @@
             {{ orgue.edifice|capfirst }} <br>
           </h2>
           <h4 class="text-muted">
-            {{ orgue.commune }}{% if orgue.ancienne_commune %} (anciennement {{ orgue.ancienne_commune }}){% endif %}, {{ orgue.departement }}
+            <a href="/orgues/?query={{ orgue.commune|urlencode }}" class="link">{{ orgue.commune }}</a>
+            {% if orgue.ancienne_commune %} (anciennement <a href="/orgues/?query={{ orgue.ancienne_commune|urlencode }}" class="link">{{ orgue.ancienne_commune }}</a>){% endif %}, <a href="/orgues/?query={{ orgue.departement|urlencode }}" class="link">{{ orgue.departement }}</a>
             <small>
-              | {{ orgue.designation|default_if_none:"Orgue" }}
+              | <a href="/orgues/?query={{ orgue.commune|add:' '|add:orgue.edifice|urlencode }}" class="link">{{ orgue.designation|default_if_none:"Orgue" }}</a>
             </small>
           </h4>
         </div>
@@ -217,7 +218,12 @@
                   {% if facteurs_evenements %}
                     <ul>
                       {% for evenement in facteurs_evenements %}
-                        <li>{{ evenement.facteurs.all|join:' & ' }} ({{ evenement.type }} {{ evenement.dates }})</li>
+                        <li>
+                          {% for facteur in evenement.facteurs.all %}
+                              <a href="/orgues/?query={{ facteur|urlencode }}" class="link">{{ facteur }}</a>
+                              {% if not forloop.last %} & {% endif %}
+                          {% endfor %}
+                          ({{ evenement.type }} {{ evenement.dates }})</li>
                       {% endfor %}
                     </ul>
                   {% else %}
