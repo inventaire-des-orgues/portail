@@ -28,6 +28,9 @@ class Facteur(models.Model):
     latitude_atelier = models.FloatField(null=True, blank=True, verbose_name="Latitude de l'atelier")
     longitude_atelier = models.FloatField(null=True, blank=True, verbose_name="Longitude de l'atelier")
 
+    class Meta:
+        ordering = ['latitude_atelier']
+
 
 class Orgue(models.Model):
     CHOIX_TYPE_OSM = (

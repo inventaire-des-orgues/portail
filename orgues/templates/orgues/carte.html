@@ -47,6 +47,17 @@
       {#popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor#}
     });
 
+    var facteur_icon = L.icon({
+      iconUrl: '{% static 'img/nonmh_icon.png' %}',
+      shadowUrl: '{% static 'img/marker-shadow.png' %}',
+
+      iconSize: [25, 41], // size of the icon
+      shadowSize: [41, 41], // size of the shadow
+      iconAnchor: [12, 41], // point of the icon which will correspond to marker's location
+      shadowAnchor: [12, 41],  // the same for the shadow
+      {#popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor#}
+    });
+
     var markersCluster = new L.MarkerClusterGroup({
       iconCreateFunction: function (cluster) {
         return L.divIcon({
@@ -57,8 +68,18 @@
       }
     });
 
-    $.getJSON("{% url 'orgues:orgue-list-js' %}", function (orgues) {
+    var markersClusterFacteur = new L.MarkerClusterGroup({
+      iconCreateFunction: function (cluster) {
+        return L.divIcon({
+          html: cluster.getChildCount(),
+          className: 'myclusterfacteur',
+          iconSize: null
+        });
+      }
+    });
 
+    $.getJSON("{% url 'orgues:orgue-list-js' %}", function (orgues) {
+      console.log("a");
       for (var i = 0; i < orgues.length; i++) {
 
 
@@ -77,6 +98,24 @@
       }
 
       carte_orgues.addLayer(markersCluster);
+
+
+    });
+
+    $.getJSON("{% url 'orgues:facteur-list-js-leaflet' %}", function (facteurs) {
+      console.log(facteurs);
+      for (var i = 0; i < facteurs.length; i++) {
+
+
+        var popup = '<p> <b>' + facteurs[i].nom + '</p> </b>';
+        console.log(facteurs[i]);
+        var latLng = new L.LatLng(facteurs[i].latitude_atelier, facteurs[i].longitude_atelier);
+        var marker = new L.Marker(latLng, {icon:facteur_icon}).bindPopup(popup);
+
+        markersClusterFacteur.addLayer(marker);
+      }
+
+      carte_orgues.addLayer(markersClusterFacteur);
 
 
     });

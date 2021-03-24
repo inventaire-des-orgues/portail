@@ -86,8 +86,21 @@ class OrgueListJS(View):
     """
 
     def get(self, request, *args, **kwargs):
+        print("passé par là")
         data = Orgue.objects.filter(latitude__isnull=False).values("slug", "commune", "edifice", "latitude",
                                                                    "longitude", 'emplacement', "references_palissy")
+        return JsonResponse(list(data), safe=False)
+
+
+class FacteurListJSLeaflet(View):
+    """
+    Cette vue est requêtée par Leaflet lors de l'affichage de la carte de France
+    """
+
+    def get(self, request, *args, **kwargs):
+        print("passé par ici")
+        data = Facteur.objects.filter(latitude_atelier__isnull=False).values("nom", "latitude_atelier", "longitude_atelier")
+        print("abcdefghijklm", data)
         return JsonResponse(list(data), safe=False)
 
 
@@ -365,6 +378,7 @@ class FacteurListJS(FabListView):
     paginate_by = 30
 
     def get_queryset(self):
+        print("Passé par ici et là !")
         queryset = super().get_queryset()
         query = self.request.GET.get("search")
         if query:
