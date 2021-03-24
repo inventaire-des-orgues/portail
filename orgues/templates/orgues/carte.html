@@ -79,7 +79,6 @@
     });
 
     $.getJSON("{% url 'orgues:orgue-list-js' %}", function (orgues) {
-      console.log("a");
       for (var i = 0; i < orgues.length; i++) {
 
 
@@ -103,12 +102,9 @@
     });
 
     $.getJSON("{% url 'orgues:facteur-list-js-leaflet' %}", function (facteurs) {
-      console.log(facteurs);
       for (var i = 0; i < facteurs.length; i++) {
 
-
         var popup = '<p> <b>' + facteurs[i].nom + '</p> </b>';
-        console.log(facteurs[i]);
         var latLng = new L.LatLng(facteurs[i].latitude_atelier, facteurs[i].longitude_atelier);
         var marker = new L.Marker(latLng, {icon:facteur_icon}).bindPopup(popup);
 
