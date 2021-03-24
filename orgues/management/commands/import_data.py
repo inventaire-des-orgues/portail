@@ -91,6 +91,7 @@ class Command(BaseCommand):
                     orgue.sommiers = row.get("sommiers")
                     orgue.soufflerie = row.get("soufflerie")
                     orgue.transmission_notes = row.get("transmission_notes")
+                    orgue.temperament = row.get("temperament")
                     orgue.transmission_commentaire = row.get("transmission_commentaire")
                     orgue.tirage_jeux = row.get("tirage_jeux")
                     orgue.tirage_commentaire = row.get("tirage_commentaire")
@@ -106,6 +107,10 @@ class Command(BaseCommand):
                     for nom in row.get("accessoires", []):
                         acc = Accessoire.objects.get(nom=nom)
                         orgue.accessoires.add(acc)
+
+                    for nom in row.get("entretien", []):
+                        facteur = Orgue.objects.get(entretien=nom)
+                        orgue.entretien.add(facteur)
 
                     for evenement in row.get("evenements", []):
                         e = Evenement.objects.create(
