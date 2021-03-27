@@ -11,7 +11,7 @@ RetrieveUpdateDestroyAPI views
 """
 from django.urls import include, path
 from rest_framework import routers
-from orgues.api.views import OrgueViewSet
+from orgues.api.views import OrgueViewSet, ConfigView
 
 
 router = routers.DefaultRouter()
@@ -19,4 +19,5 @@ router.register(r'orgues', OrgueViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('config.json', ConfigView.as_view())
 ]
