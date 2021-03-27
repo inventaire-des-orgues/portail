@@ -11,7 +11,7 @@
                 <label for="">Département</label>
                 <select v-model="departement" class="form-control">
                   <option value="">Tous les départements</option>
-                  <option v-for="departement in departements" :value="departement">((departement))</option>
+                  <option v-for="departement in departements" :value="departement[1]">((departement[0])) ((departement[1]))</option>
                 </select>
               </div>
               <div class="form-group">
