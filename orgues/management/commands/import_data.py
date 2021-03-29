@@ -1,5 +1,9 @@
 import os
 import json
+import requests
+import tempfile
+import traceback
+
 from tqdm import tqdm
 from django.core.files import File
 from django.core.management.base import BaseCommand
@@ -16,6 +20,8 @@ class Command(BaseCommand):
                             help='Chemin vers le dossier contenant les orgues à importer')
 
         parser.add_argument('--delete', help='Supprime les orgues, jeux et claviers existants')
+
+        parser.add_argument('--create', help='Crée les données si elle n\'existe pas (facteur, acessoires, typejeux, ...)')
 
         parser.add_argument('--codesfile', nargs=1, type=str,
                             help='Chemin vers le dossier contenant les codifications des orgues à ne pas effacer')
@@ -48,6 +54,7 @@ class Command(BaseCommand):
             count_to_del = to_delete.count()
             print("J'efface {} orgues".format(str(count_to_del)))
             to_delete.delete()
+        getFns = "get_or_create" if options.get("create") else "get"
         with open(options['path'][0], "r", encoding="utf-8") as f:
             print('Lecture JSON et import des orgues.')
             rows = json.load(f)
@@ -104,7 +111,7 @@ class Command(BaseCommand):
                     orgue.save()
 
                     for nom in row.get("accessoires", []):
-                        acc = Accessoire.objects.get(nom=nom)
+                        acc = Accessoire.objects.get_or_create(nom=nom) if options.get("create") else Accessoire.objects.get(nom=nom)
                         orgue.accessoires.add(acc)
 
                     for evenement in row.get("evenements", []):
@@ -116,7 +123,7 @@ class Command(BaseCommand):
                         )
 
                         for nom in evenement.get("facteurs"):
-                            fac = Facteur.objects.get(nom=nom)
+                            fac = Facteur.get(nom=nom)
                             e.facteurs.add(fac)
 
                     for clavier in row.get("claviers", []):
@@ -137,8 +144,15 @@ class Command(BaseCommand):
                             )
 
                     for image in row.get("images", []):
-                        im = Image.objects.create(orgue=orgue, credit=image.get("credit"))
-                        im.image.save(os.path.basename(image["chemin"]), File(open(image["chemin"], 'rb')))
+                        if image["chemin"]:
+                            im = Image.objects.create(orgue=orgue, credit=image.get("credit"))
+                            im.image.save(os.path.basename(image["chemin"]), File(open(image["chemin"], 'rb')))
+                        if (image["url"]):
+                            r = requests.get(image["url"])
+                            with tempfile.NamedTemporaryFile(prefix=orgue.slug, suffix=".jpg", mode="wb") as f:
+                                f.write(r.content)
+                                im = Image.objects.create(orgue=orgue, credit=image.get("credit"))
+                                im.image.save(orgue.slug+"jpg", File(open(f.name, "rb"))
 
                     for source in row.get("sources", []):
                         Source.objects.create(
@@ -157,3 +171,4 @@ class Command(BaseCommand):
 
                 except Exception as e:
                     print("Erreur sur l'orgue {} : {}".format(row['codification'], str(e)))
+                    traceback.print_exc()
