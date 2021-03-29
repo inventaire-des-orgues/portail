@@ -19,11 +19,18 @@ class Command(BaseCommand):
             TypeClavier.objects.get_or_create(nom=type_clavier)
 
         for jeu in data["types_jeux"]:
-
-            TypeJeu.objects.get_or_create(nom=jeu["nom"].strip(), hauteur=jeu["hauteur"].strip())
+            liste = TypeJeu.objects.filter(nom=jeu["nom"].strip(), hauteur=jeu["hauteur"].strip())
+            if len(liste) <= 1:
+                TypeJeu.objects.get_or_create(nom=jeu["nom"].strip(), hauteur=jeu["hauteur"].strip())
+            else :
+                print("Doublon : ", jeu, len(liste))
 
         for facteur in data["facteurs"]:
-            Facteur.objects.get_or_create(nom=facteur)
+            liste = Facteur.objects.filter(nom=facteur)
+            if len(liste) <= 1:
+                Facteur.objects.get_or_create(nom=facteur)
+            else :
+                print("Doublon : ", facteur, len(liste))
 
         for accessoire in data["type_accessoire"]:
             Accessoire.objects.get_or_create(nom=accessoire)
