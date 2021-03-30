@@ -1,0 +1,76 @@
+{% extends 'orgues/base_edition.html' %}
+{% load static %}
+
+{% block image_active %}active{% endblock %}
+
+{% block help-link %}https://docs.inventaire-des-orgues.fr/fiche-orgue/#images{% endblock %}
+
+{% block head_extra %}
+
+  <link href="https://unpkg.com/filepond/dist/filepond.min.css" rel="stylesheet"/>
+
+{% endblock %}
+
+
+{% block card-body %}
+  <div class="form-group">
+    <label for="">Précisez l'auteur des photos avant de commencer le chargement</label>
+    <input type="text" class="form-control" id="id_credit">
+  </div>
+  <input type="file" id="filepond" class="d-none">
+  <p class="text-right">
+    <a href="{% url 'orgues:image-list' orgue.uuid %}" class="btn btn-sm btn-primary">Retour</a>
+  </p>
+{% endblock %}
+
+
+{% block js_extra_2 %}
+
+  <script src="https://unpkg.com/filepond-plugin-image-transform/dist/filepond-plugin-image-transform.min.js"></script>
+  <script src="https://unpkg.com/filepond-plugin-image-resize/dist/filepond-plugin-image-resize.min.js"></script>
+  <script src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.min.js"></script>
+  <script src="https://unpkg.com/filepond/dist/filepond.min.js"></script>
+
+  <script>
+    $("#id_credit").keyup(function () {
+      if ($(this).val().length > 1) {
+        $("#filepond").removeClass("d-none")
+      } else {
+        $("#filepond").addClass("d-none")
+      }
+    })
+    const inputElement = document.querySelector('input[type="file"]');
+    FilePond.registerPlugin(FilePondPluginImageResize);
+    FilePond.registerPlugin(FilePondPluginFileValidateType);
+    FilePond.registerPlugin(FilePondPluginImageTransform);
+
+    const pond = FilePond.create(inputElement, {
+      acceptedFileTypes: ['image/*'],
+      labelFileTypeNotAllowed: 'Type de fichier invalide',
+      allowMultiple: true,
+      allowRevert: false,
+      allowImageResize: true,
+      imageResizeTargetWidth: {{MAX_PIXEL_WIDTH}},
+      imageResizeUpscale: false,
+      imageResizeMode: 'contain',
+      labelTapToCancel: 'Cliquez pour annuler',
+      labelIdle: 'Cliquez ou déposez vos images ici',
+      labelFileProcessing: 'Chargement',
+      labelFileProcessingComplete: 'Chargement terminé',
+      credits: null,
+      server: {
+        process: {
+          url: '{% url 'orgues:image-create' orgue.uuid %}',
+          ondata: function (formData) {
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+            formData.append('credit', $("#id_credit").val());
+            return formData;
+          }
+        }
+      }
+    });
+  </script>
+
+
+{% endblock %}
+

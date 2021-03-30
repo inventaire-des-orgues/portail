@@ -60,8 +60,8 @@ class Command(BaseCommand):
                     assert row.get("etat") in [c[0] for c in Orgue.CHOIX_ETAT] + [None]
                     assert row.get("tirage_jeux") in [c[0] for c in Orgue.CHOIX_TIRAGE] + [None]
                     assert row.get("transmission_notes") in [c[0] for c in Orgue.CHOIX_TRANSMISSION] + [None]
-                    assert row.get("departement") in [c[0] for c in Orgue.CHOIX_DEPARTEMENT] + [None]
-                    assert row.get("code_departement") in [c[0] for c in Orgue.CHOIX_CODE_DEPARTEMENT] + [None]
+                    assert row.get("departement") in [c[1] for c in Orgue.CHOIX_DEPARTEMENT] + [None]
+                    assert row.get("code_departement") in [c[0] for c in Orgue.CHOIX_DEPARTEMENT] + [None]
                     assert row.get("region") in [c[0] for c in Orgue.CHOIX_REGION] + [None]
                     assert row.get("osm_type") in [c[0] for c in Orgue.CHOIX_TYPE_OSM] + [None]
 
