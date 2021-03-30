@@ -519,6 +519,14 @@ class Clavier(models.Model):
         auto_now_add=False,
         verbose_name='Update date'
     )
+    @property
+    def expressif(self):
+        """
+        Affiche le terme expressif en fonction du type de clavier
+        """
+        if self.is_expressif:
+            return "expressive" if self.type.nom in ["Pédale", "Bombarde", "Résonnance"] else "expressif"
+        return ""
 
     def save(self, *args, **kwargs):
         self.orgue.completion = self.orgue.calcul_completion()
