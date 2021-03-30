@@ -11,12 +11,12 @@
                 <label for="">Département</label>
                 <select v-model="departement" class="form-control">
                   <option value="">Tous les départements</option>
-                  <option v-for="departement in departements" :value="departement">((departement))</option>
+                  <option v-for="departement in departements" :value="departement[1]">((departement[0])) ((departement[1]))</option>
                 </select>
               </div>
               <div class="form-group">
                 <label for="query">Recherche <i class="fa fa-info-circle tex-primary" data-toggle="tooltip" data-title="Rechercher une commune, une église, un facteur ..."></i></label>
-                <input id="query" v-model="query" placeholder="Commune, facteur, église ..." class="form-control" value="{{ request.GET.facteur }}"/>
+                <input id="query" v-model="input" placeholder="Commune, facteur, église ..." class="form-control" value="{{ request.GET.facteur }}"/>
               </div>
               <div class="text-center d-none d-xl-block">
                 <img src="{% static 'img/conseil_image_principale.png' %}" alt="" style="width: 100%">
@@ -30,8 +30,16 @@
             </div>
           </div>
         </div>
-        <div class="col-xl-8">
-          <p class="text-muted text-center">((hits)) résultat<span v-if="hits>0">s</span></p>
+        <div class="col-xl-8" v-cloak>
+          <p class="text-muted text-center" v-if="!loading">((hits)) résultat<span v-if="hits>0">s</span></p>
+          <div class="card" v-if="loading">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <strong>Chargement...</strong>
+                <div class="spinner-border ml-auto" role="status" aria-hidden="true"></div>
+              </div>
+            </div>
+          </div>
           <div v-for="orgue in orgues" class="card shadow-sm vignette mb-lg-4 mb-sm-5 orgue-card" @click="select(orgue)">
             <div class="row no-gutters">
               <div class="col-lg-4 la_vignette" style="background: #868e96;">
@@ -78,7 +86,7 @@
               </div>
             </div>
           </div>
-          <ul class="pagination" v-if="hits > 0 && page <=pages">
+          <ul class="pagination" v-if="!loading && hits > 0 && page <=pages">
             <li class="page-item">
               <button class="page-link" @click="previous_page" v-if="page > 1">
                 <span class="fa fa-chevron-left"></span>
@@ -93,7 +101,7 @@
               </button>
             </li>
           </ul>
-          <p class="text-center lead py-50" v-if="orgues.length == 0">
+          <p class="text-center lead py-50" v-if="!loading && orgues.length == 0">
             L'orgue que vous recherchez n'est pas répertorié ? <br>
             Si cela est le cas vous pouvez le signaler ici <br>
             <a class="btn btn-primary rounded-pill mt-2" href="{% url 'contact' %}">Faire la demande</a>
@@ -113,10 +121,11 @@
     var app = new Vue({
       el: '#app',
       data: {
-        query: '{{ query|default_if_none:'' }}',
+        debouncedInput: '{{ query|default_if_none:'' }}',
         hits: 0,
         page: {% if page %}{{ page}}{% else %}1{% endif %},
         pages: 0,
+        loading: false,
         orgues: [],
         departement: '{{ departement|default_if_none:'' }}',
         departements: departements
@@ -125,7 +134,7 @@
         this.fetchData();
       },
       watch: {
-        query: function () {
+        debouncedInput: function () {
           this.page = 1
           this.fetchData()
         },
@@ -134,13 +143,27 @@
           this.fetchData()
         },
       },
+      computed: {
+        input: {
+          get() {
+            return this.debouncedInput
+          },
+          set(val) {
+            if (this.timeout) clearTimeout(this.timeout)
+            this.timeout = setTimeout(() => {
+              this.debouncedInput = val
+            }, 300)
+          }
+        }
+      },
       methods: {
         fetchData: function (scrolltop) {
           var scrolltop = scrolltop || false;
           var self = this;
-          var query = self.query
+          var query = self.debouncedInput
           var departement = self.departement
           var page = self.page
+          this.loading = true
 
           var pageUrl = '?page=' + page;
           if (departement) {
@@ -156,14 +179,16 @@
             data: {
               csrfmiddlewaretoken: '{{ csrf_token }}',
               query: query,
-              pageUrl:pageUrl,
+              pageUrl: pageUrl,
               page: page,
               departement: departement
             },
             error: function (resp) {
+              self.loading = false
               toastr.error(resp.responseJSON.message)
             },
             success: function (results) {
+              self.loading = false
               self.orgues = results.hits
               self.hits = results.nbHits
               self.pages = results.pages
@@ -171,25 +196,29 @@
               window.history.pushState('', '', pageUrl);
             },
           });
-        },
+        }
+        ,
         previous_page: function () {
           if (this.page <= 0) {
             return
           }
           this.page -= 1;
           this.fetchData(true);
-        },
+        }
+        ,
         next_page: function () {
           if (this.page >= this.pages) {
             return
           }
           this.page += 1;
           this.fetchData(true);
-        },
+        }
+        ,
         select: function (orgue) {
           window.location.href = orgue.url;
         }
-      },
+      }
+      ,
       delimiters: ["((", "))"]
     })
   </script>

@@ -24,7 +24,7 @@ def accueil(request):
     Page d'accueil
     """
     context = {
-       "departements":[d[0] for d in Orgue.CHOIX_DEPARTEMENT]
+       "departements":Orgue.CHOIX_DEPARTEMENT
     }
     return render(request, "accueil.html", context)
 
