@@ -12,7 +12,7 @@ from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.text import slugify
 from imagekit.models import ImageSpecField, ProcessedImageField
-from pilkit.processors import ResizeToFill, ResizeToFit,Transpose
+from pilkit.processors import ResizeToFill, ResizeToFit, Transpose
 
 from accounts.models import User
 
@@ -207,7 +207,6 @@ class Orgue(models.Model):
 
     )
 
-
     # Informations générales
     designation = models.CharField(max_length=300, null=True, verbose_name="Désignation", default="orgue", blank=True)
     is_polyphone = models.BooleanField(default=False, verbose_name="Orgue polyphone de la manufacture Debierre ?")
@@ -246,8 +245,8 @@ class Orgue(models.Model):
     commune = models.CharField(max_length=100)
     code_insee = models.CharField(max_length=5)
     ancienne_commune = models.CharField(max_length=100, null=True, blank=True)
-    departement = models.CharField(verbose_name="Département", choices=[(c[1],c[1]) for c in CHOIX_DEPARTEMENT], max_length=50)
-    code_departement = models.CharField(choices=[(c[0],c[0]) for c in CHOIX_DEPARTEMENT], verbose_name="Code département", max_length=3)
+    departement = models.CharField(verbose_name="Département", choices=[(c[1], c[1]) for c in CHOIX_DEPARTEMENT], max_length=50)
+    code_departement = models.CharField(choices=[(c[0], c[0]) for c in CHOIX_DEPARTEMENT], verbose_name="Code département", max_length=3)
     region = models.CharField(verbose_name="Région", choices=CHOIX_REGION, max_length=50)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
@@ -521,6 +520,7 @@ class Clavier(models.Model):
         auto_now_add=False,
         verbose_name='Update date'
     )
+
     @property
     def expressif(self):
         """
@@ -692,7 +692,6 @@ class Fichier(models.Model):
     )
 
 
-
 def chemin_image(instance, filename):
     return os.path.join(str(instance.orgue.code_departement), instance.orgue.codification, "images", filename)
 
@@ -710,15 +709,15 @@ class Image(models.Model):
     is_principale = models.BooleanField(default=False, editable=False)
     legende = models.CharField(verbose_name="Légende", max_length=400, null=True, blank=True)
     credit = models.CharField(verbose_name="Crédit", max_length=200, null=True, blank=True)
-    order = models.IntegerField(default=0,verbose_name="Ordre d'affichage")
+    order = models.IntegerField(default=0, verbose_name="Ordre d'affichage")
     # Champs automatiques
     thumbnail_principale = ProcessedImageField(upload_to=chemin_image,
-                                               processors=[Transpose(),ResizeToFill(600, 450)],
+                                               processors=[Transpose(), ResizeToFill(600, 450)],
                                                format='JPEG',
                                                options={'quality': 100})
 
     thumbnail = ImageSpecField(source='image',
-                               processors=[Transpose(),ResizeToFill(600, 450)],
+                               processors=[Transpose(), ResizeToFill(600, 450)],
                                format='JPEG',
                                options={'quality': 100})
     vignette = ImageSpecField(source='image',
@@ -727,7 +726,7 @@ class Image(models.Model):
                               options={'quality': 100})
 
     orgue = models.ForeignKey(Orgue, null=True, on_delete=models.CASCADE, related_name="images")
-    user = models.ForeignKey(User,null=True, blank=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
     created_date = models.DateTimeField(
         auto_now_add=True,
         auto_now=False,
@@ -750,7 +749,8 @@ class Image(models.Model):
         return super().delete()
 
     class Meta:
-        ordering = ['order','created_date']
+        ordering = ['order', 'created_date']
+
 
 class Accessoire(models.Model):
     """
@@ -784,6 +784,7 @@ def update_orgue_in_index(sender, instance, **kwargs):
         index = client.get_index(uid='orgues')
         index.add_documents([orgue])
 
+
 @receiver(post_save, sender=TypeJeu)
 def update_type_jeu_in_index(sender, instance, **kwargs):
     """
@@ -792,7 +793,7 @@ def update_type_jeu_in_index(sender, instance, **kwargs):
     if settings.MEILISEARCH_URL:
         client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
         index = client.get_index(uid='types_jeux')
-        index.add_documents([{"id":instance.id,"nom":str(instance)}])
+        index.add_documents([{"id": instance.id, "nom": str(instance)}])
 
 
 @receiver(post_save, sender=Image)
