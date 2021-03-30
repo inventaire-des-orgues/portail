@@ -22,11 +22,11 @@ class Facteur(models.Model):
     Pas celui qui distribue le courrier
     """
     nom = models.CharField(max_length=100)
-    def __str__(self):
-        return self.nom
-
     latitude_atelier = models.FloatField(null=True, blank=True, verbose_name="Latitude de l'atelier")
     longitude_atelier = models.FloatField(null=True, blank=True, verbose_name="Longitude de l'atelier")
+
+    def __str__(self):
+        return self.nom
 
 
 class Orgue(models.Model):
@@ -38,11 +38,15 @@ class Orgue(models.Model):
 
     CHOIX_PROPRIETAIRE = (
         ("commune", "Commune"),
+        ("interco", "Intercommunalité"),
         ("etat", "Etat"),
         ("association_culturelle", "Association culturelle"),
         ("diocese", "Diocèse"),
         ("paroisse", "Paroisse"),
         ("congregation", "Congrégation"),
+        ("etablissement_scolaire", "Etablissement scolaire"),
+        ("conservatoire", "Conservatoire ou Ecole de musique"),
+        ("hopital", "Hôpital"),
     )
 
     CHOIX_ETAT = (
@@ -50,6 +54,7 @@ class Orgue(models.Model):
         ('bon', "Bon : jouable, défauts mineurs"),
         ('altere', "Altéré : difficilement jouable"),
         ('degrade', "Dégradé ou en ruine : injouable"),
+        ('restauration', "En restauration (ou projet initié)")
     )
 
     CHOIX_TRANSMISSION = (
@@ -57,6 +62,7 @@ class Orgue(models.Model):
         ("mecanique_suspendue", "Mécanique suspendue"),
         ("mecanique_balanciers", "Mécanique à balanciers"),
         ("mecanique_barker", "Mécanique Barker"),
+        ("numerique", "Numérique"),
         ("electrique", "Electrique"),
         ("electrique_proportionnelle", "Electrique proportionnelle"),
         ("electro_pneumatique", "Electro-pneumatique"),
@@ -67,6 +73,7 @@ class Orgue(models.Model):
         ("mecanique", "Mécanique"),
         ("pneumatique_haute_pression", "Pneumatique haute pression"),
         ("pneumatique_basse_pression", "Pneumatique basse pression"),
+        ("numerique", "Numérique"),
         ("electrique", "Electrique"),
         ("electro_pneumatique", "Electro-pneumatique"),
     )
@@ -94,216 +101,112 @@ class Orgue(models.Model):
     )
 
     CHOIX_DEPARTEMENT = (
-        ('Ain', 'Ain'),
-        ('Aisne', 'Aisne'),
-        ('Allier', 'Allier'),
-        ('Alpes-de-Haute-Provence', 'Alpes-de-Haute-Provence'),
-        ('Hautes-Alpes', 'Hautes-Alpes'),
-        ('Alpes-Maritimes', 'Alpes-Maritimes'),
-        ('Ardennes', 'Ardennes'),
-        ('Ardèche', 'Ardèche'),
-        ('Ariège', 'Ariège'),
-        ('Aube', 'Aube'),
-        ('Aude', 'Aude'),
-        ('Aveyron', 'Aveyron'),
-        ('Bouches-du-Rhône', 'Bouches-du-Rhône'),
-        ('Calvados', 'Calvados'),
-        ('Cantal', 'Cantal'),
-        ('Charente', 'Charente'),
-        ('Charente-Maritime', 'Charente-Maritime'),
-        ('Cher', 'Cher'),
-        ('Corrèze', 'Corrèze'),
-        ('Corse-du-Sud', 'Corse-du-Sud'),
-        ('Haute-Corse', 'Haute-Corse'),
-        ("Côte-d'Or", "Côte-d'Or"),
-        ("Côtes-d'Armor", "Côtes-d'Armor"),
-        ('Creuse', 'Creuse'),
-        ('Dordogne', 'Dordogne'),
-        ('Doubs', 'Doubs'),
-        ('Drôme', 'Drôme'),
-        ('Eure', 'Eure'),
-        ('Eure-et-Loir', 'Eure-et-Loir'),
-        ('Finistère', 'Finistère'),
-        ('Gard', 'Gard'),
-        ('Haute-Garonne', 'Haute-Garonne'),
-        ('Gers', 'Gers'),
-        ('Gironde', 'Gironde'),
-        ('Hérault', 'Hérault'),
-        ('Ille-et-Vilaine', 'Ille-et-Vilaine'),
-        ('Indre', 'Indre'),
-        ('Indre-et-Loire', 'Indre-et-Loire'),
-        ('Isère', 'Isère'),
-        ('Jura', 'Jura'),
-        ('Landes', 'Landes'),
-        ('Loir-et-Cher', 'Loir-et-Cher'),
-        ('Loire', 'Loire'),
-        ('Haute-Loire', 'Haute-Loire'),
-        ('Loire-Atlantique', 'Loire-Atlantique'),
-        ('Loiret', 'Loiret'),
-        ('Lot', 'Lot'),
-        ('Lot-et-Garonne', 'Lot-et-Garonne'),
-        ('Lozère', 'Lozère'),
-        ('Maine-et-Loire', 'Maine-et-Loire'),
-        ('Manche', 'Manche'),
-        ('Marne', 'Marne'),
-        ('Haute-Marne', 'Haute-Marne'),
-        ('Mayenne', 'Mayenne'),
-        ('Meurthe-et-Moselle', 'Meurthe-et-Moselle'),
-        ('Meuse', 'Meuse'),
-        ('Morbihan', 'Morbihan'),
-        ('Moselle', 'Moselle'),
-        ('Nièvre', 'Nièvre'),
-        ('Nord', 'Nord'),
-        ('Oise', 'Oise'),
-        ('Orne', 'Orne'),
-        ('Pas-de-Calais', 'Pas-de-Calais'),
-        ('Puy-de-Dôme', 'Puy-de-Dôme'),
-        ('Pyrénées-Atlantiques', 'Pyrénées-Atlantiques'),
-        ('Hautes-Pyrénées', 'Hautes-Pyrénées'),
-        ('Pyrénées-Orientales', 'Pyrénées-Orientales'),
-        ('Bas-Rhin', 'Bas-Rhin'),
-        ('Haut-Rhin', 'Haut-Rhin'),
-        ('Rhône', 'Rhône'),
-        ('Haute-Saône', 'Haute-Saône'),
-        ('Saône-et-Loire', 'Saône-et-Loire'),
-        ('Sarthe', 'Sarthe'),
-        ('Savoie', 'Savoie'),
-        ('Haute-Savoie', 'Haute-Savoie'),
-        ('Paris', 'Paris'),
-        ('Seine-Maritime', 'Seine-Maritime'),
-        ('Seine-et-Marne', 'Seine-et-Marne'),
-        ('Yvelines', 'Yvelines'),
-        ('Deux-Sèvres', 'Deux-Sèvres'),
-        ('Somme', 'Somme'),
-        ('Tarn', 'Tarn'),
-        ('Tarn-et-Garonne', 'Tarn-et-Garonne'),
-        ('Var', 'Var'),
-        ('Vaucluse', 'Vaucluse'),
-        ('Vendée', 'Vendée'),
-        ('Vienne', 'Vienne'),
-        ('Haute-Vienne', 'Haute-Vienne'),
-        ('Vosges', 'Vosges'),
-        ('Yonne', 'Yonne'),
-        ('Territoire de Belfort', 'Territoire de Belfort'),
-        ('Essonne', 'Essonne'),
-        ('Hauts-de-Seine', 'Hauts-de-Seine'),
-        ('Seine-Saint-Denis', 'Seine-Saint-Denis'),
-        ('Val-de-Marne', 'Val-de-Marne'),
-        ("Val-d'Oise", "Val-d'Oise"),
-        ('Guadeloupe', 'Guadeloupe'),
-        ('Martinique', 'Martinique'),
-        ('Mayotte', 'Mayotte'),
-        ('Guyane', 'Guyane'),
-        ('La Réunion', 'La Réunion'),
-        ('Nouvelle-Calédonie', 'Nouvelle-Calédonie'),
-        ('Saint-Pierre-et-Miquelon', 'Saint-Pierre-et-Miquelon'),
+        ('01', 'Ain'),
+        ('02', 'Aisne'),
+        ('03', 'Allier'),
+        ('04', 'Alpes-de-Haute-Provence'),
+        ('05', 'Hautes-Alpes'),
+        ('06', 'Alpes-Maritimes'),
+        ('07', 'Ardennes'),
+        ('08', 'Ardèche'),
+        ('09', 'Ariège'),
+        ('10', 'Aube'),
+        ('11', 'Aude'),
+        ('12', 'Aveyron'),
+        ('13', 'Bouches-du-Rhône'),
+        ('14', 'Calvados'),
+        ('15', 'Cantal'),
+        ('16', 'Charente'),
+        ('17', 'Charente-Maritime'),
+        ('18', 'Cher'),
+        ('19', 'Corrèze'),
+        ('2A', 'Corse-du-Sud'),
+        ('2B', 'Haute-Corse'),
+        ("21", "Côte-d'Or"),
+        ("22", "Côtes-d'Armor"),
+        ('23', 'Creuse'),
+        ('24', 'Dordogne'),
+        ('25', 'Doubs'),
+        ('26', 'Drôme'),
+        ('27', 'Eure'),
+        ('28', 'Eure-et-Loir'),
+        ('29', 'Finistère'),
+        ('30', 'Gard'),
+        ('31', 'Haute-Garonne'),
+        ('32', 'Gers'),
+        ('33', 'Gironde'),
+        ('34', 'Hérault'),
+        ('35', 'Ille-et-Vilaine'),
+        ('36', 'Indre'),
+        ('37', 'Indre-et-Loire'),
+        ('38', 'Isère'),
+        ('39', 'Jura'),
+        ('40', 'Landes'),
+        ('41', 'Loir-et-Cher'),
+        ('42', 'Loire'),
+        ('43', 'Haute-Loire'),
+        ('44', 'Loire-Atlantique'),
+        ('45', 'Loiret'),
+        ('46', 'Lot'),
+        ('47', 'Lot-et-Garonne'),
+        ('48', 'Lozère'),
+        ('49', 'Maine-et-Loire'),
+        ('50', 'Manche'),
+        ('51', 'Marne'),
+        ('52', 'Haute-Marne'),
+        ('53', 'Mayenne'),
+        ('54', 'Meurthe-et-Moselle'),
+        ('55', 'Meuse'),
+        ('56', 'Morbihan'),
+        ('57', 'Moselle'),
+        ('58', 'Nièvre'),
+        ('59', 'Nord'),
+        ('60', 'Oise'),
+        ('61', 'Orne'),
+        ('62', 'Pas-de-Calais'),
+        ('63', 'Puy-de-Dôme'),
+        ('64', 'Pyrénées-Atlantiques'),
+        ('65', 'Hautes-Pyrénées'),
+        ('66', 'Pyrénées-Orientales'),
+        ('67', 'Bas-Rhin'),
+        ('68', 'Haut-Rhin'),
+        ('69', 'Rhône'),
+        ('70', 'Haute-Saône'),
+        ('71', 'Saône-et-Loire'),
+        ('72', 'Sarthe'),
+        ('73', 'Savoie'),
+        ('74', 'Haute-Savoie'),
+        ('75', 'Paris'),
+        ('76', 'Seine-Maritime'),
+        ('77', 'Seine-et-Marne'),
+        ('78', 'Yvelines'),
+        ('79', 'Deux-Sèvres'),
+        ('80', 'Somme'),
+        ('81', 'Tarn'),
+        ('82', 'Tarn-et-Garonne'),
+        ('83', 'Var'),
+        ('84', 'Vaucluse'),
+        ('85', 'Vendée'),
+        ('86', 'Vienne'),
+        ('87', 'Haute-Vienne'),
+        ('88', 'Vosges'),
+        ('89', 'Yonne'),
+        ('90', 'Territoire de Belfort'),
+        ('91', 'Essonne'),
+        ('92', 'Hauts-de-Seine'),
+        ('93', 'Seine-Saint-Denis'),
+        ('94', 'Val-de-Marne'),
+        ("95", "Val-d'Oise"),
+        ('971', 'Guadeloupe'),
+        ('972', 'Martinique'),
+        ('976', 'Mayotte'),
+        ('973', 'Guyane'),
+        ('974', 'La Réunion'),
+        ('975', 'Saint-Pierre-et-Miquelon'),
+        ('988', 'Nouvelle-Calédonie'),
 
     )
 
-    CHOIX_CODE_DEPARTEMENT = (
-        ('01', '01'),
-        ('02', '02'),
-        ('03', '03'),
-        ('04', '04'),
-        ('05', '05'),
-        ('06', '06'),
-        ('07', '07'),
-        ('08', '08'),
-        ('09', '09'),
-        ('10', '10'),
-        ('11', '11'),
-        ('12', '12'),
-        ('13', '13'),
-        ('14', '14'),
-        ('15', '15'),
-        ('16', '16'),
-        ('17', '17'),
-        ('18', '18'),
-        ('19', '19'),
-        ('21', '21'),
-        ('22', '22'),
-        ('23', '23'),
-        ('24', '24'),
-        ('25', '25'),
-        ('26', '26'),
-        ('27', '27'),
-        ('28', '28'),
-        ('29', '29'),
-        ('2A', '2A'),
-        ('2B', '2B'),
-        ('30', '30'),
-        ('31', '31'),
-        ('32', '32'),
-        ('33', '33'),
-        ('34', '34'),
-        ('35', '35'),
-        ('36', '36'),
-        ('37', '37'),
-        ('38', '38'),
-        ('39', '39'),
-        ('40', '40'),
-        ('41', '41'),
-        ('42', '42'),
-        ('43', '43'),
-        ('44', '44'),
-        ('45', '45'),
-        ('46', '46'),
-        ('47', '47'),
-        ('48', '48'),
-        ('49', '49'),
-        ('50', '50'),
-        ('51', '51'),
-        ('52', '52'),
-        ('53', '53'),
-        ('54', '54'),
-        ('55', '55'),
-        ('56', '56'),
-        ('57', '57'),
-        ('58', '58'),
-        ('59', '59'),
-        ('60', '60'),
-        ('61', '61'),
-        ('62', '62'),
-        ('63', '63'),
-        ('64', '64'),
-        ('65', '65'),
-        ('66', '66'),
-        ('67', '67'),
-        ('68', '68'),
-        ('69', '69'),
-        ('70', '70'),
-        ('71', '71'),
-        ('72', '72'),
-        ('73', '73'),
-        ('74', '74'),
-        ('75', '75'),
-        ('76', '76'),
-        ('77', '77'),
-        ('78', '78'),
-        ('79', '79'),
-        ('80', '80'),
-        ('81', '81'),
-        ('82', '82'),
-        ('83', '83'),
-        ('84', '84'),
-        ('85', '85'),
-        ('86', '86'),
-        ('87', '87'),
-        ('88', '88'),
-        ('89', '89'),
-        ('90', '90'),
-        ('91', '91'),
-        ('92', '92'),
-        ('93', '93'),
-        ('94', '94'),
-        ('95', '95'),
-        ('971', '971'),
-        ('972', '972'),
-        ('973', '973'),
-        ('974', '974'),
-        ('976', '976'),
-
-    )
 
     # Informations générales
     designation = models.CharField(max_length=300, null=True, verbose_name="Désignation", default="orgue", blank=True)
@@ -343,8 +246,8 @@ class Orgue(models.Model):
     commune = models.CharField(max_length=100)
     code_insee = models.CharField(max_length=5)
     ancienne_commune = models.CharField(max_length=100, null=True, blank=True)
-    departement = models.CharField(verbose_name="Département", choices=CHOIX_DEPARTEMENT, max_length=50)
-    code_departement = models.CharField(choices=CHOIX_CODE_DEPARTEMENT, verbose_name="Code département", max_length=3)
+    departement = models.CharField(verbose_name="Département", choices=[(c[1],c[1]) for c in CHOIX_DEPARTEMENT], max_length=50)
+    code_departement = models.CharField(choices=[(c[0],c[0]) for c in CHOIX_DEPARTEMENT], verbose_name="Code département", max_length=3)
     region = models.CharField(verbose_name="Région", choices=CHOIX_REGION, max_length=50)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
@@ -391,10 +294,12 @@ class Orgue(models.Model):
         ]
 
     def save(self, *args, **kwargs):
+        """
+        Le calcul de l'avancement se fait à chaque nouvel enregistrement
+        """
         self.completion = self.calcul_completion()
         if not self.slug:
             self.slug = slugify("orgue-{}-{}-{}".format(self.commune, self.edifice, self.codification))
-
         super().save(*args, **kwargs)
 
     @property
@@ -407,7 +312,7 @@ class Orgue(models.Model):
     @property
     def vignette(self):
         """
-        Récupère l'image principale de l'instrument
+        Récupère la vignette l'instrument, ou une vignette par défaut si elle n'existe pas
         """
         image_principale = self.image_principale
         if not image_principale:
@@ -500,7 +405,6 @@ class Orgue(models.Model):
     def infos_completions(self):
         """
         Informations et liens pour comprendre le calcul du taux d'avancement
-        :return:
         """
         return {
             "Commune définie": {
@@ -617,6 +521,14 @@ class Clavier(models.Model):
         auto_now_add=False,
         verbose_name='Update date'
     )
+    @property
+    def expressif(self):
+        """
+        Affiche le terme expressif en fonction du type de clavier
+        """
+        if self.is_expressif:
+            return "expressive" if self.type.nom in ["Pédale", "Bombarde", "Résonnance"] else "expressif"
+        return ""
 
     def save(self, *args, **kwargs):
         self.orgue.completion = self.orgue.calcul_completion()
@@ -658,7 +570,9 @@ class Evenement(models.Model):
         ("inscription_mh", "Inscription au titre des monuments historiques"),
     )
 
-    annee = models.IntegerField(verbose_name="Année")
+    annee = models.IntegerField(verbose_name="Année de début de l'évènement")
+    annee_fin = models.IntegerField(verbose_name="Année de fin de l'évènement", null=True, blank=True, help_text="Optionnelle")
+    circa = models.BooleanField(default=False, verbose_name="Cocher si dates approximatives")
     type = models.CharField(max_length=20, choices=CHOIX_TYPE)
     facteurs = models.ManyToManyField(Facteur, blank=True, related_name="evenements")
     resume = models.TextField(verbose_name="Résumé", max_length=700, blank=True, null=True,
@@ -667,8 +581,20 @@ class Evenement(models.Model):
     # Champs automatiques
     orgue = models.ForeignKey(Orgue, on_delete=models.CASCADE, related_name="evenements")
 
+    @property
+    def dates(self):
+        """
+        Logique d'affichage des dates
+        """
+        result = str(self.annee)
+        if self.circa:
+            result = "~" + result
+        if self.annee_fin and self.annee_fin != self.annee:
+            result += "-{}".format(self.annee_fin)
+        return result
+
     def __str__(self):
-        return "{} ({})".format(self.type, self.annee)
+        return "{} ({})".format(self.type, self.dates)
 
     class Meta:
         ordering = ["annee"]
@@ -685,6 +611,10 @@ class TypeJeu(models.Model):
                                          " cornet, etc. est indiqué en chiffres romains,"
                                          " sans précision du terme \"rangs\" (ni \"rgs\").")
 
+    created_date = models.DateTimeField(auto_now_add=True, auto_now=False, verbose_name='Creation date')
+    modified_date = models.DateTimeField(auto_now=True, auto_now_add=False, verbose_name='Update date')
+    updated_by_user = models.ForeignKey(User, null=True, editable=False, on_delete=models.SET_NULL)
+
     def __str__(self):
         return "{} {}".format(self.nom, self.hauteur)
 
@@ -693,6 +623,9 @@ class TypeJeu(models.Model):
 
 
 class Jeu(models.Model):
+    """
+    Un Jeu est un TypeJeu associé à un clavier
+    """
     CHOIX_CONFIGURATION = (
         ('basse', 'Basse'),
         ('dessus', 'Dessus'),
@@ -759,20 +692,25 @@ class Fichier(models.Model):
     )
 
 
+
 def chemin_image(instance, filename):
     return os.path.join(str(instance.orgue.code_departement), instance.orgue.codification, "images", filename)
 
 
 class Image(models.Model):
     """
-    Images liées à un instrument
+    Images liées à un instrument.
+    La variable MAX_PIXEL_WIDTH définie la largeur maximale en pixels qu'une image peut avoir.
+    Une librairie javascript (filepond) s'occupe de faire le redimensionnement directement
+    dans le naviguateur.
     """
+    MAX_PIXEL_WIDTH = 2000
     image = models.ImageField(upload_to=chemin_image,
                               help_text="Taille maximale : 2 Mo. Les images doivent être libres de droits.")
     is_principale = models.BooleanField(default=False, editable=False)
     legende = models.CharField(verbose_name="Légende", max_length=400, null=True, blank=True)
-    credit = models.CharField(verbose_name="Crédit", max_length=200)
-
+    credit = models.CharField(verbose_name="Crédit", max_length=200, null=True, blank=True)
+    order = models.IntegerField(default=0,verbose_name="Ordre d'affichage")
     # Champs automatiques
     thumbnail_principale = ProcessedImageField(upload_to=chemin_image,
                                                processors=[Transpose(),ResizeToFill(600, 450)],
@@ -789,6 +727,7 @@ class Image(models.Model):
                               options={'quality': 100})
 
     orgue = models.ForeignKey(Orgue, null=True, on_delete=models.CASCADE, related_name="images")
+    user = models.ForeignKey(User,null=True, blank=True, on_delete=models.SET_NULL)
     created_date = models.DateTimeField(
         auto_now_add=True,
         auto_now=False,
@@ -804,6 +743,14 @@ class Image(models.Model):
         self.orgue.completion = self.orgue.calcul_completion()
         super().save(*args, **kwargs)
 
+    def delete(self):
+        if self.image:
+            self.image.delete()
+            self.thumbnail_principale.delete()
+        return super().delete()
+
+    class Meta:
+        ordering = ['order','created_date']
 
 class Accessoire(models.Model):
     """
@@ -817,23 +764,43 @@ class Accessoire(models.Model):
 
 @receiver([post_save, post_delete], sender=Evenement)
 def save_evenement_calcul_facteurs(sender, instance, **kwargs):
+    """
+    La modification d'un événement doit entrainement le recalcul du taux d'avancement.
+    On passe par la meéthode orgue.save() pour relancer le calcul
+    """
     orgue = instance.orgue
     orgue.save()
 
 
 @receiver(post_save, sender=Orgue)
 def update_orgue_in_index(sender, instance, **kwargs):
-    if hasattr(settings, 'MEILISEARCH_URL'):
+    """
+    Quand un orgue est modifié, on met à jour l'index des orgues
+    """
+    if settings.MEILISEARCH_URL:
         from orgues.api.serializers import OrgueResumeSerializer
         client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
         orgue = OrgueResumeSerializer(instance).data
         index = client.get_index(uid='orgues')
         index.add_documents([orgue])
 
+@receiver(post_save, sender=TypeJeu)
+def update_type_jeu_in_index(sender, instance, **kwargs):
+    """
+    Quand un type de jeu est modifié, on met à jour l'index des types de jeux
+    """
+    if settings.MEILISEARCH_URL:
+        client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
+        index = client.get_index(uid='types_jeux')
+        index.add_documents([{"id":instance.id,"nom":str(instance)}])
+
 
 @receiver(post_save, sender=Image)
 def update_image_in_index(sender, instance, **kwargs):
-    if hasattr(settings, 'MEILISEARCH_URL') and instance.is_principale:
+    """
+    Quand une vignette est modifiée, on met à jour l'index des orgues
+    """
+    if settings.MEILISEARCH_URL and instance.is_principale:
         from orgues.api.serializers import OrgueResumeSerializer
         client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
         orgue = OrgueResumeSerializer(instance.orgue).data

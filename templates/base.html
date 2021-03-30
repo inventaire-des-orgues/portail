@@ -5,11 +5,16 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-  <meta name="author" content="INSPIRO"/>
-  <meta name="description" content="Themeforest Template Polo, html template">
+  <meta name="author" content="Fabdev"/>
   <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type='image/x-icon'>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Inventaire des orgues</title>
+  {% block meta_tags %}
+  <title>Inventaire national des orgues</title>
+  <meta name="description" content="La France compte plus de 8500 orgues sur tout le territoire national, dont plus de 1600 sont classés ou inscrits au titre des monuments historiques. La beauté et la diversité de ses orgues sont reconnues dans le monde entier. En plus de mettre en avant la grande qualité de la facture d'orgue française, ce patrimoine offre un éventail complet de toutes les créations artistiques témoins des écoles européennes à travers le temps.L’inventaire des orgues a pour objectif de rassembler de manière collaborative sur un site internet dédié toutes les données actuellement disponibles sur les orgues en France.">
+  <meta property="og:title" content="Inventaire national des orgues">
+  <meta property="og:description" content="La France compte plus de 8500 orgues sur tout le territoire national, dont plus de 1600 sont classés ou inscrits au titre des monuments historiques. La beauté et la diversité de ses orgues sont reconnues dans le monde entier. En plus de mettre en avant la grande qualité de la facture d'orgue française, ce patrimoine offre un éventail complet de toutes les créations artistiques témoins des écoles européennes à travers le temps.L’inventaire des orgues a pour objectif de rassembler de manière collaborative sur un site internet dédié toutes les données actuellement disponibles sur les orgues en France.">
+  <meta property="og:image" content="{% static 'img/orgue_illustration_enfants.jpg' %}">
+  {% endblock %}
   <link href="{% static 'polo/css/plugins.css' %}" rel="stylesheet">
   <link href="{% static 'polo/scss/style.css' %}" rel="stylesheet">
   <link href="{% static 'polo/css/custom.css' %}?date={% now 'Ymd' %}" rel="stylesheet">
@@ -28,7 +33,7 @@
       <div class="row">
         <div class="col-md-6">
           <ul class="top-menu">
-            <li><a href="https://inventaire-des-orgues.fr/admin/"><i class="fa fa-cog"></i></a></li>
+            <li><a href="/admin/"><i class="fa fa-cog"></i></a></li>
             <li><a href="https://github.com/inventaire-des-orgues/portail/projects/1"><i class="fa fa-columns"></i></a></li>
             {% if request.user.is_authenticated %}
               <li>
@@ -87,6 +92,9 @@
           <li>
             <a href="{% url 'lexique' %}">Lexique</a>
           </li>
+          <li>
+            <a href="https://docs.inventaire-des-orgues.fr/faq/" target="_blank" rel="noopener noreferrer">Questions/Réponses</a>
+          </li>
         </ul>
       </nav>
       <div id="pageMenu-trigger">
@@ -98,7 +106,6 @@
     <section id="page-content">
     </section>
   {% endblock %}
-
   {% block modal %}
   {% endblock %}
 

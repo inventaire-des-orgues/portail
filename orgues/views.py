@@ -2,40 +2,45 @@ import csv
 import logging
 import os
 from collections import Counter, deque
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import meilisearch
+import pandas as pd
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Count, Q, Prefetch
+from django.core.paginator import Paginator
+from django.db import transaction
+from django.db.models import Q
 from django.forms import modelformset_factory
 from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy, reverse
-from django.utils.text import slugify
-from django.views.generic import ListView, DetailView, TemplateView
+from django.views.generic import DetailView, TemplateView
 from django.views.generic.base import View
 
 import orgues.forms as orgue_forms
+from accounts.models import User
+from fabutils.fablog import load_fabaccess_logs
 from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdateView, FabView, FabCreateViewJS, \
     FabDetailView
 from orgues.api.serializers import OrgueSerializer, OrgueResumeSerializer
 from project import settings
 from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source
 
-from django.db.models.functions import Lower
 logger = logging.getLogger("fabaccess")
 
 
 class OrgueList(TemplateView):
     """
-    Listing des orgues
+    Liste des orgues.
+    Cette page est vide au démarrage, la récupération des orgues se fait après coup en javascript via
+    la vue OrgueSearch.
     """
     template_name = "orgues/orgue_list.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context["departements"] = [d[0] for d in Orgue.CHOIX_DEPARTEMENT]
+        context["departements"] = Orgue.CHOIX_DEPARTEMENT
         context["departement"] = self.request.GET.get("departement")
         context["query"] = self.request.GET.get("query")
         context["limit"] = self.request.GET.get("limit")
@@ -44,41 +49,89 @@ class OrgueList(TemplateView):
 
 
 class OrgueSearch(View):
+    """
+    Vue de recherche d'orgue.
+    Principalement appelée par du code javascript dans orgues/orgue_list.html
+    Cette vue utilise le moteur de recherche "meilisearch" ou un moteur de recherche SQL dégradé quand meilisearch
+    n'est pas disponible (settings.MEILISEARCH_URL=False)
+    """
     paginate_by = 20
 
     def post(self, request, *args, **kwargs):
+        request.session['orgues_url'] = "{}{}".format(reverse('orgues:orgue-list'), request.POST.get('pageUrl'))
         page = request.POST.get('page', 1)
+        departement = request.POST.get('departement', '')
+        query = request.POST.get('query')
+        if settings.MEILISEARCH_URL:
+            results = self.search_meilisearch(page, departement, query)
+        else:
+            results = self.search_sql(page, departement, query)
+        return JsonResponse(results)
+
+    @staticmethod
+    def search_sql(page, departement, query):
+        """
+        Moteur de recherche dégradé.
+        Imite un résultat au format meilisearch pour être compatible avec la template de rendu
+        """
+        queryset = Orgue.objects.all()
+        if departement:
+            queryset = queryset.filter(departement=departement)
+        if query:
+            terms = [term.lower() for term in query.split(" ") if term]
+            query = Q()
+            for term in terms:
+                query = query & (Q(region__icontains=term) | Q(commune__icontains=term) | Q(edifice__icontains=term))
+            queryset = queryset.filter(query)
+        paginator = Paginator(queryset, OrgueSearch.paginate_by)
+        object_list = paginator.page(page).object_list
+        hits = []
+        for result in OrgueResumeSerializer(object_list, many=True).data:
+            hit = result.copy()
+            hit['_formatted'] = result
+            hits.append(hit)
+        return {
+            'hits': hits,
+            'pages': paginator.num_pages,
+            'nbHits': paginator.count
+        }
+
+    @staticmethod
+    def search_meilisearch(page, departement, query):
+        """
+        Moteur de recherche avancé
+        """
         try:
             client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
             index = client.get_index(uid='orgues')
         except:
             return JsonResponse({'message': 'Le moteur de recherche est mal configuré'}, status=500)
-        query = request.POST.get('query', '')
+
         try:
-            offset = (int(page) - 1) * self.paginate_by
+            offset = (int(page) - 1) * OrgueSearch.paginate_by
         except:
             offset = 0
-        if not query:
-            query = None
-        departement = request.POST.get('departement', '')
-        options = {'attributesToHighlight': ['*'], 'offset': offset, 'limit': self.paginate_by}
+        options = {'attributesToHighlight': ['*'], 'offset': offset, 'limit': OrgueSearch.paginate_by}
         if departement:
             options['facetFilters'] = ['departement:{}'.format(departement)]
+        if not query:
+            query = None
         results = index.search(query, options)
-        results['pages'] = 1 + results['nbHits'] // self.paginate_by
-        return JsonResponse(results)
+        results['pages'] = 1 + results['nbHits'] // OrgueSearch.paginate_by
+        return results
 
 
 class OrgueCarte(TemplateView):
     """
-    Cartographie des orgues (gérée par Leaflet)
+    Cartographie des orgues (gérée par Leaflet).
+    La page est vide initialement et les orgues sont récupérés après coup en javascript via la vue OrgueListJS
     """
     template_name = "orgues/carte.html"
 
 
 class OrgueListJS(View):
     """
-    Cette vue est requêtée par Leaflet lors de l'affichage de la carte de France
+    Cette vue est requêtée par Leaflet lors de l'affichage de la carte de France dans "orgues/carte.html"
     """
 
     def get(self, request, *args, **kwargs):
@@ -154,7 +207,8 @@ class OrgueDetail(DetailView):
         context = super().get_context_data()
         context["claviers"] = self.object.claviers.all().prefetch_related('type', 'jeux', 'jeux__type')
         context["evenements"] = self.object.evenements.all().prefetch_related('facteurs')
-        context["facteurs_evenements"] = self.object.evenements.filter(facteurs__isnull=False).prefetch_related('facteurs').distinct()
+        context["facteurs_evenements"] = self.object.evenements.filter(facteurs__isnull=False).prefetch_related(
+            'facteurs').distinct()
         return context
 
 
@@ -184,6 +238,12 @@ class OrgueCreate(FabCreateView):
 
 
 class OrgueUpdateMixin(FabUpdateView):
+    """
+    Mixin de modification d'un orgue qui permet de systématiquement:
+     - vérifier la permission
+     - enregistrer l'utilisateur qui a fait la modification
+     - inclure l'instance 'orgue' dans la template html
+    """
     model = Orgue
     slug_field = 'uuid'
     slug_url_kwarg = 'orgue_uuid'
@@ -203,6 +263,10 @@ class OrgueUpdateMixin(FabUpdateView):
 
 
 class OrgueDetailAvancement(FabDetailView):
+    """
+    Vue de détail du score d'avancement d'un orgue.
+    Toutes les règles de calcul sont définies dans la méthode Orgue.infos_completions
+    """
     model = Orgue
     slug_field = 'uuid'
     slug_url_kwarg = 'orgue_uuid'
@@ -223,6 +287,7 @@ class OrgueUpdate(OrgueUpdateMixin, FabUpdateView):
     form_class = orgue_forms.OrgueGeneralInfoForm
     success_message = 'Informations générales mises à jour !'
 
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['request'] = self.request
@@ -230,6 +295,9 @@ class OrgueUpdate(OrgueUpdateMixin, FabUpdateView):
 
 
 class OrgueUpdateInstrumentale(OrgueUpdateMixin):
+    """
+    Mise à jour de la partie instrumentale d'un orgue
+    """
     form_class = orgue_forms.OrgueInstrumentaleForm
     success_message = 'Tuyauterie mise à jour, merci !'
     template_name = "orgues/orgue_form_instrumentale.html"
@@ -240,6 +308,9 @@ class OrgueUpdateInstrumentale(OrgueUpdateMixin):
 
 
 class OrgueUpdateComposition(OrgueUpdateMixin):
+    """
+    Mise à jour de la composition d'un orgue
+    """
     model = Orgue
     form_class = orgue_forms.OrgueCompositionForm
     template_name = "orgues/orgue_form_composition.html"
@@ -257,6 +328,9 @@ class OrgueUpdateComposition(OrgueUpdateMixin):
 
 
 class OrgueUpdateBuffet(OrgueUpdateMixin):
+    """
+    Mise à jour du buffet d'un orgue
+    """
     model = Orgue
     form_class = orgue_forms.OrgueBuffetForm
     template_name = "orgues/orgue_form_buffet.html"
@@ -268,6 +342,9 @@ class OrgueUpdateBuffet(OrgueUpdateMixin):
 
 
 class OrgueUpdateLocalisation(OrgueUpdateMixin):
+    """
+    Mise à jour de la localisation d'un orgue
+    """
     form_class = orgue_forms.OrgueLocalisationForm
     permission_required = "orgues.change_localisation"
     success_message = 'Localisation mise à jour, merci !'
@@ -277,6 +354,17 @@ class OrgueUpdateLocalisation(OrgueUpdateMixin):
         kwargs = super().get_form_kwargs()
         kwargs['request'] = self.request
         return kwargs
+
+    def form_valid(self, form):
+        """
+        Enregistrement automatique du code du département
+        """
+        departement = form.cleaned_data['departement']
+        for code_departement, nom_departement in Orgue.CHOIX_DEPARTEMENT:
+            if departement == nom_departement:
+                form.instance.code_departement = code_departement
+                break
+        return super().form_valid(form)
 
     def get_success_url(self):
         success_url = reverse('orgues:orgue-update-localisation', args=(self.object.uuid,))
@@ -297,16 +385,14 @@ class OrgueDelete(FabDeleteView):
 
 class EvenementList(FabListView):
     """
-    Voir et éditer la liste des évenements d'un orgue
+    Liste des évenements associés à un orgue
     """
     model = Evenement
     permission_required = "orgues.add_evenement"
 
     def get_queryset(self):
         self.orgue = get_object_or_404(Orgue, uuid=self.kwargs["orgue_uuid"])
-        queryset = super().get_queryset()
-        queryset = queryset.filter(orgue=self.orgue)
-        return queryset
+        return self.orgue.evenements.all()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
@@ -315,6 +401,10 @@ class EvenementList(FabListView):
 
 
 class TypeJeuCreateJS(FabCreateViewJS):
+    """
+    Création d'un nouveau type de jeu.
+    Cette vue est appelée par du code javascript.
+    """
     model = TypeJeu
     permission_required = "orgues.add_typejeu"
     fields = ["nom"]
@@ -324,11 +414,17 @@ class TypeJeuCreateJS(FabCreateViewJS):
         nom = request.POST.get("nom")
         hauteur = request.POST.get("hauteur")
         typejeu, created = TypeJeu.objects.get_or_create(nom=nom, hauteur=hauteur)
+        if created:
+            typejeu.updated_by_user = self.request.user
+            typejeu.save()
         return JsonResponse(
             {'message': self.success_message, 'facteur': {'id': typejeu.id, 'nom': str(typejeu)}})
 
 
 class TypeJeuUpdate(FabUpdateView):
+    """
+    Mise à jour d'un type de jeu
+    """
     model = TypeJeu
     permission_required = "orgues.change_typejeu"
     fields = ["nom"]
@@ -338,36 +434,74 @@ class TypeJeuUpdate(FabUpdateView):
         return reverse('orgues:typejeu-update', args=(self.object.pk,))
 
 
-class TypeJeuListJS(FabListView):
+class TypeJeuListJS(FabView):
     """
     Liste dynamique utilisée pour filtrer les jeux d'orgues dans les menus déroulants select2.
-    Les jeux sont triés par nombre d'apparitions dans les claviers (jeux les plus populaires apparaissent en premier)
+
+    Cette vue utilise le moteur de recherche "meilisearch" ou un moteur de recherche SQL dégradé quand meilisearch
+    n'est pas disponible (settings.MEILISEARCH_URL=False)
+
     documentation : https://select2.org/data-sources/ajax
     """
-    model = TypeJeu
-    permission_required = 'orgues.view_jeu'
-    paginate_by = 30
+    permission_required = "orgues.view_jeu"
+    paginate_by = 20
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        queryset = queryset.annotate(claviers_count=Count('jeux'))
-        query = self.request.GET.get("q")
+    def get(self, request, *args, **kwargs):
+        page = request.GET.get('page', 1)
+        query = request.GET.get('q', '')
+        if settings.MEILISEARCH_URL:
+            results = self.search_meilisearch(page, query)
+        else:
+            results = self.search_sql(page, query)
+        return JsonResponse(results)
+
+    @staticmethod
+    def search_sql(page, query):
+        """
+        Moteur de recherche dégradé.
+        Imite un résultat au format meilisearch pour être compatible avec la template de rendu
+        """
+        queryset = TypeJeu.objects.all()
         if query:
-            queryset = queryset.filter(nom__icontains=query)
-        return queryset.order_by(Lower('nom'))
+            terms = [term.lower() for term in query.split(" ") if term]
+            query = Q()
+            for term in terms:
+                query = query & (Q(nom__icontains=term) | Q(hauteur__icontains=term))
+            queryset = queryset.filter(query)
+        paginator = Paginator(queryset, TypeJeuListJS.paginate_by)
+        object_list = paginator.page(page).object_list
+        return {
+            "results": [{'id': jeu.id, 'text': str(jeu)} for jeu in object_list],
+            "pagination": {"more": int(page) < paginator.num_pages}
+        }
 
-    def render_to_response(self, context, **response_kwargs):
-        results = []
-        more = context["page_obj"].number < context["paginator"].num_pages
-        if context["object_list"]:
-            results = [{"id": t.id, "text": str(t)} for t in context["object_list"]]
-        return JsonResponse({"results": results, "pagination": {"more": more}})
+    @staticmethod
+    def search_meilisearch(page, query):
+        """
+        Moteur de recherche avancé
+        """
+        try:
+            client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
+            index = client.get_index(uid='types_jeux')
+        except:
+            return JsonResponse({'message': 'Le moteur de recherche est mal configuré'}, status=500)
+
+        try:
+            offset = (int(page) - 1) * TypeJeuListJS.paginate_by
+        except:
+            offset = 0
+        options = {'offset': offset, 'limit': TypeJeuListJS.paginate_by}
+        results = index.search(query, options)
+
+        return {
+            "results": [{'id': r['id'], 'text': r['nom']} for r in results['hits']],
+            "pagination": {"more": results['nbHits'] > TypeJeuListJS.paginate_by}
+        }
 
 
 class FacteurListJS(FabListView):
     """
     Liste dynamique utilisée pour filtrer les facteurs d'orgue dans les menus déroulants select2.
-
     documentation : https://select2.org/data-sources/ajax
     """
     model = Facteur
@@ -390,6 +524,9 @@ class FacteurListJS(FabListView):
 
 
 class EvenementCreate(FabCreateView):
+    """
+    Création d'un nouvel évenement associé à un orgue
+    """
     model = Evenement
     permission_required = "orgues.add_evenement"
     form_class = orgue_forms.EvenementForm
@@ -410,6 +547,9 @@ class EvenementCreate(FabCreateView):
 
 
 class EvenementUpdate(FabUpdateView):
+    """
+    Mise à jour d'un évenement
+    """
     model = Evenement
     permission_required = "orgues.change_evenement"
     form_class = orgue_forms.EvenementForm
@@ -429,6 +569,9 @@ class EvenementUpdate(FabUpdateView):
 
 
 class EvenementDelete(FabDeleteView):
+    """
+    Suppression d'un événement
+    """
     model = Evenement
     permission_required = "orgues.delete_evenement"
     success_message = "Evenement supprimé, merci !"
@@ -443,6 +586,9 @@ class EvenementDelete(FabDeleteView):
 
 
 class ClavierCreate(FabView):
+    """
+    Ajout d'un clavier
+    """
     model = Clavier
     permission_required = "orgues.add_clavier"
     form_class = orgue_forms.ClavierForm
@@ -484,6 +630,9 @@ class ClavierCreate(FabView):
 
 
 class ClavierUpdate(FabUpdateView):
+    """
+    Mise à jour d'un clavier
+    """
     model = Clavier
     permission_required = "orgues.change_clavier"
     form_class = orgue_forms.ClavierForm
@@ -524,6 +673,9 @@ class ClavierUpdate(FabUpdateView):
 
 
 class ClavierDelete(FabDeleteView):
+    """
+    Suppression d'un clavier
+    """
     model = Clavier
     permission_required = "orgues.delete_clavier"
     success_message = "Clavier supprimé, merci !"
@@ -538,6 +690,10 @@ class ClavierDelete(FabDeleteView):
 
 
 class FacteurCreateJS(FabCreateViewJS):
+    """
+    Création d'un nouveau facteur.
+    Vue appelée par du code javascript
+    """
     model = Facteur
     permission_required = "orgues.add_facteur"
     fields = "__all__"
@@ -550,6 +706,9 @@ class FacteurCreateJS(FabCreateViewJS):
 
 
 class FichierList(FabListView):
+    """
+    Liste des facteurs
+    """
     model = Fichier
     permission_required = "orgues.add_fichier"
     paginate_by = 50
@@ -566,6 +725,9 @@ class FichierList(FabListView):
 
 
 class FichierCreate(FabCreateView):
+    """
+    Création d'un fichier associé à un orgue
+    """
     model = Fichier
     permission_required = "orgues.add_fichier"
     form_class = orgue_forms.FichierForm
@@ -589,6 +751,9 @@ class FichierCreate(FabCreateView):
 
 
 class FichierDelete(FabDeleteView):
+    """
+    Suppression d'un fichier associé à un orgue
+    """
     model = Fichier
     permission_required = "orgues.delete_fichier"
     success_message = "Fichier supprimé, merci !"
@@ -598,46 +763,63 @@ class FichierDelete(FabDeleteView):
 
 
 class ImageList(FabListView):
+    """
+    Liste des images de l'orgue.
+    Un POST sur cette vue permet de réordonner les images
+    """
     model = Image
-    permission_required = "orgues.add_image"
+    permission_required = "orgues.view_image"
     paginate_by = 50
+
+    def post(self, request, *args, **kwargs):
+        orgue = get_object_or_404(Orgue, uuid=self.kwargs["orgue_uuid"])
+        image_pks = request.POST.getlist('image_pks[]')
+        with transaction.atomic():
+            for image in orgue.images.all():
+                image.order = image_pks.index(str(image.pk))
+                image.save()
+        return JsonResponse({"message": "success"})
 
     def get_queryset(self):
         self.orgue = get_object_or_404(Orgue, uuid=self.kwargs["orgue_uuid"])
-        return Image.objects.filter(orgue=self.orgue).prefetch_related('orgue')
+        return self.orgue.images.all()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context["orgue"] = self.orgue
-        context["form"] = orgue_forms.ImageForm()
         return context
 
 
-class ImageCreate(FabCreateView):
-    model = Image
+class ImageCreate(FabView):
+    """
+    Vue de chargement d'une image.
+    Les images sont chargées et redimensionnée automatiquement en javascript côté client.
+    """
     permission_required = "orgues.add_image"
-    form_class = orgue_forms.ImageForm
-    template_name = "orgues/image_list.html"
+    template_name = "orgues/image_create.html"
 
-    def form_valid(self, form):
+    def get(self, request, *args, **kwargs):
         orgue = get_object_or_404(Orgue, uuid=self.kwargs["orgue_uuid"])
-        image = form.save(commit=False)
-        if not orgue.images.exists():
-            image.is_principale = True
-        image.orgue = orgue
+        return render(request, self.template_name, {"orgue": orgue, "MAX_PIXEL_WIDTH": Image.MAX_PIXEL_WIDTH})
+
+    def post(self, request, *args, **kwargs):
+        """
+        Vue appelée par filepond https://pqina.nl/filepond/docs/patterns/api/server/
+        """
+        image = self.request.FILES['filepond']
+        credit = self.request.POST['credit']
+        orgue = get_object_or_404(Orgue, uuid=self.kwargs["orgue_uuid"])
+        image = Image.objects.create(orgue=orgue, image=image, is_principale=not orgue.images.exists())
+        image.user = request.user
+        image.credit = credit
         image.save()
-        messages.success(self.request, "Image créée, merci !")
-        return redirect('orgues:image-list', orgue_uuid=orgue.uuid)
-
-    def get_context_data(self, **kwargs):
-        orgue = get_object_or_404(Orgue, uuid=self.kwargs["orgue_uuid"])
-        context = super().get_context_data()
-        context["orgue"] = orgue
-        context["object_list"] = Image.objects.filter(orgue=orgue)
-        return context
+        return JsonResponse({'ok': True})
 
 
 class ImageDelete(FabDeleteView):
+    """
+    Suppression d'une image
+    """
     model = Image
     permission_required = "orgues.delete_image"
     success_message = "Image supprimée, merci !"
@@ -645,10 +827,15 @@ class ImageDelete(FabDeleteView):
     def get_success_url(self):
         return reverse('orgues:image-list', args=(self.object.orgue.uuid,))
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["orgue"] = self.object.orgue
+        return context
+
 
 class ImagePrincipaleUpdate(FabUpdateView):
     """
-    Rognage de l'image principale d'un orgue dans le but de créer une vignette (utilise ajax et cropper.js)
+    Séléction et rognage de l'image principale d'un orgue dans le but de créer une vignette (utilise ajax et cropper.js)
     """
     model = Image
     fields = ['thumbnail_principale']
@@ -788,11 +975,10 @@ class ConseilsFicheView(TemplateView):
     template_name = 'orgues/conseils_fiche.html'
 
 
-
 class OrgueExport(FabView):
     permission_required = 'orgues.add_orgue'
 
-    def get(self,request,*args,**kwargs):
+    def get(self, request, *args, **kwargs):
         response = HttpResponse(content_type='text/csv')
         response.write(u'\ufeff'.encode('utf8'))
         response['Content-Disposition'] = 'attachment;filename=orgues-de-France_{}.csv'.format(
@@ -812,11 +998,61 @@ class OrgueExport(FabView):
             "completion",
             "resume_composition",
         ]
-        writer = csv.DictWriter(response, delimiter=';',fieldnames=columns)
+        writer = csv.DictWriter(response, delimiter=';', fieldnames=columns)
 
         # header from verbose_names
-        writer.writerow({column:Orgue._meta.get_field(column).verbose_name for column in columns})
+        writer.writerow({column: Orgue._meta.get_field(column).verbose_name for column in columns})
         # data
         writer.writerows(Orgue.objects.values(*columns))
 
         return response
+
+
+class Dashboard(FabView):
+    """
+    Dashboard d'avancement réservé aux admins
+    """
+    permission_required = 'orgues.add_orgue'
+
+    def get(self, request, *args, **kwargs):
+        context = {}
+        pd.options.display.html.border = 0
+        columns = ['departement', 'region', 'modified_date', 'updated_by_user__first_name',
+                   'updated_by_user__last_name', 'completion']
+        df = pd.DataFrame(Orgue.objects.values(*columns), columns=columns)
+        df["user"] = df["updated_by_user__first_name"] + " " + df["updated_by_user__last_name"]
+
+        # stats générales
+        context["users_count"] = User.objects.count()
+        context["image_count"] = Image.objects.count()
+        context["jeu_count"] = Jeu.objects.count()
+
+        # departements
+        departements = df.groupby('departement').agg({'completion': ['count', 'mean']}).reset_index().round()
+        departements.columns = ["Département", "Orgues", "Avancement (%)"]
+        departements.sort_values("Avancement (%)", inplace=True)
+        context["departments"] = departements.to_html(classes=['departments table table-sm'], index=False)
+
+        # regions
+        regions = df.groupby('region').agg({'completion': ['count', 'mean']}).reset_index().round()
+        regions.columns = ["Region", "Orgues", "Avancement (%)"]
+        regions.sort_values("Avancement (%)", inplace=True)
+        context["regions"] = regions.to_html(classes=['regions table table-sm'], index=False)
+
+        # utilisateurs
+        utilisateurs = df.groupby('user').agg({'departement': 'count'}).reset_index().round()
+        utilisateurs.columns = ["Utilisateur", "Orgues modifiés"]
+        utilisateurs.sort_values("Orgues modifiés", inplace=True)
+        context["users"] = utilisateurs.to_html(classes=['users table table-sm'], index=False)
+
+        # Activité
+        df = load_fabaccess_logs()
+        df = df.loc[df["Date"] > datetime.now() - timedelta(days=30), :]
+        df["strdate"] = df["Date"].dt.strftime("%Y-%m-%d")
+        users_per_day = df.groupby("strdate").agg({"User": lambda x: x.nunique()})
+        context["users_per_day"] = {
+            "dates": list(users_per_day.index),
+            "users": list(users_per_day["User"].values)
+        }
+
+        return render(request, 'orgues/dashboard.html', context=context)

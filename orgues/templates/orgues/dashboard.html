@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head_extra %}
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4-4.1.1/dt-1.10.24/datatables.min.css"/>
+
+{% endblock %}
+
+{% block content %}
+  <div class="container py-3">
+    <div class="row justify-content-md-center my-5">
+      <div class="col-md-4">
+        <div class="text-center">
+          <span class="display-4 d-block text-dark mb-2">{{ users_count }}</span>
+          <p class="lead">Utilisateurs</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="text-center">
+          <span class="display-4 d-block text-dark mb-2">{{ image_count }}</span>
+          <p class="lead">Images</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="text-center">
+          <span class="display-4 d-block text-dark mb-2">{{ jeu_count }}</span>
+          <p class="lead">Jeux</p>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header">
+            Départements
+          </div>
+          <div class="card-body">
+            {{ departments|safe }}
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header">
+            Régions
+          </div>
+          <div class="card-body">
+            {{ regions|safe }}
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header">
+            Utilisateurs
+          </div>
+          <div class="card-body">
+            {{ users|safe }}
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header">
+            Utilisateurs uniques par jour
+          </div>
+          <div class="card-body">
+            <div>
+              <canvas id="activity" height="400"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+
+{% block js_extra %}
+
+  <script type="text/javascript" src="https://cdn.datatables.net/v/bs4-4.1.1/dt-1.10.24/datatables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+
+  <script>
+    $(document).ready(function () {
+      $('table').DataTable({
+        paging: false, scrollY: "300px", columnDefs: [
+          {
+            targets: "_all",
+            className: "text-left",
+          }
+        ]
+      });
+
+      new Chart(document.getElementById('activity'), {
+        type: 'line',
+        data: {
+          labels: {{ users_per_day.dates|safe }},
+          datasets: [
+            {
+              label: "Utilisateurs/jour",
+              data: {{ users_per_day.users|safe }},
+              borderColor: "#3e95cd",
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+        }
+      });
+
+    });
+  </script>
+
+{% endblock %}

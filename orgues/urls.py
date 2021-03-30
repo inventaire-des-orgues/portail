@@ -24,6 +24,10 @@ urlpatterns = [
     path('edition/buffet/<uuid:orgue_uuid>/', v.OrgueUpdateBuffet.as_view(), name='orgue-update-buffet'),
     path('edition/localisation/<uuid:orgue_uuid>/', v.OrgueUpdateLocalisation.as_view(), name='orgue-update-localisation'),
     path('suppression/<uuid:orgue_uuid>/', v.OrgueDelete.as_view(), name='orgue-delete'),
+    path('dashboard/', v.Dashboard.as_view(), name='dashboard'),
+
+    # Tableau de bord
+    #path('orgues/dashboard', v.OrgueDashboard.as_view(), name='orgue-dashboard'),
 
     # Evenements
     path('evenements/<uuid:orgue_uuid>/', v.EvenementList.as_view(), name='evenement-list'),
