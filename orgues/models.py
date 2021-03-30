@@ -25,15 +25,20 @@ class Facteur(models.Model):
     latitude_atelier = models.FloatField(null=True, blank=True, verbose_name="Latitude de l'atelier")
     longitude_atelier = models.FloatField(null=True, blank=True, verbose_name="Longitude de l'atelier")
 
+
     def __str__(self):
         return self.nom
+
+    class Meta:
+        ordering = ['latitude_atelier']
+
 
 
 class Orgue(models.Model):
     CHOIX_TYPE_OSM = (
-        ("node", "Nœud"),
-        ("way", "Chemin"),
-        ("relation", "Relation"),
+        ("node", "Nœud (Node)"),
+        ("way", "Chemin (Way)"),
+        ("relation", "Relation (Relation)"),
     )
 
     CHOIX_PROPRIETAIRE = (

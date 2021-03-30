@@ -215,7 +215,7 @@
               <dl>
                 <dt>Facteurs</dt>
                 <dd>
-                  {% if facteurs_evenements %}
+                  {% if facteurs_evenements or orgue.entretien.all.count > 0%}
                     <ul>
                       {% for evenement in facteurs_evenements %}
                         <li>
@@ -224,6 +224,11 @@
                               {% if not forloop.last %} & {% endif %}
                           {% endfor %}
                           ({{ evenement.type }} {{ evenement.dates }})</li>
+                      {% endfor %}
+                    </ul>
+                    <ul>
+                      {% for facteur in orgue.entretien.all %}
+                        <li>{{facteur}} (entretien)</li>
                       {% endfor %}
                     </ul>
                   {% else %}
