@@ -22,7 +22,7 @@
                 <select name="departement" id="id_departement" class="form-control">
                   <option value="">Choisir un departement</option>
                   {% for departement in departements %}
-                    <option value="{{ departement }}">{{ departement }}</option>
+                    <option value="{{ departement.1 }}">{{ departement.0 }} {{ departement.1 }}</option>
                   {% endfor %}
                 </select>
               </div>
