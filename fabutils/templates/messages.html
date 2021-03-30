@@ -1,4 +1,7 @@
 <script>
+     toastr.options = {
+      "preventDuplicates": true
+    };
   {% if messages %}
     {% for message in messages %}
       {%  if 'error' in message.tags or 'danger' in message.tags %}
