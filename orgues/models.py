@@ -38,6 +38,7 @@ class Orgue(models.Model):
 
     CHOIX_PROPRIETAIRE = (
         ("commune", "Commune"),
+        ("interco", "Intercommunalité"),
         ("etat", "Etat"),
         ("association_culturelle", "Association culturelle"),
         ("diocese", "Diocèse"),
