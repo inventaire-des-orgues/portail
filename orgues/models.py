@@ -72,6 +72,7 @@ class Orgue(models.Model):
         ("mecanique", "Mécanique"),
         ("pneumatique_haute_pression", "Pneumatique haute pression"),
         ("pneumatique_basse_pression", "Pneumatique basse pression"),
+        ("numerique", "Numérique"),
         ("electrique", "Electrique"),
         ("electro_pneumatique", "Electro-pneumatique"),
     )
