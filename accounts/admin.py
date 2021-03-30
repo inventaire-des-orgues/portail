@@ -12,6 +12,7 @@ User = get_user_model()
 class PermissionAdmin(admin.ModelAdmin):
     list_display = ('name', 'codename')
 
+
 class UserCreateForm(UserCreationForm):
     class Meta:
         model = User
@@ -20,7 +21,7 @@ class UserCreateForm(UserCreationForm):
 
 class FabUserAdmin(UserAdmin):
     add_form = UserCreateForm
-    list_display = ('first_name','last_name','email','last_login',)
+    list_display = ('first_name', 'last_name', 'email', 'last_login',)
     prepopulated_fields = {'username': ('first_name', 'last_name',)}
 
     fieldsets = (

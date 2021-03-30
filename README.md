@@ -26,6 +26,16 @@ python manage.py calcul_resume_composition
 ```  
 Normalement le résumé clavier est recalculé automatiquement à chaque modification de la composition d'un orgue.
 
+Pour récupérer les configs depuis le site inventaire des orgues (Facteurs, types de jeux, types de claviers et )
+Téléchargez le fichier config.json depuis l'url du site : https://inventaire-des-orgues.fr/api/v1/config.json
+et lancer la commande suivante :
+
+```shell script
+python manage.py init_config --delete path/ver/config.json
+```
+
+l'option --delete permet de vider la base préalablement si nécessaire
+
 # Installation du moteur de recherche 
 
 Suivre la documentation pour installer meilisearch : 
@@ -54,6 +64,11 @@ les suppressions d'orgues.
 Pour mettre à jour l'index de recherche après ces types de modifications, il faut lancer la commande `build_meilisearch_index`.
 En production cette commande est lancée toutes les nuits (à 2 h) pour garantir que l'index soit à jour. 
 
+Si l'installation de meilisearch ne fonctionne pas, on peut utiliser un moteur de recherche dégradé en paramétrant : 
+
+```python
+MEILISEARCH_URL = False
+```
 
 # Faire un import de données sur le serveur : 
 

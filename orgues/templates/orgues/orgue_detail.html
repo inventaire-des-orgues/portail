@@ -1,6 +1,17 @@
 {% extends 'base.html' %}
 {% load static %}
 
+
+{% block meta_tags %}
+  <title>{{ orgue.designation }} {{ orgue.edifice }} - {{ orgue.commune }}, {{ orgue.departement }}</title>
+  <meta property="og:title" content="{{ orgue.designation }} {{ orgue.edifice }} - {{ orgue.commune }}, {{ orgue.departement }}">
+  <meta name="description" content="{{ orgue.designation }} {{ orgue.edifice }} - {{ orgue.commune }}, {{ orgue.departement }}">
+  <meta property="og:description" content="{{ orgue.designation }} {{ orgue.edifice }} - {{ orgue.commune }}, {{ orgue.departement }}">
+  {% if object.image_principale %}
+    <meta property="og:image" content="{{ orgue.image_principale.image.url }}">
+  {% endif %}
+{% endblock %}
+
 {% block head_extra %}
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
@@ -23,9 +34,10 @@
             {{ orgue.edifice|capfirst }} <br>
           </h2>
           <h4 class="text-muted">
-            {{ orgue.commune }}{% if orgue.ancienne_commune %} (anciennement {{ orgue.ancienne_commune }}){% endif %}, {{ orgue.departement }}
+            <a href="/orgues/?query={{ orgue.commune|urlencode }}" class="link">{{ orgue.commune }}</a>
+            {% if orgue.ancienne_commune %} (anciennement <a href="/orgues/?query={{ orgue.ancienne_commune|urlencode }}" class="link">{{ orgue.ancienne_commune }}</a>){% endif %}, <a href="/orgues/?query={{ orgue.departement|urlencode }}" class="link">{{ orgue.departement }}</a>
             <small>
-              | {{ orgue.designation|default_if_none:"Orgue" }}
+              | <a href="/orgues/?query={{ orgue.commune|add:' '|add:orgue.edifice|urlencode }}" class="link">{{ orgue.designation|default_if_none:"Orgue" }}</a>
             </small>
           </h4>
         </div>
@@ -56,7 +68,13 @@
                       {% endfor %}
                     </div>
                   {% else %}
-                    <p class="text-muted">Aucun clavier</p>
+                    <p class="text-muted">A compléter !</p>
+                  {% endif %}
+                  {% if orgue.accessoires.count %}
+                    <p class="soustitre-fiche">Accessoires</p>
+                    <div id="accessoires">
+                      {{ orgue.accessoires.all|join:', ' }}
+                    </div>
                   {% endif %}
                   <h2 class="titre-fiche">Frise chronologique</h2>
                   {% if evenements.count %}
@@ -128,26 +146,25 @@
                   {% endif %}
                   {% if orgue.images.count %}
                     <h2 class="titre-fiche">Images</h2>
-                    <div class="row">
+                    <div class="grid-layout portfolio-3-columns">
                       {% for image in orgue.images.all %}
-
-                        <div class="col-lg-4" style="padding: 0 10px;">
-                          <div class="grid-item">
-                            <div class="grid-item-wrap">
-                              <div class="grid-image"><img alt="Image Lightbox" src="{{ image.thumbnail.url }}"/>
-                              </div>
-                              <div class="grid-description">
-                                <a title="{% if image.legende %}{{ image.legende }}{% endif %} {% if image.credit %}Crédit : {{ image.credit }}{% endif %}"
-                                    data-lightbox="gallery-image" href="{{ image.image.url }}"
-                                    class="btn btn-light btn-rounded">+</a>
-                              </div>
+                        <div class="portfolio-item img-zoom">
+                          <div class="portfolio-item-wrap border-radius-5">
+                            <div class="portfolio-image">
+                              <a href="#"><img src="{{ image.thumbnail.url }}" alt=""></a>
+                            </div>
+                            <div class="portfolio-description">
+                              <a title="{% if image.legende %}{{ image.legende }}{% endif %} {% if image.credit %}Crédit : {{ image.credit }}{% endif %}"
+                                  data-lightbox="gallery-image" href="{{ image.image.url }}">
+                                <i class="icon-zoom-in"></i>
+                              </a>
                             </div>
                           </div>
                         </div>
                       {% endfor %}
                     </div>
                   {% else %}
-                    <p class="text-muted">Aucune image</p>
+                    <p class="text-muted">Ajouter des photos !</p>
                   {% endif %}
                   <h2 class="titre-fiche">Fichiers</h2>
                   {% if orgue.fichiers.count %}
@@ -201,7 +218,12 @@
                   {% if facteurs_evenements or orgue.entretien.all.count > 0%}
                     <ul>
                       {% for evenement in facteurs_evenements %}
-                        <li>{{ evenement.facteurs.all|join:' & ' }} ({{ evenement.type }} - {{ evenement.annee }})</li>
+                        <li>
+                          {% for facteur in evenement.facteurs.all %}
+                              <a href="/orgues/?query={{ facteur|urlencode }}" class="link">{{ facteur }}</a>
+                              {% if not forloop.last %} & {% endif %}
+                          {% endfor %}
+                          ({{ evenement.type }} {{ evenement.dates }})</li>
                       {% endfor %}
                     </ul>
                     <ul>
@@ -262,7 +284,7 @@
             <a href="{% url 'orgues:orgue-update' object.uuid %}" class="btn btn-primary  btn-block">
               <i class="fa fa-edit"></i> Compléter la fiche
             </a>
-          <small class="text-justify">Modifié le {{ orgue.modified_date|date:'d/m/Y' }} par {{ orgue.updated_by_user }}</small>
+            <small class="text-justify">Actualisé le {{ orgue.modified_date|date:'d/m/Y' }} par {{ orgue.updated_by_user }}</small>
           </div>
         </div>
       </div>
@@ -296,6 +318,10 @@
           {% for evenement in evenements %}
             {
               "start_date": {"year": "{{evenement.annee}}"},
+              {% if evenement.annee_fin %}
+                "end_date": {"year": "{{evenement.annee_fin}}"},
+              {% endif %}
+              "display_date": "{{evenement.dates}}",
               "text": {
                 "headline": "<b>{{ evenement.get_type_display }}</b>",
                 "text": "{% if evenement.resume %}{{ evenement.resume|linebreaksbr|safe|escapejs}}{% endif %}{% if evenement.facteurs.count %}<p>Facteur(s) : {{ evenement.facteurs.all|join:', ' }}</p>{% endif %}"

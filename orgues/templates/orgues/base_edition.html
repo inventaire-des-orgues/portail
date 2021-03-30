@@ -95,7 +95,6 @@
             <div class="alert alert-info">
               <b>Commentaire rédacteurs :</b> {{ orgue.commentaire_admin|safe }}
             </div>
-
           {% endif %}
           <div class="card box-shadow">
             <div class="card-body">
@@ -144,6 +143,7 @@
   {% include 'orgues/facteur_create_modal.html' %}
   <script>
     $('textarea').trumbowyg({
+      removeformatPasted:true,
       btns: [['strong', 'em',], ['link'], ['unorderedList'], ['horizontalRule'],],
       autogrow: true,
       lang: 'fr'

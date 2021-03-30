@@ -12,11 +12,11 @@
           <div class="form-group row">
             <div class="col-7">
               <label for="">Nom</label>
-              <input type="text" name="nom" class="form-control"  required placeholder="Ex: Bombarde">
+              <input type="text" name="nom" class="form-control" required placeholder="Ex: Bombarde">
             </div>
             <div class="col-5">
-              <label for="">Hauteur</label>
-              <input type="text" name="hauteur" class="form-control" placeholder="Ex : 8">
+              <label for="">Hauteur et/ou nombre de rangs</label>
+              <input type="text" name="hauteur" class="form-control" placeholder="Ex1 : 8, Ex2 : IV">
             </div>
           </div>
         </div>
@@ -52,8 +52,11 @@
   })
 
   $("select[id$=-type]").select2({
-    placeholder: 'Sélectionner un jeu',
+    placeholder: 'Chercher un jeu',
+
+    minimumInputLength: 3,
     ajax: {
+      delay: 250,
       url: '{% url 'orgues:typejeu-list-js' %}',
       dataType: 'json'
     },
@@ -61,16 +64,18 @@
       return markup;
     },
     language: {
-       {% if perms.orgues.add_typejeu %}
+      inputTooShort: function () {
+        return "Tapez au minimum 3 lettres pour commencer à chercher";
+      },
+      {% if perms.orgues.add_typejeu %}
         noResults: function () {
-        return "Aucun jeu trouvé ...  <a href='javascript:openjeumodal()'>cliquez ici</a> pour en créer un nouveau";
-      }
-    {% else %}
+          return "Aucun jeu trouvé ...  <a href='javascript:openjeumodal()'>cliquez ici</a> pour en créer un nouveau";
+        }
+      {% else %}
         noResults: function () {
           return "Aucun jeu trouvé ... contactez-nous si vous souhaitez ajouter un nouveau jeu.";
         }
-
-    {% endif %}
+      {% endif %}
 
     },
     width: '100%'

@@ -1,7 +1,7 @@
 <div class="clavier">
   <div class="card">
     <div class="card-header p-3 bg-light">
-      <h4 class="my-0">{{ clavier.type }} {% if clavier.is_expressif %}expressif {% endif %}</h4>
+      <h4 class="my-0">{{ clavier.type }} {{ clavier.expressif }}</h4>
       <p class="card-text font-weight-bold" style="font-size:0.9em;">
         {% if clavier.etendue %}
           Etendue : {{ clavier.etendue }}
