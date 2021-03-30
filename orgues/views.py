@@ -140,6 +140,16 @@ class OrgueListJS(View):
         return JsonResponse(list(data), safe=False)
 
 
+class FacteurListJSLeaflet(View):
+    """
+    Cette vue est requêtée par Leaflet lors de l'affichage de la carte de France
+    """
+
+    def get(self, request, *args, **kwargs):
+        data = Facteur.objects.filter(latitude_atelier__isnull=False).values("nom", "latitude_atelier", "longitude_atelier")
+        return JsonResponse(list(data), safe=False)
+
+
 class OrgueEtatsJS(View):
     """
     JSON décrivant les états des orgues pour une région
