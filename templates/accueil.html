@@ -379,6 +379,7 @@
             <span class="puce-etat " style="background-color:#cccccc;"></span>
             <span>Etat inconnu</span>
           </p>
+	  <button class='btn' id='retour'>Retour à la vue régionale</button>
         </div>
       </div>
     </div>
@@ -539,19 +540,38 @@
     $("[data-action=filter2]").click(function () {
       if ($(this).hasClass('active')) {
         $(this).removeClass('active');
-        var region = $(this).parents('svg').attr('data-value'); 
-        $("#selected-region").html(region); 
-        var regApp = $(this).parents('svg').attr('class'); 
-        $("."+regApp).hide(); 
-        $(".REGIONS").show(); 
-        update_states(region); 
+        var region = $(this).parents('svg').attr('data-value'); //on recupere le data value du svg parent
+        $("#selected-region").html(region); //on affiche le nom de la region
+        update_states(region); //on redemande les données de la region*/
       }else{
         $("[data-action=filter2]").removeClass('active')
         $(this).addClass('active');
-        dep = $(this).data("value");
-        $("#selected-region").html(dep); 
-        update_states2(dep); 
+        dep = $(this).data("value"); //on recupere le nom du departement
+        $("#selected-region").html(dep); //nom du departement
+        update_states2(dep);
       }
     })
+
+    //$(".REGIONS").hide()
+    $("button#retour").click(function () {
+      $('active').removeClass('active')
+      $(".Grand-Est").hide();
+      $(".IDF").hide();
+      $(".NA").hide();
+      $(".ARA").hide()
+      $(".BFC").hide()
+      $(".Bretagne").hide()
+      $(".CVDL").hide()
+      $(".Corse").hide()
+      $(".Occitanie").hide()
+      $(".HDF").hide()
+      $(".Normandie").hide()
+      $(".PDLL").hide()
+      $(".PACA").hide()
+      $(".REGIONS").show()
+      $("#selected-region").html("France")
+      update_states("")
+    })
+    
   </script>
 {% endblock %}
