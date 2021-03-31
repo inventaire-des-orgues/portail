@@ -24,7 +24,7 @@
 </div>
 <script>
   var openfacteurmodal = function () {
-    $('#id_facteurs, #id_facteur').select2('close');
+    $('#id_facteurs, #id_facteur, #id_entretien').select2('close');
     $('#nouveauFacteurModal').modal('show');
   }
   $(function () {
@@ -43,13 +43,13 @@
 
           var facteur = data.facteur;
 
-          if ($('#id_facteurs,#id_facteur').find("option[value='" + facteur.id + "']").length) {
+          if ($('#id_facteurs,#id_facteur, #id_entretien').find("option[value='" + facteur.id + "']").length) {
             $('#id_facteurs').val(facteur.id).trigger('change');
           } else {
             // Create a DOM Option and pre-select by default
             var newOption = new Option(facteur.nom, facteur.id, true, true);
             // Append it to the select
-            $('#id_facteurs,#id_facteur').append(newOption).trigger('change');
+            $('#id_facteurs,#id_facteur, #id_entretien').append(newOption).trigger('change');
           }
           $('#nouveauFacteurModal').modal('hide');
 
@@ -58,7 +58,7 @@
     })
 
 
-    $("#id_facteurs,#id_facteur").select2({
+    $("#id_facteurs,#id_facteur,#id_entretien").select2({
       placeholder: 'Choisir un facteur',
       ajax: {
         url: '{% url 'orgues:facteur-list-js' %}',

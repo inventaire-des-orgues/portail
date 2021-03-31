@@ -25,19 +25,25 @@ class Facteur(models.Model):
     latitude_atelier = models.FloatField(null=True, blank=True, verbose_name="Latitude de l'atelier")
     longitude_atelier = models.FloatField(null=True, blank=True, verbose_name="Longitude de l'atelier")
 
+
     def __str__(self):
         return self.nom
+
+    class Meta:
+        ordering = ['latitude_atelier']
+
 
 
 class Orgue(models.Model):
     CHOIX_TYPE_OSM = (
-        ("node", "Nœud"),
-        ("way", "Chemin"),
-        ("relation", "Relation"),
+        ("node", "Nœud (Node)"),
+        ("way", "Chemin (Way)"),
+        ("relation", "Relation (Relation)"),
     )
 
     CHOIX_PROPRIETAIRE = (
         ("commune", "Commune"),
+        ("interco", "Intercommunalité"),
         ("etat", "Etat"),
         ("association_culturelle", "Association culturelle"),
         ("diocese", "Diocèse"),
@@ -61,6 +67,7 @@ class Orgue(models.Model):
         ("mecanique_suspendue", "Mécanique suspendue"),
         ("mecanique_balanciers", "Mécanique à balanciers"),
         ("mecanique_barker", "Mécanique Barker"),
+        ("numerique", "Numérique"),
         ("electrique", "Electrique"),
         ("electrique_proportionnelle", "Electrique proportionnelle"),
         ("electro_pneumatique", "Electro-pneumatique"),
@@ -71,6 +78,7 @@ class Orgue(models.Model):
         ("mecanique", "Mécanique"),
         ("pneumatique_haute_pression", "Pneumatique haute pression"),
         ("pneumatique_basse_pression", "Pneumatique basse pression"),
+        ("numerique", "Numérique"),
         ("electrique", "Electrique"),
         ("electro_pneumatique", "Electro-pneumatique"),
     )
@@ -518,6 +526,14 @@ class Clavier(models.Model):
         auto_now_add=False,
         verbose_name='Update date'
     )
+    @property
+    def expressif(self):
+        """
+        Affiche le terme expressif en fonction du type de clavier
+        """
+        if self.is_expressif:
+            return "expressive" if self.type.nom in ["Pédale", "Bombarde", "Résonnance"] else "expressif"
+        return ""
 
     def save(self, *args, **kwargs):
         self.orgue.completion = self.orgue.calcul_completion()

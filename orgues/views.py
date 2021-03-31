@@ -40,7 +40,7 @@ class OrgueList(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context["departements"] = [d[1] for d in Orgue.CHOIX_DEPARTEMENT]
+        context["departements"] = Orgue.CHOIX_DEPARTEMENT
         context["departement"] = self.request.GET.get("departement")
         context["query"] = self.request.GET.get("query")
         context["limit"] = self.request.GET.get("limit")
@@ -137,6 +137,16 @@ class OrgueListJS(View):
     def get(self, request, *args, **kwargs):
         data = Orgue.objects.filter(latitude__isnull=False).values("slug", "commune", "edifice", "latitude",
                                                                    "longitude", 'emplacement', "references_palissy")
+        return JsonResponse(list(data), safe=False)
+
+
+class FacteurListJSLeaflet(View):
+    """
+    Cette vue est requêtée par Leaflet lors de l'affichage de la carte de France
+    """
+
+    def get(self, request, *args, **kwargs):
+        data = Facteur.objects.filter(latitude_atelier__isnull=False).values("nom", "latitude_atelier", "longitude_atelier")
         return JsonResponse(list(data), safe=False)
 
 
