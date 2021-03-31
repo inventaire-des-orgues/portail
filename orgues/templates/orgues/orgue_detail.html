@@ -278,6 +278,14 @@
               {% if orgue.latitude and orgue.longitude %}
                 <div id="mapid" style="height:150px;margin-bottom:10px"></div>
               {% endif %}
+                            
+              {% if orgue.osm_type and orgue.osm_id %}
+                <dt>Lien OSM</dt>
+                  <dd>
+                    <p><a href="#" id="osm_link">Lien vers la page OSM</a></p>
+                  </dd>
+              {% endif %}
+              
             </div>
           </div>
           <div class="mb-4  box-shadow">
@@ -351,6 +359,13 @@
       }).addTo(mymap);
 
       var marker = L.marker([{{ object.latitude|safe }}, {{ object.longitude|safe }}]).addTo(mymap);
+    </script>
+  {% endif %}
+
+  {% if orgue.osm_type and orgue.osm_id %}
+    <script>
+      var lien = "https://www.openstreetmap.org/" + "{{orgue.osm_type}}" + "/" + "{{orgue.osm_id}}";
+      $("a#osm_link").attr("href", lien);
     </script>
   {% endif %}
 
