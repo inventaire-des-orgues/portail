@@ -35,12 +35,17 @@
       var form = $(this);
       var url = form.attr('action');
 
+      if (form.data('requestRunning')) {
+        return;
+      }
+
+      form.data('requestRunning', true);
+
       $.ajax({
         type: "POST",
         url: url,
         data: form.serialize(), // serializes the form's elements.
         success: function (data) {
-
           var facteur = data.facteur;
 
           if ($('#id_facteurs,#id_facteur, #id_entretien').find("option[value='" + facteur.id + "']").length) {
@@ -52,8 +57,10 @@
             $('#id_facteurs,#id_facteur, #id_entretien').append(newOption).trigger('change');
           }
           $('#nouveauFacteurModal').modal('hide');
-
         },
+        complete: function() {
+            form.data('requestRunning', false);
+        }
       });
     })
 
@@ -74,16 +81,16 @@
         return markup;
       },
       language: {
-    {% if perms.orgues.add_facteur %}
-        noResults: function () {
-          return "Aucun facteur trouvé ...  <a href='javascript:openfacteurmodal()'>cliquez ici</a> pour en créer un nouveau";
-        }
-    {% else %}
-        noResults: function () {
-          return "Aucun facteur trouvé ... contactez-nous si vous souhaitez ajouter un nouveau facteur.";
-        }
+        {% if perms.orgues.add_facteur %}
+          noResults: function () {
+            return "Aucun facteur trouvé ...  <a href='javascript:openfacteurmodal()'>cliquez ici</a> pour en créer un nouveau";
+          }
+        {% else %}
+          noResults: function () {
+            return "Aucun facteur trouvé ... contactez-nous si vous souhaitez ajouter un nouveau facteur.";
+          }
 
-    {% endif %}
+        {% endif %}
       },
       width: '100%'
     });
