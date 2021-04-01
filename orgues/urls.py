@@ -8,6 +8,7 @@ urlpatterns = [
     path('orgues/csv/', v.OrgueExport.as_view(), name='orgue-csv'),
     path('recherche/', v.OrgueSearch.as_view(), name='orgue-search'),
     path('liste.json', v.OrgueListJS.as_view(), name='orgue-list-js'),
+    path('listeFacteur.json', v.FacteurListJSLeaflet.as_view(), name='facteur-list-js-leaflet'),
     path('etats.json', v.OrgueEtatsJS.as_view(), name='orgue-etats-js'),
     path('etats2.json', v.OrgueEtatsJSDep.as_view(), name='orgue-etats-js2'),
     path('carte/', v.OrgueCarte.as_view(), name='orgue-carte'),
