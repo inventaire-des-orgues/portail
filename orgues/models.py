@@ -725,10 +725,6 @@ class Image(models.Model):
                                processors=[Transpose(), ResizeToFill(600, 450)],
                                format='JPEG',
                                options={'quality': 100})
-    vignette = ImageSpecField(source='image',
-                              processors=[Transpose(), ResizeToFit(150, 100)],
-                              format='JPEG',
-                              options={'quality': 100})
 
     orgue = models.ForeignKey(Orgue, null=True, on_delete=models.CASCADE, related_name="images")
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
