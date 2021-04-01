@@ -501,7 +501,7 @@ class TypeClavier(models.Model):
 
 def validate_etendue(value):
     if not re.match("^([A-G]|CD)#?[1-7]-([A-G]|CD)#?[1-7]$", value):
-        raise ValidationError("L'étendue doit être de la forme F1-G5, C1-F#5 ...")
+        raise ValidationError("De la forme F1-G5. Absence du premier Ut dièse notée CD1-F5.")
 
 
 class Clavier(models.Model):
