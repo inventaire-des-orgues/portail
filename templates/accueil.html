@@ -63,7 +63,7 @@
       <div class="row justify-content-between">
         <div class="col-12">
           <h2 class="mb-0">Carte</h2>
-          <p>Sélectionnez une région</p>
+          <p id = "selectionner">Sélectionnez une région</p>
         </div>
         <div class="col-lg-5">
           <div id="map">
@@ -508,6 +508,7 @@
       if ($(this).hasClass('active')) {
         $(this).removeClass('active');
         $("#selected-region").html("France")
+        $("#selectionner").html("Sélectionnez une région")
         update_states("")
       } else {
         $("[data-action=filter]").removeClass('active')
@@ -515,7 +516,8 @@
         var reg = $(this).attr('id');
         var region = $(this).data("value")
         $("#selected-region").html(region)
-         if((region != "Mayotte") && (region != "La Réunion") && (region != "Guadeloupe") && (region != "Martinique") && (region != "Guyane")){
+        $("#selectionner").html("Sélectionnez un département")
+        if((region != "Mayotte") && (region != "La Réunion") && (region != "Guadeloupe") && (region != "Martinique") && (region != "Guyane")){
           $(".REGIONS").hide()
           $("."+reg).show()
         }
@@ -542,12 +544,14 @@
         $(this).removeClass('active');
         var region = $(this).parents('svg').attr('data-value'); //on recupere le data value du svg parent
         $("#selected-region").html(region); //on affiche le nom de la region
+        $("#selectionner").html("Sélectionnez un département")
         update_states(region); //on redemande les données de la region*/
       }else{
         $("[data-action=filter2]").removeClass('active')
         $(this).addClass('active');
         dep = $(this).data("value"); //on recupere le nom du departement
         $("#selected-region").html(dep); //nom du departement
+        $("#selectionner").html("Sélectionnez un département")
         update_states2(dep);
       }
     })
@@ -570,6 +574,7 @@
       $(".PACA").hide()
       $(".REGIONS").show()
       $("#selected-region").html("France")
+      $("#selectionner").html("Sélectionnez une région")
       update_states("")
     })
     
