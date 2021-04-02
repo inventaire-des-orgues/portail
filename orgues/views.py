@@ -819,7 +819,9 @@ class ImageCreate(FabView):
         image = self.request.FILES['filepond']
         credit = self.request.POST['credit']
         orgue = get_object_or_404(Orgue, uuid=self.kwargs["orgue_uuid"])
-        image = Image.objects.create(orgue=orgue, image=image, is_principale=not orgue.images.exists())
+        image = Image.objects.create(orgue=orgue, image=image)
+        if not (image.is_blackandwhite() or orgue.images.filter(is_principale=True).exists()):
+            image.is_principale = True
         image.user = request.user
         image.credit = credit
         image.save()
@@ -852,6 +854,17 @@ class ImagePrincipaleUpdate(FabUpdateView):
     permission_required = "orgues.change_image"
     success_message = "Vignette mise à jour, merci !"
     template_name = "orgues/image_principale_form.html"
+
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return super().dispatch(request, *args, **kwargs)
+        image = self.get_object()
+        if image.is_blackandwhite():
+            messages.warning(request,"Les images en noir & blanc ne peuvent pas devenir des vignettes")
+            return redirect("orgues:image-list",orgue_uuid=image.orgue.uuid)
+        return super().dispatch(request,*args,**kwargs)
+
 
     def form_valid(self, form):
         old_path = None
