@@ -3,10 +3,10 @@
 
 
 {% block meta_tags %}
-  <title>{{ orgue.designation }} {{ orgue.edifice }} - {{ orgue.commune }}, {{ orgue.departement }}</title>
-  <meta property="og:title" content="{{ orgue.designation }} {{ orgue.edifice }} - {{ orgue.commune }}, {{ orgue.departement }}">
-  <meta name="description" content="{{ orgue.designation }} {{ orgue.edifice }} - {{ orgue.commune }}, {{ orgue.departement }}">
-  <meta property="og:description" content="{{ orgue.designation }} {{ orgue.edifice }} - {{ orgue.commune }}, {{ orgue.departement }}">
+  <title>{{ orgue.designation|default_if_none:"" }} {{ orgue.edifice }} - {{ orgue.commune }}, {{ orgue.departement }}</title>
+  <meta property="og:title" content="{{ orgue.designation|default_if_none:"" }} {{ orgue.edifice }} - {{ orgue.commune }}, {{ orgue.departement }}">
+  <meta name="description" content="{{ orgue.designation|default_if_none:"" }} {{ orgue.edifice }} - {{ orgue.commune }}, {{ orgue.departement }}">
+  <meta property="og:description" content="{{ orgue.designation|default_if_none:"" }} {{ orgue.edifice }} - {{ orgue.commune }}, {{ orgue.departement }}">
   {% if object.image_principale %}
     <meta property="og:image" content="{{ orgue.image_principale.image.url }}">
   {% endif %}
