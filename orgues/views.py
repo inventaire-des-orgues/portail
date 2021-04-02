@@ -156,7 +156,6 @@ class FacteurListJSFiltre(FabListView):
     """
     model = Facteur
     permission_required = 'orgues.view_facteur'
-    paginate_by = 100000
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -167,7 +166,6 @@ class FacteurListJSFiltre(FabListView):
 
     def render_to_response(self, context, **response_kwargs):
         results = []
-        print("abcdefgh")
         if context["object_list"]:
             results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
         return JsonResponse({"results": results, "pagination": {"more": False}})
@@ -180,10 +178,13 @@ class OrgueFiltreJS(View):
 
     def get(self, request, *args, **kwargs):
         facteur = request.GET.get("facteur")
-        print(facteur)
-        data = Orgue.objects.filter(evenements__facteurs__nom=facteur).distinct().values("slug", "commune", "edifice", "latitude",
-                                                                   "longitude", 'emplacement', "references_palissy")
-        print(data)
+        type_requete = request.GET.get("type")
+        requete = Orgue.objects.filter(evenements__facteurs__nom=facteur).distinct()
+        if type_requete == "construction":
+            requete = Orgue.objects.filter(Q(evenements__facteurs__nom=facteur) & (Q(evenements__type="construction")|Q(evenements__type="reconstruction"))).distinct()
+        else:
+            requete = Orgue.objects.filter(evenements__facteurs__nom=facteur).distinct()
+        data =requete.values("slug", "commune", "edifice", "latitude", "longitude", 'emplacement', "references_palissy")
         return JsonResponse(list(data), safe=False)
 
 class OrgueEtatsJS(View):

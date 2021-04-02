@@ -13,10 +13,9 @@
     </div>
     <form id="filtre_formulaire" action="">
       <select type="text" name="nom_facteur" id="nom_facteur"></select>
-      <label>Construction<input type="checkbox" name="construction"></label>
+      <label>Construction<input type="checkbox" name="construction" id="construction"></label>
       <input type="submit" name="envoi" value="OK" id="validation">
     </form>
-    <p id="test">abc</p>
   </div>  
   
 {% endblock %}
@@ -156,11 +155,17 @@
             if (facteurs.results[i].id==$("#nom_facteur").val()){
               facteur = facteurs.results[i].text;
             }
-          } 
+          }
+          if ($('#construction').is(':checked')){
+            var data_filtre = {"facteur": facteur, "type":"construction"}
+          }
+          else{
+            var data_filtre = {"facteur": facteur, "type":"tout_type"}
+          }
           $.ajax({
             type: "GET",
             url: "{% url 'orgues:orgue-filtre-js' %}",
-            data: {"facteur": facteur},
+            data: data_filtre,
             success: function (data) {
               for (var i = 0; i < data.length; i++) {
                 var popup = '<p> <b>' + data[i].commune + '</b>' + '</br>' + data[i].edifice + '</br><a href="/detail/' + data[i].slug + '">Voir l\'orgue</a></p>';
