@@ -467,6 +467,18 @@ table#lexique td:first-child {
     margin-left: -20px;
 }
 
+.myclusterfacteur {
+    height: 20px;
+    width: 20px;
+    border-radius: 30%;
+    background-color: #d4af37;
+    color: white;
+    text-align: center;
+    font-size: 12px;
+    line-height: 20px;
+    margin-top: -20px;
+    margin-left: -20px;
+}
 
 .grid-image {
     border-radius: 5px;
