@@ -7,9 +7,18 @@
 {% endblock %}
 
 {% block content %}
+<div id="carte_generale">  
   <div class="container-fluid" id="carte">
-    <div id="mapid" style="height:700px"></div>
-  </div>
+      <div id="mapid" style="height:700px"></div>
+    </div>
+    <form id="filtre_formulaire" action="">
+      <select type="text" name="nom_facteur" id="nom_facteur"></select>
+      <label>Construction<input type="checkbox" name="construction"></label>
+      <input type="submit" name="envoi" value="OK" id="validation">
+    </form>
+    <p id="test">abc</p>
+  </div>  
+  
 {% endblock %}
 
 {% block js_extra %}
@@ -92,7 +101,6 @@
           var marker = new L.Marker(latLng, {icon:nonmh_icon}).bindPopup(popup);
         }
         marker.bindTooltip(ttip);
-
         markersCluster.addLayer(marker);
       }
 
@@ -115,6 +123,65 @@
 
 
     });
+
+    $("#nom_facteur").select2({
+      placeholder: 'Choisir un facteur',
+      ajax: {
+        url: '{% url 'orgues:facteur-list-js' %}',
+        data: function (params) {
+          var query = {
+            search: params.term,
+            page: params.page || 1
+          }
+          return query;
+        }
+      },
+      escapeMarkup: function (markup) {
+        return markup;
+      },
+      language: {
+          noResults: function () {
+            return "Aucun facteur trouvé ... contactez-nous si vous souhaitez ajouter un nouveau facteur.";
+          }
+      },
+      width: '100%'
+    });
+
+    $("#validation").click(function(e){
+      e.preventDefault();
+      markersCluster.clearLayers();
+        $.getJSON("{% url 'orgues:facteur-filtre-js' %}", function (facteurs) {
+          var facteur =  0;
+          for (var i = 0; i < facteurs.results.length; i++) {
+            if (facteurs.results[i].id==$("#nom_facteur").val()){
+              facteur = facteurs.results[i].text;
+            }
+          } 
+          $.ajax({
+            type: "GET",
+            url: "{% url 'orgues:orgue-filtre-js' %}",
+            data: {"facteur": facteur},
+            success: function (data) {
+              for (var i = 0; i < data.length; i++) {
+                var popup = '<p> <b>' + data[i].commune + '</b>' + '</br>' + data[i].edifice + '</br><a href="/detail/' + data[i].slug + '">Voir l\'orgue</a></p>';
+                var ttip = '<b>' + data[i].commune + '</b>' + '</br>' + data[i].edifice;
+                var latLng = new L.LatLng(data[i].latitude, data[i].longitude);
+                if (data[i].references_palissy) {
+                  var marker = new L.marker(latLng, {icon: mh_icon}).bindPopup(popup);
+                }
+                else {
+                  var marker = new L.Marker(latLng, {icon:nonmh_icon}).bindPopup(popup);
+                }
+                marker.bindTooltip(ttip);
+                markersCluster.addLayer(marker);
+              }
+              carte_orgues.addLayer(markersCluster);
+            },
+            error: function () {
+            }
+          })
+        })
+    })
   </script>
 
 {% endblock %}

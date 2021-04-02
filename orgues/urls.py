@@ -15,6 +15,7 @@ urlpatterns = [
     path('detail/<slug:slug>/', v.OrgueDetail.as_view(), name='orgue-detail'),
     path('exemple/', v.OrgueDetailExemple.as_view(), name='orgue-detail-exemple'),
     path('conseils/', v.ConseilsFicheView.as_view(),name='orgue-fiche-conseils'),
+    path('orgues/filtre', v.OrgueFiltreJS.as_view(), name='orgue-filtre-js'),
 
     # Administration
     path('creation/', v.OrgueCreate.as_view(), name='orgue-create'),
@@ -44,6 +45,7 @@ urlpatterns = [
     # facteurs
     path('js/facteurs/', v.FacteurListJS.as_view(), name='facteur-list-js'),
     path('js/facteurs/creation/', v.FacteurCreateJS.as_view(), name='facteur-create-js'),
+    path('js/facteurs/filtre/', v.FacteurListJSFiltre.as_view(), name='facteur-filtre-js'),
 
     # types jeux
     path('types_jeux/creation/', v.TypeJeuCreateJS.as_view(), name='typejeu-create-js'),

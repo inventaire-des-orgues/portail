@@ -543,3 +543,19 @@ a.link, a.link:visited, a.link:active {
 .page-menu nav > ul > li > a {
     transition:none;
 }
+
+#carte_generale{
+    display: flex;
+    flex-direction: row;
+}
+
+#mapid{
+    justify-content: center;
+}
+
+#filtre_formulaire{
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}

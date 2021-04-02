@@ -149,6 +149,42 @@ class FacteurListJSLeaflet(View):
         data = Facteur.objects.filter(latitude_atelier__isnull=False).values("nom", "latitude_atelier", "longitude_atelier")
         return JsonResponse(list(data), safe=False)
 
+class FacteurListJSFiltre(FabListView):
+    """
+    Liste dynamique utilisée pour filtrer les facteurs d'orgue dans les menus déroulants select2. Utilisée pour le filtre de la carte.
+    documentation : https://select2.org/data-sources/ajax
+    """
+    model = Facteur
+    permission_required = 'orgues.view_facteur'
+    paginate_by = 100000
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        query = self.request.GET.get("search")
+        if query:
+            queryset = queryset.filter(nom__icontains=query)
+        return queryset
+
+    def render_to_response(self, context, **response_kwargs):
+        results = []
+        print("abcdefgh")
+        if context["object_list"]:
+            results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
+        return JsonResponse({"results": results, "pagination": {"more": False}})
+
+
+class OrgueFiltreJS(View):
+    """
+    JSON renvoyant la liste des orgues auxquels le facteur a participé.
+    """
+
+    def get(self, request, *args, **kwargs):
+        facteur = request.GET.get("facteur")
+        print(facteur)
+        data = Orgue.objects.filter(evenements__facteurs__nom=facteur).distinct().values("slug", "commune", "edifice", "latitude",
+                                                                   "longitude", 'emplacement', "references_palissy")
+        print(data)
+        return JsonResponse(list(data), safe=False)
 
 class OrgueEtatsJS(View):
     """
