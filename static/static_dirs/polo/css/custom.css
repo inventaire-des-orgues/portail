@@ -543,3 +543,27 @@ a.link, a.link:visited, a.link:active {
 .page-menu nav > ul > li > a {
     transition:none;
 }
+
+#carte_generale{
+    display: grid;
+    grid-template-columns: 80% 1fr;
+}
+
+#mapid{
+    grid-column: 1;
+}
+
+#div_filtre{
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#filtre_formulaire{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
