@@ -179,11 +179,14 @@ class OrgueFiltreJS(View):
     def get(self, request, *args, **kwargs):
         facteur = request.GET.get("facteur")
         type_requete = request.GET.get("type")
-        requete = Orgue.objects.filter(evenements__facteurs__nom=facteur).distinct()
-        if type_requete == "construction":
-            requete = Orgue.objects.filter(Q(evenements__facteurs__nom=facteur) & (Q(evenements__type="construction")|Q(evenements__type="reconstruction"))).distinct()
-        else:
+        if facteur:
             requete = Orgue.objects.filter(evenements__facteurs__nom=facteur).distinct()
+            if type_requete == "construction":
+                requete = Orgue.objects.filter(Q(evenements__facteurs__nom=facteur) & (Q(evenements__type="construction")|Q(evenements__type="reconstruction"))).distinct()
+            else:
+                requete = Orgue.objects.filter(evenements__facteurs__nom=facteur).distinct()
+        else:
+            requete =  Orgue.objects.all()
         data =requete.values("slug", "commune", "edifice", "latitude", "longitude", 'emplacement', "references_palissy")
         return JsonResponse(list(data), safe=False)
 

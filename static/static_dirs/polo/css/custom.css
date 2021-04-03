@@ -545,17 +545,25 @@ a.link, a.link:visited, a.link:active {
 }
 
 #carte_generale{
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: 80% 1fr;
 }
 
 #mapid{
+    grid-column: 1;
+}
+
+#div_filtre{
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
 }
 
 #filtre_formulaire{
-    justify-content: center;
-    align-items: center;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }

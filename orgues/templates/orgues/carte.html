@@ -10,13 +10,18 @@
 <div id="carte_generale">  
   <div class="container-fluid" id="carte">
       <div id="mapid" style="height:700px"></div>
-    </div>
+  </div>
+  <div id="div_filtre">
+    <p>Filtrer les orgues par facteur :</p>
     <form id="filtre_formulaire" action="">
-      <select type="text" name="nom_facteur" id="nom_facteur"></select>
-      <label>Construction<input type="checkbox" name="construction" id="construction"></label>
-      <input type="submit" name="envoi" value="OK" id="validation">
+        <select type="text" name="nom_facteur" id="nom_facteur"></select>
+        <label><input type="checkbox" name="construction" id="construction">N'afficher que les orgues pour lesquels le facteur a participé à la construction ou à la reconstruction.</label>
+        <input type="submit" name="envoi" value="OK" id="validation" class='btn'>
     </form>
+    <button class='btn' id='afficher_tous_orgues'>Afficher tous les orgues</button>
+    <label><input type="checkbox" name="construction" id="manufacture">Afficher les manufactures d'orgues.</label>
   </div>  
+</div>  
   
 {% endblock %}
 
@@ -87,41 +92,28 @@
     });
 
     $.getJSON("{% url 'orgues:orgue-list-js' %}", function (orgues) {
-      for (var i = 0; i < orgues.length; i++) {
-
-
-        var popup = '<p> <b>' + orgues[i].commune + '</b>' + '</br>' + orgues[i].edifice + '</br><a href="/detail/' + orgues[i].slug + '">Voir l\'orgue</a></p>';
-        var ttip = '<b>' + orgues[i].commune + '</b>' + '</br>' + orgues[i].edifice;
-        var latLng = new L.LatLng(orgues[i].latitude, orgues[i].longitude);
-        if (orgues[i].references_palissy) {
-          var marker = new L.marker(latLng, {icon: mh_icon}).bindPopup(popup);
-        }
-        else {
-          var marker = new L.Marker(latLng, {icon:nonmh_icon}).bindPopup(popup);
-        }
-        marker.bindTooltip(ttip);
-        markersCluster.addLayer(marker);
-      }
-
-      carte_orgues.addLayer(markersCluster);
-
-
+      $("#afficher_tous_orgues").hide();
+      afficher_orgue(orgues);
     });
 
-    $.getJSON("{% url 'orgues:facteur-list-js-leaflet' %}", function (facteurs) {
-      for (var i = 0; i < facteurs.length; i++) {
 
-        var popup = '<p> <b>' + facteurs[i].nom + '</p> </b>';
-        var latLng = new L.LatLng(facteurs[i].latitude_atelier, facteurs[i].longitude_atelier);
-        var marker = new L.Marker(latLng, {icon:facteur_icon}).bindPopup(popup);
-
-        markersClusterFacteur.addLayer(marker);
+    $('#manufacture').change(function(){
+      if ($('#manufacture').is(':checked')){
+        $.getJSON("{% url 'orgues:facteur-list-js-leaflet' %}", function (facteurs) {
+          for (var i = 0; i < facteurs.length; i++) {
+            var popup = '<p> <b>' + facteurs[i].nom + '</p> </b>';
+            var latLng = new L.LatLng(facteurs[i].latitude_atelier, facteurs[i].longitude_atelier);
+            var marker = new L.Marker(latLng, {icon:facteur_icon}).bindPopup(popup);
+            markersClusterFacteur.addLayer(marker);
+          }
+          carte_orgues.addLayer(markersClusterFacteur);
+        });
       }
+      else{
+        markersClusterFacteur.clearLayers();
+      }
+    })
 
-      carte_orgues.addLayer(markersClusterFacteur);
-
-
-    });
 
     $("#nom_facteur").select2({
       placeholder: 'Choisir un facteur',
@@ -146,47 +138,66 @@
       width: '100%'
     });
 
+    $("#afficher_tous_orgues").click(function(){
+      markersCluster.clearLayers();
+      $("#afficher_tous_orgues").hide();
+      $.getJSON("{% url 'orgues:orgue-list-js' %}", function (orgues) {
+        afficher_orgue(orgues)
+      });
+    })
+
     $("#validation").click(function(e){
       e.preventDefault();
       markersCluster.clearLayers();
         $.getJSON("{% url 'orgues:facteur-filtre-js' %}", function (facteurs) {
-          var facteur =  0;
+          var facteur =  null;
           for (var i = 0; i < facteurs.results.length; i++) {
             if (facteurs.results[i].id==$("#nom_facteur").val()){
               facteur = facteurs.results[i].text;
             }
           }
-          if ($('#construction').is(':checked')){
-            var data_filtre = {"facteur": facteur, "type":"construction"}
+          if (facteur==null){
+            var data_filtre = {}
           }
-          else{
-            var data_filtre = {"facteur": facteur, "type":"tout_type"}
+          else {
+            $("#afficher_tous_orgues").show();
+            $("#nom_facteur")[0].placeholder = 'Choisir un facteur';
+            if ($('#construction').is(':checked')){
+              var data_filtre = {"facteur": facteur, "type":"construction"}
+            }
+            else{
+              var data_filtre = {"facteur": facteur, "type":"tout_type"}
+            }
           }
           $.ajax({
             type: "GET",
             url: "{% url 'orgues:orgue-filtre-js' %}",
             data: data_filtre,
             success: function (data) {
-              for (var i = 0; i < data.length; i++) {
-                var popup = '<p> <b>' + data[i].commune + '</b>' + '</br>' + data[i].edifice + '</br><a href="/detail/' + data[i].slug + '">Voir l\'orgue</a></p>';
-                var ttip = '<b>' + data[i].commune + '</b>' + '</br>' + data[i].edifice;
-                var latLng = new L.LatLng(data[i].latitude, data[i].longitude);
-                if (data[i].references_palissy) {
-                  var marker = new L.marker(latLng, {icon: mh_icon}).bindPopup(popup);
-                }
-                else {
-                  var marker = new L.Marker(latLng, {icon:nonmh_icon}).bindPopup(popup);
-                }
-                marker.bindTooltip(ttip);
-                markersCluster.addLayer(marker);
-              }
-              carte_orgues.addLayer(markersCluster);
+              afficher_orgue(data)
             },
             error: function () {
             }
           })
         })
     })
+
+    function afficher_orgue(orgues){
+      for (var i = 0; i < orgues.length; i++) {
+        var popup = '<p> <b>' + orgues[i].commune + '</b>' + '</br>' + orgues[i].edifice + '</br><a href="/detail/' + orgues[i].slug + '">Voir l\'orgue</a></p>';
+        var ttip = '<b>' + orgues[i].commune + '</b>' + '</br>' + orgues[i].edifice;
+        var latLng = new L.LatLng(orgues[i].latitude, orgues[i].longitude);
+        if (orgues[i].references_palissy) {
+          var marker = new L.marker(latLng, {icon: mh_icon}).bindPopup(popup);
+        }
+        else {
+          var marker = new L.Marker(latLng, {icon:nonmh_icon}).bindPopup(popup);
+        }
+        marker.bindTooltip(ttip);
+        markersCluster.addLayer(marker);
+        }
+        carte_orgues.addLayer(markersCluster);
+    }
   </script>
 
 {% endblock %}
