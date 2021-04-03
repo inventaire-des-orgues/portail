@@ -278,6 +278,16 @@
               {% if orgue.latitude and orgue.longitude %}
                 <div id="mapid" style="height:150px;margin-bottom:10px"></div>
               {% endif %}
+                            
+              {% if orgue.osm_type and orgue.osm_id %}
+                <dt>Localiser l'édifice</dt>
+                <dd>
+                {% with 'https://www.openstreetmap.org/'|add:orgue.osm_type|add:'/'|add:orgue.osm_id as lien_osm %}
+                    <a href="{{ lien_osm }}" target="_blank" rel="noopener noreferrer">Ouvrir la carte OpenStreetMap</a> <br>
+                {% endwith %}
+                </dd>
+              {% endif %}
+              
             </div>
           </div>
           <div class="mb-4  box-shadow">

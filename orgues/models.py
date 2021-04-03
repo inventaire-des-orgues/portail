@@ -13,6 +13,7 @@ from django.urls import reverse
 from django.utils.text import slugify
 from imagekit.models import ImageSpecField, ProcessedImageField
 from pilkit.processors import ResizeToFill, ResizeToFit, Transpose
+from PIL import Image as PilImage
 
 from accounts.models import User
 
@@ -25,13 +26,11 @@ class Facteur(models.Model):
     latitude_atelier = models.FloatField(null=True, blank=True, verbose_name="Latitude de l'atelier")
     longitude_atelier = models.FloatField(null=True, blank=True, verbose_name="Longitude de l'atelier")
 
-
     def __str__(self):
         return self.nom
 
     class Meta:
         ordering = ['latitude_atelier']
-
 
 
 class Orgue(models.Model):
@@ -250,8 +249,10 @@ class Orgue(models.Model):
     commune = models.CharField(max_length=100)
     code_insee = models.CharField(max_length=5)
     ancienne_commune = models.CharField(max_length=100, null=True, blank=True)
-    departement = models.CharField(verbose_name="Département", choices=[(c[1], c[1]) for c in CHOIX_DEPARTEMENT], max_length=50)
-    code_departement = models.CharField(choices=[(c[0], c[0]) for c in CHOIX_DEPARTEMENT], verbose_name="Code département", max_length=3)
+    departement = models.CharField(verbose_name="Département", choices=[(c[1], c[1]) for c in CHOIX_DEPARTEMENT],
+                                   max_length=50)
+    code_departement = models.CharField(choices=[(c[0], c[0]) for c in CHOIX_DEPARTEMENT],
+                                        verbose_name="Code département", max_length=3)
     region = models.CharField(verbose_name="Région", choices=CHOIX_REGION, max_length=50)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
@@ -576,7 +577,8 @@ class Evenement(models.Model):
     )
 
     annee = models.IntegerField(verbose_name="Année de début de l'évènement")
-    annee_fin = models.IntegerField(verbose_name="Année de fin de l'évènement", null=True, blank=True, help_text="Optionnelle")
+    annee_fin = models.IntegerField(verbose_name="Année de fin de l'évènement", null=True, blank=True,
+                                    help_text="Optionnelle")
     circa = models.BooleanField(default=False, verbose_name="Cocher si dates approximatives")
     type = models.CharField(max_length=20, choices=CHOIX_TYPE)
     facteurs = models.ManyToManyField(Facteur, blank=True, related_name="evenements")
@@ -742,6 +744,21 @@ class Image(models.Model):
     def save(self, *args, **kwargs):
         self.orgue.completion = self.orgue.calcul_completion()
         super().save(*args, **kwargs)
+
+    def is_blackandwhite(self):
+        """
+        Vérifie si une image est en noir et blanc en analysant la couleur de 100 pixels
+        """
+        if not self.image:
+            return
+        img = PilImage.open(self.thumbnail.path)
+        width, height = img.size
+        for x in range(0, width, width // 10):
+            for y in range(0, height,height // 10):
+                r, g, b = img.getpixel((x, y))
+                if (abs(r-g) > 30 or abs(g-b) > 30):
+                    return False
+        return True
 
     def delete(self):
         if self.image:

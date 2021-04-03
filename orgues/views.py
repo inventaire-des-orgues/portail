@@ -168,7 +168,25 @@ class OrgueEtatsJS(View):
             etats["inconnu"] = etats.get(None, 0)
             del etats[None]
         return JsonResponse(etats, safe=False)
-
+    
+class OrgueEtatsJSDep(View):
+    """
+    JSON décrivant les états des orgues pour une région
+    Si pas de région alors envoie les infos aggrégées pour toutes les régions
+    """
+    def get(self, request, *args, **kwargs):
+        """Un if ou deux fonctions"""
+        departement = request.GET.get("departement")
+        queryset = Orgue.objects.all()
+        if departement:
+            queryset = queryset.filter(departement=departement)
+        valeurs = queryset.values_list("etat", flat=True)
+        etats = dict(Counter(valeurs))
+        etats["total"] = sum(list(etats.values()))
+        if None in etats.keys():
+            etats["inconnu"] = etats.get(None, 0)
+            del etats[None]
+        return JsonResponse(etats, safe=False)
 
 class OrgueDetail(DetailView):
     """
@@ -801,7 +819,9 @@ class ImageCreate(FabView):
         image = self.request.FILES['filepond']
         credit = self.request.POST['credit']
         orgue = get_object_or_404(Orgue, uuid=self.kwargs["orgue_uuid"])
-        image = Image.objects.create(orgue=orgue, image=image, is_principale=not orgue.images.exists())
+        image = Image.objects.create(orgue=orgue, image=image)
+        if not (image.is_blackandwhite() or orgue.images.filter(is_principale=True).exists()):
+            image.is_principale = True
         image.user = request.user
         image.credit = credit
         image.save()
@@ -834,6 +854,17 @@ class ImagePrincipaleUpdate(FabUpdateView):
     permission_required = "orgues.change_image"
     success_message = "Vignette mise à jour, merci !"
     template_name = "orgues/image_principale_form.html"
+
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return super().dispatch(request, *args, **kwargs)
+        image = self.get_object()
+        if image.is_blackandwhite():
+            messages.warning(request,"Les images en noir & blanc ne peuvent pas devenir des vignettes")
+            return redirect("orgues:image-list",orgue_uuid=image.orgue.uuid)
+        return super().dispatch(request,*args,**kwargs)
+
 
     def form_valid(self, form):
         old_path = None
