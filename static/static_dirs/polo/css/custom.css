@@ -342,7 +342,7 @@ section.triangle::before {
 }
 
 #carte {
-    padding: 0;
+    padding: 30px;
 }
 
 
@@ -557,8 +557,10 @@ a.link, a.link:visited, a.link:active {
     grid-column: 2;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    
     justify-content: center;
+    text-align: left;
+    padding: 15px;
 }
 
 #filtre_formulaire{
