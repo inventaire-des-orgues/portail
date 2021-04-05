@@ -170,6 +170,31 @@ class FacteurListJSFiltre(FabListView):
             results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
         return JsonResponse({"results": results, "pagination": {"more": False}})
 
+class FacteurListJSlonlat(FabListView):
+    """
+    Liste dynamique utilisée pour filtrer les facteurs d'orgue dans les menus déroulants select2. Utilisée pour le filtre de la carte.
+    documentation : https://select2.org/data-sources/ajax
+    """
+    model = Facteur
+    permission_required = 'orgues.view_facteur'
+    paginate_by = 100000
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        query = self.request.GET.get("search")
+        if query:
+            queryset = queryset.filter(nom__icontains=query)
+        return queryset
+
+    def render_to_response(self, context, **response_kwargs):
+        results = []
+        if context["object_list"]:
+            for u in context["object_list"]:
+                if u.latitude_atelier != None and u.longitude_atelier != None:
+                    results.append({"id": u.id, "text": u.nom, "latitude": u.latitude_atelier, "longitude": u.longitude_atelier})
+        return JsonResponse({"results": results, "pagination": {"more": False}})
+
+
 
 class OrgueFiltreJS(View):
     """

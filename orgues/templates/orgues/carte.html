@@ -12,14 +12,23 @@
       <div id="mapid" style="height:700px"></div>
   </div>
   <div id="div_filtre">
-    <p>Filtrer les orgues par facteur :</p>
-    <form id="filtre_formulaire" action="">
-        <select type="text" name="nom_facteur" id="nom_facteur"></select>
+    <b>Filtrer les orgues par facteur :</b>
+    <form id="filtre_formulaire" action="" >
+        <select type="text" id="nom_facteur"></select>
         <label><input type="checkbox" name="construction" id="construction">N'afficher que les orgues pour lesquels le facteur a participé à la construction ou à la reconstruction.</label>
-        <input type="submit" name="envoi" value="OK" id="validation" class='btn'>
-    </form>
+        <div class="form-group text-right">
+          <button id="validation" class="btn btn-primary btn-sm btn-slide"><i id="search-btn" class="fa fa-search"></i></button>
+        </div>
+      </form>
     <button class='btn' id='afficher_tous_orgues'>Afficher tous les orgues</button>
-    <label><input type="checkbox" name="construction" id="manufacture">Afficher les manufactures d'orgues.</label>
+    <form id="chercher_facteur" action="">
+      <b>Rechercher une manufacture d'orgues :</b>
+      <select type="text" id="nom_facteur_recherche"></select>
+      <div class="form-group text-right" id="valider_recherche_manufacture">
+        <button id="validation_facteur" class="btn  btn-sm btn-slide"><i id="search-btn" class="fa fa-search"></i></button>
+      </div>
+    </form>
+    <label><input type="checkbox" name="manufacture" id="manufacture">Afficher toutes les manufactures d'orgues.</label>
   </div>  
 </div>  
   
@@ -96,10 +105,8 @@
       afficher_orgue(orgues);
     });
 
-
-    $('#manufacture').change(function(){
-      if ($('#manufacture').is(':checked')){
-        $.getJSON("{% url 'orgues:facteur-list-js-leaflet' %}", function (facteurs) {
+    function afficher_manufactures(){
+      $.getJSON("{% url 'orgues:facteur-list-js-leaflet' %}", function (facteurs) {
           for (var i = 0; i < facteurs.length; i++) {
             var popup = '<p> <b>' + facteurs[i].nom + '</p> </b>';
             var latLng = new L.LatLng(facteurs[i].latitude_atelier, facteurs[i].longitude_atelier);
@@ -108,10 +115,62 @@
           }
           carte_orgues.addLayer(markersClusterFacteur);
         });
+    }
+
+
+    $('#manufacture').change(function(){
+      if ($('#manufacture').is(':checked')){
+        afficher_manufactures();
       }
       else{
         markersClusterFacteur.clearLayers();
       }
+    })
+
+    $("#nom_facteur_recherche").select2({
+      placeholder: 'Choisir un facteur',
+      ajax: {
+        url: '{% url 'orgues:facteur-list-js_lonlat' %}',
+        data: function (params) {
+          var query = {
+            search: params.term,
+            page: params.page || 1
+          }
+          return query;
+        }
+      },
+      escapeMarkup: function (markup) {
+        return markup;
+      },
+      language: {
+          noResults: function () {
+            return "Aucun facteur trouvé ... contactez-nous si vous souhaitez ajouter un nouveau facteur.";
+          }
+      },
+      width: '100%'
+    });
+
+    $("#validation_facteur").click(function(e){
+      e.preventDefault();
+      markersClusterFacteur.clearLayers();
+      document.getElementById("manufacture").checked = true;
+      afficher_manufactures();
+      $.getJSON("{% url 'orgues:facteur-list-js_lonlat' %}", function (facteurs) {
+        var listeFacteurs = facteurs.results;
+        for (var i = 0; i < listeFacteurs.length; i++) {
+          if (listeFacteurs[i].id == $("#nom_facteur_recherche").val()){
+            carte_orgues.setView([listeFacteurs[i].latitude, listeFacteurs[i].longitude], 10);
+          }
+        }
+      })
+    })
+
+    $("#afficher_tous_orgues").click(function(){
+      markersCluster.clearLayers();
+      $("#afficher_tous_orgues").hide();
+      $.getJSON("{% url 'orgues:orgue-list-js' %}", function (orgues) {
+        afficher_orgue(orgues)
+      });
     })
 
 
