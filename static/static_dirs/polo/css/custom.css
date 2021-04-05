@@ -557,15 +557,12 @@ a.link, a.link:visited, a.link:active {
     grid-column: 2;
     display: flex;
     flex-direction: column;
-    
     justify-content: center;
     text-align: left;
     padding: 15px;
+    padding-right: 30px;
 }
 
-#filtre_formulaire{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+#valider_recherche_manufacture{
+    padding: 5px;
 }
