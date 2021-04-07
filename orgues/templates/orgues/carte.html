@@ -43,9 +43,18 @@
           scrollWheelZoom: true,
         }).setView([46.2, 2.2], 5);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(carte_orgues);
+    var mapboxAccessToken =
+        "pk.eyJ1IjoiaW52ZW50YWlyZWRlc29yZ3VlcyIsImEiOiJja243Y3huZWcwbXJjMndvNmU0dnhnM2ZpIn0.vUjgVVyXZFYNEl1xQ3pLww";
+
+    L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=" +
+    mapboxAccessToken,
+    {
+      id: "mapbox/light-v9",
+      attribution: "",
+      tileSize: 512,
+      zoomOffset: -1
+    }
+    ).addTo(carte_orgues);
 
     var mh_icon = L.icon({
       iconUrl: '{% static 'img/mh_icon.png' %}',
