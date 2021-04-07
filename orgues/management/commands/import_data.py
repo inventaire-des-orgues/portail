@@ -105,11 +105,11 @@ class Command(BaseCommand):
                     orgue.save()
 
                     for nom in row.get("accessoires", []):
-                        acc = Accessoire.objects.get(nom=nom)
+                        acc, created = Accessoire.objects.get_or_create(nom=nom)
                         orgue.accessoires.add(acc)
 
                     for nom in row.get("entretien", []):
-                        facteur = Orgue.objects.get(entretien=nom)
+                        facteur, created = Orgue.objects.get_or_create(entretien=nom)
                         orgue.entretien.add(facteur)
 
                     for evenement in row.get("evenements", []):
@@ -121,11 +121,11 @@ class Command(BaseCommand):
                         )
 
                         for nom in evenement.get("facteurs"):
-                            fac = Facteur.objects.get(nom=nom)
+                            fac, created = Facteur.objects.get_or_create(nom=nom)
                             e.facteurs.add(fac)
 
                     for clavier in row.get("claviers", []):
-                        type_clavier = TypeClavier.objects.get(nom=clavier["type"])
+                        type_clavier, created = TypeClavier.objects.get_or_create(nom=clavier["type"])
                         c = Clavier.objects.create(
                             type=type_clavier,
                             is_expressif=clavier.get("is_expressif"),
@@ -133,7 +133,7 @@ class Command(BaseCommand):
                             orgue=orgue
                         )
                         for jeu in clavier.get("jeux", []):
-                            type_jeu = TypeJeu.objects.get(nom=jeu["type"]["nom"], hauteur=jeu["type"]["hauteur"])
+                            type_jeu, created = TypeJeu.objects.get_or_create(nom=jeu["type"]["nom"], hauteur=jeu["type"]["hauteur"])
                             Jeu.objects.create(
                                 type=type_jeu,
                                 commentaire=jeu.get("commentaire"),
