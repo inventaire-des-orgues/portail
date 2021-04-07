@@ -64,6 +64,7 @@
         <div class="col-12">
           <h2 class="mb-0">Carte</h2>
           <p id = "selectionner">Sélectionnez une région</p>
+	  <button class='btn' id='retour'>Retour à la vue régionale</button>
         </div>
         <div class="col-lg-5">
           <div id="map">
@@ -379,7 +380,6 @@
             <span class="puce-etat " style="background-color:#cccccc;"></span>
             <span>Etat inconnu</span>
           </p>
-	  <button class='btn' id='retour'>Retour à la vue régionale</button>
         </div>
       </div>
     </div>
@@ -502,6 +502,7 @@
       })
     }
 
+    $("button#retour").hide()
     update_states()
     $("[data-action=filter]").click(function () {
 
@@ -516,6 +517,7 @@
         var reg = $(this).attr('id');
         var region = $(this).data("value")
         $("#selected-region").html(region)
+	$("button#retour").show()
         $("#selectionner").html("Sélectionnez un département")
         if((region != "Mayotte") && (region != "La Réunion") && (region != "Guadeloupe") && (region != "Martinique") && (region != "Guyane")){
           $(".REGIONS").hide()
@@ -575,6 +577,7 @@
       $(".REGIONS").show()
       $("#selected-region").html("France")
       $("#selectionner").html("Sélectionnez une région")
+      $("button#retour").hide()
       update_states("")
     })
     
