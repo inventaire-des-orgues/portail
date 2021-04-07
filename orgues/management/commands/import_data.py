@@ -98,6 +98,7 @@ class Command(BaseCommand):
                     orgue.sommiers = row.get("sommiers")
                     orgue.soufflerie = row.get("soufflerie")
                     orgue.transmission_notes = row.get("transmission_notes")
+                    orgue.temperament = row.get("temperament")
                     orgue.transmission_commentaire = row.get("transmission_commentaire")
                     orgue.tirage_jeux = row.get("tirage_jeux")
                     orgue.tirage_commentaire = row.get("tirage_commentaire")
@@ -113,6 +114,10 @@ class Command(BaseCommand):
                     for nom in row.get("accessoires", []):
                         acc = Accessoire.objects.get_or_create(nom=nom) if options.get("create") else Accessoire.objects.get(nom=nom)
                         orgue.accessoires.add(acc)
+
+                    for nom in row.get("entretien", []):
+                        facteur = Orgue.objects.get(entretien=nom)
+                        orgue.entretien.add(facteur)
 
                     for evenement in row.get("evenements", []):
                         e = Evenement.objects.create(
@@ -171,4 +176,3 @@ class Command(BaseCommand):
 
                 except Exception as e:
                     print("Erreur sur l'orgue {} : {}".format(row['codification'], str(e)))
-                    traceback.print_exc()
