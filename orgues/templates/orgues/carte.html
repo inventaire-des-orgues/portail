@@ -130,7 +130,7 @@
     $("#nom_facteur_recherche").select2({
       placeholder: 'Choisir un facteur',
       ajax: {
-        url: '{% url 'orgues:facteur-list-js_lonlat' %}',
+        url: '{% url 'orgues:facteur-list-js-lonlat' %}',
         data: function (params) {
           var query = {
             search: params.term,
@@ -155,7 +155,7 @@
       markersClusterFacteur.clearLayers();
       document.getElementById("manufacture").checked = true;
       afficher_manufactures();
-      $.getJSON("{% url 'orgues:facteur-list-js_lonlat' %}", function (facteurs) {
+      $.getJSON("{% url 'orgues:facteur-list-js-lonlat' %}", function (facteurs) {
         var listeFacteurs = facteurs.results;
         for (var i = 0; i < listeFacteurs.length; i++) {
           if (listeFacteurs[i].id == $("#nom_facteur_recherche").val()){
