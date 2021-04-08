@@ -6,20 +6,23 @@ import json
 
 class Command(BaseCommand):
     """
-    Calcule la position latitude/longitude pour tous les orgues dont les champs id_osm et id_type sont définis. Par défaut, le calcul ne concerne que les orgues pour lesquels  les champs latitude et longitude ne sont pas renseignés. Pour écraser ces deux champs, utiliser l'option --ecrase ECRASE.
+    Calcule la position latitude/longitude pour tous les orgues dont les champs id_osm et id_type sont définis et 
+    les renvoie dans un fichier json. 
+    Par défaut, le calcul ne concerne que les orgues pour lesquels  les champs latitude et longitude ne sont pas renseignés. 
+    Pour écraser ces deux champs, utiliser l'option --calculall.
     L'API Overpass ne peut recevoir plus de 10000 requêtes par jour.
     """
     help = 'Calcul barycenters of osm object'
 
     def add_arguments(self, parser):
-        parser.add_argument('--ecrase',
-                help="Ecrase la position latitude/longitude de l'orgue.")
+        parser.add_argument('--calculall',
+                help="Calcule toutes les position latitude/longitude de l'orgue.")
 
     def handle(self, *args, **options):
         liste_coordonnees = []
         for orgue in tqdm(Orgue.objects.all()):
             if (orgue.osm_type and orgue.osm_id):
-                if options['ecrase']:
+                if options['calculall']:
                     liste_coordonnees = self.mettre_a_jour_barycentre(orgue, liste_coordonnees)
                 else:
                     if orgue.latitude == None or orgue.longitude == None:
