@@ -392,7 +392,7 @@ class OrgueUpdateComposition(OrgueUpdateMixin):
     success_message = 'Composition mise à jour, merci !'
 
     def get_object(self, queryset=None):
-        object = super().get_object()
+        objecsettings.MEILISEARCH_URLt = super().get_object()
         object.resume_composition = object.calcul_resume_composition()
         object.save()
         return object
@@ -1064,7 +1064,6 @@ class ConseilsFicheView(TemplateView):
 
 
 class OrgueExport(FabView):
-    permission_required = 'orgues.add_orgue'
 
     def get(self, request, *args, **kwargs):
         response = HttpResponse(content_type='text/csv')
