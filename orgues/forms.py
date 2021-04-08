@@ -71,7 +71,7 @@ class OrgueLocalisationForm(forms.ModelForm):
         self.request = kwargs.pop('request', None)
         super().__init__(*args, **kwargs)
         if not self.request.user.has_perm('orgues.edition_avancee'):
-            for field in ['commune', 'code_insee', 'departement', 'region']:
+            for field in ['commune', 'ancienne_commune', 'code_insee', 'departement', 'region']:
                 self.fields[field].disabled = True
                 self.fields[field].help_text = 'Cette information est figée'
 
