@@ -19,9 +19,9 @@ class Command(BaseCommand):
         parser.add_argument('path', nargs=1, type=str,
                             help='Chemin vers le dossier contenant les orgues à importer')
 
-        parser.add_argument('--delete', help='Supprime les orgues, jeux et claviers existants')
+        parser.add_argument('--delete', action='store_true', help='Supprime les orgues, jeux et claviers existants')
 
-        parser.add_argument('--create', help='Crée les données si elle n\'existe pas (facteur, acessoires, typejeux, ...)')
+        parser.add_argument('--create', action='store_true', help='Crée les données si elle n\'existe pas (facteur, acessoires, typejeux, ...)')
 
         parser.add_argument('--codesfile', nargs=1, type=str,
                             help='Chemin vers le dossier contenant les codifications des orgues à ne pas effacer')
