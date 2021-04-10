@@ -111,7 +111,10 @@ class Command(BaseCommand):
                     orgue.save()
 
                     for nom in row.get("accessoires", []):
-                        acc = Accessoire.objects.get_or_create(nom=nom) if options.get("create") else Accessoire.objects.get(nom=nom)
+                        if options.get("create"):
+                            acc, created = Accessoire.objects.get_or_create(nom=nom)
+                        else:
+                            acc = Accessoire.objects.get(nom=nom)
                         orgue.accessoires.add(acc)
 
                     for evenement in row.get("evenements", []):
@@ -123,11 +126,17 @@ class Command(BaseCommand):
                         )
 
                         for nom in evenement.get("facteurs"):
-                            fac = Facteur.get(nom=nom)
+                            if options.get("create"):
+                                fac, created = Facteur.objects.get_or_create(nom=nom)
+                            else:
+                                fac = Facteur.objects.get(nom=nom)
                             e.facteurs.add(fac)
 
                     for clavier in row.get("claviers", []):
-                        type_clavier = TypeClavier.objects.get(nom=clavier["type"])
+                        if options.get("create"):
+                            type_clavier, created = TypeClavier.objects.get_or_create(nom=clavier["type"])
+                        else:
+                            type_clavier = TypeClavier.objects.get(nom=clavier["type"])
                         c = Clavier.objects.create(
                             type=type_clavier,
                             is_expressif=clavier.get("is_expressif"),
@@ -135,7 +144,10 @@ class Command(BaseCommand):
                             orgue=orgue
                         )
                         for jeu in clavier.get("jeux", []):
-                            type_jeu = TypeJeu.objects.get(nom=jeu["type"]["nom"], hauteur=jeu["type"]["hauteur"])
+                            if options.get("create"):
+                                type_jeu, created = TypeJeu.objects.get_or_create(nom=jeu["type"]["nom"], hauteur=jeu["type"]["hauteur"])
+                            else:
+                                type_jeu = TypeJeu.objects.get(nom=jeu["type"]["nom"], hauteur=jeu["type"]["hauteur"])
                             Jeu.objects.create(
                                 type=type_jeu,
                                 commentaire=jeu.get("commentaire"),
@@ -144,15 +156,15 @@ class Command(BaseCommand):
                             )
 
                     for image in row.get("images", []):
-                        if image["chemin"]:
+                        if "chemin" in image:
                             im = Image.objects.create(orgue=orgue, credit=image.get("credit"))
                             im.image.save(os.path.basename(image["chemin"]), File(open(image["chemin"], 'rb')))
-                        if (image["url"]):
+                        if "url" in image:
                             r = requests.get(image["url"])
                             with tempfile.NamedTemporaryFile(prefix=orgue.slug, suffix=".jpg", mode="wb") as f:
                                 f.write(r.content)
                                 im = Image.objects.create(orgue=orgue, credit=image.get("credit"))
-                                im.image.save(orgue.slug+"jpg", File(open(f.name, "rb"))
+                                im.image.save(orgue.slug+"jpg", File(open(f.name, "rb")))
 
                     for source in row.get("sources", []):
                         Source.objects.create(
@@ -170,5 +182,4 @@ class Command(BaseCommand):
                         )
 
                 except Exception as e:
-                    print("Erreur sur l'orgue {} : {}".format(row['codification'], str(e)))
-                    traceback.print_exc()
+                    tqdm.write("Erreur sur l'orgue {} : {}".format(row['codification'], str(e)))
