@@ -49,7 +49,6 @@ class OrgueTestCase(TestCase):
                                              commentaire_admin="test"
                                              ).exists())
 
-
     def test_validate_etendue(self):
         self.assertRaises(ValidationError, validate_etendue, "H1-F3")
         self.assertRaises(ValidationError, validate_etendue, "C1#-F3")
@@ -59,5 +58,4 @@ class OrgueTestCase(TestCase):
         self.assertIsNone(validate_etendue("C#1-F3"))
         self.assertIsNone(validate_etendue("G#1-F6"))
         self.assertIsNone(validate_etendue("G#7-A1"))
-
 
