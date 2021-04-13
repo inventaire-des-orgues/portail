@@ -469,6 +469,23 @@
         error: function () {
         }
       })
+      /* Requête sur les monuments classés ou inscrits */
+      $.ajax({
+        type: "GET",
+        url: "{% url 'orgues:orgue-hist-js' %}",
+        data: {"region": region},
+        success: function (data) {
+          var total = data.total || 0;
+          if (total > 0) {
+            var tot_insc_class = data.total - data.PasCla || 0
+          } else {
+            var tot_insc_class = "0% "
+          }
+          $("#nbInsCla .puce-etat").html(tot_insc_class);
+        },
+        error: function () {
+        }
+      })
     }
     
     var update_states2 = function (dep){
@@ -500,6 +517,23 @@
         error: function () {
         }
       })
+	/* Requête sur les monuments classés ou inscrits */
+      $.ajax({
+        type: "GET",
+        url: "{% url 'orgues:orgue-histDep-js' %}",
+        data: {"departement": dep},
+        success: function (data) {
+          var total = data.total || 0;
+          if (total > 0) {
+            var tot_insc_class = data.total - data.PasCla || 0
+          } else {
+            var tot_insc_class = "0% "
+          }
+          $("#nbInsCla .puce-etat").html(tot_insc_class);
+        },
+        error: function () {
+        }
+      })
     }
 
     $("button#retour").hide()
@@ -523,6 +557,19 @@
           $(".REGIONS").hide()
           $("."+reg).show()
         }
+        update_states(region)
+      }
+    })
+    $("[data-action=filter]").mouseover(function () {
+      if ($(this).hasClass('active')) {
+        //$(this).removeClass('active');
+        $("#selected-region").html("France")
+        update_states("")
+      } else {
+        //$("[data-action=filter]").removeClass('active')
+        //$(this).addClass('active');
+        var region = $(this).data("value") //on recupere le nom de la region
+        $("#selected-region").html(region) //on affiche le nom de la région sur la page
         update_states(region)
       }
     })
@@ -578,6 +625,7 @@
       $("#selected-region").html("France")
       $("#selectionner").html("Sélectionnez une région")
       $("button#retour").hide()
+      $("[data-action=filter].active").removeClass('active');
       update_states("")
     })
     
