@@ -234,9 +234,27 @@ class OrgueEtatsJS(View):
             del etats[None]
         return JsonResponse(etats, safe=False)
     
+class OrgueHistJS(View):
+    """
+    JSON décrivant les orgues classés ou inscrits au monument historique pour un département
+    """
+    def get(self, request, *args, **kwargs):
+        region = request.GET.get("region")
+        queryset = Orgue.objects.all()
+        if region:
+            queryset = queryset.filter(region=region)
+        valeurs = queryset.values_list("references_palissy", flat=True)
+        references_palissy = dict(Counter(valeurs))
+        references_palissy["total"] = sum(list(references_palissy.values()))
+        if None in references_palissy.keys():
+            references_palissy["PasCla"] = references_palissy.get(None, 0)
+            del references_palissy[None]
+        #if evenementstot["type"] 
+        return JsonResponse(references_palissy, safe=False)
+    
 class OrgueEtatsJSDep(View):
     """
-    JSON décrivant les états des orgues pour une région
+    JSON décrivant les états des orgues pour un département
     Si pas de région alors envoie les infos aggrégées pour toutes les régions
     """
     def get(self, request, *args, **kwargs):
@@ -252,6 +270,23 @@ class OrgueEtatsJSDep(View):
             etats["inconnu"] = etats.get(None, 0)
             del etats[None]
         return JsonResponse(etats, safe=False)
+    
+class OrgueHistJSDep(View):
+    """
+    JSON décrivant les orgues classés ou inscrits au monument historique pour un département
+    """
+    def get(self, request, *args, **kwargs):
+        departement = request.GET.get("departement")
+        queryset = Orgue.objects.all()
+        if departement:
+            queryset = queryset.filter(departement=departement)
+        valeurs = queryset.values_list("references_palissy", flat=True)
+        references_palissy = dict(Counter(valeurs))
+        references_palissy["total"] = sum(list(references_palissy.values()))
+        if None in references_palissy.keys():
+            references_palissy["PasCla"] = references_palissy.get(None, 0)
+            del references_palissy[None]
+        return JsonResponse(references_palissy, safe=False)
 
 class OrgueDetail(DetailView):
     """
