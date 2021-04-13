@@ -64,6 +64,7 @@
         <div class="col-12">
           <h2 class="mb-0">Carte</h2>
           <p id = "selectionner">Sélectionnez une région</p>
+	  <button class='btn' id='retour'>Retour à la vue régionale</button>
         </div>
         <div class="col-lg-5">
           <div id="map">
@@ -379,7 +380,6 @@
             <span class="puce-etat " style="background-color:#cccccc;"></span>
             <span>Etat inconnu</span>
           </p>
-	  <button class='btn' id='retour'>Retour à la vue régionale</button>
         </div>
       </div>
     </div>
@@ -469,6 +469,23 @@
         error: function () {
         }
       })
+      /* Requête sur les monuments classés ou inscrits */
+      $.ajax({
+        type: "GET",
+        url: "{% url 'orgues:orgue-hist-js' %}",
+        data: {"region": region},
+        success: function (data) {
+          var total = data.total || 0;
+          if (total > 0) {
+            var tot_insc_class = data.total - data.PasCla || 0
+          } else {
+            var tot_insc_class = "0% "
+          }
+          $("#nbInsCla .puce-etat").html(tot_insc_class);
+        },
+        error: function () {
+        }
+      })
     }
     
     var update_states2 = function (dep){
@@ -500,8 +517,26 @@
         error: function () {
         }
       })
+	/* Requête sur les monuments classés ou inscrits */
+      $.ajax({
+        type: "GET",
+        url: "{% url 'orgues:orgue-histDep-js' %}",
+        data: {"departement": dep},
+        success: function (data) {
+          var total = data.total || 0;
+          if (total > 0) {
+            var tot_insc_class = data.total - data.PasCla || 0
+          } else {
+            var tot_insc_class = "0% "
+          }
+          $("#nbInsCla .puce-etat").html(tot_insc_class);
+        },
+        error: function () {
+        }
+      })
     }
 
+    $("button#retour").hide()
     update_states()
     $("[data-action=filter]").click(function () {
 
@@ -516,11 +551,25 @@
         var reg = $(this).attr('id');
         var region = $(this).data("value")
         $("#selected-region").html(region)
+	$("button#retour").show()
         $("#selectionner").html("Sélectionnez un département")
         if((region != "Mayotte") && (region != "La Réunion") && (region != "Guadeloupe") && (region != "Martinique") && (region != "Guyane")){
           $(".REGIONS").hide()
           $("."+reg).show()
         }
+        update_states(region)
+      }
+    })
+    $("[data-action=filter]").mouseover(function () {
+      if ($(this).hasClass('active')) {
+        //$(this).removeClass('active');
+        $("#selected-region").html("France")
+        update_states("")
+      } else {
+        //$("[data-action=filter]").removeClass('active')
+        //$(this).addClass('active');
+        var region = $(this).data("value") //on recupere le nom de la region
+        $("#selected-region").html(region) //on affiche le nom de la région sur la page
         update_states(region)
       }
     })
@@ -575,6 +624,8 @@
       $(".REGIONS").show()
       $("#selected-region").html("France")
       $("#selectionner").html("Sélectionnez une région")
+      $("button#retour").hide()
+      $("[data-action=filter].active").removeClass('active');
       update_states("")
     })
     

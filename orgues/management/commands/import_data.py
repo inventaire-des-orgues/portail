@@ -119,7 +119,7 @@ class Command(BaseCommand):
                         orgue.accessoires.add(acc)
 
                     for nom in row.get("entretien", []):
-                        facteur = Orgue.objects.get(entretien=nom)
+                        facteur, created = Orgue.objects.get_or_create(entretien=nom)
                         orgue.entretien.add(facteur)
 
                     for evenement in row.get("evenements", []):

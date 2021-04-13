@@ -342,7 +342,7 @@ section.triangle::before {
 }
 
 #carte {
-    padding: 0;
+    padding: 30px;
 }
 
 
@@ -542,4 +542,27 @@ a.link, a.link:visited, a.link:active {
 
 .page-menu nav > ul > li > a {
     transition:none;
+}
+
+#carte_generale{
+    display: grid;
+    grid-template-columns: 80% 1fr;
+}
+
+#mapid{
+    grid-column: 1;
+}
+
+#div_filtre{
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left;
+    padding: 15px;
+    padding-right: 30px;
+}
+
+#valider_recherche_manufacture{
+    padding: 5px;
 }

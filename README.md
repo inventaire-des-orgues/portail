@@ -121,6 +121,20 @@ sudo service nginx start
 Bien pratique pour travailler sur un tableur type OpenOffice ou Excel...
 https://inventaire-des-orgues.fr/orgues/csv
 
+# Renouvellement des certificats
+Via un fichier cron. Pour le voir :
+```shell
+sudo su
+crontab -l
+```
+
+Commandes correspondantes :
+```shell
+service nginx stop
+certbot renew
+service nginx start
+```
+
 # Création d'un diagramme UML à partir du modèle de données Django
 
 Installer si nécessaire django-extensions et pydotplus (toutefois ces deux modules sont dans `requirements.txt`, donc l'installation n'est normalement pas nécessaire).

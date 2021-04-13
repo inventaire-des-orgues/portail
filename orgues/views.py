@@ -149,6 +149,71 @@ class FacteurListJSLeaflet(View):
         data = Facteur.objects.filter(latitude_atelier__isnull=False).values("nom", "latitude_atelier", "longitude_atelier")
         return JsonResponse(list(data), safe=False)
 
+class FacteurListJSFiltre(FabListView):
+    """
+    Liste dynamique utilisée pour filtrer les facteurs d'orgue dans les menus déroulants select2. Utilisée pour le filtre de la carte.
+    documentation : https://select2.org/data-sources/ajax
+    """
+    model = Facteur
+    permission_required = 'orgues.view_facteur'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        query = self.request.GET.get("search")
+        if query:
+            queryset = queryset.filter(nom__icontains=query)
+        return queryset
+
+    def render_to_response(self, context, **response_kwargs):
+        results = []
+        if context["object_list"]:
+            results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
+        return JsonResponse({"results": results, "pagination": {"more": False}})
+
+class FacteurListJSlonlat(FabListView):
+    """
+    Liste dynamique utilisée pour filtrer les facteurs d'orgue dans les menus déroulants select2. Utilisée pour le filtre de la carte.
+    documentation : https://select2.org/data-sources/ajax
+    """
+    model = Facteur
+    permission_required = 'orgues.view_facteur'
+    paginate_by = 100000
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        query = self.request.GET.get("search")
+        if query:
+            queryset = queryset.filter(nom__icontains=query)
+        return queryset
+
+    def render_to_response(self, context, **response_kwargs):
+        results = []
+        if context["object_list"]:
+            for u in context["object_list"]:
+                if u.latitude_atelier != None and u.longitude_atelier != None:
+                    results.append({"id": u.id, "text": u.nom, "latitude": u.latitude_atelier, "longitude": u.longitude_atelier})
+        return JsonResponse({"results": results, "pagination": {"more": False}})
+
+
+
+class OrgueFiltreJS(View):
+    """
+    JSON renvoyant la liste des orgues auxquels le facteur a participé.
+    """
+
+    def get(self, request, *args, **kwargs):
+        facteur = request.GET.get("facteur")
+        type_requete = request.GET.get("type")
+        if facteur:
+            requete = Orgue.objects.filter(evenements__facteurs__nom=facteur).distinct()
+            if type_requete == "construction":
+                requete = Orgue.objects.filter(Q(evenements__facteurs__nom=facteur) & (Q(evenements__type="construction")|Q(evenements__type="reconstruction"))).distinct()
+            else:
+                requete = Orgue.objects.filter(evenements__facteurs__nom=facteur).distinct()
+        else:
+            requete =  Orgue.objects.all()
+        data =requete.values("slug", "commune", "edifice", "latitude", "longitude", 'emplacement', "references_palissy")
+        return JsonResponse(list(data), safe=False)
 
 class OrgueEtatsJS(View):
     """
@@ -169,9 +234,27 @@ class OrgueEtatsJS(View):
             del etats[None]
         return JsonResponse(etats, safe=False)
     
+class OrgueHistJS(View):
+    """
+    JSON décrivant les orgues classés ou inscrits au monument historique pour un département
+    """
+    def get(self, request, *args, **kwargs):
+        region = request.GET.get("region")
+        queryset = Orgue.objects.all()
+        if region:
+            queryset = queryset.filter(region=region)
+        valeurs = queryset.values_list("references_palissy", flat=True)
+        references_palissy = dict(Counter(valeurs))
+        references_palissy["total"] = sum(list(references_palissy.values()))
+        if None in references_palissy.keys():
+            references_palissy["PasCla"] = references_palissy.get(None, 0)
+            del references_palissy[None]
+        #if evenementstot["type"] 
+        return JsonResponse(references_palissy, safe=False)
+    
 class OrgueEtatsJSDep(View):
     """
-    JSON décrivant les états des orgues pour une région
+    JSON décrivant les états des orgues pour un département
     Si pas de région alors envoie les infos aggrégées pour toutes les régions
     """
     def get(self, request, *args, **kwargs):
@@ -187,6 +270,23 @@ class OrgueEtatsJSDep(View):
             etats["inconnu"] = etats.get(None, 0)
             del etats[None]
         return JsonResponse(etats, safe=False)
+    
+class OrgueHistJSDep(View):
+    """
+    JSON décrivant les orgues classés ou inscrits au monument historique pour un département
+    """
+    def get(self, request, *args, **kwargs):
+        departement = request.GET.get("departement")
+        queryset = Orgue.objects.all()
+        if departement:
+            queryset = queryset.filter(departement=departement)
+        valeurs = queryset.values_list("references_palissy", flat=True)
+        references_palissy = dict(Counter(valeurs))
+        references_palissy["total"] = sum(list(references_palissy.values()))
+        if None in references_palissy.keys():
+            references_palissy["PasCla"] = references_palissy.get(None, 0)
+            del references_palissy[None]
+        return JsonResponse(references_palissy, safe=False)
 
 class OrgueDetail(DetailView):
     """
@@ -327,7 +427,7 @@ class OrgueUpdateComposition(OrgueUpdateMixin):
     success_message = 'Composition mise à jour, merci !'
 
     def get_object(self, queryset=None):
-        object = super().get_object()
+        objecsettings.MEILISEARCH_URLt = super().get_object()
         object.resume_composition = object.calcul_resume_composition()
         object.save()
         return object
@@ -999,7 +1099,6 @@ class ConseilsFicheView(TemplateView):
 
 
 class OrgueExport(FabView):
-    permission_required = 'orgues.add_orgue'
 
     def get(self, request, *args, **kwargs):
         response = HttpResponse(content_type='text/csv')
