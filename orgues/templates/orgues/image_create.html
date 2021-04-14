@@ -8,6 +8,7 @@
 {% block head_extra %}
 
   <link href="https://unpkg.com/filepond/dist/filepond.min.css" rel="stylesheet"/>
+  <link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css" rel="stylesheet">
 
 {% endblock %}
 
@@ -19,7 +20,7 @@
   </div>
   <input type="file" id="filepond" class="d-none">
   <p class="text-right">
-    <a href="{% url 'orgues:image-list' orgue.uuid %}" class="btn btn-sm btn-primary">Retour</a>
+    <a href="{% url 'orgues:image-list' orgue.uuid %}" id="return-button" class="btn btn-sm btn-primary">Retour</a>
   </p>
 {% endblock %}
 
@@ -29,6 +30,7 @@
   <script src="https://unpkg.com/filepond-plugin-image-transform/dist/filepond-plugin-image-transform.min.js"></script>
   <script src="https://unpkg.com/filepond-plugin-image-resize/dist/filepond-plugin-image-resize.min.js"></script>
   <script src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.min.js"></script>
+  <script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.js"></script>
   <script src="https://unpkg.com/filepond/dist/filepond.min.js"></script>
 
   <script>
@@ -43,6 +45,7 @@
     FilePond.registerPlugin(FilePondPluginImageResize);
     FilePond.registerPlugin(FilePondPluginFileValidateType);
     FilePond.registerPlugin(FilePondPluginImageTransform);
+    FilePond.registerPlugin(FilePondPluginImagePreview);
 
     const pond = FilePond.create(inputElement, {
       acceptedFileTypes: ['image/*'],
@@ -69,6 +72,12 @@
         }
       }
     });
+    pond.on('processfiles', () => {
+       $("#return-button").show()
+      });
+    pond.on('addfilestart', (file) => {
+        $("#return-button").hide();
+      });
   </script>
 
 
