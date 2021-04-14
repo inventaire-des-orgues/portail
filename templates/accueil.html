@@ -559,7 +559,6 @@
         if((region != "Mayotte") && (region != "La Réunion") && (region != "Guadeloupe") && (region != "Martinique") && (region != "Guyane")){
           $(".REGIONS").addClass('opacity')
           $("."+reg).show()
-          $("button#retour").show()
         }
         update_states(region)
       }
@@ -590,7 +589,6 @@
     $(".Normandie").hide()
     $(".PDLL").hide()
     $(".PACA").hide()
-    $("button#retour").hide()
 
     $("[data-action=filter2]").click(function () {
       if ($(this).hasClass('active')) {
@@ -626,7 +624,6 @@
       $(".PDLL").hide()
       $(".PACA").hide()
       $(".REGIONS").removeClass('opacity')
-      $("button#retour").hide()
       $("#selected-region").html("France")
       $("#selectionner").html("Sélectionnez une région")
       $("button#retour").hide()
