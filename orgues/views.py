@@ -233,7 +233,7 @@ class OrgueEtatsJS(View):
             etats["inconnu"] = etats.get(None, 0)
             del etats[None]
         return JsonResponse(etats, safe=False)
-    
+
 class OrgueHistJS(View):
     """
     JSON décrivant les orgues classés ou inscrits au monument historique pour un département
@@ -249,9 +249,9 @@ class OrgueHistJS(View):
         if None in references_palissy.keys():
             references_palissy["PasCla"] = references_palissy.get(None, 0)
             del references_palissy[None]
-        #if evenementstot["type"] 
+        #if evenementstot["type"]
         return JsonResponse(references_palissy, safe=False)
-    
+
 class OrgueEtatsJSDep(View):
     """
     JSON décrivant les états des orgues pour un département
@@ -270,7 +270,7 @@ class OrgueEtatsJSDep(View):
             etats["inconnu"] = etats.get(None, 0)
             del etats[None]
         return JsonResponse(etats, safe=False)
-    
+
 class OrgueHistJSDep(View):
     """
     JSON décrivant les orgues classés ou inscrits au monument historique pour un département
@@ -427,7 +427,7 @@ class OrgueUpdateComposition(OrgueUpdateMixin):
     success_message = 'Composition mise à jour, merci !'
 
     def get_object(self, queryset=None):
-        objecsettings.MEILISEARCH_URLt = super().get_object()
+        object = super().get_object()
         object.resume_composition = object.calcul_resume_composition()
         object.save()
         return object
