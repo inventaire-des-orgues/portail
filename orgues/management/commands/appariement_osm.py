@@ -6,7 +6,15 @@ import json
 
 
 AMENITY = ['place_of_worship', 'monastery', 'music_school', 'college', 'school', 'clinic', 'hospital']
-BUILDING = ['cathedral', 'chapel', 'church', 'monastery', 'religious', 'shrine', 'synagogue', 'temple']
+BUILDING = ['yes', 'cathedral', 'chapel', 'church', 'monastery', 'religious', 'shrine', 'synagogue', 'temple']
+
+"""
+Langage de requête Overpass :
+https://wiki.openstreetmap.org/wiki/FR:Overpass_API/Overpass_QL#Union
+
+Test :
+https://overpass-turbo.eu/
+"""
 
 
 class Command(BaseCommand):
@@ -19,99 +27,65 @@ class Command(BaseCommand):
     """
     help = 'Appariement des édifices avec la base de données osm'
 
+    def __init__(self):
+        self.liste_appariements = []
+
     def handle(self, *args, **options):
-        liste_appariements = []
         for orgue in tqdm(Orgue.objects.all()):
             # On ne recherche que les osm_id qui ne sont pas déjà présents :
             if not orgue.osm_id:
-                liste_appariements = self.mettre_a_jour_appariement(orgue, liste_appariements)
+                self.tenter_appariement_osm_via_nom(orgue)
         with open('appariements_osm.json', 'w') as f:
-            json.dump(liste_appariements, f)
+            json.dump(self.liste_appariements, f)
 
-    def mettre_a_jour_appariement(self, orgue, liste_appariements):
+    def tenter_appariement_osm_via_nom(self, orgue):
         overpass_url = "http://overpass-api.de/api/interpreter"
         overpass_query = """[out:json];
-                            area[boundary=administrative]["ref:INSEE"]["ref:INSEE"={}] -> .searchArea;
-                            ( nwr [name={}] [amenity~{}] (area.searchArea);) ;(._;>;);out;
-                            """.format(int(orgue.code_insee), orgue.edifice, "|".join(AMENITY))
+                            area[boundary=administrative]["ref:INSEE"]["ref:INSEE"={}] -> .commune;
+                            (
+                            way[name={},i] [amenity~{}][building~{}] (area.commune);
+                            relation[name={},i] [amenity~{}][building~{}] (area.commune);
+                            );
+                            ._;
+                            out;
+                            """.format(int(orgue.code_insee), orgue.edifice, "|".join(AMENITY), "|".join(BUILDING))
         response = requests.get(overpass_url, params={'data': overpass_query})
-        if response.status_code == 200:
-            data = response.json()
 
-            # Si aucun appariement strict
-            if len(data['elements']) == 0:
-                # Lancer une requête sur la ville pour récupérer tous les édifices susceptibles d'héberger un orgue
-                overpass_query_town = """[out:json];
-                                         area[boundary=administrative]["ref:INSEE"]["ref:INSEE"={}] -> .searchArea;
-                                         ( nwr [amenity~{}] (area.searchArea);) ;(._;>;);out;""".format(int(orgue.code_insee), "|".join(AMENITY))
-                response_town = requests.get(overpass_url, params={'data': overpass_query_town})
-                if response_town.status_code == 200:
-                    data_town = response.json()
-
-                    if len(data_town['elements']) == 0: # Aucun objet osm adapté
-                        print("Erreur dans la requête INSEE avec l'orgue : ", orgue)
-                        print("La commune ne comporte pas d'objet OSM susceptibles d'héberger un orgue")
-                        print("")
-                    else:
-                        # Fonction d'appariement avec codification
-                        appariement_via_codif = self.appariement_codif(data_town['elements'], orgue.edifice)
-
-                        if len(appariement_via_codif) == 0:  # Aucun appariement codifié
-                            print("Erreur dans la requête INSEE avec l'orgue : ", orgue)
-                            print("La commune ne comporte pas d'objet OSM correspondant à l'édifice : ", orgue.edifice)
-                            print("Liste des objets de la commune : ")
-                            for elem in data_town['elements']:
-                                print(elem['name'])
-                        elif len(appariement_via_codif) == 1 :  # 1 appariement codifié, c'est bon !
-                            print("Appariement codifié réussi entre "+orgue.edifice+" et "+appariement_via_codif[0]['name'])
-                            print("")
-                            liste_appariements.append({"codification" : orgue.codification, "type" : appariement_via_codif[0]['type'], "id" : appariement_via_codif[0]['id']})
-                        else:  # Trop d'appariements codifiés pour le même édifice
-                            print("Erreur dans l'appariement codifié pour l'édifice "+orgue.edifice+"de l'orgue : ", orgue)
-                            print("La commune ne comporte pas d'objet OSM correspondant à l'édifice : ", orgue.edifice)
-                            print("Liste des objets de la commune susceptibles d'être appariés : ")
-                            for elem in appariement_via_codif:
-                                print(elem['name'])                        
-
-                else:  # Erreur dans la requête QL Overpass
-                    print("Erreur dans la requête INSEE avec l'orgue : ", orgue)
-                    print("Status code : ", response.status_code)
-                    print("")
-
-            # Si un seul appariement :
-            elif len(data['elements']) == 1:
-                liste_appariements.append({"codification" : orgue.codification, "type": data['elements'][0]['type'], "id": data['elements'][0]['id']})
-
-            # Si plusieurs appariements :
-            else:
-                # Filtrage par l'attribut building afin de supprimer les sous-éléments captés par la requête
-                data_filtre = []
-                for elem in data['elements']:
-                    if elem['building']:
-                        if elem['building'] in "|".join(BUILDING):
-                            data_filtre.append({"type": elem['type'], "id": elem['id'], "building": elem['building']})
-                
-                if len(data_filtre) == 1:  # Appariement avec 1 seul objet type building
-                    liste_appariements.append({"codification": orgue.codification, "type": data_filtre[0]['type'], "id": data_filtre[0]['id']})
-                else:  # Soit toujours trop d'appariement avec le building, soit aucun appariement avec le critère building
-                    print("Multi-appariement problématique pour l'orgue : ", orgue)
-                    for elem in data['elements']:
-                        print("Appariement possible : ", elem)
-                        print("")
-
-        else:  # Erreur dans la requête QL Overpass
+        # Erreur dans la requête QL Overpass
+        if response.status_code != 200:
             print("Echec de la requête QL Overpass avec l'orgue : {}".format(orgue))
             print("Status code : {}".format(response.status_code))
             print("")
+        # Résultats
+        else:
+            data = response.json()
+            elements = data['elements']
+            # Si un seul appariement, c'est gagné :
+            if len() == 1:
+                elem = elements[0]
+                print("Un seul objet OSM possibles pour cet orgue : {} {} {}"
+                      .format(elem['name'], elem['type'], elem['tags']['amenity'], elem['tags']['amenity']))
+                self.liste_appariements.append({"codification": orgue.codification,
+                                                "type": data['elements'][0]['type'],
+                                                "id": data['elements'][0]['id']})
 
-        return liste_appariements
+            # Si plusieurs appariements, pour l'instant on ne fait que les sortir en traces :
+            elif len(elements) > 1:
+                for elem in data['elements']:
+                    print("Plusieurs objets OSM possibles pour cet orgue : {} {} {}"
+                          .format(elem['name'], elem['type'], elem['tags']['amenity'], elem['tags']['amenity']))
 
-    def appariement_codif(self, list_osm, edifice):
+            # Si aucun appariement strict
+            else:
+                print("Aucun chemin ou relation OSM à apparier : ".format(orgue))
+        return
+
+    def tenter_appariement_osm_via_codif(self, orgue):
         """
         :param list_osm:
         :param edifice:
         :return:
-        Fonction d'appariement avec codification  (Elliot)
+        Fonction d'appariement utilisant le code d'une orgue (Elliot)
         # Elle codifie le nom de l'edifice recherché et les noms de tous les édifices de la commune, afin de trouver des appariements.
         # entrée :
         #    la liste d'objets OSM de la commune récupérés : [objets osm]
@@ -128,6 +102,13 @@ class Command(BaseCommand):
         ex : Saint-Martin et Sainte-Martine on le même code 'STMART')
         - il est très rare que l'index de l'édifice soit autre chose que 1 (i.e. il est très rare d'avoir plusieurs édifices sur la même commune avec un même nom)
         - il est courant d'avoir deux orgues ou plus dans le même édifice
-        """
-        return 0
 
+
+        PSEUDO-CODE A IMPLEMENTER :
+
+        - Lancer une requête OVERPASS QL pour trouver tous les édifices qui correspondent aux listes AMENITY et BUILDING
+        - Comparer le nom des édifices du résultat de cette requête, une fois codifié, avec le code de l'orgue (cf. rappel ci-dessus pour construire l'heuristique de comparison).
+        - Si une seule correspondance, dire que c'est OK et la conserver, si plusieurs, les afficher en traces, si aucune, erreur.
+        """
+        pass
+        return
