@@ -1,4 +1,5 @@
 import json
+import os
 
 from django.core.management.base import BaseCommand
 from orgues.models import Orgue
@@ -6,22 +7,27 @@ from orgues.models import Orgue
 
 class Command(BaseCommand):
     help = "Exporte l'orgue le plus récemment modifié en format JSON"
-    # TODO: A TESTER : Implémenter export des noms et chemins de fichers
-    # TODO: Implémenter export des accessoires
+
+    def add_arguments(self, parser):
+        parser.add_argument('path', nargs=1, type=str,
+                            help='Chemin vers le dossier contenant les orgues à importer')
 
     def handle(self, *args, **options):
         orgue = Orgue.objects.order_by('-modified_date').first()
 
         o = {
-            "id": orgue.id,
+            # "id": orgue.id,
             "commentaire_admin": orgue.commentaire_admin,
             "designation": orgue.designation,
             "is_polyphone": orgue.is_polyphone,
             "emplacement": orgue.emplacement,
             "etat": orgue.etat,
             "codification": orgue.codification,
+            "completion": orgue.completion,
             "edifice": orgue.edifice,
             "commune": orgue.commune,
+            "console": orgue.console,
+            "adresse": orgue.adresse,
             "code_insee": orgue.code_insee,
             "ancienne_commune": orgue.ancienne_commune,
             "departement": orgue.departement,
@@ -46,12 +52,18 @@ class Command(BaseCommand):
             "sommiers": orgue.sommiers,
             "soufflerie": orgue.soufflerie,
             "commentaire_tuyauterie": orgue.commentaire_tuyauterie,
+            "temperament": orgue.temperament,
+            "resume_composition": orgue.resume_composition,
+            "modified_date": str(orgue.modified_date),
+            "update_by_user": str(orgue.updated_by_user),
+            "url": orgue.get_absolute_url(),
             "claviers": [],
             "evenements": [],
             "images": [],
             "fichiers": [],
             "accessoires": [],
             "sources": [],
+            "entretien": []
         }
 
         for clavier in orgue.claviers.all():
@@ -83,6 +95,9 @@ class Command(BaseCommand):
                 e["facteurs"].append(str(facteur))
             o["evenements"].append(e)
 
+        for facteur_entretien in orgue.entretien.all():
+            o["entretien"].append(str(facteur_entretien))
+
         for image in orgue.images.all():
             i = {
                 "chemin": image.image.name,
@@ -92,7 +107,7 @@ class Command(BaseCommand):
 
         for fichier in orgue.fichiers.all():
             f = {
-                "chemin": fichier.file,
+                "file": fichier.file.name,
                 "description": fichier.description
             }
             o["fichiers"].append(f)
@@ -108,5 +123,10 @@ class Command(BaseCommand):
             }
             o["sources"].append(s)
 
-        with open('exemple_orgue.json', 'w') as f:
+        if not options['path'][0]:
+            path = './export_data.json'
+            print("Pas d'argument spécifié de path, j'utilise ./export_data.json par défaut")
+        else:
+            path = options['path'][0]
+        with open(path, "w", encoding="utf-8") as f:
             json.dump(o, f)
