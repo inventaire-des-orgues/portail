@@ -612,7 +612,7 @@ class TypeJeu(models.Model):
     Lorsque l'on définit les jeux d'un clavier, on pioche parmi les types de jeu existants
     """
     nom = models.CharField(max_length=50)
-    hauteur = models.CharField(max_length=20,
+    hauteur = models.CharField(max_length=20, null=True, blank=True,
                                help_text="La hauteur est indiquée par convention en pieds, en chiffres arabes, "
                                          "sans précision de l'unité. La nombre de rangs des fournitures, plein-jeux,"
                                          " cornet, etc. est indiqué en chiffres romains,"
