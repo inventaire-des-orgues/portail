@@ -53,6 +53,7 @@ class Command(BaseCommand):
                             shutil.move(chemin_thumbnail_avant, chemin_thumbnail_apres)
                             
                         img.image.name = img.image.name.replace(chemin_avant, chemin_apres)
+                        img.image.name = img.image.name.replace(chemin_avant_propre, chemin_apres_propre)
                         img.save()
                     
                     # On met à jour les autres fichiers
@@ -65,6 +66,7 @@ class Command(BaseCommand):
                         if os.path.exists(pathfichier_avant) and not os.path.exists(pathfichier_apres):
                             os.rename(pathfichier_avant, pathfichier_apres)
                         fic.file.name = fic.file.name.replace(chemin_avant_propre, chemin_apres_propre)
+                        fic.file.name = fic.file.name.replace(chemin_avant, chemin_apres)
                         fic.save()
                     
                     # On efface l'ancien répertoire
