@@ -122,6 +122,7 @@ Bien pratique pour travailler sur un tableur type OpenOffice ou Excel...
 https://inventaire-des-orgues.fr/orgues/csv
 
 # Renouvellement des certificats
+
 Via un fichier cron. Pour le voir :
 ```shell
 sudo su
@@ -134,6 +135,10 @@ service nginx stop
 certbot renew
 service nginx start
 ```
+
+# Rétablir les permissions sur les fichiers
+
+sudo chown -R fabdev:www-data /var/www/portail/static/media
 
 # Création d'un diagramme UML à partir du modèle de données Django
 
