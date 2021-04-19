@@ -17,6 +17,7 @@
   <div class="form-group">
     <label for="">Précisez l'auteur des photos avant de commencer le chargement</label>
     <input type="text" class="form-control" id="id_credit">
+    <a class="nav-link" href="javascript:;" id="use-user-credit">Utiliser mon nom : {{ user }}</a>
   </div>
   <input type="file" id="filepond" class="d-none">
   <p class="text-right">
@@ -34,7 +35,10 @@
   <script src="https://unpkg.com/filepond/dist/filepond.min.js"></script>
 
   <script>
-    $("#id_credit").keyup(function () {
+    $("#use-user-credit").click(function() {
+      $("#id_credit").val("{{ user }}").trigger( "change" )
+    })
+    $("#id_credit").change(function () {
       if ($(this).val().length > 1) {
         $("#filepond").removeClass("d-none")
       } else {
