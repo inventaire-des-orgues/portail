@@ -54,9 +54,13 @@ class SourceSerializer(serializers.ModelSerializer):
 class FacteurSerializer(serializers.ModelSerializer):
     class Meta:
         model = Facteur
+        exclude = ["id", "orgue"]
+
+class ContributionsSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField()
+    class Meta:
+        model = Contributions
         exclude = ["id"]
-
-
 class OrgueSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name="orgues:orgue-detail", lookup_field="slug")
     updated_by_user = serializers.StringRelatedField()
@@ -66,6 +70,7 @@ class OrgueSerializer(serializers.ModelSerializer):
     fichiers = FichierSerializer(many=True)
     evenements = EvenementSerializer(many=True)
     sources = SourceSerializer(many=True)
+    contributions = ContributionsSerializer(many=True)
 
     class Meta:
         model = Orgue
