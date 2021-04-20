@@ -278,7 +278,7 @@
               {% if orgue.latitude and orgue.longitude %}
                 <div id="mapid" style="height:150px;margin-bottom:10px"></div>
               {% endif %}
-                            
+
               {% if orgue.osm_type and orgue.osm_id %}
                 <dt>Localiser l'édifice</dt>
                 <dd>
@@ -287,13 +287,14 @@
                 {% endwith %}
                 </dd>
               {% endif %}
-              
+
             </div>
           </div>
           <div class="mb-4  box-shadow">
             <a href="{% url 'orgues:orgue-update' object.uuid %}" class="btn btn-primary  btn-block">
               <i class="fa fa-edit"></i> Compléter la fiche
             </a>
+            <small class="text-justify">Mise à jour {{ orgue.contributions.count }} fois</small>
             <small class="text-justify">Actualisé le {{ orgue.modified_date|date:'d/m/Y' }} par {{ orgue.updated_by_user }}</small>
           </div>
         </div>
