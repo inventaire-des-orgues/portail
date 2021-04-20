@@ -677,7 +677,7 @@ class Source(models.Model):
     def __str__(self):
         return "{} ({})".format(self.type, self.description)
 
-class Contributions(models.Model):
+class Contribution(models.Model):
     """
     Historique des contributions
     """
