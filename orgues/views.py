@@ -400,6 +400,20 @@ class OrgueDetailAvancement(FabDetailView):
         context["orgue"] = self.object
         return context
 
+class OrgueDetailContributions(FabDetailView):
+    """
+    Vue de détail des contributeurs d'un orgue.
+    """
+    model = Orgue
+    slug_field = 'uuid'
+    slug_url_kwarg = 'orgue_uuid'
+    permission_required = 'orgues.change_orgue'
+    template_name = "orgues/orgue_detail_contributions.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["orgue"] = self.object
+        return context
 
 class OrgueUpdate(OrgueUpdateMixin, FabUpdateView):
     """

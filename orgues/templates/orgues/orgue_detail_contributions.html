@@ -1,0 +1,55 @@
+{% extends 'orgues/base_edition.html' %}
+{% load static %}
+
+{% block help-link %}#{% endblock %}
+
+
+
+{% block card-body %}
+
+  <table class="table table-bordered" data-order='[[ 0, "desc" ]]'>
+    <thead>
+    <tr>
+      <th>Date</th>
+      <th>Détail</th>
+      <th>Utilisateur</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for contribution in orgue.contributions.all %}
+      <tr>
+        <td>{{ contribution.date | date:'d/m/Y H:m' }}</td>
+        <td>
+          {{ contribution.description }}
+        </td>
+      <td>
+        {{ contribution.user }}
+      </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+
+{% endblock %}
+
+
+{% block head_extra %}
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4-4.1.1/dt-1.10.24/datatables.min.css"/>
+
+{% endblock %}
+{% block js_extra %}
+
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4-4.1.1/dt-1.10.24/datatables.min.js"></script>
+
+  <script>
+    $(document).ready(function () {
+      $('table').DataTable({
+        paging: false
+      });
+    });
+  </script>
+
+{% endblock %}
+
+
