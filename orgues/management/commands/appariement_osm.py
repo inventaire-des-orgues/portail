@@ -4,6 +4,7 @@ from tqdm import tqdm
 import requests
 import json
 
+import orgues.management.utilsorgues.correcteurorgues as co
 
 AMENITY = ['place_of_worship', 'monastery', 'music_school', 'college', 'school', 'clinic', 'hospital']
 BUILDING = ['yes', 'cathedral', 'chapel', 'church', 'monastery', 'religious', 'shrine', 'synagogue', 'temple']
@@ -32,23 +33,32 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for orgue in tqdm(Orgue.objects.all()):
-            # On ne recherche que les osm_id qui ne sont pas déjà présents :
-            if not orgue.osm_id:
+            # On ne recherche que les osm_id qui ne sont pas déjà présents (et pour lesquels on a bien un code INSEE):
+            if orgue.code_insee and not orgue.osm_id:
                 self.tenter_appariement_osm_via_nom(orgue)
         with open('appariements_osm.json', 'w') as f:
             json.dump(self.liste_appariements, f)
 
-    def tenter_appariement_osm_via_nom(self, orgue):
+    def tenter_appariement_osm_via_nom(self, orgue):        
+        nom_edifice,type_edifice = co.detecter_type_edifice(orgue.edifice)
         overpass_url = "http://overpass-api.de/api/interpreter"
-        overpass_query = """[out:json];
-                            area[boundary=administrative]["ref:INSEE"]["ref:INSEE"={}] -> .commune;
-                            (
-                            way[name={},i] [amenity~{}][building~{}] (area.commune);
-                            relation[name={},i] [amenity~{}][building~{}] (area.commune);
-                            );
-                            ._;
-                            out;
-                            """.format(int(orgue.code_insee), orgue.edifice, "|".join(AMENITY), "|".join(BUILDING))
+        overpass_query = "[out:json]; area[boundary=administrative]['ref:INSEE']['ref:INSEE'={}] -> .commune;".format(int(orgue.code_insee))
+        filtre_type_commune = "[amenity~'{}'][building~'{}'] (area.commune)".format("|".join(AMENITY), "|".join(BUILDING))
+        overpass_query +=" ((way[name~'{}',i] {}; ".format(orgue.edifice.capitalize(), filtre_type_commune) #On met ~ au lieu de = pour que l'option Insensible à la casse ",i" fonctionne
+        overpass_query +=" relation[name~'{}',i] {}; ); ._;)->.a; ".format(orgue.edifice, filtre_type_commune)
+
+        overpass_query +="if (a.count(wr)>0){ .a out; } else {"
+        overpass_query +=" ((way[name~'{}',i] {}; ".format(nom_edifice, filtre_type_commune)
+        overpass_query +=" relation[name~'{}',i] {}; ); ._;)->.b; ".format(nom_edifice, filtre_type_commune)
+        overpass_query += ".b out; }"
+        
+
+        #L'Overpass_query fait un premier test sur le nom exact (avec insensibilité à la casse),
+        #puis, en l'absence de résultat, teste en enlevant le type d'édifice dans la requête sur name
+        #
+        # Attention : - il existe de rares édifices OSM qui n'ont pas d'attribut "building".
+        #            >> A vérifier si certains orgues ne peuvent pas être apparier.
+        #             - Requête sur way. Faut-il repasser sur nwr pour inclure les édifices de type node ?
         response = requests.get(overpass_url, params={'data': overpass_query})
 
         # Erreur dans la requête QL Overpass
@@ -61,10 +71,10 @@ class Command(BaseCommand):
             data = response.json()
             elements = data['elements']
             # Si un seul appariement, c'est gagné :
-            if len() == 1:
+            if len(elements) == 1:
                 elem = elements[0]
-                print("Un seul objet OSM possibles pour cet orgue : {} {} {}"
-                      .format(elem['name'], elem['type'], elem['tags']['amenity'], elem['tags']['amenity']))
+                print("Un seul objet OSM possibles pour cet orgue : {} {} {} {}"
+                      .format(elem['tags']['name'], elem['type'], elem['tags']['amenity'], elem['tags']['building']))
                 self.liste_appariements.append({"codification": orgue.codification,
                                                 "type": data['elements'][0]['type'],
                                                 "id": data['elements'][0]['id']})
@@ -72,12 +82,14 @@ class Command(BaseCommand):
             # Si plusieurs appariements, pour l'instant on ne fait que les sortir en traces :
             elif len(elements) > 1:
                 for elem in data['elements']:
-                    print("Plusieurs objets OSM possibles pour cet orgue : {} {} {}"
-                          .format(elem['name'], elem['type'], elem['tags']['amenity'], elem['tags']['amenity']))
+                    print("Plusieurs objets OSM possibles pour cet orgue : {} {} {} {}"
+                          .format(elem['tags']['name'], elem['type'], elem['tags']['amenity'], elem['tags']['building']))
 
             # Si aucun appariement strict
             else:
-                print("Aucun chemin ou relation OSM à apparier : ".format(orgue))
+                print("Aucun chemin ou relation OSM à apparier : {}".format(orgue))
+                print ("Code INSEE de la commune : ", orgue.code_insee)
+                print("Nom sans type d'édifice : ", nom_edifice)
         return
 
     def tenter_appariement_osm_via_codif(self, orgue):
@@ -112,3 +124,4 @@ class Command(BaseCommand):
         """
         pass
         return
+
