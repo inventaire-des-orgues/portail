@@ -111,8 +111,9 @@ class OrgueCreateForm(forms.ModelForm):
     class Meta:
         model = Orgue
         fields = [
-            "designation",
+            "commune",
             "edifice",
+            "designation"
         ]
 
 

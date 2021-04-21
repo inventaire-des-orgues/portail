@@ -341,6 +341,7 @@ class OrgueCreate(FabCreateView):
     form_class = orgue_forms.OrgueCreateForm
     success_url = reverse_lazy('orgues:orgue-list')
     success_message = 'Nouvel orgue créé'
+    template_name = "orgues/orgue_create.html"
 
     def form_valid(self, form):
         form.instance.updated_by_user = self.request.user
@@ -631,6 +632,27 @@ class FacteurListJS(FabListView):
         if context["object_list"]:
             results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
         return JsonResponse({"results": results, "pagination": {"more": more}})
+
+class CommuneListJS(View):
+    """
+    Liste dynamique utilisée pour filtrer les communes dans le menu déroulant select2 pour créer un nouvel orgue.
+    documentation : https://select2.org/data-sources/ajax
+    """
+
+    def get(self, context, **response_kwargs):
+        print(context)
+        with open('code_INSEE.csv', 'r') as read_obj:
+            csv_reader = csv.reader(read_obj, delimiter=';')
+            results = []
+            i = 0
+            for row in csv_reader:
+                if i != 0:
+                    ligne=row[0].split(",")
+                    #print("row : ", row)
+                    dictionnaire = {"id": ligne[0], "text": ligne[3]+", "+ligne[0]}
+                    results.append(dictionnaire)
+                i+=1
+        return JsonResponse({"results": results, "pagination": {"more": True}})
 
 
 class EvenementCreate(FabCreateView):

@@ -31,6 +31,44 @@
       </form>
     </div>
   </div>
+  {% endblock %}
+
+  {% block js_extra %}
+  <script>
+    $(function () {
+      $("#id_commune").select2({
+        placeholder: 'Choisir une commune',
+        ajax: {
+          url: '{% url 'orgues:commune-list-js' %}',
+          data: function (params) {
+            var query = {
+              search: params.term,
+              page: params.page || 1
+            }
+            return query;
+          },
+        },
+        escapeMarkup: function (markup) {
+          return markup;
+        },
+        language: {
+          noResults: function () {
+            return "Aucune commune trouvée ...";
+          }
+        },
+        
+        width: '100%'
+      });
+  });
+
+
+
+
+
+
+
+
+  </script>
 
 
 

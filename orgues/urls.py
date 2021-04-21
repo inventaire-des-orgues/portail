@@ -73,6 +73,8 @@ urlpatterns = [
     path('source/creation/<uuid:orgue_uuid>/', v.SourceCreate.as_view(), name='source-create'),
     path('source/suppression/<int:pk>/', v.SourceDelete.as_view(), name='source-delete'),
 
-    path('searchlog/', v.SearchLogView.as_view(), name='search-log')
+    path('searchlog/', v.SearchLogView.as_view(), name='search-log'),
 
+    #Création d'orgue
+    path('js/communes/', v.CommuneListJS.as_view(), name='commune-list-js')
 ]
