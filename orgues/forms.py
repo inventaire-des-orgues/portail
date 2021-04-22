@@ -1,4 +1,5 @@
 from django import forms
+import csv
 
 from .models import Orgue, Evenement, Clavier, Facteur, Jeu, Fichier, Image, Source
 
@@ -115,7 +116,10 @@ class OrgueCreateForm(forms.ModelForm):
             "edifice",
             "designation"
         ]
-
+        widgets = {
+            'commune': forms.Select(),
+            'designation': forms.Select()
+        }
 
 class ChoiceFieldNoValidation(forms.ChoiceField):
     def validate(self, value):

@@ -76,5 +76,6 @@ urlpatterns = [
     path('searchlog/', v.SearchLogView.as_view(), name='search-log'),
 
     #Création d'orgue
-    path('js/communes/', v.CommuneListJS.as_view(), name='commune-list-js')
+    path('js/communes/', v.CommuneListJS.as_view(), name='commune-list-js'),
+    path('js/designation/', v.DesignationListJS.as_view(), name='designation-list-js')
 ]

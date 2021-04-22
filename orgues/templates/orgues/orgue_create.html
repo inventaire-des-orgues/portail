@@ -2,7 +2,7 @@
 {% load static %}
 
 
-
+{% block orgue_active %} active {% endblock %}
 {% block content %}
 
   <div class="my-50 text-center">
@@ -59,6 +59,32 @@
         
         width: '100%'
       });
+
+      $("#id_designation").select2({
+        placeholder: 'Choisir une désignation',
+        ajax: {
+          url: '{% url 'orgues:designation-list-js' %}',
+          data: function (params) {
+            var query = {
+              search: params.term,
+              page: params.page || 1
+            }
+            return query;
+          },
+        },
+        escapeMarkup: function (markup) {
+          return markup;
+        },
+        language: {
+          noResults: function () {
+            return "Aucune désignation trouvée ...";
+          }
+        },
+        
+        width: '100%'
+      });
+
+
   });
 
 
