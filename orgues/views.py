@@ -26,6 +26,7 @@ from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdate
 from orgues.api.serializers import OrgueSerializer, OrgueResumeSerializer
 from project import settings
 from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source
+from .codification import Codification
 
 logger = logging.getLogger("fabaccess")
 
@@ -341,9 +342,18 @@ class OrgueCreate(FabCreateView):
     form_class = orgue_forms.OrgueCreateForm
     success_url = reverse_lazy('orgues:orgue-list')
     success_message = 'Nouvel orgue créé'
+    template_name = "orgues/orgue_create.html"
 
     def form_valid(self, form):
         form.instance.updated_by_user = self.request.user
+        c = Codification(form.instance.commune, form.instance.edifice, form.instance.designation)
+        form.instance.commune = c.commune
+        form.instance.departement = c.departement
+        form.instance.code_departement = c.code_departement
+        form.instance.region = c.region
+        form.instance.code_insee = c.code_insee
+        form.instance.edifice = c.edifice
+        form.instance.codification = c.codification
         return super().form_valid(form)
 
 
@@ -630,6 +640,74 @@ class FacteurListJS(FabListView):
         more = context["page_obj"].number < context["paginator"].num_pages
         if context["object_list"]:
             results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
+        return JsonResponse({"results": results, "pagination": {"more": more}})
+
+class CommuneListJS(FabListView):
+    """
+    Liste dynamique utilisée pour filtrer les communes dans le menu déroulant select2 pour créer un nouvel orgue.
+    documentation : https://select2.org/data-sources/ajax
+    """
+    model = Facteur
+    permission_required = 'orgues.add_orgue'
+    paginate_by = 30
+
+    def get_queryset(self):
+        query = self.request.GET.get("search")
+        with open('code_INSEE.csv', 'r', encoding='utf-8') as read_obj:
+            csv_reader = csv.reader(read_obj, delimiter=';')
+            results = []
+            for row in csv_reader:
+                ligne=row[0].split(",")  
+                if query :
+                    if query in ligne[3].lower():    
+                        dictionnaire = {"id": ligne[3]+", "+ligne[4], "nom": ligne[3]+", "+ligne[4]}
+                        results.append(dictionnaire)
+                else:
+                    dictionnaire = {"id": ligne[3]+", "+ligne[4], "nom": ligne[3]+", "+ligne[4]}
+                    results.append(dictionnaire)
+        return results
+
+    def render_to_response(self, context, **response_kwargs):
+        results = []
+        more = context["page_obj"].number < context["paginator"].num_pages
+        if context["object_list"]:
+            results = [{"id": u["id"], "text": u["nom"]} for u in context["object_list"]]
+        return JsonResponse({"results": results, "pagination": {"more": more}})
+
+class DesignationListJS(FabListView):
+    """
+    Liste dynamique utilisée pour filtrer les désignations dans le menu déroulant select2 pour créer un nouvel orgue.
+    Si une désignation est manquante, l'ajouter dans la liste liste_designation.
+    documentation : https://select2.org/data-sources/ajax
+    """
+    model = Facteur
+    permission_required = 'orgues.add_orgue'
+    paginate_by = 30
+
+    def get_queryset(self):
+        query = self.request.GET.get("search")
+        liste_designation = ['G.O.', 'orgue', 'Grand Orgue', 'orgue de tribune', 'orgue de transept', 'orgue positif','orgue régale',
+"orgue d'accompagnement",'petit orgue', "orgue d'étude", 'positif', 'grand positif', 'chapelle', 'oratoire',
+"chapelle d'hiver", 'chapelle de la Vierge', 'sacristie', 'O.C.', 'O.C.1', 'O.C.2', 'crypte', 'Orgue coffre','auditorium',
+'orgue 1', 'orgue 2','ancien','nouveau','1', '2', '3', '4', '5', '6', '7', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII',
+"Orgue d'étude", 'Orgue espagnol', 'Orgue majorquin', 'Orgue napolitain', "orgue d'étude (1982)", "orgue d'étude (1968)",
+'polyphone', 'buffet', 'orgue à rouleau', 'orgue à cylindre', '']
+        results = []
+        for denomination in liste_designation:
+            if query :
+                if query in denomination.lower():    
+                    dictionnaire = {"id": denomination, "nom": denomination}
+                    results.append(dictionnaire)
+            else:
+                dictionnaire = {"id": denomination, "nom": denomination}
+                results.append(dictionnaire)
+        return results
+
+    def render_to_response(self, context, **response_kwargs):
+        results = []
+        more = context["page_obj"].number < context["paginator"].num_pages
+        if context["object_list"]:
+            results = [{"id": u["id"], "text": u["nom"]} for u in context["object_list"]]
         return JsonResponse({"results": results, "pagination": {"more": more}})
 
 
