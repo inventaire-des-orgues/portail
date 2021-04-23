@@ -25,6 +25,7 @@ class Facteur(models.Model):
     nom = models.CharField(max_length=100)
     latitude_atelier = models.FloatField(null=True, blank=True, verbose_name="Latitude de l'atelier")
     longitude_atelier = models.FloatField(null=True, blank=True, verbose_name="Longitude de l'atelier")
+    updated_by_user = models.ForeignKey(User, null=True, editable=False, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.nom
