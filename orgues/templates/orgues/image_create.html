@@ -8,6 +8,7 @@
 {% block head_extra %}
 
   <link href="https://unpkg.com/filepond/dist/filepond.min.css" rel="stylesheet"/>
+  <link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css" rel="stylesheet">
 
 {% endblock %}
 
@@ -16,10 +17,11 @@
   <div class="form-group">
     <label for="">Précisez l'auteur des photos avant de commencer le chargement</label>
     <input type="text" class="form-control" id="id_credit">
+    <a class="nav-link" href="javascript:;" id="use-user-credit">Utiliser mon nom : {{ user }}</a>
   </div>
   <input type="file" id="filepond" class="d-none">
   <p class="text-right">
-    <a href="{% url 'orgues:image-list' orgue.uuid %}" class="btn btn-sm btn-primary">Retour</a>
+    <a href="{% url 'orgues:image-list' orgue.uuid %}" id="return-button" class="btn btn-sm btn-primary">Retour</a>
   </p>
 {% endblock %}
 
@@ -29,10 +31,14 @@
   <script src="https://unpkg.com/filepond-plugin-image-transform/dist/filepond-plugin-image-transform.min.js"></script>
   <script src="https://unpkg.com/filepond-plugin-image-resize/dist/filepond-plugin-image-resize.min.js"></script>
   <script src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.min.js"></script>
+  <script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.js"></script>
   <script src="https://unpkg.com/filepond/dist/filepond.min.js"></script>
 
   <script>
-    $("#id_credit").keyup(function () {
+    $("#use-user-credit").click(function() {
+      $("#id_credit").val("{{ user }}").trigger( "change" )
+    })
+    $("#id_credit").change(function () {
       if ($(this).val().length > 1) {
         $("#filepond").removeClass("d-none")
       } else {
@@ -43,6 +49,7 @@
     FilePond.registerPlugin(FilePondPluginImageResize);
     FilePond.registerPlugin(FilePondPluginFileValidateType);
     FilePond.registerPlugin(FilePondPluginImageTransform);
+    FilePond.registerPlugin(FilePondPluginImagePreview);
 
     const pond = FilePond.create(inputElement, {
       acceptedFileTypes: ['image/*'],
@@ -69,6 +76,12 @@
         }
       }
     });
+    pond.on('processfiles', () => {
+       $("#return-button").show()
+      });
+    pond.on('addfilestart', (file) => {
+        $("#return-button").hide();
+      });
   </script>
 
 

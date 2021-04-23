@@ -49,7 +49,7 @@
           processData: false,
           contentType: false,
           success() {
-            location.reload()
+            location.assign("{% url 'orgues:image-list' orgue.uuid %}")
           },
           error() {
             toastr.error("Oups, il y a eu une erreur");
