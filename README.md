@@ -26,6 +26,16 @@ python manage.py calcul_resume_composition
 ```  
 Normalement le résumé clavier est recalculé automatiquement à chaque modification de la composition d'un orgue.
 
+Pour récupérer les configs depuis le site inventaire des orgues (Facteurs, types de jeux, types de claviers et )
+Téléchargez le fichier config.json depuis l'url du site : https://inventaire-des-orgues.fr/api/v1/config.json
+et lancer la commande suivante :
+
+```shell script
+python manage.py init_config --delete path/ver/config.json
+```
+
+l'option --delete permet de vider la base préalablement si nécessaire
+
 # Installation du moteur de recherche 
 
 Suivre la documentation pour installer meilisearch : 
@@ -110,6 +120,20 @@ sudo service nginx start
 
 Bien pratique pour travailler sur un tableur type OpenOffice ou Excel...
 https://inventaire-des-orgues.fr/orgues/csv
+
+# Renouvellement des certificats
+Via un fichier cron. Pour le voir :
+```shell
+sudo su
+crontab -l
+```
+
+Commandes correspondantes :
+```shell
+service nginx stop
+certbot renew
+service nginx start
+```
 
 # Création d'un diagramme UML à partir du modèle de données Django
 

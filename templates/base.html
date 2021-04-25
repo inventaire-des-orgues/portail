@@ -124,6 +124,12 @@
   $(function () {
     $('[data-toggle="tooltip"]').tooltip()
   })
+  $(function () {
+    $('[data-toggle="tooltip-children"]').hover(
+      function(e){$(this).find('.tooltip-children').tooltip('show');},
+      function(e){$(this).find('.tooltip-children').tooltip('hide');}
+    );
+  })
 </script>
 <script>
   $(".menu-outline ul li a").each(function () {

@@ -3,10 +3,10 @@
 
 
 {% block meta_tags %}
-  <title>{{ orgue.designation }} {{ orgue.edifice }} - {{ orgue.commune }}, {{ orgue.departement }}</title>
-  <meta property="og:title" content="{{ orgue.designation }} {{ orgue.edifice }} - {{ orgue.commune }}, {{ orgue.departement }}">
-  <meta name="description" content="{{ orgue.designation }} {{ orgue.edifice }} - {{ orgue.commune }}, {{ orgue.departement }}">
-  <meta property="og:description" content="{{ orgue.designation }} {{ orgue.edifice }} - {{ orgue.commune }}, {{ orgue.departement }}">
+  <title>{{ orgue.designation|default_if_none:"" }} {{ orgue.edifice }} - {{ orgue.commune }}, {{ orgue.departement }}</title>
+  <meta property="og:title" content="{{ orgue.designation|default_if_none:"" }} {{ orgue.edifice }} - {{ orgue.commune }}, {{ orgue.departement }}">
+  <meta name="description" content="{{ orgue.designation|default_if_none:"" }} {{ orgue.edifice }} - {{ orgue.commune }}, {{ orgue.departement }}">
+  <meta property="og:description" content="{{ orgue.designation|default_if_none:"" }} {{ orgue.edifice }} - {{ orgue.commune }}, {{ orgue.departement }}">
   {% if object.image_principale %}
     <meta property="og:image" content="{{ orgue.image_principale.image.url }}">
   {% endif %}
@@ -35,7 +35,7 @@
           </h2>
           <h4 class="text-muted">
             <a href="/orgues/?query={{ orgue.commune|urlencode }}" class="link">{{ orgue.commune }}</a>
-            {% if orgue.ancienne_commune %} (anciennement <a href="/orgues/?query={{ orgue.ancienne_commune|urlencode }}" class="link">{{ orgue.ancienne_commune }}</a>){% endif %}, <a href="/orgues/?query={{ orgue.departement|urlencode }}" class="link">{{ orgue.departement }}</a>
+            {% if orgue.ancienne_commune %} (<a href="/orgues/?query={{ orgue.ancienne_commune|urlencode }}" class="link">{{ orgue.ancienne_commune }}</a>){% endif %}, <a href="/orgues/?query={{ orgue.departement|urlencode }}" class="link">{{ orgue.departement }}</a>
             <small>
               | <a href="/orgues/?query={{ orgue.commune|add:' '|add:orgue.edifice|urlencode }}" class="link">{{ orgue.designation|default_if_none:"Orgue" }}</a>
             </small>
@@ -215,7 +215,7 @@
               <dl>
                 <dt>Facteurs</dt>
                 <dd>
-                  {% if facteurs_evenements %}
+                  {% if facteurs_evenements or orgue.entretien.all.count > 0%}
                     <ul>
                       {% for evenement in facteurs_evenements %}
                         <li>
@@ -224,6 +224,11 @@
                               {% if not forloop.last %} & {% endif %}
                           {% endfor %}
                           ({{ evenement.type }} {{ evenement.dates }})</li>
+                      {% endfor %}
+                    </ul>
+                    <ul>
+                      {% for facteur in orgue.entretien.all %}
+                        <li>{{facteur}} (entretien)</li>
                       {% endfor %}
                     </ul>
                   {% else %}
@@ -273,6 +278,16 @@
               {% if orgue.latitude and orgue.longitude %}
                 <div id="mapid" style="height:150px;margin-bottom:10px"></div>
               {% endif %}
+                            
+              {% if orgue.osm_type and orgue.osm_id %}
+                <dt>Localiser l'édifice</dt>
+                <dd>
+                {% with 'https://www.openstreetmap.org/'|add:orgue.osm_type|add:'/'|add:orgue.osm_id as lien_osm %}
+                    <a href="{{ lien_osm }}" target="_blank" rel="noopener noreferrer">Ouvrir la carte OpenStreetMap</a> <br>
+                {% endwith %}
+                </dd>
+              {% endif %}
+              
             </div>
           </div>
           <div class="mb-4  box-shadow">
