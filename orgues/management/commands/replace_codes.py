@@ -24,8 +24,9 @@ class Command(BaseCommand):
                     (chemin_avant, chemin_apres) = couple_code
                     departement_avant, code_avant = chemin_avant.split("/")
                     departement_apres, code_apres = chemin_apres.split("/")
-                    print("Orgue {} : je remplace {} par {}".format(str(orgue), code_avant, code_apres))
+                    print("Je remplace {} par {}".format(code_avant, code_apres))
                     orgue = Orgue.objects.get(codification__exact=code_avant)
+                    print("Orgue {} : je remplace {} par {}".format(str(orgue), code_avant, code_apres))
                     # On met à jour le code de l'orgue
                     orgue.codification = code_apres
 
