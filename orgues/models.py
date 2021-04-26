@@ -217,14 +217,15 @@ class Orgue(models.Model):
     designation = models.CharField(max_length=300, null=True, verbose_name="Désignation", default="orgue", blank=True)
     is_polyphone = models.BooleanField(default=False, verbose_name="Orgue polyphone de la manufacture Debierre ?")
     codification = models.CharField(max_length=24, unique=True, db_index=True)
-    references_palissy = models.CharField(max_length=60, null=True, verbose_name="Référence(s) Palissy", blank=True,
-                                          help_text="Séparer les codes par des virgules")
+    references_palissy = models.CharField(max_length=60, null=True, verbose_name="Référence(s) Palissy pour les monuments historiques.", blank=True,
+                                          help_text="Séparer les codes par des virgules.")
     resume = models.TextField(max_length=500, null=True, verbose_name="Résumé", blank=True,
                               help_text="Présentation en quelques lignes de l'instrument \
-                              et son originalité (max 500 caractères)")
+                              en insistant sur son originalité (max 500 caractères).")
     proprietaire = models.CharField(max_length=40, null=True, choices=CHOIX_PROPRIETAIRE, default="commune",
                                     verbose_name="Propriétaire")
-    organisme = models.CharField(verbose_name="Organisme auquel s'adresser", max_length=100, null=True, blank=True)
+    organisme = models.CharField(verbose_name="Organisme auquel s'adresser", max_length=100, null=True, blank=True,
+                                 help_text="Notamment pour accéder à l'instrument.")
     lien_reference = models.URLField(verbose_name="Lien de référence", max_length=300, null=True, blank=True)
 
     entretien = models.ManyToManyField(Facteur, blank=True, verbose_name="Facteur en charge de l'entretien")
@@ -239,8 +240,8 @@ class Orgue(models.Model):
                                help_text="Description de la console (ex: en fenêtre, \
                                séparée organiste tourné vers l'orgue ...).")
 
-    commentaire_admin = models.TextField(verbose_name="Commentaire rédacteurs", null=True, blank=True,
-                                         help_text="Commentaire uniquement visible par les rédacteurs")
+    commentaire_admin = models.TextField(verbose_name="Commentaire contributeurs", null=True, blank=True,
+                                         help_text="Commentaire uniquement visible par les contributeurs.")
 
     # Localisation
     code_dep_validator = RegexValidator(regex='^(97[12346]|0[1-9]|[1-8][0-9]|9[0-5]|2[AB])$',
@@ -264,7 +265,7 @@ class Orgue(models.Model):
 
     # Partie instrumentale
     diapason = models.CharField(max_length=20, null=True, blank=True,
-                                help_text="Hauteur en Hertz du A2 joué par le prestant 4, à une température donnée")
+                                help_text="Hauteur en Hertz du A2 joué par le prestant 4, à une température donnée.")
     sommiers = models.TextField(null=True, blank=True)
     soufflerie = models.TextField(null=True, blank=True)
     transmission_notes = models.CharField(verbose_name="Transmission des notes",
@@ -275,12 +276,12 @@ class Orgue(models.Model):
                                    max_length=50,
                                    help_text="Mention la plus précise possible. Ex: mésotonique au sixième modifié.",
                                    null=True, blank=True)
-    transmission_commentaire = models.CharField(max_length=100, null=True, blank=True, help_text="Max 100 caractères")
+    transmission_commentaire = models.CharField(max_length=100, null=True, blank=True, help_text="Max 100 caractères.")
     tirage_jeux = models.CharField(verbose_name="Tirage des jeux", max_length=30, choices=CHOIX_TIRAGE, null=True,
                                    blank=True)
-    tirage_commentaire = models.CharField(max_length=100, null=True, blank=True, help_text="Max 100 caractères")
+    tirage_commentaire = models.CharField(max_length=100, null=True, blank=True, help_text="Max 100 caractères.")
     commentaire_tuyauterie = models.TextField(verbose_name="Description de la tuyauterie", blank=True, null=True)
-    accessoires = models.ManyToManyField('Accessoire', blank=True)
+    accessoires = models.ManyToManyField('Accessoire', blank=True, help_text="Nous contacter si un accessoire manque.")
 
     # Auto générés
     created_date = models.DateTimeField(auto_now_add=True, auto_now=False, verbose_name='Creation date')
