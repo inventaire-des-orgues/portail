@@ -14,6 +14,7 @@ from django.utils.text import slugify
 from imagekit.models import ImageSpecField, ProcessedImageField
 from pilkit.processors import ResizeToFill, ResizeToFit, Transpose
 from PIL import Image as PilImage
+from django import forms
 
 from accounts.models import User
 
