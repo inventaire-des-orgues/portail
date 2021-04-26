@@ -65,7 +65,7 @@ class Command(BaseCommand):
                         pathfichier_apres = fic.file.path.replace(chemin_avant_propre, chemin_apres_propre)
                         # On renomme le fichier PDF de livre d'inventaire s'il existe
                         if pathfichier_avant[-28:] == code_avant + '.pdf':
-                            pathfichier_avant = pathfichier_avant[:-28] + code_apres + '.pdf'
+                            pathfichier_avant = pathfichier_avant[:28] + code_apres + '.pdf'
                         # Create dir if necessary and move file
                         if not os.path.exists(os.path.dirname(pathfichier_apres)):
                             os.makedirs(os.path.dirname(pathfichier_apres))
