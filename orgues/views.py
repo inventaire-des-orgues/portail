@@ -386,8 +386,9 @@ class OrgueCreate(FabCreateView, ContributionOrgueMixin):
         form.instance.code_insee = c.code_insee
         form.instance.edifice = c.edifice
         form.instance.codification = c.codification
+        ret = super().form_valid(form)
         self.save_contribution(form.instance, "Création de l'orgue")
-        return super().form_valid(form)
+        return ret
 
 class OrgueUpdateMixin(FabUpdateView, ContributionOrgueMixin):
     """
@@ -708,9 +709,9 @@ class CommuneListJS(FabListView):
             csv_reader = csv.reader(read_obj, delimiter=';')
             results = []
             for row in csv_reader:
-                ligne=row[0].split(",")  
+                ligne=row[0].split(",")
                 if query :
-                    if query in ligne[3].lower():    
+                    if query in ligne[3].lower():
                         dictionnaire = {"id": ligne[3]+", "+ligne[4], "nom": ligne[3]+", "+ligne[4]}
                         results.append(dictionnaire)
                 else:
@@ -746,7 +747,7 @@ class DesignationListJS(FabListView):
         results = []
         for denomination in liste_designation:
             if query :
-                if query in denomination.lower():    
+                if query in denomination.lower():
                     dictionnaire = {"id": denomination, "nom": denomination}
                     results.append(dictionnaire)
             else:
