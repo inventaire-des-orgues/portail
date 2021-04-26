@@ -146,6 +146,7 @@ class Command(BaseCommand):
                             type=type_clavier,
                             is_expressif=clavier.get("is_expressif"),
                             etendue=clavier.get("etendue"),
+                            commentaire=clavier.get("commentaire"),
                             orgue=orgue
                         )
                         for jeu in clavier.get("jeux", []):
@@ -180,9 +181,13 @@ class Command(BaseCommand):
                         )
 
                     for fichier in row.get("fichiers", []):
+                        # Transformation des chemins absolus en chemins relatifs avant import :
+                        url_absolue = fichier.get("file")
+                        url_absolue_splitted = os.path.normpath(url_absolue).split(os.sep)
+                        url_relative = os.path.join(*url_absolue_splitted[-4:])
                         Fichier.objects.create(
                             orgue=orgue,
-                            file=fichier.get("file"),
+                            file=url_relative,
                             description=fichier.get("description")
                         )
 

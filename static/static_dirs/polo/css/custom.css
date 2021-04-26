@@ -566,3 +566,12 @@ a.link, a.link:visited, a.link:active {
 #valider_recherche_manufacture{
     padding: 5px;
 }
+
+
+.tooltip {
+    pointer-events: none;
+}
+
+.btn-filtre{
+    border-radius: 50px;
+}

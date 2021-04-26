@@ -115,7 +115,8 @@
 <script src="{% static 'plugins/popper/popper.min.js' %}"></script>
 <script src="{% static 'polo/js/plugins.js' %}"></script>
 <script src="{% static 'polo/js/functions.js' %}"></script>
-<script src="{% static 'plugins/select2/select2.min.js' %}"></script>
+<!--<script src="{% static 'plugins/select2/select2.min.js' %}"></script>-->
+<script src="{% static 'plugins/select2/select2.full.min.js' %}"></script>
 <script src="{% static 'plugins/select2/i18n/fr.js' %}"></script>
 <script src="{% static 'plugins/toastr/toastr.min.js' %}"></script>
 <script src="{% static 'plugins/lightbox/js/lightbox.min.js' %}"></script>
@@ -123,6 +124,12 @@
 <script>
   $(function () {
     $('[data-toggle="tooltip"]').tooltip()
+  })
+  $(function () {
+    $('[data-toggle="tooltip-children"]').hover(
+      function(e){$(this).find('.tooltip-children').tooltip('show');},
+      function(e){$(this).find('.tooltip-children').tooltip('hide');}
+    );
   })
 </script>
 <script>
