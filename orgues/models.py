@@ -691,7 +691,7 @@ class Contribution(models.Model):
     orgue = models.ForeignKey(Orgue, null=True, on_delete=models.CASCADE, related_name="contributions")
 
     def __str__(self):
-        return "{} ({})".format(self.type, self.description)
+        return "{}: {} ({})".format(self.date, self.user, self.description)
 
 
 class Fichier(models.Model):

@@ -319,7 +319,17 @@ class OrgueDetail(DetailView):
         context["evenements"] = self.object.evenements.all().prefetch_related('facteurs')
         context["facteurs_evenements"] = self.object.evenements.filter(facteurs__isnull=False).prefetch_related(
             'facteurs').distinct()
+        context["contributions"] = self.get_contributions()
         return context
+
+    def get_contributions(self):
+        last = self.object.contributions.order_by("-date").first()
+        return {
+            "count": self.object.contributions.count(),
+            "contributeurs": self.object.contributions.values_list("user").distinct().count(),
+            "updated_by_user": last.user if last else "",
+            "modified_date": last.date if last else "",
+        }
 
 
 class OrgueDetailExemple(View):
@@ -341,10 +351,7 @@ class ContributionOrgueMixin:
         detail = self.contribution_description if not description else description
         contribution = Contribution.objects.filter(orgue=orgue, date__date=date.today()).order_by('-date').first()
         if not contribution or contribution.user != self.request.user:
-            contribution = Contribution()
-            contribution.user = self.request.user
-            contribution.orgue = orgue
-            contribution.description = detail
+            contribution = Contribution(user=self.request.user, orgue=orgue, description=detail)
         if contribution.description.find(detail) < 0:
             contribution.description += ', ' + detail
         contribution.save()
