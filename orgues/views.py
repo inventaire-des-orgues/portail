@@ -288,6 +288,7 @@ class OrgueHistJSDep(View):
             del references_palissy[None]
         return JsonResponse(references_palissy, safe=False)
 
+
 class OrgueDetail(DetailView):
     """
     Vue de détail (lecture seule) d'un orgue
