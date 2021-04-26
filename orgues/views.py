@@ -2,7 +2,7 @@ import csv
 import logging
 import os
 from collections import Counter, deque
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 import meilisearch
 import pandas as pd
@@ -331,8 +331,25 @@ class OrgueDetailExemple(View):
         orgue = Orgue.objects.order_by('-completion').first()
         return redirect(orgue.get_absolute_url())
 
+class ContributionOrgueMixin:
+    """
+    Ajout d'une contribution lors de la modification d'un orgue
+    """
+    contribution_description = 'Mise à jour'
 
-class OrgueCreate(FabCreateView):
+    def save_contribution(self, orgue, description = None):
+        detail = self.contribution_description if not description else description
+        contribution = Contribution.objects.filter(orgue=orgue, date__date=date.today()).order_by('-date').first()
+        if not contribution or contribution.user != self.request.user:
+            contribution = Contribution()
+            contribution.user = self.request.user
+            contribution.orgue = orgue
+            contribution.description = detail
+        if contribution.description.find(detail) < 0:
+            contribution.description += ', ' + detail
+        contribution.save()
+
+class OrgueCreate(FabCreateView, ContributionOrgueMixin):
     """
     Création d'un nouvel orgue
     """
@@ -344,20 +361,9 @@ class OrgueCreate(FabCreateView):
 
     def form_valid(self, form):
         form.instance.updated_by_user = self.request.user
+        self.save_contribution(form.instance, "Création de l'orgue")
         return super().form_valid(form)
 
-class ContributionOrgueMixin:
-    """
-    Add a success message on successful form submission.
-    """
-    contribution_description = 'Mise à jour'
-
-    def save_contribution(self, orgue, description = None):
-        contribution = Contribution()
-        contribution.description = self.contribution_description if not description else description
-        contribution.user = self.request.user
-        contribution.orgue = orgue
-        contribution.save()
 class OrgueUpdateMixin(FabUpdateView, ContributionOrgueMixin):
     """
     Mixin de modification d'un orgue qui permet de systématiquement:

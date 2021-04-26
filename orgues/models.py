@@ -682,11 +682,11 @@ class Contribution(models.Model):
     Historique des contributions
     """
     date = models.DateTimeField(
-        auto_now_add=True,
-        auto_now=False,
+        auto_now_add=False,
+        auto_now=True,
         verbose_name='Date de contribution'
     )
-    description = models.CharField(max_length=100, verbose_name="Description de la contribution", blank=False)
+    description = models.CharField(max_length=500, verbose_name="Description de la contribution", blank=False)
     user = models.ForeignKey(User, null=True, editable=False, related_name="contributions", on_delete=models.SET_NULL)
     orgue = models.ForeignKey(Orgue, null=True, on_delete=models.CASCADE, related_name="contributions")
 
