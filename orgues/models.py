@@ -26,6 +26,7 @@ class Facteur(models.Model):
     nom = models.CharField(max_length=100)
     latitude_atelier = models.FloatField(null=True, blank=True, verbose_name="Latitude de l'atelier")
     longitude_atelier = models.FloatField(null=True, blank=True, verbose_name="Longitude de l'atelier")
+    updated_by_user = models.ForeignKey(User, null=True, editable=False, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.nom
@@ -515,6 +516,8 @@ class Clavier(models.Model):
     is_expressif = models.BooleanField(verbose_name="Cocher si expressif", default=False)
     etendue = models.CharField(validators=[validate_etendue], max_length=10, null=True, blank=True,
                                help_text="De la forme F1-G5, C1-F#5 ... ")
+    commentaire = models.CharField(max_length=200, null=True, blank=True, help_text="Particularités specifiques du clavier (transmission, ")
+
     # Champs automatiques
     orgue = models.ForeignKey(Orgue, null=True, on_delete=models.CASCADE, related_name="claviers", db_index=True)
     created_date = models.DateTimeField(

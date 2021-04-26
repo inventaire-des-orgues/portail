@@ -146,6 +146,7 @@ class ClavierForm(forms.ModelForm):
             "type",
             "etendue",
             "is_expressif",
+            "commentaire",
         ]
 
 

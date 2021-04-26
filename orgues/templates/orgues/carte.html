@@ -206,14 +206,6 @@
       width: '100%'
     });
 
-    $("#afficher_tous_orgues").click(function(){
-      markersCluster.clearLayers();
-      $("#afficher_tous_orgues").hide();
-      $.getJSON("{% url 'orgues:orgue-list-js' %}", function (orgues) {
-        afficher_orgue(orgues)
-      });
-    })
-
     $("#validation").click(function(e){
       e.preventDefault();
       markersCluster.clearLayers();

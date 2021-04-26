@@ -23,7 +23,7 @@ class ImageAdmin(admin.ModelAdmin):
 
 @admin.register(Facteur)
 class FacteurAdmin(admin.ModelAdmin):
-    list_display = ('nom', 'latitude_atelier', 'longitude_atelier',)
+    list_display = ('nom', 'latitude_atelier', 'longitude_atelier', 'updated_by_user')
     list_editable = ('latitude_atelier', 'longitude_atelier',)
     search_fields = ('nom',)
 

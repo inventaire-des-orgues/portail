@@ -7,7 +7,7 @@ from orgues.models import Orgue
 
 
 class Command(BaseCommand):
-    help = 'Population initiale de la base de données avec les types'
+    help = "Correction de codes d'orgues"
 
     def add_arguments(self, parser):
         parser.add_argument('codestable', nargs=1, type=str,
@@ -22,12 +22,14 @@ class Command(BaseCommand):
                 couples_codes = [ligne.rstrip('\n').split(';') for ligne in f.readlines()]
                 for couple_code in couples_codes:
                     (chemin_avant, chemin_apres) = couple_code
+
                     code_avant = os.path.basename(chemin_avant)
                     departement_avant = os.path.dirname(chemin_avant)
                     code_apres = os.path.basename(chemin_apres)
                     departement_apres = os.path.dirname(chemin_apres)
                     chemin_avant_propre = os.path.join(departement_avant, code_avant)
                     chemin_apres_propre = os.path.join(departement_apres, code_apres)
+
                     orgue = Orgue.objects.get(codification__exact=code_avant)
                     print("Orgue {} : je remplace {} par {}".format(str(orgue), code_avant, code_apres))
                     

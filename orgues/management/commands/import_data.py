@@ -146,6 +146,7 @@ class Command(BaseCommand):
                             type=type_clavier,
                             is_expressif=clavier.get("is_expressif"),
                             etendue=clavier.get("etendue"),
+                            commentaire=clavier.get("commentaire"),
                             orgue=orgue
                         )
                         for jeu in clavier.get("jeux", []):
