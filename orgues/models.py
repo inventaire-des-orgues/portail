@@ -515,8 +515,9 @@ class Clavier(models.Model):
     type = models.ForeignKey(TypeClavier, verbose_name="Nom", null=True, on_delete=models.CASCADE, db_index=True)
     is_expressif = models.BooleanField(verbose_name="Cocher si expressif", default=False)
     etendue = models.CharField(validators=[validate_etendue], max_length=10, null=True, blank=True,
-                               help_text="De la forme F1-G5, C1-F#5 ... ")
-    commentaire = models.CharField(max_length=200, null=True, blank=True, help_text="Particularités specifiques du clavier (transmission, ")
+                               help_text="De la forme F1-G5, C1-F#5, CD1-G5 (pour absence premier Ut dièse)...")
+    commentaire = models.CharField(max_length=200, null=True, blank=True,
+                                   help_text="Particularités specifiques du clavier (transmission, ravalement, etc.)")
 
     # Champs automatiques
     orgue = models.ForeignKey(Orgue, null=True, on_delete=models.CASCADE, related_name="claviers", db_index=True)
