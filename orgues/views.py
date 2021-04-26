@@ -1099,6 +1099,7 @@ class ConseilsFicheView(TemplateView):
 
 
 class OrgueExport(FabView):
+    permission_required = 'orgues.change_orgue'
 
     def get(self, request, *args, **kwargs):
         response = HttpResponse(content_type='text/csv')
