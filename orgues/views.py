@@ -950,6 +950,11 @@ class FichierDelete(FabDeleteView):
     def get_success_url(self):
         return reverse('orgues:fichier-list', args=(self.object.orgue.uuid,))
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["orgue"] = self.object.orgue
+        return context
+
 
 class ImageList(FabListView):
     """
