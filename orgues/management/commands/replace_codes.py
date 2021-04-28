@@ -34,8 +34,6 @@ class Command(BaseCommand):
                     print("Orgue {} : je remplace {} par {}".format(str(orgue), code_avant, code_apres))
                     
                     # On met à jour le code de l'orgue
-                    
-                    
                     orgue.codification = code_apres
 
                     # On met à jour les fichiers images
@@ -61,23 +59,28 @@ class Command(BaseCommand):
                     
                     # On met à jour les autres fichiers
                     for fic in orgue.fichiers.all():
+                        print(fic, orgue.fichiers.all())
                         pathfichier_avant = fic.file.path
                         pathfichier_apres = fic.file.path.replace(chemin_avant_propre, chemin_apres_propre)
-                        # On renomme le fichier PDF de livre d'inventaire s'il existe
-                        if pathfichier_avant[-28:] == code_avant + '.pdf':
-                            # Renommage du lien stocké en BD :
-                            pathfichier_avant_corr = pathfichier_avant[:28] + code_apres + '.pdf'
-                            # Renommage du .PDF lui-même dans l'ancien répertoire
-                            if os.path.exists(pathfichier_avant):
-                                os.rename(pathfichier_avant, pathfichier_avant_corr)
-                            pathfichier_avant = pathfichier_avant_corr
-                        # Create dir if necessary and move file
+
+                        # Create dir if necessary
                         if not os.path.exists(os.path.dirname(pathfichier_apres)):
                             os.makedirs(os.path.dirname(pathfichier_apres))
+
+                        # Déplacement des fichiers sur le disque
                         if os.path.exists(pathfichier_avant) and not os.path.exists(pathfichier_apres):
                             os.rename(pathfichier_avant, pathfichier_apres)
+
+                            # On renomme en particulier le fichier PDF de livre d'inventaire s'il existe
+                            if pathfichier_apres[-28:] == code_avant + '.pdf':
+                                os.rename(pathfichier_apres, pathfichier_apres[:-28] + code_apres + '.pdf')
+                                # Renommage du lien vers le fichier PDF de livre d'inventaire s'il existe
+                                fic.file.name = fic.file.name[:-28] + code_apres + '.pdf'
+
+                        # Renommage de tous les liens
                         fic.file.name = fic.file.name.replace(chemin_avant_propre, chemin_apres_propre)
                         fic.file.name = fic.file.name.replace(chemin_avant, chemin_apres)
+
                         fic.save()
                     
                     # On efface l'ancien répertoire
