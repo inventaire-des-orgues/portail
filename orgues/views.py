@@ -3,9 +3,10 @@ import logging
 import os
 from collections import Counter, deque
 from datetime import datetime, timedelta
+import pandas as pd
 
 import meilisearch
-import pandas as pd
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
@@ -26,6 +27,7 @@ from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdate
 from orgues.api.serializers import OrgueSerializer, OrgueResumeSerializer
 from project import settings
 from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source
+from .codification import Codification
 
 logger = logging.getLogger("fabaccess")
 
@@ -149,6 +151,7 @@ class FacteurListJSLeaflet(View):
         data = Facteur.objects.filter(latitude_atelier__isnull=False).values("nom", "latitude_atelier", "longitude_atelier")
         return JsonResponse(list(data), safe=False)
 
+
 class FacteurListJSFiltre(FabListView):
     """
     Liste dynamique utilisée pour filtrer les facteurs d'orgue dans les menus déroulants select2. Utilisée pour le filtre de la carte.
@@ -170,6 +173,7 @@ class FacteurListJSFiltre(FabListView):
             results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
         return JsonResponse({"results": results, "pagination": {"more": False}})
 
+
 class FacteurListJSlonlat(FabListView):
     """
     Liste dynamique utilisée pour filtrer les facteurs d'orgue dans les menus déroulants select2. Utilisée pour le filtre de la carte.
@@ -190,7 +194,7 @@ class FacteurListJSlonlat(FabListView):
         results = []
         if context["object_list"]:
             for u in context["object_list"]:
-                if u.latitude_atelier != None and u.longitude_atelier != None:
+                if u.latitude_atelier is not None and u.longitude_atelier is not None:
                     results.append({"id": u.id, "text": u.nom, "latitude": u.latitude_atelier, "longitude": u.longitude_atelier})
         return JsonResponse({"results": results, "pagination": {"more": False}})
 
@@ -207,13 +211,14 @@ class OrgueFiltreJS(View):
         if facteur:
             requete = Orgue.objects.filter(evenements__facteurs__nom=facteur).distinct()
             if type_requete == "construction":
-                requete = Orgue.objects.filter(Q(evenements__facteurs__nom=facteur) & (Q(evenements__type="construction")|Q(evenements__type="reconstruction"))).distinct()
+                requete = Orgue.objects.filter(Q(evenements__facteurs__nom=facteur) & (Q(evenements__type="construction") | Q(evenements__type="reconstruction"))).distinct()
             else:
                 requete = Orgue.objects.filter(evenements__facteurs__nom=facteur).distinct()
         else:
-            requete =  Orgue.objects.all()
-        data =requete.values("slug", "commune", "edifice", "latitude", "longitude", 'emplacement', "references_palissy")
+            requete = Orgue.objects.all()
+        data = requete.values("slug", "commune", "edifice", "latitude", "longitude", 'emplacement', "references_palissy")
         return JsonResponse(list(data), safe=False)
+
 
 class OrgueEtatsJS(View):
     """
@@ -234,6 +239,7 @@ class OrgueEtatsJS(View):
             del etats[None]
         return JsonResponse(etats, safe=False)
 
+
 class OrgueHistJS(View):
     """
     JSON décrivant les orgues classés ou inscrits au monument historique pour un département
@@ -249,8 +255,9 @@ class OrgueHistJS(View):
         if None in references_palissy.keys():
             references_palissy["PasCla"] = references_palissy.get(None, 0)
             del references_palissy[None]
-        #if evenementstot["type"]
+        # if evenementstot["type"]
         return JsonResponse(references_palissy, safe=False)
+
 
 class OrgueEtatsJSDep(View):
     """
@@ -271,6 +278,7 @@ class OrgueEtatsJSDep(View):
             del etats[None]
         return JsonResponse(etats, safe=False)
 
+
 class OrgueHistJSDep(View):
     """
     JSON décrivant les orgues classés ou inscrits au monument historique pour un département
@@ -287,6 +295,7 @@ class OrgueHistJSDep(View):
             references_palissy["PasCla"] = references_palissy.get(None, 0)
             del references_palissy[None]
         return JsonResponse(references_palissy, safe=False)
+
 
 class OrgueDetail(DetailView):
     """
@@ -341,9 +350,18 @@ class OrgueCreate(FabCreateView):
     form_class = orgue_forms.OrgueCreateForm
     success_url = reverse_lazy('orgues:orgue-list')
     success_message = 'Nouvel orgue créé'
+    template_name = "orgues/orgue_create.html"
 
     def form_valid(self, form):
         form.instance.updated_by_user = self.request.user
+        c = Codification(form.instance.commune, form.instance.edifice, form.instance.designation)
+        form.instance.commune = c.commune
+        form.instance.departement = c.departement
+        form.instance.code_departement = c.code_departement
+        form.instance.region = c.region
+        form.instance.code_insee = c.code_insee
+        form.instance.edifice = c.edifice
+        form.instance.codification = c.codification
         return super().form_valid(form)
 
 
@@ -630,6 +648,74 @@ class FacteurListJS(FabListView):
         more = context["page_obj"].number < context["paginator"].num_pages
         if context["object_list"]:
             results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
+        return JsonResponse({"results": results, "pagination": {"more": more}})
+
+class CommuneListJS(FabListView):
+    """
+    Liste dynamique utilisée pour filtrer les communes dans le menu déroulant select2 pour créer un nouvel orgue.
+    documentation : https://select2.org/data-sources/ajax
+    """
+    model = Facteur
+    permission_required = 'orgues.add_orgue'
+    paginate_by = 30
+
+    def get_queryset(self):
+        query = self.request.GET.get("search")
+        with open('code_INSEE.csv', 'r', encoding='utf-8') as read_obj:
+            csv_reader = csv.reader(read_obj, delimiter=';')
+            results = []
+            for row in csv_reader:
+                ligne=row[0].split(",")  
+                if query :
+                    if query in ligne[3].lower():    
+                        dictionnaire = {"id": ligne[3]+", "+ligne[4], "nom": ligne[3]+", "+ligne[4]}
+                        results.append(dictionnaire)
+                else:
+                    dictionnaire = {"id": ligne[3]+", "+ligne[4], "nom": ligne[3]+", "+ligne[4]}
+                    results.append(dictionnaire)
+        return results
+
+    def render_to_response(self, context, **response_kwargs):
+        results = []
+        more = context["page_obj"].number < context["paginator"].num_pages
+        if context["object_list"]:
+            results = [{"id": u["id"], "text": u["nom"]} for u in context["object_list"]]
+        return JsonResponse({"results": results, "pagination": {"more": more}})
+
+class DesignationListJS(FabListView):
+    """
+    Liste dynamique utilisée pour filtrer les désignations dans le menu déroulant select2 pour créer un nouvel orgue.
+    Si une désignation est manquante, l'ajouter dans la liste liste_designation.
+    documentation : https://select2.org/data-sources/ajax
+    """
+    model = Facteur
+    permission_required = 'orgues.add_orgue'
+    paginate_by = 30
+
+    def get_queryset(self):
+        query = self.request.GET.get("search")
+        liste_designation = ['G.O.', 'orgue', 'Grand Orgue', 'orgue de tribune', 'orgue de transept', 'orgue positif','orgue régale',
+"orgue d'accompagnement",'petit orgue', "orgue d'étude", 'positif', 'grand positif', 'chapelle', 'oratoire',
+"chapelle d'hiver", 'chapelle de la Vierge', 'sacristie', 'O.C.', 'O.C.1', 'O.C.2', 'crypte', 'Orgue coffre','auditorium',
+'orgue 1', 'orgue 2','ancien','nouveau','1', '2', '3', '4', '5', '6', '7', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII',
+"Orgue d'étude", 'Orgue espagnol', 'Orgue majorquin', 'Orgue napolitain', "orgue d'étude (1982)", "orgue d'étude (1968)",
+'polyphone', 'buffet', 'orgue à rouleau', 'orgue à cylindre', '']
+        results = []
+        for denomination in liste_designation:
+            if query :
+                if query in denomination.lower():    
+                    dictionnaire = {"id": denomination, "nom": denomination}
+                    results.append(dictionnaire)
+            else:
+                dictionnaire = {"id": denomination, "nom": denomination}
+                results.append(dictionnaire)
+        return results
+
+    def render_to_response(self, context, **response_kwargs):
+        results = []
+        more = context["page_obj"].number < context["paginator"].num_pages
+        if context["object_list"]:
+            results = [{"id": u["id"], "text": u["nom"]} for u in context["object_list"]]
         return JsonResponse({"results": results, "pagination": {"more": more}})
 
 
@@ -955,16 +1041,14 @@ class ImagePrincipaleUpdate(FabUpdateView):
     success_message = "Vignette mise à jour, merci !"
     template_name = "orgues/image_principale_form.html"
 
-
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return super().dispatch(request, *args, **kwargs)
         image = self.get_object()
         if image.is_blackandwhite():
-            messages.warning(request,"Les images en noir & blanc ne peuvent pas devenir des vignettes")
-            return redirect("orgues:image-list",orgue_uuid=image.orgue.uuid)
-        return super().dispatch(request,*args,**kwargs)
-
+            messages.warning(request, "Les images en noir & blanc ne peuvent pas devenir des vignettes")
+            return redirect("orgues:image-list", orgue_uuid=image.orgue.uuid)
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         old_path = None
@@ -1099,6 +1183,7 @@ class ConseilsFicheView(TemplateView):
 
 
 class OrgueExport(FabView):
+    permission_required = 'orgues.change_orgue'
 
     def get(self, request, *args, **kwargs):
         response = HttpResponse(content_type='text/csv')

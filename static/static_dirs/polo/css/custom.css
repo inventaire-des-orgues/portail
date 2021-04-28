@@ -567,6 +567,11 @@ a.link, a.link:visited, a.link:active {
     padding: 5px;
 }
 
+
 .tooltip {
     pointer-events: none;
+}
+
+.btn-filtre{
+    border-radius: 50px;
 }
