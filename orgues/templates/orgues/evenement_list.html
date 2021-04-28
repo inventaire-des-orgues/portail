@@ -24,7 +24,7 @@
         <tr>
           <td class="d-lg-table-cell font-size-xl font-w600">{{ evenement.dates }}</td>
           <td class="d-lg-table-cell">
-            <b>{{ evenement.type }}</b>
+            <b>{{ evenement.get_type_display }}</b>
           </td>
           <td>{% for facteur in evenement.facteurs.all %}{{ facteur }}
 
@@ -32,8 +32,10 @@
           {% endfor %}</td>
           <td style="width:40%" class="text-muted">{{ evenement.resume|striptags|truncatechars:150}}</td>
           <td style="width:140px" class="text-right">
-            <a href="{% url 'orgues:evenement-update' evenement.pk %}" class="btn btn-xs btn btn-outline">modifier</a>
-            <a href="{% url 'orgues:evenement-delete' evenement.pk %}" class="btn btn-xs  btn-danger btn-outline supprimer_evenement" data-pk="{{ evenement.pk }}">Supprimer</a>
+      {% if perms.orgues.add_orgue and not evenement.is_locked %}
+        <a href="{% url 'orgues:evenement-update' evenement.pk %}" class="btn btn-xs btn btn-outline">modifier</a>
+        <a href="{% url 'orgues:evenement-delete' evenement.pk %}" class="btn btn-xs  btn-danger btn-outline supprimer_evenement" data-pk="{{ evenement.pk }}">Supprimer</a>
+      {% endif %}
           </td>
         </tr>
       {% endfor %}

@@ -549,7 +549,6 @@ class Clavier(models.Model):
     class Meta:
         verbose_name = "Plan sonore"
 
-
 class Evenement(models.Model):
     """
     Décrit les différents événements relatifs à un orgue
@@ -602,6 +601,11 @@ class Evenement(models.Model):
         if self.annee_fin and self.annee_fin != self.annee:
             result += "-{}".format(self.annee_fin)
         return result
+
+    @property
+    def is_locked(self):
+        return self.type not in ["classement_mh","inscription_mh"]
+
 
     def __str__(self):
         return "{} ({})".format(self.type, self.dates)
