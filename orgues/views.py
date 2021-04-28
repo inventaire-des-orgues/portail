@@ -660,7 +660,7 @@ class CommuneListJS(FabListView):
             for row in csv_reader:
                 ligne=row[0].split(",")  
                 if query :
-                    if query in ligne[3].lower():    
+                    if query in ligne[3].lower() or query in ligne[3]:    
                         dictionnaire = {"id": ligne[3]+", "+ligne[4], "nom": ligne[3]+", "+ligne[4]}
                         results.append(dictionnaire)
                 else:

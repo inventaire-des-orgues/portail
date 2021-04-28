@@ -575,3 +575,12 @@ a.link, a.link:visited, a.link:active {
 .btn-filtre{
     border-radius: 50px;
 }
+
+#creation_orgue_box{
+    display: grid;
+    grid-template-columns: 30% 1fr 30%;
+}
+
+#creation_orgue{
+    grid-column: 2;
+}
