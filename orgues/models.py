@@ -504,8 +504,28 @@ class TypeClavier(models.Model):
 
 
 def validate_etendue(value):
-    if not re.match("^([A-G]|CD)#?[1-7]-([A-G]|CD)#?[1-7]$", value):
+    if not re.match("^(([CDEFGAB]#?)+)([0-7])-([CDEFGAB]#?)([1-7])$", value):
         raise ValidationError("De la forme F1-G5. Absence du premier Ut dièse notée CD1-F5.")
+
+def notesToHauteur(value):
+    """
+    Prend le nom d'une note et retourne la hauteur de la note :
+    C = 0
+    """
+    etendu = ['C', 'C#','D', 'D#', 'E', 'F','F#','G','G#','A','A#','B']
+    return etendu.index(value)
+
+def countNotes(etendu):
+    val = re.match("^(?P<notes>(?P<startNote>[CDEFGAB]#?)+)(?P<start>[0-7])-(?P<endNote>[CDEFGAB]#?)(?P<end>[1-7])$", etendu)
+    if not val:
+        return None
+    try:
+        start = notesToHauteur(val.group("startNote")) + (int(val.group("start"))*12)
+        end = notesToHauteur(val.group("endNote")) + (int(val.group("end"))*12)
+        notes = len(re.findall(r'([ABCDEFG]#?)', val.group('notes')))
+        return end - start +  notes
+    except:
+        return None
 
 
 class Clavier(models.Model):
@@ -541,6 +561,15 @@ class Clavier(models.Model):
         if self.is_expressif:
             return "expressive" if self.type.nom in ["Pédale", "Bombarde", "Résonnance"] else "expressif"
         return ""
+
+    @property
+    def notes(self):
+        """
+        Retourne le nombre de notes en fonction de l'étendu du clavier
+        """
+        if not self.etendue:
+            return None
+        return countNotes(self.etendue);
 
     def save(self, *args, **kwargs):
         self.orgue.completion = self.orgue.calcul_completion()
