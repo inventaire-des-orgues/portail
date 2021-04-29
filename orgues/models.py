@@ -504,7 +504,7 @@ class TypeClavier(models.Model):
 
 
 def validate_etendue(value):
-    if not re.match("^(([CDEFGAB]#?)+)([0-7])-([CDEFGAB]#?)([1-7])$", value):
+    if not re.match("^(([CDEFGAB]#?)+)([0-7])-([CDEFGAB]#?)([1-8])$", value):
         raise ValidationError("De la forme F1-G5. Absence du premier Ut dièse notée CD1-F5.")
 
 def notesToHauteur(value):
@@ -516,12 +516,33 @@ def notesToHauteur(value):
     return etendu.index(value)
 
 def countNotes(etendu):
-    val = re.match("^(?P<notes>(?P<startNote>[CDEFGAB]#?)+)(?P<start>[0-7])-(?P<endNote>[CDEFGAB]#?)(?P<end>[1-7])$", etendu)
+    """
+    Retourne le nombre de note en fonction d'une étendu de clavier de la forme :
+    Groupe de note initiale (format internationnal CDEFGAB suivit eventuellement d'un #)
+    L'octave initiale
+    Un tiret de séparation -
+    Une note et une octave finale
+
+    IE:
+    C1-G5
+    CD1-G5
+    CFDGEAA#BC1-C4 : Octave courte italienne : Do Fa Ré Sol Mi La Sib Si Do
+    """
+    val = re.match(r"""^
+    #Premier groupe Suite de Note (ABDC#) avec une note final et un octave
+    (?P<notes> # Bloc contenant toutes les notes
+        (?P<startNote>[CDEFGAB]\#?) # Match une note (et garde en mémoire la dernière)
+    +)
+    (?P<start>[0-7]) # Octave de début
+    -
+    (?P<endNote>[CDEFGAB]\#?)(?P<end>[1-8]) # Deuxième groupe Une note et une octave de fin
+    $""", etendu, re.X)
     if not val:
         return None
     try:
         start = notesToHauteur(val.group("startNote")) + (int(val.group("start"))*12)
         end = notesToHauteur(val.group("endNote")) + (int(val.group("end"))*12)
+        # Compte le nombre de note dans le groupe de note initiale
         notes = len(re.findall(r'([ABCDEFG]#?)', val.group('notes')))
         return end - start +  notes
     except:

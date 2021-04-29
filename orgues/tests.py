@@ -91,6 +91,7 @@ class OrgueTestCase(TestCase):
         # Validation nombres notes claviers courts
         self.assertNotes("C3-C5", 25)
         self.assertNotes("C2-C5", 37)
+        self.assertNotes("A0-C8", 88) #Etendu du piano
         # Validation ravalement
         self.assertNotes("CD1-E1", 4) # Do Ré Ré# Mi
         self.assertNotes("E1-E1", 1) # Mi
