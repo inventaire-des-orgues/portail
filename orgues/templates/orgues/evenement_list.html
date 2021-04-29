@@ -34,7 +34,7 @@
           <td style="width:140px" class="text-right">
       {% if perms.orgues.add_orgue or not evenement.is_locked %}
         <a href="{% url 'orgues:evenement-update' evenement.pk %}" class="btn btn-xs btn btn-outline">modifier</a>
-        <a href="{% url 'orgues:evenement-delete' evenement.pk %}" class="btn btn-xs  btn-danger btn-outline supprimer_evenement" data-pk="{{ evenement.pk }}">Supprimer</a>
+        <a href="{% url 'orgues:evenement-delete' evenement.pk %}" class="btn btn-xs btn-danger btn-outline supprimer_evenement" data-pk="{{ evenement.pk }}">Supprimer</a>
       {% endif %}
           </td>
         </tr>

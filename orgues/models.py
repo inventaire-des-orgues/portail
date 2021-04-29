@@ -607,7 +607,7 @@ class Evenement(models.Model):
 
     @property
     def is_locked(self):
-        return self.type not in ["classement_mh","inscription_mh"]
+        return self.type in ["classement_mh","inscription_mh"]
 
 
     def __str__(self):
