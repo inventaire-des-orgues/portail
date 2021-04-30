@@ -11,7 +11,7 @@ from django.urls import reverse
 
 from django.conf import settings
 from accounts.models import User
-from orgues.models import Jeu, validate_etendue, notesToHauteur, Orgue, Clavier, Image
+from orgues.models import Jeu, validate_etendue, notesToHauteur, countNotes, Orgue, Clavier, Image
 
 
 class OrgueTestCase(TestCase):
@@ -53,22 +53,34 @@ class OrgueTestCase(TestCase):
         self.assertRaises(ValidationError, validate_etendue, "H1-F3")
         self.assertRaises(ValidationError, validate_etendue, "C1#-F3")
         self.assertRaises(ValidationError, validate_etendue, "C1-F3#")
-        self.assertRaises(ValidationError, validate_etendue, "C1-F8")
+        self.assertRaises(ValidationError, validate_etendue, "C1-F9")
         self.assertRaises(ValidationError, validate_etendue, "C1-CD8")
+        self.assertRaises(ValidationError, validate_etendue, "G#7-A1")
+        self.assertRaises(ValidationError, validate_etendue, "D♭1-D1")
+        self.assertRaises(ValidationError, validate_etendue, "C0-B8") #Plus de 88 notes (etendu du piano)
         self.assertIsNone(validate_etendue("C1-F3"))
         self.assertIsNone(validate_etendue("CD1-F3"))
         self.assertIsNone(validate_etendue("C#1-F3"))
         self.assertIsNone(validate_etendue("G#1-F6"))
-        self.assertIsNone(validate_etendue("G#7-A1"))
+        self.assertIsNone(validate_etendue("G#1-A#4"))
+        self.assertIsNone(validate_etendue("CFDGEAA#BC1-C2")) #Ocatave courte à l'italienne
+        self.assertIsNone(validate_etendue("CFDGEAB♭BC1-C2")) #Ocatave courte à l'italienne
 
     def test_nombre_notes(self):
         self.assertEqual(notesToHauteur("F"), 5)
         self.assertEqual(notesToHauteur("A#"), 10)
+        self.assertEqual(notesToHauteur("C♭"), 11)
+        self.assertEqual(notesToHauteur("D♭"), 1)
+        self.assertEqual(notesToHauteur("D"), 2)
         self.assertRaises(ValueError, notesToHauteur, "H")
 
         self.assertNotes("", None)
         self.assertNotes("J3-F1", None)
         self.assertNotes("A-F1", None)
+        self.assertNotes("D♭2-D1", None)
+        self.assertNotes("D1-D♭1", None)
+        self.assertNotes("D#1-D1", None)
+        self.assertNotes("E1-E1", None)
 
         self.assertNotes("C1-G5", 56)
 
@@ -78,6 +90,7 @@ class OrgueTestCase(TestCase):
 
         self.assertNotes("C1-C3", 25)
         self.assertNotes("C1-C#3", 26)
+        self.assertNotes("C1-D♭3", 26)
         self.assertNotes("C1-D3", 27)
         self.assertNotes("C1-E3", 29)
         # Validation nombres notes claviers usuelles
@@ -93,16 +106,15 @@ class OrgueTestCase(TestCase):
         self.assertNotes("C2-C5", 37)
         self.assertNotes("A0-C8", 88) #Etendu du piano
         # Validation ravalement
-        self.assertNotes("CD1-E1", 4) # Do Ré Ré# Mi
-        self.assertNotes("E1-E1", 1) # Mi
+        self.assertNotes("CD1-F1", 5) # Do Ré Ré# Mi Fa
         self.assertNotes("CDD#E1-F1", 5) # Do Ré Ré# Mi Fa
         self.assertNotes("F0-C1", 8) # Fa Fa# Sol Sol# La La# Si Do
         self.assertNotes("CFDGEAA#BC1-C1", 9) # Octave courte italienne : Do Fa Ré Sol Mi La Sib Si Do
+        self.assertNotes("CFDGEAB♭BC1-C1", 9) # Octave courte italienne : Do Fa Ré Sol Mi La Sib Si Do
 
     def assertNotes(self, etendue, notes):
-        clavier = Clavier(etendue=etendue)
         if notes is not None:
-            self.assertEqual(clavier.notes, notes, "etendue %s = %i notes" % (etendue, notes))
+            self.assertEqual(countNotes(etendue), notes, "etendue %s = %i notes" % (etendue, notes))
         else:
-            self.assertIsNone(clavier.notes, "etendue %s" % (etendue))
+            self.assertRaises(ValidationError, countNotes, etendue)
 

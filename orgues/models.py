@@ -504,16 +504,26 @@ class TypeClavier(models.Model):
 
 
 def validate_etendue(value):
-    if not re.match("^(([CDEFGAB]#?)+)([0-7])-([CDEFGAB]#?)([1-8])$", value):
+    if not re.match("^(([CDEFGAB][#♭]?)+)([0-7])-([CDEFGAB][#♭]?)([1-8])$", value):
         raise ValidationError("De la forme F1-G5. Absence du premier Ut dièse notée CD1-F5.")
+    notes = countNotes(value)
+    if notes is None:
+        raise ValidationError("L'etendue du clavier est invalide.")
+    if notes <= 0:
+        raise ValidationError("L'etendue du clavier est invalide, borne inversées.")
+    if notes < 5:
+        raise ValidationError("L'etendue du clavier est invalide, moins de 5 notes.")
+    if notes > 88:
+        raise ValidationError("L'etendue du clavier est invalide, trop de notes.")
 
 def notesToHauteur(value):
     """
     Prend le nom d'une note et retourne la hauteur de la note :
     C = 0
     """
-    etendu = ['C', 'C#','D', 'D#', 'E', 'F','F#','G','G#','A','A#','B']
-    return etendu.index(value)
+    etendu_diese = ['C', 'C#','D', 'D#', 'E', 'F','F#','G','G#','A','A#','B']
+    etendu_bemole = ['B#', 'D♭','D', 'E♭', 'F♭', 'E#','G♭','G','A♭','A','B♭','C♭']
+    return etendu_diese.index(value) if value in etendu_diese else etendu_bemole.index(value)
 
 def countNotes(etendu):
     """
@@ -531,22 +541,25 @@ def countNotes(etendu):
     val = re.match(r"""^
     #Premier groupe Suite de Note (ABDC#) avec une note final et un octave
     (?P<notes> # Bloc contenant toutes les notes
-        (?P<startNote>[CDEFGAB]\#?) # Match une note (et garde en mémoire la dernière)
+        (?P<startNote>[CDEFGAB][#♭]?) # Match une note (et garde en mémoire la dernière)
     +)
     (?P<start>[0-7]) # Octave de début
     -
-    (?P<endNote>[CDEFGAB]\#?)(?P<end>[1-8]) # Deuxième groupe Une note et une octave de fin
+    (?P<endNote>[CDEFGAB][#♭]?)(?P<end>[1-8]) # Deuxième groupe Une note et une octave de fin
     $""", etendu, re.X)
     if not val:
-        return None
-    try:
-        start = notesToHauteur(val.group("startNote")) + (int(val.group("start"))*12)
-        end = notesToHauteur(val.group("endNote")) + (int(val.group("end"))*12)
-        # Compte le nombre de note dans le groupe de note initiale
-        notes = len(re.findall(r'([ABCDEFG]#?)', val.group('notes')))
-        return end - start +  notes
-    except:
-        return None
+        raise ValidationError("Etendue vide")
+
+    start = notesToHauteur(val.group("startNote")) + (int(val.group("start"))*12)
+    end = notesToHauteur(val.group("endNote")) + (int(val.group("end"))*12)
+    # Compte le nombre de note dans le groupe de note initiale
+    notes = len(re.findall(r'([ABCDEFG]#?)', val.group('notes')))
+    count = end - start + notes
+    if count <= 0:
+        raise ValidationError("Etendue inversé")
+    if count < 5:
+        raise ValidationError("Clavier court")
+    return end - start + notes
 
 
 class Clavier(models.Model):
@@ -588,9 +601,10 @@ class Clavier(models.Model):
         """
         Retourne le nombre de notes en fonction de l'étendu du clavier
         """
-        if not self.etendue:
+        try:
+            return countNotes(self.etendue)
+        except:
             return None
-        return countNotes(self.etendue);
 
     def save(self, *args, **kwargs):
         self.orgue.completion = self.orgue.calcul_completion()
