@@ -6,7 +6,10 @@
       >{{ clavier.type }} {{ clavier.expressif }} {% if clavier.commentaire %}<i class="fa fa-info-circle text-muted tooltip-children" title="{{ clavier.commentaire }}" data-placement="right"></i> {% endif %}</h4>
       <p class="card-text font-weight-bold" style="font-size:0.9em;">
         {% if clavier.etendue %}
-          Etendue : {{ clavier.etendue }}{% if clavier.notes %} ({{ clavier.notes }} notes){% endif %}
+          Etendue : {{ clavier.etendue }}
+          {% with notes=clavier.notes %}
+            {% if notes %} ({{ notes }} notes){% endif %}
+          {% endwith %}
         {% endif %}
       </p>
     </div>

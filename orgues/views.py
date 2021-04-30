@@ -665,9 +665,9 @@ class CommuneListJS(FabListView):
             csv_reader = csv.reader(read_obj, delimiter=';')
             results = []
             for row in csv_reader:
-                ligne=row[0].split(",")  
+                ligne=row[0].split(",")
                 if query :
-                    if query in ligne[3].lower():    
+                    if query in ligne[3].lower():
                         dictionnaire = {"id": ligne[3]+", "+ligne[4], "nom": ligne[3]+", "+ligne[4]}
                         results.append(dictionnaire)
                 else:
@@ -703,7 +703,7 @@ class DesignationListJS(FabListView):
         results = []
         for denomination in liste_designation:
             if query :
-                if query in denomination.lower():    
+                if query in denomination.lower():
                     dictionnaire = {"id": denomination, "nom": denomination}
                     results.append(dictionnaire)
             else:
@@ -795,7 +795,8 @@ class ClavierCreate(FabView):
         context = {
             "jeux_formset": JeuFormset(queryset=Jeu.objects.none()),
             "clavier_form": orgue_forms.ClavierForm(),
-            "orgue": orgue
+            "orgue": orgue,
+            "notes": None,
         }
         return render(request, "orgues/clavier_form.html", context)
 
@@ -820,7 +821,8 @@ class ClavierCreate(FabView):
             context = {
                 "jeux_formset": jeux_formset,
                 "clavier_form": clavier_form,
-                "orgue": orgue
+                "orgue": orgue,
+                "notes": None,
             }
             return render(request, "orgues/clavier_form.html", context)
 
@@ -840,7 +842,8 @@ class ClavierUpdate(FabUpdateView):
             "jeux_formset": JeuFormset(queryset=clavier.jeux.all()),
             "clavier_form": orgue_forms.ClavierForm(instance=clavier),
             "orgue": clavier.orgue,
-            "clavier": clavier
+            "clavier": clavier,
+            "notes": clavier.notes,
         }
         return render(request, "orgues/clavier_form.html", context)
 
