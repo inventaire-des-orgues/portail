@@ -328,6 +328,7 @@ class OrgueDetail(DetailView):
         context["evenements"] = self.object.evenements.all().prefetch_related('facteurs')
         context["facteurs_evenements"] = self.object.evenements.filter(facteurs__isnull=False).prefetch_related(
             'facteurs').distinct()
+        context["orgue_url"] = self.request.build_absolute_uri(self.object.get_absolute_url())
         return context
 
 
@@ -665,9 +666,9 @@ class CommuneListJS(FabListView):
             csv_reader = csv.reader(read_obj, delimiter=';')
             results = []
             for row in csv_reader:
-                ligne=row[0].split(",")  
+                ligne=row[0].split(",")
                 if query :
-                    if query in ligne[3].lower():    
+                    if query in ligne[3].lower():
                         dictionnaire = {"id": ligne[3]+", "+ligne[4], "nom": ligne[3]+", "+ligne[4]}
                         results.append(dictionnaire)
                 else:
@@ -703,7 +704,7 @@ class DesignationListJS(FabListView):
         results = []
         for denomination in liste_designation:
             if query :
-                if query in denomination.lower():    
+                if query in denomination.lower():
                     dictionnaire = {"id": denomination, "nom": denomination}
                     results.append(dictionnaire)
             else:

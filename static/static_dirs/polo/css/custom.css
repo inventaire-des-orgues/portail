@@ -575,3 +575,8 @@ a.link, a.link:visited, a.link:active {
 .btn-filtre{
     border-radius: 50px;
 }
+
+.qrcode {
+    display: flex;
+    justify-content: center;
+}
