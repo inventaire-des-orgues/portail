@@ -3,6 +3,7 @@ from django.core.management.base import BaseCommand
 from tqdm import tqdm
 import requests
 import json
+import time
 
 import orgues.management.utilsorgues.correcteurorgues as co
 
@@ -36,6 +37,7 @@ class Command(BaseCommand):
             # On ne recherche que les osm_id qui ne sont pas déjà présents (et pour lesquels on a bien un code INSEE):
             if orgue.code_insee and not orgue.osm_id:
                 self.tenter_appariement_osm_via_nom(orgue)
+                time.sleep(30) #Timer permettant d'espacer les requêtes OSM (30secondes)
         with open('appariements_osm.json', 'w') as f:
             json.dump(self.liste_appariements, f)
 
@@ -81,8 +83,9 @@ class Command(BaseCommand):
 
             # Si plusieurs appariements, pour l'instant on ne fait que les sortir en traces :
             elif len(elements) > 1:
+                print("Plusieurs objets OSM possibles pour cet orgue : {}".format(orgue))
                 for elem in data['elements']:
-                    print("Plusieurs objets OSM possibles pour cet orgue : {} {} {} {}"
+                    print("Appariement possible : {} {} {} {}"
                           .format(elem['tags']['name'], elem['type'], elem['tags']['amenity'], elem['tags']['building']))
 
             # Si aucun appariement strict
