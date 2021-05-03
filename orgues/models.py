@@ -219,6 +219,7 @@ class Orgue(models.Model):
     codification = models.CharField(max_length=24, unique=True, db_index=True)
     references_palissy = models.CharField(max_length=60, null=True, verbose_name="Référence(s) Palissy", blank=True,
                                           help_text="Séparer les codes par des virgules")
+    references_inventaire_regions = models.CharField(verbose_name = "Code inventaire régional", max_length=60, null=True, blank=True)
     resume = models.TextField(max_length=500, null=True, verbose_name="Résumé", blank=True,
                               help_text="Présentation en quelques lignes de l'instrument \
                               et son originalité (max 500 caractères)")
