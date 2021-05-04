@@ -1200,6 +1200,7 @@ class OrgueExport(FabView):
             "designation",
             "edifice",
             "references_palissy",
+            "references_inventaire_regions",
             "etat",
             "emplacement",
             "completion",
