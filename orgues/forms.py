@@ -14,6 +14,7 @@ class OrgueGeneralInfoForm(forms.ModelForm):
             "etat",
             "proprietaire",
             "references_palissy",
+            "references_inventaire_regions",
             "entretien",
             "organisme",
             "lien_reference",
@@ -35,6 +36,8 @@ class OrgueGeneralInfoForm(forms.ModelForm):
             self.fields['edifice'].help_text = 'Cette information est figée'
             self.fields['references_palissy'].disabled = True
             self.fields['references_palissy'].help_text = 'Cette information est figée'
+            self.fields['references_inventaire_regions'].disabled = True
+            self.fields['references_inventaire_regions'].help_text = 'Cette information est figée'
 
 
 INSTRUMENTALE_COLUMNS = {

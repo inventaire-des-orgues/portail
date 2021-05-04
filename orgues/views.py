@@ -668,7 +668,8 @@ class CommuneListJS(FabListView):
             for row in csv_reader:
                 ligne=row[0].split(",")
                 if query :
-                    if query in ligne[3].lower():
+                    if query in ligne[3].lower() or query in ligne[3]:    
+
                         dictionnaire = {"id": ligne[3]+", "+ligne[4], "nom": ligne[3]+", "+ligne[4]}
                         results.append(dictionnaire)
                 else:
@@ -958,6 +959,11 @@ class FichierDelete(FabDeleteView):
     def get_success_url(self):
         return reverse('orgues:fichier-list', args=(self.object.orgue.uuid,))
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["orgue"] = self.object.orgue
+        return context
+
 
 class ImageList(FabListView):
     """
@@ -1201,6 +1207,7 @@ class OrgueExport(FabView):
             "designation",
             "edifice",
             "references_palissy",
+            "references_inventaire_regions",
             "etat",
             "emplacement",
             "completion",

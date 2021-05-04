@@ -309,7 +309,7 @@ class Codification():
                         'loge maçonnique',
                         'maison d’accueil']
         new_chaine = ''
-        type_edifice = None
+        type_edifice = ""
         if not chaine:
             #loggerCorrecteurorgues.error("Pas de libellé d'édifice, détection de type impossible.")
             print("Pas de libellé d'édifice, détection de type impossible.")
@@ -330,7 +330,7 @@ class Codification():
                     type_trouve = False
             new_chaine = self.corriger_casse(new_chaine)
             if not type_trouve:
-                type_edifice = None
+                type_edifice = ""
                 new_chaine = chaine
                 #loggerCorrecteurorgues.debug("Pas de libellé d'édifice, détection de type impossible.")
                 print("Pas de libellé d'édifice, détection de type impossible.")

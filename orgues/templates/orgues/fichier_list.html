@@ -31,7 +31,7 @@
       <tr>
         <td width="90%"><a href="{{ fichier.file.url }}">{{ fichier.description }}</a></td>
         <td width="10%">
-          <form action="{% url 'orgues:fichier-delete' fichier.pk %}" method="post">{% csrf_token %}
+          <form action="{% url 'orgues:fichier-delete' fichier.pk %}" method="get">{% csrf_token %}
             <button type="submit" class="btn btn-outline btn-danger btn-xs">Supprimer</button>
           </form>
         </td>

@@ -572,7 +572,7 @@ a.link, a.link:visited, a.link:active {
 }
 
 #valider_recherche_manufacture{
-    padding: 5px;
+    padding-top: 5px;
 }
 
 
@@ -587,4 +587,12 @@ a.link, a.link:visited, a.link:active {
 .qrcode {
     display: flex;
     justify-content: center;
+
+#creation_orgue_box{
+    display: grid;
+    grid-template-columns: 30% 1fr 30%;
+}
+
+#creation_orgue{
+    grid-column: 2;
 }

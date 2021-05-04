@@ -219,6 +219,7 @@ class Orgue(models.Model):
     codification = models.CharField(max_length=24, unique=True, db_index=True)
     references_palissy = models.CharField(max_length=60, null=True, verbose_name="Référence(s) Palissy pour les monuments historiques.", blank=True,
                                           help_text="Séparer les codes par des virgules.")
+    references_inventaire_regions = models.CharField(verbose_name = "Code inventaire régional", max_length=60, null=True, blank=True)
     resume = models.TextField(max_length=500, null=True, verbose_name="Résumé", blank=True,
                               help_text="Présentation en quelques lignes de l'instrument \
                               en insistant sur son originalité (max 500 caractères).")
@@ -260,8 +261,8 @@ class Orgue(models.Model):
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
     osm_type = models.CharField(choices=CHOIX_TYPE_OSM, verbose_name="Type open street map", max_length=20, null=True,
-                                blank=True)
-    osm_id = models.CharField(verbose_name="Id open street map", max_length=20, null=True, blank=True)
+                                blank=True, help_text="Type OSM de l'objet représenant l'édifice.")
+    osm_id = models.CharField(verbose_name="Id open street map", max_length=20, null=True, blank=True, help_text="Id OSM de l'objet décrivant l'édifice.")
 
     # Partie instrumentale
     diapason = models.CharField(max_length=20, null=True, blank=True,
