@@ -352,7 +352,11 @@ class OrgueCreate(FabCreateView):
         form.instance.code_insee = c.code_insee
         form.instance.edifice = c.edifice
         form.instance.codification = c.codification
-        return super().form_valid(form)
+        if len(Orgue.objects.filter(codification=c.codification))==1:
+            messages.error(self.request, 'Cette codification existe déjà !')
+            return super().form_invalid(form)
+        else:
+            return super().form_valid(form)
 
 
 class OrgueUpdateMixin(FabUpdateView):
