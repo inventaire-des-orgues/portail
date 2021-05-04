@@ -3,9 +3,10 @@ import logging
 import os
 from collections import Counter, deque
 from datetime import datetime, timedelta
+import pandas as pd
 
 import meilisearch
-import pandas as pd
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
@@ -150,26 +151,17 @@ class FacteurListJSLeaflet(View):
         data = Facteur.objects.filter(latitude_atelier__isnull=False).values("nom", "latitude_atelier", "longitude_atelier")
         return JsonResponse(list(data), safe=False)
 
-class FacteurListJSFiltre(FabListView):
+class FacteurLonLatLeaflet(View):
     """
-    Liste dynamique utilisée pour filtrer les facteurs d'orgue dans les menus déroulants select2. Utilisée pour le filtre de la carte.
-    documentation : https://select2.org/data-sources/ajax
+    Cette vue est requêtée par Leaflet lors de l'affichage de la carte de France
     """
-    model = Facteur
-    permission_required = 'orgues.view_facteur'
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        query = self.request.GET.get("search")
-        if query:
-            queryset = queryset.filter(nom__icontains=query)
-        return queryset
+    def get(self, request, *args, **kwargs):
+        nom = self.request.GET.get("facteur")
+        print("nom : ", nom)
+        data = Facteur.objects.filter(nom=nom).values("nom", "latitude_atelier", "longitude_atelier")
+        return JsonResponse(list(data), safe=False)
 
-    def render_to_response(self, context, **response_kwargs):
-        results = []
-        if context["object_list"]:
-            results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
-        return JsonResponse({"results": results, "pagination": {"more": False}})
 
 class FacteurListJSlonlat(FabListView):
     """
@@ -178,22 +170,22 @@ class FacteurListJSlonlat(FabListView):
     """
     model = Facteur
     permission_required = 'orgues.view_facteur'
-    paginate_by = 100000
+    paginate_by = 30
 
     def get_queryset(self):
         queryset = super().get_queryset()
         query = self.request.GET.get("search")
+        queryset = queryset.filter(Q(latitude_atelier__isnull=False) & Q(longitude_atelier__isnull=False)).distinct()
         if query:
-            queryset = queryset.filter(nom__icontains=query)
+            queryset = queryset.filter(nom__icontains=query).distinct()
         return queryset
 
     def render_to_response(self, context, **response_kwargs):
         results = []
+        more = context["page_obj"].number < context["paginator"].num_pages
         if context["object_list"]:
-            for u in context["object_list"]:
-                if u.latitude_atelier != None and u.longitude_atelier != None:
-                    results.append({"id": u.id, "text": u.nom, "latitude": u.latitude_atelier, "longitude": u.longitude_atelier})
-        return JsonResponse({"results": results, "pagination": {"more": False}})
+            results = [{"id": u.nom, "text": u.nom} for u in context["object_list"]]
+        return JsonResponse({"results": results, "pagination": {"more": more}})
 
 
 
@@ -208,13 +200,14 @@ class OrgueFiltreJS(View):
         if facteur:
             requete = Orgue.objects.filter(evenements__facteurs__nom=facteur).distinct()
             if type_requete == "construction":
-                requete = Orgue.objects.filter(Q(evenements__facteurs__nom=facteur) & (Q(evenements__type="construction")|Q(evenements__type="reconstruction"))).distinct()
+                requete = Orgue.objects.filter(Q(evenements__facteurs__nom=facteur) & (Q(evenements__type="construction") | Q(evenements__type="reconstruction"))).distinct()
             else:
                 requete = Orgue.objects.filter(evenements__facteurs__nom=facteur).distinct()
         else:
-            requete =  Orgue.objects.all()
-        data =requete.values("slug", "commune", "edifice", "latitude", "longitude", 'emplacement', "references_palissy")
+            requete = Orgue.objects.all()
+        data = requete.values("slug", "commune", "edifice", "latitude", "longitude", 'emplacement', "references_palissy")
         return JsonResponse(list(data), safe=False)
+
 
 class OrgueEtatsJS(View):
     """
@@ -235,6 +228,7 @@ class OrgueEtatsJS(View):
             del etats[None]
         return JsonResponse(etats, safe=False)
 
+
 class OrgueHistJS(View):
     """
     JSON décrivant les orgues classés ou inscrits au monument historique pour un département
@@ -250,8 +244,9 @@ class OrgueHistJS(View):
         if None in references_palissy.keys():
             references_palissy["PasCla"] = references_palissy.get(None, 0)
             del references_palissy[None]
-        #if evenementstot["type"]
+        # if evenementstot["type"]
         return JsonResponse(references_palissy, safe=False)
+
 
 class OrgueEtatsJSDep(View):
     """
@@ -271,6 +266,7 @@ class OrgueEtatsJSDep(View):
             etats["inconnu"] = etats.get(None, 0)
             del etats[None]
         return JsonResponse(etats, safe=False)
+
 
 class OrgueHistJSDep(View):
     """
@@ -640,7 +636,7 @@ class FacteurListJS(FabListView):
         results = []
         more = context["page_obj"].number < context["paginator"].num_pages
         if context["object_list"]:
-            results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
+            results = [{"id": u.nom, "text": u.nom} for u in context["object_list"]]
         return JsonResponse({"results": results, "pagination": {"more": more}})
 
 class CommuneListJS(FabListView):
@@ -660,7 +656,7 @@ class CommuneListJS(FabListView):
             for row in csv_reader:
                 ligne=row[0].split(",")  
                 if query :
-                    if query in ligne[3].lower() or query in ligne[3]:    
+                    if query in ligne[3].lower():    
                         dictionnaire = {"id": ligne[3]+", "+ligne[4], "nom": ligne[3]+", "+ligne[4]}
                         results.append(dictionnaire)
                 else:
@@ -950,11 +946,6 @@ class FichierDelete(FabDeleteView):
     def get_success_url(self):
         return reverse('orgues:fichier-list', args=(self.object.orgue.uuid,))
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data()
-        context["orgue"] = self.object.orgue
-        return context
-
 
 class ImageList(FabListView):
     """
@@ -1039,16 +1030,14 @@ class ImagePrincipaleUpdate(FabUpdateView):
     success_message = "Vignette mise à jour, merci !"
     template_name = "orgues/image_principale_form.html"
 
-
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return super().dispatch(request, *args, **kwargs)
         image = self.get_object()
         if image.is_blackandwhite():
-            messages.warning(request,"Les images en noir & blanc ne peuvent pas devenir des vignettes")
-            return redirect("orgues:image-list",orgue_uuid=image.orgue.uuid)
-        return super().dispatch(request,*args,**kwargs)
-
+            messages.warning(request, "Les images en noir & blanc ne peuvent pas devenir des vignettes")
+            return redirect("orgues:image-list", orgue_uuid=image.orgue.uuid)
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         old_path = None
