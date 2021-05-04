@@ -103,6 +103,14 @@ button.btn.btn-primary:hover, button.btn.btn-primary:focus, button.btn.btn-prima
     fill: #5c1c54;
 }
 
+#map .opacity {
+    opacity: 0.3;
+}
+
+#map #retour {
+    z-index: 1;
+}
+
 img.img-responsive {
     width: 100%;
 }
