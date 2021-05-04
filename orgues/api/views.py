@@ -19,6 +19,7 @@ class OrgueViewSet(viewsets.ReadOnlyModelViewSet):
             queryset = queryset.filter(code_departement=code_departement)
         return queryset.order_by('designation')
 
+
 class ConfigView(APIView):
     renderer_classes = [JSONRenderer]
 

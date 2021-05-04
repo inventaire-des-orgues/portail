@@ -147,8 +147,8 @@ class ClavierForm(forms.ModelForm):
         model = Clavier
         fields = [
             "type",
-            "etendue",
             "is_expressif",
+            "etendue",
             "commentaire",
         ]
 

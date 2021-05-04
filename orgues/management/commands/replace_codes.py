@@ -42,6 +42,7 @@ class Command(BaseCommand):
                     for img in orgue.images.all():
                         pathimage_avant = img.image.path
                         pathimage_apres = img.image.path.replace(chemin_avant_propre, chemin_apres_propre)
+
                         # Create dir if necessary and move file
                         if not os.path.exists(os.path.dirname(pathimage_apres)):
                             os.makedirs(os.path.dirname(pathimage_apres))
@@ -62,6 +63,14 @@ class Command(BaseCommand):
                     for fic in orgue.fichiers.all():
                         pathfichier_avant = fic.file.path
                         pathfichier_apres = fic.file.path.replace(chemin_avant_propre, chemin_apres_propre)
+                        # On renomme le fichier PDF de livre d'inventaire s'il existe
+                        if pathfichier_avant[-28:] == code_avant + '.pdf':
+                            # Renommage du lien stocké en BD :
+                            pathfichier_avant_corr = pathfichier_avant[:28] + code_apres + '.pdf'
+                            # Renommage du .PDF lui-même dans l'ancien répertoire
+                            if os.path.exists(pathfichier_avant):
+                                os.rename(pathfichier_avant, pathfichier_avant_corr)
+                            pathfichier_avant = pathfichier_avant_corr
                         # Create dir if necessary and move file
                         if not os.path.exists(os.path.dirname(pathfichier_apres)):
                             os.makedirs(os.path.dirname(pathfichier_apres))
