@@ -328,6 +328,7 @@ class OrgueDetail(DetailView):
         context["evenements"] = self.object.evenements.all().prefetch_related('facteurs')
         context["facteurs_evenements"] = self.object.evenements.filter(facteurs__isnull=False).prefetch_related(
             'facteurs').distinct()
+        context["orgue_url"] = self.request.build_absolute_uri(self.object.get_absolute_url())
         return context
 
 

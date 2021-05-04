@@ -14,6 +14,7 @@ from accounts.models import User
 from orgues.models import Jeu, validate_etendue, notesToHauteur, countNotes, Orgue, Clavier, Image
 
 
+
 class OrgueTestCase(TestCase):
 
     def setUp(self):
@@ -117,4 +118,16 @@ class OrgueTestCase(TestCase):
             self.assertEqual(countNotes(etendue), notes, "etendue %s = %i notes" % (etendue, notes))
         else:
             self.assertRaises(ValidationError, countNotes, etendue)
+        self.assertIsNone(validate_etendue("G#7-A1"))
+
+    def test_has_pedalier(self):
+        orgue = Orgue.objects.create()
+        clavierGO = Clavier.objects.create(type=TypeClavier.objects.create(nom='GO'), orgue=orgue)
+        self.assertFalse(orgue.has_pedalier)
+        clavierPed = Clavier.objects.create(type=TypeClavier.objects.create(nom='Pédalier'), orgue=orgue)
+        self.assertTrue(orgue.has_pedalier)
+        clavierPed.delete()
+        clavierPed = Clavier.objects.create(type=TypeClavier.objects.create(nom='Pedalwerk'), orgue=orgue)
+        self.assertTrue(orgue.has_pedalier)
+
 

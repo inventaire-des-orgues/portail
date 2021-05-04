@@ -342,7 +342,7 @@ class Orgue(models.Model):
         """
         Est-ce que l'instrument possède un pédalier ?
         """
-        return self.claviers.filter(type__nom__in=['Pédale', 'Pédalier']).exists()
+        return self.claviers.filter(type__nom__in=['Pédale', 'Pédalier', 'Pedalwerk', 'Pedal', 'Pedalero', 'Pedaliera']).exists()
 
     @property
     def construction(self):
