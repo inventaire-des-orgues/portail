@@ -21,6 +21,8 @@ jobs:
           git pull
           pip3 install -r requirements.txt
           python manage.py collectstatic --noinput
+          python manage.py makemigrations --merge
+          y
           python manage.py migrate
           sudo systemctl restart nginx
           sudo systemctl restart gunicorn
