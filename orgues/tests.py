@@ -11,7 +11,7 @@ from django.urls import reverse
 
 from django.conf import settings
 from accounts.models import User
-from orgues.models import Jeu, validate_etendue, Orgue, Clavier, Image
+from orgues.models import Jeu, validate_etendue, Orgue, Clavier, Image, TypeClavier
 
 
 class OrgueTestCase(TestCase):
@@ -58,3 +58,14 @@ class OrgueTestCase(TestCase):
         self.assertIsNone(validate_etendue("C#1-F3"))
         self.assertIsNone(validate_etendue("G#1-F6"))
         self.assertIsNone(validate_etendue("G#7-A1"))
+
+    def test_has_pedalier(self):
+        orgue = Orgue.objects.create()
+        clavierGO = Clavier.objects.create(type=TypeClavier.objects.create(nom='GO'), orgue=orgue)
+        self.assertFalse(orgue.has_pedalier)
+        clavierPed = Clavier.objects.create(type=TypeClavier.objects.create(nom='Pédalier'), orgue=orgue)
+        self.assertTrue(orgue.has_pedalier)
+        clavierPed.delete()
+        clavierPed = Clavier.objects.create(type=TypeClavier.objects.create(nom='Pedalwerk'), orgue=orgue)
+        self.assertTrue(orgue.has_pedalier)
+

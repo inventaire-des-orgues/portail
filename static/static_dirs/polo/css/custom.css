@@ -103,6 +103,14 @@ button.btn.btn-primary:hover, button.btn.btn-primary:focus, button.btn.btn-prima
     fill: #5c1c54;
 }
 
+#map .opacity {
+    opacity: 0.3;
+}
+
+#map #retour {
+    z-index: 1;
+}
+
 img.img-responsive {
     width: 100%;
 }
@@ -575,6 +583,10 @@ a.link, a.link:visited, a.link:active {
 .btn-filtre{
     border-radius: 50px;
 }
+
+.qrcode {
+    display: flex;
+    justify-content: center;
 
 #creation_orgue_box{
     display: grid;

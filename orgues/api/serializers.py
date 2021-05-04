@@ -105,7 +105,7 @@ class OrgueResumeSerializer(serializers.ModelSerializer):
         seen_facteurs = set()
         evenements = Evenement.objects.filter(orgue=obj, facteurs__isnull=False).prefetch_related('facteurs').order_by('annee')
         for evenement in evenements:
-            nouveau_facteur = " & ".join(evenement.facteurs.values_list('nom',flat=True))
+            nouveau_facteur = " & ".join(evenement.facteurs.values_list('nom', flat=True))
             if nouveau_facteur not in seen_facteurs:
                 seen_facteurs.add(nouveau_facteur)
                 facteurs.append(nouveau_facteur)

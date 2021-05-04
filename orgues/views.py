@@ -151,6 +151,7 @@ class FacteurListJSLeaflet(View):
         data = Facteur.objects.filter(latitude_atelier__isnull=False).values("nom", "latitude_atelier", "longitude_atelier")
         return JsonResponse(list(data), safe=False)
 
+
 class FacteurLonLatLeaflet(View):
     """
     Cette vue est requêtée par Leaflet lors de l'affichage de la carte de France
@@ -158,9 +159,9 @@ class FacteurLonLatLeaflet(View):
 
     def get(self, request, *args, **kwargs):
         nom = self.request.GET.get("facteur")
-        print("nom : ", nom)
         data = Facteur.objects.filter(nom=nom).values("nom", "latitude_atelier", "longitude_atelier")
         return JsonResponse(list(data), safe=False)
+
 
 
 class FacteurListJSlonlat(FabListView):
@@ -186,7 +187,6 @@ class FacteurListJSlonlat(FabListView):
         if context["object_list"]:
             results = [{"id": u.nom, "text": u.nom} for u in context["object_list"]]
         return JsonResponse({"results": results, "pagination": {"more": more}})
-
 
 
 class OrgueFiltreJS(View):
@@ -317,6 +317,7 @@ class OrgueDetail(DetailView):
         context["evenements"] = self.object.evenements.all().prefetch_related('facteurs')
         context["facteurs_evenements"] = self.object.evenements.filter(facteurs__isnull=False).prefetch_related(
             'facteurs').distinct()
+        context["orgue_url"] = self.request.build_absolute_uri(self.object.get_absolute_url())
         return context
 
 
@@ -654,9 +655,9 @@ class CommuneListJS(FabListView):
             csv_reader = csv.reader(read_obj, delimiter=';')
             results = []
             for row in csv_reader:
-                ligne=row[0].split(",")  
+                ligne=row[0].split(",")
                 if query :
-                    if query in ligne[3].lower():    
+                    if query in ligne[3].lower() or query in ligne[3]:    
                         dictionnaire = {"id": ligne[3]+", "+ligne[4], "nom": ligne[3]+", "+ligne[4]}
                         results.append(dictionnaire)
                 else:
@@ -692,7 +693,7 @@ class DesignationListJS(FabListView):
         results = []
         for denomination in liste_designation:
             if query :
-                if query in denomination.lower():    
+                if query in denomination.lower():
                     dictionnaire = {"id": denomination, "nom": denomination}
                     results.append(dictionnaire)
             else:
@@ -1189,6 +1190,7 @@ class OrgueExport(FabView):
             "designation",
             "edifice",
             "references_palissy",
+            "references_inventaire_regions",
             "etat",
             "emplacement",
             "completion",

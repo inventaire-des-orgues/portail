@@ -36,6 +36,8 @@ class OrgueGeneralInfoForm(forms.ModelForm):
             self.fields['edifice'].help_text = 'Cette information est figée'
             self.fields['references_palissy'].disabled = True
             self.fields['references_palissy'].help_text = 'Cette information est figée'
+            self.fields['references_inventaire_regions'].disabled = True
+            self.fields['references_inventaire_regions'].help_text = 'Cette information est figée'
 
 
 INSTRUMENTALE_COLUMNS = {
@@ -145,8 +147,8 @@ class ClavierForm(forms.ModelForm):
         model = Clavier
         fields = [
             "type",
-            "etendue",
             "is_expressif",
+            "etendue",
             "commentaire",
         ]
 
