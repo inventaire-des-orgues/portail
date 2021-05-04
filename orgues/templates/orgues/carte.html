@@ -106,25 +106,12 @@
       }
     });
 
-    $.getJSON("{% url 'orgues:orgue-list-js' %}", function (orgues) {
+    $.getJSON("{% url 'orgues:orgue-list-js' %}", function (orgues) {//Affiche les orgues à l'ouverture de la page.
       $("#afficher_tous_orgues").hide();
       afficher_orgue(orgues);
     });
 
-    function afficher_manufactures(){
-      $.getJSON("{% url 'orgues:facteur-list-js-leaflet' %}", function (facteurs) {
-          for (var i = 0; i < facteurs.length; i++) {
-            var popup = '<p> <b>' + facteurs[i].nom + '</p> </b>';
-            var latLng = new L.LatLng(facteurs[i].latitude_atelier, facteurs[i].longitude_atelier);
-            var marker = new L.Marker(latLng, {icon:facteur_icon}).bindPopup(popup);
-            markersClusterFacteur.addLayer(marker);
-          }
-          carte_orgues.addLayer(markersClusterFacteur);
-        });
-    }
-
-
-    $('#manufacture').change(function(){
+    $('#manufacture').change(function(){//Affiche ou cache les manufactures d'orgues en fonction de l'état du bouton.
       if ($('#manufacture').is(':checked')){
         afficher_manufactures();
       }
@@ -133,54 +120,7 @@
       }
     })
 
-    $("#nom_facteur_recherche").select2({
-      placeholder: 'Choisir un facteur',
-      ajax: {
-        url: '{% url 'orgues:facteur-list-js-lonlat' %}',
-        data: function (params) {
-          var query = {
-            search: params.term,
-            page: params.page || 1
-          }
-          return query;
-        }
-      },
-      escapeMarkup: function (markup) {
-        return markup;
-      },
-      language: {
-          noResults: function () {
-            return "Aucun facteur trouvé ... contactez-nous si vous souhaitez ajouter un nouveau facteur.";
-          }
-      },
-      width: '100%'
-    });
-
-    $("#validation_facteur").click(function(e){
-      e.preventDefault();
-      markersClusterFacteur.clearLayers();
-      document.getElementById("manufacture").checked = true;
-      afficher_manufactures();
-      $.getJSON("{% url 'orgues:facteur-list-js-lonlat' %}", function (facteurs) {
-        var listeFacteurs = facteurs.results;
-        for (var i = 0; i < listeFacteurs.length; i++) {
-          if (listeFacteurs[i].id == $("#nom_facteur_recherche").val()){
-            carte_orgues.setView([listeFacteurs[i].latitude, listeFacteurs[i].longitude], 10);
-          }
-        }
-      })
-    })
-
-    $("#afficher_tous_orgues").click(function(){
-      markersCluster.clearLayers();
-      $("#afficher_tous_orgues").hide();
-      $.getJSON("{% url 'orgues:orgue-list-js' %}", function (orgues) {
-        afficher_orgue(orgues)
-      });
-    })
-
-
-    $("#nom_facteur").select2({
+    $("#nom_facteur").select2({//Liste des facteurs proposée dans le champ "Filtrer les orgues par facteur"
       placeholder: 'Choisir un facteur',
       ajax: {
         url: '{% url 'orgues:facteur-list-js' %}',
@@ -203,40 +143,76 @@
       width: '100%'
     });
 
-    $("#validation").click(function(e){
+    $("#validation").click(function(e){//Affiche seulement les orgues dont le facteur choisi a participé à la construction ou à l'entretien.
       e.preventDefault();
       markersCluster.clearLayers();
-        $.getJSON("{% url 'orgues:facteur-filtre-js' %}", function (facteurs) {
-          var facteur =  null;
-          for (var i = 0; i < facteurs.results.length; i++) {
-            if (facteurs.results[i].id==$("#nom_facteur").val()){
-              facteur = facteurs.results[i].text;
-            }
+      $("#afficher_tous_orgues").show();
+      $("#nom_facteur")[0].placeholder = 'Choisir un facteur';
+      if ($('#construction').is(':checked')){
+        var data_filtre = {"facteur": $("#nom_facteur").val(), "type":"construction"}
+      }
+      else{
+        var data_filtre = {"facteur": $("#nom_facteur").val(), "type":"tout_type"}
+      }
+      $.ajax({
+        type: "GET",
+        url: "{% url 'orgues:orgue-filtre-js' %}",
+        data: data_filtre,
+        success: function (data) {
+          afficher_orgue(data)
+        },
+        error: function () {
+        }
+      })
+    })
+
+    $("#nom_facteur_recherche").select2({//Liste des facteurs proposés dans le champ "Rechercher une manufacture d'orgues"
+      placeholder: 'Choisir un facteur',
+      ajax: {
+        url: '{% url 'orgues:facteur-list-js-lonlat' %}',
+        data: function (params) {
+          var query = {
+            search: params.term,
+            page: params.page || 1
           }
-          if (facteur==null){
-            var data_filtre = {}
+          return query;
+        }
+      },
+      escapeMarkup: function (markup) {
+        return markup;
+      },
+      language: {
+          noResults: function () {
+            return "Aucun facteur trouvé ... contactez-nous si vous souhaitez ajouter un nouveau facteur.";
           }
-          else {
-            $("#afficher_tous_orgues").show();
-            $("#nom_facteur")[0].placeholder = 'Choisir un facteur';
-            if ($('#construction').is(':checked')){
-              var data_filtre = {"facteur": facteur, "type":"construction"}
-            }
-            else{
-              var data_filtre = {"facteur": facteur, "type":"tout_type"}
-            }
-          }
-          $.ajax({
-            type: "GET",
-            url: "{% url 'orgues:orgue-filtre-js' %}",
-            data: data_filtre,
-            success: function (data) {
-              afficher_orgue(data)
-            },
-            error: function () {
-            }
-          })
-        })
+      },
+      width: '100%'
+    });
+
+    $("#validation_facteur").click(function(e){//Affiche les manufactures d'orgues et centre la carte sur celle choisie
+      e.preventDefault();
+      markersClusterFacteur.clearLayers();
+      document.getElementById("manufacture").checked = true;
+      afficher_manufactures();
+      data_filtre = {"facteur": $("#nom_facteur_recherche").val(), "type":"tout_type"}
+      $.ajax({
+        type: "GET",
+        url: "{% url 'orgues:facteur-js-lonlat' %}",
+        data: data_filtre,
+        success: function (data) {
+          carte_orgues.setView([data[0].latitude_atelier, data[0].longitude_atelier], 10);
+        },
+        error: function () {
+        }
+      })
+    })
+
+    $("#afficher_tous_orgues").click(function(){//Affiche tous les orgues lorsque l'on clique sur le bouton
+      markersCluster.clearLayers();
+      $("#afficher_tous_orgues").hide();
+      $.getJSON("{% url 'orgues:orgue-list-js' %}", function (orgues) {
+        afficher_orgue(orgues)
+      });
     })
 
     function afficher_orgue(orgues){
@@ -254,6 +230,18 @@
         markersCluster.addLayer(marker);
         }
         carte_orgues.addLayer(markersCluster);
+    }
+
+    function afficher_manufactures(){
+      $.getJSON("{% url 'orgues:facteur-list-js-leaflet' %}", function (facteurs) {
+          for (var i = 0; i < facteurs.length; i++) {
+            var popup = '<p> <b>' + facteurs[i].nom + '</p> </b>';
+            var latLng = new L.LatLng(facteurs[i].latitude_atelier, facteurs[i].longitude_atelier);
+            var marker = new L.Marker(latLng, {icon:facteur_icon}).bindPopup(popup);
+            markersClusterFacteur.addLayer(marker);
+          }
+          carte_orgues.addLayer(markersClusterFacteur);
+        });
     }
   </script>
 
