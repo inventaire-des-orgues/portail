@@ -5,7 +5,7 @@ import requests
 import json
 import time
 
-import orgues.management.utilsorgues.correcteurorgues as co
+import orgues.utilsorgues.correcteurorgues as co
 
 AMENITY = ['place_of_worship', 'monastery', 'music_school', 'college', 'school', 'clinic', 'hospital']
 BUILDING = ['yes', 'cathedral', 'chapel', 'church', 'monastery', 'religious', 'shrine', 'synagogue', 'temple']
