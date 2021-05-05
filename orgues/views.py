@@ -27,7 +27,10 @@ from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdate
 from orgues.api.serializers import OrgueSerializer, OrgueResumeSerializer
 from project import settings
 from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source
-from .codification import Codification
+import orgues.utilsorgues.correcteurorgues as co
+import orgues.utilsorgues.tools.generiques as gen
+import orgues.utilsorgues.codification as codif
+import orgues.utilsorgues.code_geographique as codegeo
 
 logger = logging.getLogger("fabaccess")
 
@@ -344,15 +347,16 @@ class OrgueCreate(FabCreateView):
 
     def form_valid(self, form):
         form.instance.updated_by_user = self.request.user
-        c = Codification(form.instance.commune, form.instance.edifice, form.instance.designation)
-        form.instance.commune = c.commune
-        form.instance.departement = c.departement
-        form.instance.code_departement = c.code_departement
-        form.instance.region = c.region
-        form.instance.code_insee = c.code_insee
-        form.instance.edifice = c.edifice
-        form.instance.codification = c.codification
-        if len(Orgue.objects.filter(codification=c.codification))==1:
+        commune, departement, code_departement, region, code_insee = co.geographie_administrative(form.instance.commune)
+        edifice, type_edifice = co.reduire_edifice(form.instance.edifice, commune)
+        codification = codif.codifier_instrument(code_insee, commune, edifice, type_edifice, form.instance.designation)
+        form.instance.commune = commune
+        form.instance.departement = departement
+        form.instance.code_departement = code_departement
+        form.instance.region = region
+        form.instance.code_insee = code_insee
+        form.instance.codification = codification
+        if len(Orgue.objects.filter(codification=codification))==1:
             messages.error(self.request, 'Cette codification existe déjà !')
             return super().form_invalid(form)
         else:
@@ -655,17 +659,16 @@ class CommuneListJS(FabListView):
 
     def get_queryset(self):
         query = self.request.GET.get("search")
-        with open('code_INSEE.csv', 'r', encoding='utf-8') as read_obj:
-            csv_reader = csv.reader(read_obj, delimiter=';')
-            results = []
-            for row in csv_reader:
-                ligne=row[0].split(",")
-                if query :
-                    if query in ligne[3].lower() or query in ligne[3]:    
-                        dictionnaire = {"id": ligne[3]+", "+ligne[4], "nom": ligne[3]+", "+ligne[4]}
+        communes_francaises = codegeo.Communes()
+        results = []
+        for commune in communes_francaises:
+            if commune.typecom == "COM" or commune.typecom == "ARM" :
+                intitule = commune.nom +", " + commune.nomdepartement + ", " + commune.code_insee
+                dictionnaire = {"id": commune.code_insee, "nom": commune.nom +", " + commune.nomdepartement + ", " + commune.code_insee}
+                if query:
+                    if query in commune.nom.lower() or query in commune.nom:
                         results.append(dictionnaire)
                 else:
-                    dictionnaire = {"id": ligne[3]+", "+ligne[4], "nom": ligne[3]+", "+ligne[4]}
                     results.append(dictionnaire)
         return results
 
