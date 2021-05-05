@@ -18,6 +18,7 @@ urlpatterns = [
     path('exemple/', v.OrgueDetailExemple.as_view(), name='orgue-detail-exemple'),
     path('conseils/', v.ConseilsFicheView.as_view(),name='orgue-fiche-conseils'),
     path('orgues/filtre', v.OrgueFiltreJS.as_view(), name='orgue-filtre-js'),
+    path('avancement.json', v.Avancement.as_view(), name = 'orgue-av-js'),
 
     # Administration
     path('creation/', v.OrgueCreate.as_view(), name='orgue-create'),
