@@ -284,7 +284,34 @@ class OrgueHistJSDep(View):
             references_palissy["PasCla"] = references_palissy.get(None, 0)
             del references_palissy[None]
         return JsonResponse(references_palissy, safe=False)
+    
+class Avancement(View):
+    def get(self, request, *args, **kwargs):
+        entite = request.GET.get("entite")
 
+        pd.options.display.html.border = 0
+        columns = ['departement', 'region', 'completion']
+        df = pd.DataFrame(Orgue.objects.values(*columns), columns=columns)
+
+        moy = {}
+
+        # departements
+        departements = df.groupby('departement').agg({'completion': ['count', 'mean']}).reset_index().round()
+        departements.columns = ["Département", "Orgues", "Avancement"]
+        
+        # regions
+        regions = df.groupby('region').agg({'completion': ['count', 'mean']}).reset_index().round()
+        regions.columns = ["Region", "Orgues", "Avancement"]
+        # Réglage du bug sur Mayotte
+        regions.loc[[0], "Region"] = "Mayotte"
+
+        if entite in regions["Region"].values:
+            moy["total"] = (regions.loc[regions["Region"] == entite, ["Region", "Avancement"]]).iloc[0,1]
+        elif entite in departements["Département"].values:
+            moy["total"] = (departements.loc[departements["Département"] == entite, ["Département", "Avancement"]]).iloc[0,1]
+        else:
+            moy["total"] = regions['Avancement'].mean(axis=0)
+        return JsonResponse(moy, safe=False)
 
 class OrgueDetail(DetailView):
     """
