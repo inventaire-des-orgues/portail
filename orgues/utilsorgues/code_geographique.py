@@ -15,18 +15,14 @@ FIC_FRANCE_REGIONS_INSEE = REP_GEODATA + 'region2021.csv'
 
 loggerCodegeogaphique = logging.getLogger('codegeographique')
 loggerCodegeogaphique.setLevel(logging.DEBUG)
-# create file handler which logs even debug messages
-fh = logging.FileHandler('orgues/utilsorgues/logs/inventaire--codegeographique.log')
-fh.setLevel(logging.DEBUG)
+
 # create console handler with a higher log level
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
 # create formatter and add it to the handlers
 formatter = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
-fh.setFormatter(formatter)
 ch.setFormatter(formatter)
 # add the handlers to the logger
-loggerCodegeogaphique.addHandler(fh)
 loggerCodegeogaphique.addHandler(ch)
 
 

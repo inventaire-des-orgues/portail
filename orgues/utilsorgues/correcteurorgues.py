@@ -11,17 +11,13 @@ import orgues.utilsorgues.code_geographique as codegeo
 loggerCorrecteurorgues = logging.getLogger('correcteurogues')
 loggerCorrecteurorgues.setLevel(logging.DEBUG)
 # create file handler which logs even debug messages
-fhc = logging.FileHandler('orgues/utilsorgues/logs/inventaire--correcteurorgues.log')
-fhc.setLevel(logging.DEBUG)
 # create console handler with a higher log level
 chc = logging.StreamHandler()
 chc.setLevel(logging.WARNING)
 # create formatter and add it to the handlers
 formatter = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
-fhc.setFormatter(formatter)
 chc.setFormatter(formatter)
 # add the handlers to the logger
-loggerCorrecteurorgues.addHandler(fhc)
 loggerCorrecteurorgues.addHandler(chc)
 
 
