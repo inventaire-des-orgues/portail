@@ -641,7 +641,7 @@ class FacteurListJS(FabListView):
         results = []
         more = context["page_obj"].number < context["paginator"].num_pages
         if context["object_list"]:
-            results = [{"id": u.nom, "text": u.nom} for u in context["object_list"]]
+            results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
         return JsonResponse({"results": results, "pagination": {"more": more}})
 
 class CommuneListJS(FabListView):
