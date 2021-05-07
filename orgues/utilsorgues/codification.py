@@ -6,20 +6,6 @@ import logging
 import orgues.utilsorgues.tools.generiques as gen
 
 logger_codification = logging.getLogger('codification')
-logger_codification.setLevel(logging.DEBUG)
-# create file handler which logs even debug messages
-fhd = logging.FileHandler('orgues/utilsorgues/logs/inventaire--codification.log')
-fhd.setLevel(logging.DEBUG)
-# create console handler with a higher log level
-chd = logging.StreamHandler()
-chd.setLevel(logging.INFO)
-# create formatter and add it to the handlers
-formatter = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
-fhd.setFormatter(formatter)
-chd.setFormatter(formatter)
-# add the handlers to the logger
-logger_codification.addHandler(fhd)
-logger_codification.addHandler(chd)
 
 
 ABREVIATIONS_4 = {'BEAU': 'BX',
@@ -246,7 +232,7 @@ def codifie_edifice(edifice, type_edif):
                         deuxieme_saint = saint.split('&')[1].lstrip().lstrip('Sainte-')
                     code_edifice = 'SS' + premier_saint[0] + premier_saint[-1] + deuxieme_saint[0] + deuxieme_saint[-1]
                 else:
-                    logger_codification.error("Nom d'édifice avec plusieurs saints non géré : {}".format(edifice))
+                    logger_codification.warning("Nom d'édifice avec plusieurs saints non géré : {}".format(edifice))
                     code_edifice = 'SS' + saint[:4]
             else:
                 code_edifice = 'ST' + saint[:4]
@@ -376,7 +362,7 @@ def codifier_instrument(code_insee, commune, edifice_standard, type_edifice, des
     :param orgue: objet de la classe OrgueInventaire
     :return: codification (str)
     """
-    logger_codification.debug('codifier_instrument {} {}'.format(str(edifice_standard), str(commune)))
+    logger_codification.info('codifier_instrument {}, {}, {}'.format(str(commune), str(edifice_standard), str(designation)))
     code_orgue = ''
     code_orgue += 'FR'
     code_orgue += '-'
@@ -387,6 +373,7 @@ def codifier_instrument(code_insee, commune, edifice_standard, type_edifice, des
     code_orgue += codifie_edifice(edifice_standard, type_edifice)
     code_orgue += '-'
     code_orgue += codifie_denomination(designation)
+    logger_codification.info('Codification : {}'.format(str(code_orgue)))
     return code_orgue
 
 
