@@ -103,6 +103,14 @@ button.btn.btn-primary:hover, button.btn.btn-primary:focus, button.btn.btn-prima
     fill: #5c1c54;
 }
 
+#map .opacity {
+    opacity: 0.3;
+}
+
+#map #retour {
+    z-index: 1;
+}
+
 img.img-responsive {
     width: 100%;
 }
@@ -564,7 +572,7 @@ a.link, a.link:visited, a.link:active {
 }
 
 #valider_recherche_manufacture{
-    padding: 5px;
+    padding-top: 5px;
 }
 
 
@@ -579,4 +587,20 @@ a.link, a.link:visited, a.link:active {
 .qrcode {
     display: flex;
     justify-content: center;
+}
+
+#creation_orgue_box{
+    display: grid;
+    grid-template-columns: 30% 1fr 30%;
+}
+
+#creation_orgue{
+    grid-column: 2;
+}
+
+
+#logo_mh {
+    width:100%;
+    max-width:250px;
+    margin-bottom:15px;
 }
