@@ -390,13 +390,10 @@ class OrgueCreate(FabCreateView, ContributionOrgueMixin):
     model = Orgue
     permission_required = 'orgues.add_orgue'
     form_class = orgue_forms.OrgueCreateForm
-    success_url = reverse_lazy('orgues:orgue-list')
-    success_message = 'Nouvel orgue créé'
     template_name = "orgues/orgue_create.html"
 
     def form_valid(self, form):
         form.instance.updated_by_user = self.request.user
-
         commune, departement, code_departement, region, code_insee = co.geographie_administrative(form.instance.commune)
         edifice, type_edifice = co.reduire_edifice(form.instance.edifice, commune)
         codification = codif.codifier_instrument(code_insee, commune, edifice, type_edifice, form.instance.designation)
@@ -410,9 +407,13 @@ class OrgueCreate(FabCreateView, ContributionOrgueMixin):
             messages.error(self.request, 'Cette codification existe déjà !')
             return super().form_invalid(form)
         else:
+            messages.success(self.request, "Nouvel orgue créé : {}".format(form.instance.codification))
             return super().form_valid(form)
 
-          
+    def get_success_url(self):
+        success_url = reverse('orgues:orgue-detail', args=(self.object.slug,))
+        return self.request.POST.get("next", success_url)
+         
 class OrgueUpdateMixin(FabUpdateView, ContributionOrgueMixin):
     """
     Mixin de modification d'un orgue qui permet de systématiquement:
