@@ -10,7 +10,6 @@ import orgues.utilsorgues.code_geographique as codegeo
 
 loggerCorrecteurorgues = logging.getLogger('correcteurogues')
 
-
 listeMinuscule = ["le", "la", "les", "de", "des", "du", "en", "et", "aux", "ès"]
 listeMajuscule = ["ND"]
 CHOIX_DEPARTEMENT = (

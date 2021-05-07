@@ -7,7 +7,6 @@ import orgues.utilsorgues.tools.generiques as gen
 
 logger_codification = logging.getLogger('codification')
 
-
 ABREVIATIONS_4 = {'BEAU': 'BX',
                   'BOUR': 'BZ',
                   'BONN': 'BN',
