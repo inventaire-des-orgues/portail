@@ -193,19 +193,15 @@ class OrgueFiltreJS(View):
     """
     JSON renvoyant la liste des orgues auxquels le facteur a participé.
     """
-
     def get(self, request, *args, **kwargs):
-        facteur = request.GET.get("facteur")
+        facteur_pk = request.GET.get("facteur_pk")
         type_requete = request.GET.get("type")
-        if facteur:
-            requete = Orgue.objects.filter(evenements__facteurs__nom=facteur).distinct()
+        queryset = Orgue.objects.all()
+        if facteur_pk:
+            queryset = queryset.filter(evenements__facteurs__pk=facteur_pk)
             if type_requete == "construction":
-                requete = Orgue.objects.filter(Q(evenements__facteurs__nom=facteur) & (Q(evenements__type="construction") | Q(evenements__type="reconstruction"))).distinct()
-            else:
-                requete = Orgue.objects.filter(evenements__facteurs__nom=facteur).distinct()
-        else:
-            requete = Orgue.objects.all()
-        data = requete.values("slug", "commune", "edifice", "latitude", "longitude", 'emplacement', "references_palissy")
+                queryset = queryset.filter(Q(evenements__type="construction") | Q(evenements__type="reconstruction")).distinct()
+        data = queryset.distinct().values("slug", "commune", "edifice", "latitude", "longitude", 'emplacement', "references_palissy")
         return JsonResponse(list(data), safe=False)
 
 
@@ -661,7 +657,7 @@ class CommuneListJS(FabListView):
             for row in csv_reader:
                 ligne=row[0].split(",")
                 if query :
-                    if query in ligne[3].lower() or query in ligne[3]:    
+                    if query in ligne[3].lower() or query in ligne[3]:
                         dictionnaire = {"id": ligne[3]+", "+ligne[4], "nom": ligne[3]+", "+ligne[4]}
                         results.append(dictionnaire)
                 else:
