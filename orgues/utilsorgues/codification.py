@@ -353,6 +353,7 @@ def codifie_denomination(denomination):
                            'buffet': 'B',
                            'orgue à rouleau': 'R',
                            'orgue à cylindre': 'R',
+                           'orgue' : 'X',
                            '': 'X'}
     if denomination in denominations_orgue.keys():
         code_denomination = denominations_orgue[denomination]
@@ -362,7 +363,7 @@ def codifie_denomination(denomination):
     # Code dénomination par défaut :
     else:
         logger_codification.error('Dénomination inconnue : {}'.format(denomination))
-        code_denomination = 'A'
+        code_denomination = 'X'
     return code_denomination
 
 
