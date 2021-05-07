@@ -5,10 +5,13 @@ import requests
 import json
 import time
 
-import orgues.management.utilsorgues.correcteurorgues as co
+import orgues.utilsorgues.correcteurorgues as co
 
 AMENITY = ['place_of_worship', 'monastery', 'music_school', 'college', 'school', 'clinic', 'hospital']
 BUILDING = ['yes', 'cathedral', 'chapel', 'church', 'monastery', 'religious', 'shrine', 'synagogue', 'temple']
+filtre_type_commune = "[amenity~'{}'][building~'{}'] (area.commune)".format("|".join(AMENITY), "|".join(BUILDING))
+overpass_url = "http://overpass-api.de/api/interpreter"
+        
 
 """
 Langage de requête Overpass :
@@ -31,21 +34,44 @@ class Command(BaseCommand):
 
     def __init__(self):
         self.liste_appariements = []
+        self.liste_multi = []
+        self.liste_none = []
+        
+    def add_arguments(self, parser):
+        parser.add_argument('dep', nargs=1, type=str,
+                            help='Département à traiter. "all" pour traiter toute la base de données')
 
     def handle(self, *args, **options):
-        for orgue in tqdm(Orgue.objects.all()):
+        #print(Orgue.objects.all().values_list())
+        if options['dep'][0] =='all':
+            BDO = Orgue.objects.all()
+            print("Appariement pour tous les orgues")
+        else :
+            BDO = Orgue.objects.filter(code_departement=options['dep'][0])
+            print("Appariement uniquement le département "+ options['dep'][0])
+        #print(BDO)
+        for orgue in tqdm(BDO):
+        #for orgue in tqdm(Orgue.objects.all()):
+            print(orgue.edifice)
+            
             # On ne recherche que les osm_id qui ne sont pas déjà présents (et pour lesquels on a bien un code INSEE):
             if orgue.code_insee and not orgue.osm_id:
                 self.tenter_appariement_osm_via_nom(orgue)
                 time.sleep(30) #Timer permettant d'espacer les requêtes OSM (30secondes)
-        with open('appariements_osm.json', 'w') as f:
+            
+        
+        with open("appariements_osm_"+options['dep'][0]+".json", 'w') as f:
             json.dump(self.liste_appariements, f)
+        with open("multi-appariements_osm_"+options['dep'][0]+".json", 'w') as f:
+            json.dump(self.liste_appariements, f)
+        with open("non-appariements_osm_"+options['dep'][0]+".json", 'w') as f:
+            json.dump(self.liste_appariements, f)
+
+        
 
     def tenter_appariement_osm_via_nom(self, orgue):        
         nom_edifice,type_edifice = co.detecter_type_edifice(orgue.edifice)
-        overpass_url = "http://overpass-api.de/api/interpreter"
         overpass_query = "[out:json]; area[boundary=administrative]['ref:INSEE']['ref:INSEE'={}] -> .commune;".format(int(orgue.code_insee))
-        filtre_type_commune = "[amenity~'{}'][building~'{}'] (area.commune)".format("|".join(AMENITY), "|".join(BUILDING))
         overpass_query +=" ((way[name~'{}',i] {}; ".format(orgue.edifice.capitalize(), filtre_type_commune) #On met ~ au lieu de = pour que l'option Insensible à la casse ",i" fonctionne
         overpass_query +=" relation[name~'{}',i] {}; ); ._;)->.a; ".format(orgue.edifice, filtre_type_commune)
 
@@ -84,15 +110,22 @@ class Command(BaseCommand):
             # Si plusieurs appariements, pour l'instant on ne fait que les sortir en traces :
             elif len(elements) > 1:
                 print("Plusieurs objets OSM possibles pour cet orgue : {}".format(orgue))
+                correspondances = []
                 for elem in data['elements']:
+                    correspondances.append({"nom":elem['tags']['name'], "type":elem['type'], "id":elem['id']})
                     print("Appariement possible : {} {} {} {}"
                           .format(elem['tags']['name'], elem['type'], elem['tags']['amenity'], elem['tags']['building']))
+                liste_none.append({"codification": orgue.codification, "edifice": orgue.edifice, "code_departement": orgue.code_departement,
+                                    "commune": orgue.commune, "code_insee": orgue.code_insee})
 
             # Si aucun appariement strict
             else:
                 print("Aucun chemin ou relation OSM à apparier : {}".format(orgue))
                 print ("Code INSEE de la commune : ", orgue.code_insee)
                 print("Nom sans type d'édifice : ", nom_edifice)
+                liste_multi.append({"codification": orgue.codification, "edifice": orgue.edifice, "code_departement": orgue.code_departement,
+                                    "commune": orgue.commune, "code_insee": orgue.code_insee, "correspondances" : correspondances})
+
         return
 
     def tenter_appariement_osm_via_codif(self, orgue):
@@ -125,6 +158,25 @@ class Command(BaseCommand):
         - Comparer le nom des édifices du résultat de cette requête, une fois codifié, avec le code de l'orgue (cf. rappel ci-dessus pour construire l'heuristique de comparison).
         - Si une seule correspondance, dire que c'est OK et la conserver, si plusieurs, les afficher en traces, si aucune, erreur.
         """
+        
+        overpass_query = "[out:json]; area[boundary=administrative]['ref:INSEE']['ref:INSEE'={}] -> .commune;".format(int(orgue.code_insee))
+        overpass_query +=" ((way {}; ".format(filtre_type_commune)
+        overpass_query +=" relation {}; ); ._;)->.a; .a out;".format(filtre_type_commune)
+
+        #L'Overpass_query récupère tous les édifices susceptibles de comporter un orgue dans la commune où se trouve l'orgue
+        response = requests.get(overpass_url, params={'data': overpass_query})
+
+        # Erreur dans la requête QL Overpass
+        if response.status_code != 200:
+            print("Echec de la requête QL Overpass pour la commune : {}".format(orgue.commune))
+            print("Status code : {}".format(response.status_code))
+            print("")
+        # Résultats
+        else:
+            data = response.json()
+            elements = data['elements']
+
+
         pass
         return
 

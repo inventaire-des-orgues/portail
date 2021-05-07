@@ -361,6 +361,14 @@
             <span class="puce-etat bg-primary"></span>
             Nombre d'orgues recensés
           </p>
+	  <p id="nbInsCla">
+            <span class="puce-etat " style="background-color:#C31A38;"></span>
+            <span>Orgues inscrits ou classés</span>
+          </p>
+	  <p id="Avancement">
+            <span class="puce-etat " style="background-color:#FF4500;"></span>
+            <span>Avancement complétion orgues</span>
+          </p>
           <p class="mt-5 mb-4">
             Etat général des orgues
           </p>
@@ -488,6 +496,22 @@
         error: function () {
         }
       })
+      /* Requete sur le taux d'avancement par région */
+      $.ajax({
+        type: "GET",
+        url: "{% url 'orgues:orgue-av-js' %}",
+        data: {"entite": region},
+        success: function (data) {
+        if(data.total > 0) {
+          var total = Math.round(data.total) + " %"
+        } else {
+          var total = 0 + " %"
+        }
+        $("#Avancement .puce-etat").html(total);
+        },
+        error: function () {
+        }
+      })
     }
 
     var update_states2 = function (dep){
@@ -533,6 +557,21 @@
             var tot_insc_class = "0% "
           }
           $("#nbInsCla .puce-etat").html(tot_insc_class);
+        },
+        error: function () {
+        }
+      })
+      $.ajax({
+        type: "GET",
+        url: "{% url 'orgues:orgue-av-js' %}",
+        data: {"entite": dep},
+        success: function (data) {
+        if(data.total > 0) {
+          var total = Math.round(data.total) + " %"
+        } else {
+          var total = 0 + " %"
+        }
+        $("#Avancement .puce-etat").html(total);
         },
         error: function () {
         }
