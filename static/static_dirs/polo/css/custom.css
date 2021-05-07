@@ -587,6 +587,7 @@ a.link, a.link:visited, a.link:active {
 .qrcode {
     display: flex;
     justify-content: center;
+}
 
 #creation_orgue_box{
     display: grid;
@@ -595,4 +596,11 @@ a.link, a.link:visited, a.link:active {
 
 #creation_orgue{
     grid-column: 2;
+}
+
+
+#logo_mh {
+    width:100%;
+    max-width:250px;
+    margin-bottom:15px;
 }

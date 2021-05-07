@@ -2,7 +2,7 @@ import csv
 import logging
 import os
 from collections import Counter, deque
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import pandas as pd
 
 import meilisearch
@@ -26,11 +26,13 @@ from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdate
     FabDetailView
 from orgues.api.serializers import OrgueSerializer, OrgueResumeSerializer
 from project import settings
+
 from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source
 import orgues.utilsorgues.correcteurorgues as co
 import orgues.utilsorgues.tools.generiques as gen
 import orgues.utilsorgues.codification as codif
 import orgues.utilsorgues.code_geographique as codegeo
+
 
 logger = logging.getLogger("fabaccess")
 
@@ -196,19 +198,15 @@ class OrgueFiltreJS(View):
     """
     JSON renvoyant la liste des orgues auxquels le facteur a participé.
     """
-
     def get(self, request, *args, **kwargs):
-        facteur = request.GET.get("pk")
+        facteur_pk = request.GET.get("facteur_pk")
         type_requete = request.GET.get("type")
-        if facteur:
-            requete = Orgue.objects.filter(evenements__facteurs__pk=facteur).distinct()
+        queryset = Orgue.objects.all()
+        if facteur_pk:
+            queryset = queryset.filter(evenements__facteurs__pk=facteur_pk)
             if type_requete == "construction":
-                requete = Orgue.objects.filter(Q(evenements__facteurs__pk=facteur) & (Q(evenements__type="construction") | Q(evenements__type="reconstruction"))).distinct()
-            else:
-                requete = Orgue.objects.filter(evenements__facteurs__pk=facteur).distinct()
-        else:
-            requete = Orgue.objects.all()
-        data = requete.values("slug", "commune", "edifice", "latitude", "longitude", 'emplacement', "references_palissy")
+                queryset = queryset.filter(Q(evenements__type="construction") | Q(evenements__type="reconstruction")).distinct()
+        data = queryset.distinct().values("slug", "commune", "edifice", "latitude", "longitude", 'emplacement', "references_palissy")
         return JsonResponse(list(data), safe=False)
 
 
@@ -347,8 +345,18 @@ class OrgueDetail(DetailView):
         context["evenements"] = self.object.evenements.all().prefetch_related('facteurs')
         context["facteurs_evenements"] = self.object.evenements.filter(facteurs__isnull=False).prefetch_related(
             'facteurs').distinct()
+        context["contributions"] = self.get_contributions()
         context["orgue_url"] = self.request.build_absolute_uri(self.object.get_absolute_url())
         return context
+
+    def get_contributions(self):
+        last = self.object.contributions.order_by("-date").first()
+        return {
+            "count": self.object.contributions.count(),
+            "contributeurs": self.object.contributions.values_list("user").distinct().count(),
+            "updated_by_user": last.user if last else "",
+            "modified_date": last.date if last else "",
+        }
 
 
 class OrgueDetailExemple(View):
@@ -360,8 +368,22 @@ class OrgueDetailExemple(View):
         orgue = Orgue.objects.order_by('-completion').first()
         return redirect(orgue.get_absolute_url())
 
+class ContributionOrgueMixin:
+    """
+    Ajout d'une contribution lors de la modification d'un orgue
+    """
+    contribution_description = 'Mise à jour'
 
-class OrgueCreate(FabCreateView):
+    def save_contribution(self, orgue, description = None):
+        detail = self.contribution_description if not description else description
+        contribution = Contribution.objects.filter(orgue=orgue, date__date=date.today()).order_by('-date').first()
+        if not contribution or contribution.user != self.request.user:
+            contribution = Contribution(user=self.request.user, orgue=orgue, description=detail)
+        if contribution.description.find(detail) < 0:
+            contribution.description += ', ' + detail
+        contribution.save()
+
+class OrgueCreate(FabCreateView, ContributionOrgueMixin):
     """
     Création d'un nouvel orgue
     """
@@ -374,6 +396,7 @@ class OrgueCreate(FabCreateView):
 
     def form_valid(self, form):
         form.instance.updated_by_user = self.request.user
+
         commune, departement, code_departement, region, code_insee = co.geographie_administrative(form.instance.commune)
         edifice, type_edifice = co.reduire_edifice(form.instance.edifice, commune)
         codification = codif.codifier_instrument(code_insee, commune, edifice, type_edifice, form.instance.designation)
@@ -389,8 +412,8 @@ class OrgueCreate(FabCreateView):
         else:
             return super().form_valid(form)
 
-
-class OrgueUpdateMixin(FabUpdateView):
+          
+class OrgueUpdateMixin(FabUpdateView, ContributionOrgueMixin):
     """
     Mixin de modification d'un orgue qui permet de systématiquement:
      - vérifier la permission
@@ -404,6 +427,7 @@ class OrgueUpdateMixin(FabUpdateView):
 
     def form_valid(self, form):
         form.instance.updated_by_user = self.request.user
+        self.save_contribution(form.instance)
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -413,7 +437,6 @@ class OrgueUpdateMixin(FabUpdateView):
         context = super().get_context_data()
         context["orgue"] = self.object
         return context
-
 
 class OrgueDetailAvancement(FabDetailView):
     """
@@ -432,6 +455,20 @@ class OrgueDetailAvancement(FabDetailView):
         context["orgue"] = self.object
         return context
 
+class OrgueDetailContributions(FabDetailView):
+    """
+    Vue de détail des contributeurs d'un orgue.
+    """
+    model = Orgue
+    slug_field = 'uuid'
+    slug_url_kwarg = 'orgue_uuid'
+    permission_required = 'orgues.change_orgue'
+    template_name = "orgues/orgue_detail_contributions.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["orgue"] = self.object
+        return context
 
 class OrgueUpdate(OrgueUpdateMixin, FabUpdateView):
     """
@@ -439,6 +476,7 @@ class OrgueUpdate(OrgueUpdateMixin, FabUpdateView):
     """
     form_class = orgue_forms.OrgueGeneralInfoForm
     success_message = 'Informations générales mises à jour !'
+    contribution_description = 'Informations générales'
 
 
     def get_form_kwargs(self):
@@ -453,6 +491,7 @@ class OrgueUpdateInstrumentale(OrgueUpdateMixin):
     """
     form_class = orgue_forms.OrgueInstrumentaleForm
     success_message = 'Tuyauterie mise à jour, merci !'
+    contribution_description = 'Partie instrumentale'
     template_name = "orgues/orgue_form_instrumentale.html"
 
     def get_success_url(self):
@@ -468,6 +507,7 @@ class OrgueUpdateComposition(OrgueUpdateMixin):
     form_class = orgue_forms.OrgueCompositionForm
     template_name = "orgues/orgue_form_composition.html"
     success_message = 'Composition mise à jour, merci !'
+    contribution_description = 'Composition'
 
     def get_object(self, queryset=None):
         object = super().get_object()
@@ -487,6 +527,7 @@ class OrgueUpdateBuffet(OrgueUpdateMixin):
     model = Orgue
     form_class = orgue_forms.OrgueBuffetForm
     template_name = "orgues/orgue_form_buffet.html"
+    contribution_description = 'Buffet'
     success_message = 'Buffet mis à jour, merci !'
 
     def get_success_url(self):
@@ -501,6 +542,7 @@ class OrgueUpdateLocalisation(OrgueUpdateMixin):
     form_class = orgue_forms.OrgueLocalisationForm
     permission_required = "orgues.change_localisation"
     success_message = 'Localisation mise à jour, merci !'
+    contribution_description = 'Localisation'
     template_name = "orgues/orgue_form_localisation.html"
 
     def get_form_kwargs(self):
@@ -744,7 +786,7 @@ class DesignationListJS(FabListView):
         return JsonResponse({"results": results, "pagination": {"more": more}})
 
 
-class EvenementCreate(FabCreateView):
+class EvenementCreate(FabCreateView, ContributionOrgueMixin):
     """
     Création d'un nouvel évenement associé à un orgue
     """
@@ -756,6 +798,7 @@ class EvenementCreate(FabCreateView):
     def form_valid(self, form):
         orgue = get_object_or_404(Orgue, uuid=self.kwargs['orgue_uuid'])
         form.instance.orgue = orgue
+        self.save_contribution(orgue, "Nouvel événement")
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
@@ -767,7 +810,7 @@ class EvenementCreate(FabCreateView):
         return reverse('orgues:evenement-list', args=(self.kwargs["orgue_uuid"],))
 
 
-class EvenementUpdate(FabUpdateView):
+class EvenementUpdate(FabUpdateView, ContributionOrgueMixin):
     """
     Mise à jour d'un évenement
     """
@@ -778,6 +821,7 @@ class EvenementUpdate(FabUpdateView):
 
     def form_valid(self, form):
         form.instance.updated_by_user = self.request.user
+        self.save_contribution(self.object.orgue, "Mise à jour d'un événement")
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
@@ -789,13 +833,17 @@ class EvenementUpdate(FabUpdateView):
         return reverse('orgues:evenement-list', args=(self.object.orgue.uuid,))
 
 
-class EvenementDelete(FabDeleteView):
+class EvenementDelete(FabDeleteView, ContributionOrgueMixin):
     """
     Suppression d'un événement
     """
     model = Evenement
     permission_required = "orgues.delete_evenement"
     success_message = "Evenement supprimé, merci !"
+
+    def delete(self, request, *args, **kwargs):
+        self.save_contribution(self.get_object().orgue, "Suppression d'un événement")
+        return super().delete(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
@@ -806,7 +854,7 @@ class EvenementDelete(FabDeleteView):
         return reverse('orgues:evenement-list', args=(self.object.orgue.uuid,))
 
 
-class ClavierCreate(FabView):
+class ClavierCreate(FabView, ContributionOrgueMixin):
     """
     Ajout d'un clavier
     """
@@ -840,6 +888,7 @@ class ClavierCreate(FabView):
             if request.POST.get("continue") == "true":
                 return redirect(reverse('orgues:clavier-update', args=(clavier.pk,)) + "#jeux")
             messages.success(self.request, "Nouveau clavier ajouté, merci !")
+            self.save_contribution(orgue, "Ajout d'un clavier")
             return redirect('orgues:orgue-update-composition', orgue_uuid=orgue.uuid)
         else:
             context = {
@@ -850,7 +899,7 @@ class ClavierCreate(FabView):
             return render(request, "orgues/clavier_form.html", context)
 
 
-class ClavierUpdate(FabUpdateView):
+class ClavierUpdate(FabUpdateView, ContributionOrgueMixin):
     """
     Mise à jour d'un clavier
     """
@@ -882,6 +931,7 @@ class ClavierUpdate(FabUpdateView):
                 jeu.save()
             if request.POST.get("continue") == "true":
                 return redirect(reverse('orgues:clavier-update', args=(clavier.pk,)) + "#jeux")
+            self.save_contribution(clavier.orgue, "Mise à jour d'un clavier")
             messages.success(self.request, "Clavier mis à jour, merci !")
             return redirect('orgues:orgue-update-composition', orgue_uuid=clavier.orgue.uuid)
         else:
@@ -893,13 +943,17 @@ class ClavierUpdate(FabUpdateView):
             return render(request, "orgues/clavier_form.html", context)
 
 
-class ClavierDelete(FabDeleteView):
+class ClavierDelete(FabDeleteView, ContributionOrgueMixin):
     """
     Suppression d'un clavier
     """
     model = Clavier
     permission_required = "orgues.delete_clavier"
     success_message = "Clavier supprimé, merci !"
+
+    def delete(self, request, *args, **kwargs):
+        self.save_contribution(self.get_object().orgue, "Suppression d'un Clavier")
+        return super().delete(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
@@ -945,7 +999,7 @@ class FichierList(FabListView):
         return context
 
 
-class FichierCreate(FabCreateView):
+class FichierCreate(FabCreateView, ContributionOrgueMixin):
     """
     Création d'un fichier associé à un orgue
     """
@@ -959,6 +1013,7 @@ class FichierCreate(FabCreateView):
         fichier = form.save(commit=False)
         fichier.orgue = orgue
         fichier.save()
+        self.save_contribution(orgue, "Ajout d'un fichier")
         messages.success(self.request, "Fichier créé, merci !")
         return redirect('orgues:fichier-list', orgue_uuid=orgue.uuid)
 
@@ -971,13 +1026,17 @@ class FichierCreate(FabCreateView):
         return context
 
 
-class FichierDelete(FabDeleteView):
+class FichierDelete(FabDeleteView, ContributionOrgueMixin):
     """
     Suppression d'un fichier associé à un orgue
     """
     model = Fichier
     permission_required = "orgues.delete_fichier"
     success_message = "Fichier supprimé, merci !"
+
+    def delete(self, request, *args, **kwargs):
+        self.save_contribution(self.get_object().orgue, "Suppression d'un fichier")
+        return super().delete(request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse('orgues:fichier-list', args=(self.object.orgue.uuid,))
@@ -1011,7 +1070,7 @@ class ImageList(FabListView):
         return context
 
 
-class ImageCreate(FabView):
+class ImageCreate(FabView, ContributionOrgueMixin):
     """
     Vue de chargement d'une image.
     Les images sont chargées et redimensionnée automatiquement en javascript côté client.
@@ -1036,16 +1095,21 @@ class ImageCreate(FabView):
         image.user = request.user
         image.credit = credit
         image.save()
+        self.save_contribution(orgue, "Ajout d'une image")
         return JsonResponse({'ok': True})
 
 
-class ImageDelete(FabDeleteView):
+class ImageDelete(FabDeleteView, ContributionOrgueMixin):
     """
     Suppression d'une image
     """
     model = Image
     permission_required = "orgues.delete_image"
     success_message = "Image supprimée, merci !"
+
+    def delete(self, request, *args, **kwargs):
+        self.save_contribution(self.get_object().orgue, "Suppression d'une image")
+        return super().delete(request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse('orgues:image-list', args=(self.object.orgue.uuid,))
@@ -1056,9 +1120,9 @@ class ImageDelete(FabDeleteView):
         return context
 
 
-class ImagePrincipaleUpdate(FabUpdateView):
+class ImagePrincipaleUpdate(FabUpdateView, ContributionOrgueMixin):
     """
-    Séléction et rognage de l'image principale d'un orgue dans le but de créer une vignette (utilise ajax et cropper.js)
+    Sélection et rognage de l'image principale d'un orgue dans le but de créer une vignette (utilise ajax et cropper.js)
     """
     model = Image
     fields = ['thumbnail_principale']
@@ -1086,6 +1150,7 @@ class ImagePrincipaleUpdate(FabUpdateView):
         image.orgue.images.update(is_principale=False)
         image.is_principale = True
         image.save()
+        self.save_contribution(image.orgue, "Mise à jour de la vignette")
 
         # remove old thumbnail
         if old_path:
@@ -1100,7 +1165,7 @@ class ImagePrincipaleUpdate(FabUpdateView):
         return context
 
 
-class ImageUpdate(FabUpdateView):
+class ImageUpdate(FabUpdateView, ContributionOrgueMixin):
     """
     Modification de la légende ou du crédit d'une image
     """
@@ -1108,6 +1173,11 @@ class ImageUpdate(FabUpdateView):
     fields = ['credit', 'legende']
     permission_required = "orgues.change_image"
     success_message = "Informations mises à jour, merci"
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.save_contribution(self.object.orgue, "Mise à jour d'une image")
+        return super().post(request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse('orgues:image-list', args=(self.object.orgue.uuid,))
@@ -1137,7 +1207,7 @@ class SourceList(FabListView):
         return context
 
 
-class SourceCreate(FabCreateView):
+class SourceCreate(FabCreateView, ContributionOrgueMixin):
     model = Source
     permission_required = "orgues.add_source"
     form_class = orgue_forms.SourceForm
@@ -1146,6 +1216,7 @@ class SourceCreate(FabCreateView):
     def form_valid(self, form):
         orgue = get_object_or_404(Orgue, uuid=self.kwargs['orgue_uuid'])
         form.instance.orgue = orgue
+        self.save_contribution(orgue, "Ajout d'une source")
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
@@ -1157,7 +1228,7 @@ class SourceCreate(FabCreateView):
         return reverse('orgues:source-list', args=(self.kwargs["orgue_uuid"],))
 
 
-class SourceUpdate(FabUpdateView):
+class SourceUpdate(FabUpdateView, ContributionOrgueMixin):
     model = Source
     permission_required = "orgues.change_source"
     form_class = orgue_forms.SourceForm
@@ -1165,6 +1236,7 @@ class SourceUpdate(FabUpdateView):
 
     def form_valid(self, form):
         form.instance.updated_by_user = self.request.user
+        self.save_contribution(self.object.orgue, "Mise à jour d'une source")
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
@@ -1176,10 +1248,14 @@ class SourceUpdate(FabUpdateView):
         return reverse('orgues:source-list', args=(self.object.orgue.uuid,))
 
 
-class SourceDelete(FabDeleteView):
+class SourceDelete(FabDeleteView, ContributionOrgueMixin):
     model = Source
     permission_required = "orgues.delete_source"
     success_message = "Source supprimée, merci !"
+
+    def delete(self, request, *args, **kwargs):
+        self.save_contribution(self.get_object().orgue, "Suppression d'une source")
+        return super().delete(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()

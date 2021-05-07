@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from orgues.models import Orgue, Jeu, Clavier, TypeJeu, Image, Fichier, Evenement, Source, Facteur
+from orgues.models import Orgue, Jeu, Clavier, TypeJeu, Image, Fichier, Evenement, Source, Facteur, Contribution
 
 
 class ImageSerializer(serializers.ModelSerializer):
@@ -56,7 +56,11 @@ class FacteurSerializer(serializers.ModelSerializer):
         model = Facteur
         exclude = ["id"]
 
-
+class ContributionSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField()
+    class Meta:
+        model = Contribution
+        exclude = ["id", "orgue"]
 class OrgueSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name="orgues:orgue-detail", lookup_field="slug")
     updated_by_user = serializers.StringRelatedField()
@@ -66,6 +70,7 @@ class OrgueSerializer(serializers.ModelSerializer):
     fichiers = FichierSerializer(many=True)
     evenements = EvenementSerializer(many=True)
     sources = SourceSerializer(many=True)
+    contributions = ContributionSerializer(many=True)
 
     class Meta:
         model = Orgue
