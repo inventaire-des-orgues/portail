@@ -27,7 +27,7 @@ from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdate
 from orgues.api.serializers import OrgueSerializer, OrgueResumeSerializer
 from project import settings
 
-from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source
+from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source, Contribution
 import orgues.utilsorgues.correcteurorgues as co
 import orgues.utilsorgues.tools.generiques as gen
 import orgues.utilsorgues.codification as codif
