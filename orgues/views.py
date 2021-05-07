@@ -762,12 +762,7 @@ class DesignationListJS(FabListView):
 
     def get_queryset(self):
         query = self.request.GET.get("search")
-        liste_designation = ['G.O.', 'orgue', 'Grand Orgue', 'orgue de tribune', 'orgue de transept', 'orgue positif','orgue régale',
-"orgue d'accompagnement",'petit orgue', "orgue d'étude", 'positif', 'grand positif', 'chapelle', 'oratoire',
-"chapelle d'hiver", 'chapelle de la Vierge', 'sacristie', 'O.C.', 'O.C.1', 'O.C.2', 'crypte', 'Orgue coffre','auditorium',
-'orgue 1', 'orgue 2','ancien','nouveau','1', '2', '3', '4', '5', '6', '7', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII',
-"Orgue d'étude", 'Orgue espagnol', 'Orgue majorquin', 'Orgue napolitain', "orgue d'étude (1982)", "orgue d'étude (1968)",
-'polyphone', 'buffet', 'orgue à rouleau', 'orgue à cylindre', '']
+        liste_designation = codif.DENOMINATION_ORGUE
         results = []
         for denomination in liste_designation:
             if query :
