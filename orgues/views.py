@@ -198,14 +198,14 @@ class OrgueFiltreJS(View):
     """
 
     def get(self, request, *args, **kwargs):
-        facteur = request.GET.get("facteur")
+        facteur = request.GET.get("pk")
         type_requete = request.GET.get("type")
         if facteur:
-            requete = Orgue.objects.filter(evenements__facteurs__nom=facteur).distinct()
+            requete = Orgue.objects.filter(evenements__facteurs__pk=facteur).distinct()
             if type_requete == "construction":
-                requete = Orgue.objects.filter(Q(evenements__facteurs__nom=facteur) & (Q(evenements__type="construction") | Q(evenements__type="reconstruction"))).distinct()
+                requete = Orgue.objects.filter(Q(evenements__facteurs__pk=facteur) & (Q(evenements__type="construction") | Q(evenements__type="reconstruction"))).distinct()
             else:
-                requete = Orgue.objects.filter(evenements__facteurs__nom=facteur).distinct()
+                requete = Orgue.objects.filter(evenements__facteurs__pk=facteur).distinct()
         else:
             requete = Orgue.objects.all()
         data = requete.values("slug", "commune", "edifice", "latitude", "longitude", 'emplacement', "references_palissy")
@@ -672,8 +672,9 @@ class FacteurListJS(FabListView):
         results = []
         more = context["page_obj"].number < context["paginator"].num_pages
         if context["object_list"]:
-            results = [{"id": u.nom, "text": u.nom} for u in context["object_list"]]
+            results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
         return JsonResponse({"results": results, "pagination": {"more": more}})
+
 
 class CommuneListJS(FabListView):
     """
