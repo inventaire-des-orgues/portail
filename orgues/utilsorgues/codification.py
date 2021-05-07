@@ -353,7 +353,7 @@ def codifie_denomination(denomination):
                            'buffet': 'B',
                            'orgue à rouleau': 'R',
                            'orgue à cylindre': 'R',
-                           'orgue' : 'X',
+                           'orgue': 'X',
                            '': 'X'}
     if denomination in denominations_orgue.keys():
         code_denomination = denominations_orgue[denomination]
@@ -382,6 +382,7 @@ def codifier_instrument(code_insee, commune, edifice_standard, type_edifice, des
     code_orgue += codifie_commune(commune)
     code_orgue += '-'
     code_orgue += codifie_edifice(edifice_standard, type_edifice)
+    code_orgue += '1' # TODO gestion de l'indice édifice
     code_orgue += '-'
     code_orgue += codifie_denomination(designation)
     return code_orgue
