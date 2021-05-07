@@ -219,6 +219,7 @@ class Orgue(models.Model):
     codification = models.CharField(max_length=24, unique=True, db_index=True)
     references_palissy = models.CharField(max_length=60, null=True, verbose_name="Référence(s) Palissy pour les monuments historiques.", blank=True,
                                           help_text="Séparer les codes par des virgules.")
+    references_inventaire_regions = models.CharField(verbose_name = "Code inventaire régional", max_length=60, null=True, blank=True)
     resume = models.TextField(max_length=500, null=True, verbose_name="Résumé", blank=True,
                               help_text="Présentation en quelques lignes de l'instrument \
                               en insistant sur son originalité (max 500 caractères).")
@@ -260,8 +261,8 @@ class Orgue(models.Model):
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
     osm_type = models.CharField(choices=CHOIX_TYPE_OSM, verbose_name="Type open street map", max_length=20, null=True,
-                                blank=True)
-    osm_id = models.CharField(verbose_name="Id open street map", max_length=20, null=True, blank=True)
+                                blank=True, help_text="Type OSM de l'objet représenant l'édifice.")
+    osm_id = models.CharField(verbose_name="Id open street map", max_length=20, null=True, blank=True, help_text="Id OSM de l'objet décrivant l'édifice.")
 
     # Partie instrumentale
     diapason = models.CharField(max_length=20, null=True, blank=True,
@@ -342,7 +343,7 @@ class Orgue(models.Model):
         """
         Est-ce que l'instrument possède un pédalier ?
         """
-        return self.claviers.filter(type__nom__in=['Pédale', 'Pédalier']).exists()
+        return self.claviers.filter(type__nom__in=['Pédale', 'Pédalier', 'Pedalwerk', 'Pedal', 'Pedalero', 'Pedaliera']).exists()
 
     @property
     def construction(self):
@@ -504,7 +505,7 @@ class TypeClavier(models.Model):
 
 
 def validate_etendue(value):
-    if not re.match("^([A-G]|CD)#?[1-7]-([A-G]|CD)#?[1-7]$", value):
+    if not re.match("^([A-G]|CD)#?[0-7]-([A-G]|CD)#?[1-7]$", value):
         raise ValidationError("De la forme F1-G5. Absence du premier Ut dièse notée CD1-F5.")
 
 
@@ -551,7 +552,6 @@ class Clavier(models.Model):
 
     class Meta:
         verbose_name = "Plan sonore"
-
 
 class Evenement(models.Model):
     """
@@ -605,6 +605,11 @@ class Evenement(models.Model):
         if self.annee_fin and self.annee_fin != self.annee:
             result += "-{}".format(self.annee_fin)
         return result
+
+    @property
+    def is_locked(self):
+        return self.type in ["classement_mh","inscription_mh"]
+
 
     def __str__(self):
         return "{} ({})".format(self.type, self.dates)

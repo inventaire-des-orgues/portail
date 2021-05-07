@@ -13,6 +13,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'dbbackup',  # https://django-dbbackup.readthedocs.io/en/stable/installation.html
     'debug_toolbar', #https://django-debug-toolbar.readthedocs.io/en/latest/installation.html
+    'qr_code', #https://github.com/dprog-philippe-docourt/django-qr-code
 
     'accounts',
     'fabutils',

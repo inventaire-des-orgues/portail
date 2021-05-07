@@ -48,8 +48,8 @@ urlpatterns = [
     # facteurs
     path('js/facteurs/', v.FacteurListJS.as_view(), name='facteur-list-js'),
     path('js/facteurs/creation/', v.FacteurCreateJS.as_view(), name='facteur-create-js'),
-    path('js/facteurs/filtre/', v.FacteurListJSFiltre.as_view(), name='facteur-filtre-js'),
     path('js/facteurs/lonlat/', v.FacteurListJSlonlat.as_view(), name='facteur-list-js-lonlat'),
+    path('js/facteurs/lonlatLeaflet/', v.FacteurLonLatLeaflet.as_view(), name='facteur-js-lonlat'),
 
     # types jeux
     path('types_jeux/creation/', v.TypeJeuCreateJS.as_view(), name='typejeu-create-js'),
