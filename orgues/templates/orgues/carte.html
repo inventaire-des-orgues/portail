@@ -7,14 +7,14 @@
 {% endblock %}
 
 {% block content %}
-<div id="carte_generale">  
+<div id="carte_generale">
   <div class="container-fluid" id="carte">
       <div id="mapid" style="height:700px"></div>
   </div>
   <div id="div_filtre">
     <b>Filtrer les orgues par facteur :</b>
     <form id="filtre_formulaire" action="" >
-        <select type="text" id="nom_facteur"></select>
+        <select type="text" id="facteur_pk"></select>
         <label><input type="checkbox" name="construction" id="construction">N'afficher que les orgues pour lesquels le facteur a participé à la construction ou à la reconstruction.</label>
         <div class="form-group text-right">
           <button id="validation" class="btn btn-primary btn-sm btn-rounded"><i id="search-btn" class="fa fa-search"></i></button>
@@ -29,9 +29,9 @@
       </div>
     </form>
     <label><input type="checkbox" name="manufacture" id="manufacture">Afficher toutes les manufactures d'orgues.</label>
-  </div>  
-</div>  
-  
+  </div>
+</div>
+
 {% endblock %}
 
 {% block js_extra %}
@@ -120,7 +120,7 @@
       }
     })
 
-    $("#nom_facteur").select2({//Liste des facteurs proposée dans le champ "Filtrer les orgues par facteur"
+    $("#facteur_pk").select2({//Liste des facteurs proposée dans le champ "Filtrer les orgues par facteur"
       placeholder: 'Choisir un facteur',
       ajax: {
         url: '{% url 'orgues:facteur-list-js' %}',
@@ -147,12 +147,12 @@
       e.preventDefault();
       markersCluster.clearLayers();
       $("#afficher_tous_orgues").show();
-      $("#nom_facteur")[0].placeholder = 'Choisir un facteur';
+      $("#facteur_pk")[0].placeholder = 'Choisir un facteur';
       if ($('#construction').is(':checked')){
-        var data_filtre = {"facteur": $("#nom_facteur").val(), "type":"construction"}
+        var data_filtre = {"pk": $("#nom_facteur").val(), "type":"construction"}
       }
       else{
-        var data_filtre = {"facteur": $("#nom_facteur").val(), "type":"tout_type"}
+        var data_filtre = {"pk": $("#nom_facteur").val(), "type":"tout_type"}
       }
       $.ajax({
         type: "GET",
@@ -194,7 +194,7 @@
       markersClusterFacteur.clearLayers();
       document.getElementById("manufacture").checked = true;
       afficher_manufactures();
-      data_filtre = {"facteur": $("#nom_facteur_recherche").val(), "type":"tout_type"}
+      data_filtre = {"facteur_pk": $("#nom_facteur_recherche").val(), "type":"tout_type"}
       $.ajax({
         type: "GET",
         url: "{% url 'orgues:facteur-js-lonlat' %}",
