@@ -1,6 +1,7 @@
 from django import forms
 import csv
 
+from fabutils.forms import Select2Single, Select2Multiple
 from .models import Orgue, Evenement, Clavier, Facteur, Jeu, Fichier, Image, Source
 
 
@@ -26,6 +27,7 @@ class OrgueGeneralInfoForm(forms.ModelForm):
         widgets = {
             'resume': forms.Textarea(attrs={'rows': 5, 'cols': 15}),
             'commentaire_admin': forms.Textarea(attrs={'rows': 2, 'cols': 15}),
+            'entretien':Select2Multiple
         }
 
     def __init__(self, *args, **kwargs):
@@ -140,6 +142,10 @@ class EvenementForm(forms.ModelForm):
             "facteurs",
             "resume",
         ]
+
+        widgets = {
+            "facteurs":Select2Multiple
+        }
 
 
 class ClavierForm(forms.ModelForm):
