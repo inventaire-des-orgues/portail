@@ -306,6 +306,7 @@ def codifie_denomination(denomination):
                            'orgue positif': 'D',
                            'orgue régale': 'D',
                            "orgue d'accompagnement": 'C',
+                           'orgue de chœur': 'C',
                            'petit orgue': 'D',
                            "orgue d'étude": 'D',
                            'positif': 'D',
