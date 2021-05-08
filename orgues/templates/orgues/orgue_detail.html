@@ -295,10 +295,6 @@
             </div>
           </div>
           <div class="mb-4  box-shadow">
-            {% load qr_code %}
-            <div class="qrcode">
-              {% qr_from_text orgue_url size="t" %}
-            </div>
             <a href="{% url 'orgues:orgue-update' object.uuid %}" class="btn btn-primary  btn-block">
               <i class="fa fa-edit"></i> Compléter la fiche
             </a>
