@@ -285,7 +285,7 @@ class OrgueHistJSDep(View):
             references_palissy["PasCla"] = references_palissy.get(None, 0)
             del references_palissy[None]
         return JsonResponse(references_palissy, safe=False)
-    
+
 class Avancement(View):
     def get(self, request, *args, **kwargs):
         entite = request.GET.get("entite")
@@ -299,7 +299,7 @@ class Avancement(View):
         # departements
         departements = df.groupby('departement').agg({'completion': ['count', 'mean']}).reset_index().round()
         departements.columns = ["Département", "Orgues", "Avancement"]
-        
+
         # regions
         regions = df.groupby('region').agg({'completion': ['count', 'mean']}).reset_index().round()
         regions.columns = ["Region", "Orgues", "Avancement"]
@@ -368,6 +368,26 @@ class OrgueDetailExemple(View):
         orgue = Orgue.objects.order_by('-completion').first()
         return redirect(orgue.get_absolute_url())
 
+class OrgueQrcode(DetailView):
+    """
+    Affiche une page avec un QrCode
+    """
+    model = Orgue
+    slug_field = 'slug'
+    slug_url_kwarg = 'slug'
+    template_name_suffix = '_qrcode'
+
+    def get_object(self, queryset=None):
+        orgue = Orgue.objects.filter(Q(slug=self.kwargs['slug']) | Q(codification=self.kwargs['slug'])).first()
+        if not orgue:
+            raise Http404
+        return orgue
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["orgue_url"] = self.request.build_absolute_uri(self.object.get_short_url())
+        return context
+
 class ContributionOrgueMixin:
     """
     Ajout d'une contribution lors de la modification d'un orgue
@@ -412,7 +432,7 @@ class OrgueCreate(FabCreateView, ContributionOrgueMixin):
         else:
             return super().form_valid(form)
 
-          
+
 class OrgueUpdateMixin(FabUpdateView, ContributionOrgueMixin):
     """
     Mixin de modification d'un orgue qui permet de systématiquement:

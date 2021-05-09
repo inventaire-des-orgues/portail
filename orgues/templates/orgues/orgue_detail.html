@@ -295,18 +295,17 @@
             </div>
           </div>
           <div class="mb-4  box-shadow">
-            {% load qr_code %}
-            <div class="qrcode">
-              {% qr_from_text orgue_url size="t" %}
-            </div>
-            <a href="{% url 'orgues:orgue-update' object.uuid %}" class="btn btn-primary  btn-block">
+            <a href="{% url 'orgues:orgue-update' object.uuid %}" class="btn btn-primary btn-block">
               <i class="fa fa-edit"></i> Compléter la fiche
             </a>
             <small class="text-justify">Mise à jour {{ contributions.count }} fois par {{ contributions.contributeurs }} contributeur{{ contributions.contributeurs|pluralize }} <a href="{% url 'orgues:orgue-detail-contributions' orgue.uuid %}" class="pl-1">voir détail</a>
               {% if contributions.count > 0 %}
                 Actualisé le {{ contributions.modified_date|date:'d/m/Y' }} par {{ contributions.updated_by_user | default:"Personne" }}
               {% endif %}
-              </small>
+            </small>
+            <a href="{% url 'orgues:orgue-qrcode' object.slug %}" class="text-center block" target="_blank">
+              <i class="fa fa-qrcode"></i> Imprimer un qrcode
+            </a>
           </div>
         </div>
       </div>
