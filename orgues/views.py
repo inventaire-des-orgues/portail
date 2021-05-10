@@ -199,7 +199,7 @@ class OrgueFiltreJS(View):
     JSON renvoyant la liste des orgues auxquels le facteur a participé.
     """
     def get(self, request, *args, **kwargs):
-        facteur_pk = request.GET.get("facteur_pk")
+        facteur_pk = request.GET.get("pk")
         type_requete = request.GET.get("type")
         queryset = Orgue.objects.all()
         if facteur_pk:
