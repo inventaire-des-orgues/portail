@@ -8,6 +8,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for image in Image.objects.all():
-            if (not image.image) or (image.image.size <= 1):
+            if not image.image:
                 image.delete()
-                print('Deleting image : ',image)
+                print('Delete non existing image: ',image)
+            elif image.image.size <= 1:
+                image.image.delete()
+                image.delete()
+                print('Delete empty image : ',image)
