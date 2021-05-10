@@ -61,10 +61,13 @@
   <body>
     <img src="{% static 'img/logo.png' %}" alt="" width="200px">
 
-    <h2>Retrouvez l'historique complet et la composition de cet instrument :<br>
+    <h2>
         {{ orgue.designation|default_if_none:"Orgue" }} <br>
-        {{ orgue.commune }}<br>
-        sur l'Inventaire national des orgues</p>
+        {{ orgue.commune }}
+    </h2>
+    <h2>
+        Retrouvez l'historique complet et la composition de cet instrument sur l'Inventaire national des orgues</p>
+    </h2>
 
     <div id="qrcode"></div>
     <script type="text/javascript">
