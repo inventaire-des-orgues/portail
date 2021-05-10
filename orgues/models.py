@@ -247,7 +247,7 @@ class Orgue(models.Model):
     # Localisation
     code_dep_validator = RegexValidator(regex='^(97[12346]|0[1-9]|[1-8][0-9]|9[0-5]|2[AB])$',
                                         message="Renseigner un code de département valide")
-    osm_id_validator = RegexValidator(regex='^[0-9]+$', message="Renseigner un numéro d'identifant OSM")
+
     edifice = models.CharField(max_length=300)
     adresse = models.CharField(max_length=300, null=True, blank=True)
     commune = models.CharField(max_length=100)
@@ -262,8 +262,7 @@ class Orgue(models.Model):
     longitude = models.FloatField(null=True, blank=True)
     osm_type = models.CharField(choices=CHOIX_TYPE_OSM, verbose_name="Type open street map", max_length=20, null=True,
                                 blank=True, help_text="Type OSM de l'objet représenant l'édifice.")
-    osm_id = models.CharField(verbose_name="Id open street map", max_length=20, null=True, blank=True,
-                              help_text="Id OSM de l'objet décrivant l'édifice.", validators=[osm_id_validator])
+    osm_id = models.CharField(verbose_name="Id open street map", max_length=20, null=True, blank=True, help_text="Id OSM de l'objet décrivant l'édifice.")
 
     # Partie instrumentale
     diapason = models.CharField(max_length=20, null=True, blank=True,
@@ -521,7 +520,7 @@ class Clavier(models.Model):
     type = models.ForeignKey(TypeClavier, verbose_name="Nom", null=True, on_delete=models.CASCADE, db_index=True)
     is_expressif = models.BooleanField(verbose_name="Cocher si expressif", default=False)
     etendue = models.CharField(validators=[validate_etendue], max_length=10, null=True, blank=True,
-                               help_text="De la forme F1-G5, C1-F#5, CD1-G5 (pour absence premier Ut dièse)...")
+                               help_text="De la forme F1-G5, CD1-G5 (pour absence premier Ut dièse), FGC1-G5 (pour un ravalement), ...")
     commentaire = models.CharField(max_length=200, null=True, blank=True,
                                    help_text="Particularités specifiques du clavier (transmission, ravalement, etc.)")
 
