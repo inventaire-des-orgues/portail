@@ -11,6 +11,9 @@
     {% if field.label %}
       <label class="" for="{{ field.id_for_label }}">
         {{ field.label }}
+        {% if label %}
+         <span class="label-plus">({{ label }})</span>
+        {% endif %}
         {% if field.field.required %}
           <span class="required">*</span>
         {% endif %}

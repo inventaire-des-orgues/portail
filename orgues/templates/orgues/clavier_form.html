@@ -1,7 +1,7 @@
 {% extends 'orgues/base_edition.html' %}
 {% load static %}
 
-{% block tuyauterie_active %}active{% endblock %}
+{% block composition_active %}active{% endblock %}
 
 {% block card-body %}
   <h5 class="card-title mb-4">
@@ -17,7 +17,14 @@
         {% include 'stack_field.html' with field=clavier_form.type %}
       </div>
       <div class="col-md-6">
-        {% include 'stack_field.html' with field=clavier_form.etendue %}
+        {% with notes=clavier_form.instance.notes %}
+            {% if notes %}
+              {% include 'stack_field.html' with field=clavier_form.etendue label=notes|stringformat:"d"|add:" notes" %}
+            {% else %}
+              {% include 'stack_field.html' with field=clavier_form.etendue %}
+            {% endif %}
+        {% endwith %}
+
       </div>
       <div class="col-md-6">
         <br>
