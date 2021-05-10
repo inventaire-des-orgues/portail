@@ -168,6 +168,7 @@ class FacteurLonLatLeaflet(View):
         return JsonResponse(list(data), safe=False)
 
 
+
 class FacteurListJSlonlat(FabListView):
     """
     Liste dynamique utilisée pour filtrer les facteurs d'orgue dans les menus déroulants select2. Utilisée pour le filtre de la carte.
@@ -284,8 +285,7 @@ class OrgueHistJSDep(View):
             references_palissy["PasCla"] = references_palissy.get(None, 0)
             del references_palissy[None]
         return JsonResponse(references_palissy, safe=False)
-
-
+    
 class Avancement(View):
     def get(self, request, *args, **kwargs):
         entite = request.GET.get("entite")
@@ -313,7 +313,6 @@ class Avancement(View):
         else:
             moy["total"] = regions['Avancement'].mean(axis=0)
         return JsonResponse(moy, safe=False)
-
 
 class OrgueDetail(DetailView):
     """
@@ -369,7 +368,6 @@ class OrgueDetailExemple(View):
         orgue = Orgue.objects.order_by('-completion').first()
         return redirect(orgue.get_absolute_url())
 
-
 class ContributionOrgueMixin:
     """
     Ajout d'une contribution lors de la modification d'un orgue
@@ -384,7 +382,6 @@ class ContributionOrgueMixin:
         if contribution.description.find(detail) < 0:
             contribution.description += ', ' + detail
         contribution.save()
-
 
 class OrgueCreate(FabCreateView, ContributionOrgueMixin):
     """
@@ -441,7 +438,6 @@ class OrgueUpdateMixin(FabUpdateView, ContributionOrgueMixin):
         context["orgue"] = self.object
         return context
 
-
 class OrgueDetailAvancement(FabDetailView):
     """
     Vue de détail du score d'avancement d'un orgue.
@@ -459,7 +455,6 @@ class OrgueDetailAvancement(FabDetailView):
         context["orgue"] = self.object
         return context
 
-
 class OrgueDetailContributions(FabDetailView):
     """
     Vue de détail des contributeurs d'un orgue.
@@ -474,7 +469,6 @@ class OrgueDetailContributions(FabDetailView):
         context = super().get_context_data()
         context["orgue"] = self.object
         return context
-
 
 class OrgueUpdate(OrgueUpdateMixin, FabUpdateView):
     """
@@ -755,7 +749,6 @@ class CommuneListJS(FabListView):
             results = [{"id": u["id"], "text": u["nom"]} for u in context["object_list"]]
         return JsonResponse({"results": results, "pagination": {"more": more}})
 
-
 class DesignationListJS(FabListView):
     """
     Liste dynamique utilisée pour filtrer les désignations dans le menu déroulant select2 pour créer un nouvel orgue.
@@ -768,10 +761,10 @@ class DesignationListJS(FabListView):
 
     def get_queryset(self):
         query = self.request.GET.get("search")
-        liste_designation = ['G.O.', 'orgue', 'Grand Orgue', 'orgue de tribune', 'orgue de transept', 'orgue positif', 'orgue régale',
-"orgue d'accompagnement", 'petit orgue', "orgue d'étude", 'positif', 'grand positif', 'chapelle', 'oratoire',
-"chapelle d'hiver", 'chapelle de la Vierge', 'sacristie', 'O.C.', 'O.C.1', 'O.C.2', 'crypte', 'Orgue coffre', 'auditorium',
-'orgue 1', 'orgue 2', 'ancien','nouveau', '1', '2', '3', '4', '5', '6', '7', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII',
+        liste_designation = ['G.O.', 'orgue', 'Grand Orgue', 'orgue de tribune', 'orgue de transept', 'orgue positif','orgue régale',
+"orgue d'accompagnement",'petit orgue', "orgue d'étude", 'positif', 'grand positif', 'chapelle', 'oratoire',
+"chapelle d'hiver", 'chapelle de la Vierge', 'sacristie', 'O.C.', 'O.C.1', 'O.C.2', 'crypte', 'Orgue coffre','auditorium',
+'orgue 1', 'orgue 2','ancien','nouveau','1', '2', '3', '4', '5', '6', '7', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII',
 "Orgue d'étude", 'Orgue espagnol', 'Orgue majorquin', 'Orgue napolitain', "orgue d'étude (1982)", "orgue d'étude (1968)",
 'polyphone', 'buffet', 'orgue à rouleau', 'orgue à cylindre', '']
         results = []

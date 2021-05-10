@@ -384,6 +384,9 @@ class Orgue(models.Model):
     def get_absolute_url(self):
         return reverse('orgues:orgue-detail', args=(self.slug,))
 
+    def get_short_url(self):
+        return reverse('orgues:orgue-detail', args=(self.codification,))
+
     def get_update_url(self):
         return reverse('orgues:orgue-update', args=(self.uuid,))
 

@@ -1,0 +1,82 @@
+{% load static %}
+<html>
+  <head>
+    <style>
+      @font-face {
+          font-family: D-DIN;
+          src: url("{% static 'polo/fonts/d-din/D-DIN.otf' %}");
+      }
+
+      @font-face {
+          font-family: D-DIN-Bold;
+          src: url("{% static 'polo/fonts/d-din/D-DIN-Bold.otf' %}");
+          font-weight: bold;
+      }
+
+      body {
+        font-family: D-DIN, sans-serif !important;
+        text-align: center;
+      }
+      h2 {
+        font-weight: bold;
+        margin: 3em;
+      }
+      #qrcode {
+        margin: 3em auto;
+        width: 256px;
+      }
+      .info {
+        color: #0c5460;
+        background-color: #dceef1;
+        padding: .75rem 1.25rem;
+        margin-bottom: 1rem;
+        border: 1px solid #bee5eb;
+        border-radius: .25rem;
+        width: 60%;
+        margin: 2em auto;
+      }
+      a {
+        border-radius: 5px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: .5px;
+        text-decoration: none;
+        padding: 12px 18px;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+        line-height: 14px;
+        cursor: pointer;
+        background-color: #5c1c54;
+        color: white;
+        border: none;
+      }
+      @media print {
+        .noprint {
+          display: none;
+        }
+      }
+    </style>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+  </head>
+  <body>
+    <img src="{% static 'img/logo.png' %}" alt="" width="200px">
+
+    <h2>Retrouver l'historique complet et la composition du {{ orgue.designation|default_if_none:"Orgue" }} de {{ orgue.commune }}<br> sur l'inventaire National des Orgues</p>
+
+    <div id="qrcode"></div>
+    <script type="text/javascript">
+    new QRCode(document.getElementById("qrcode"), "{{ orgue_url }}");
+    </script>
+
+    <h3>inventaire-des-orgues.fr</h3>
+
+
+
+    <div class="noprint info">
+      Imprimez cette page et affichez la à côté de l'orgue pour permettre aux visiteurs de retrouver les infos sur l'orgue via le qrcode
+    </div>
+    <a href="{% url 'orgues:orgue-detail' object.slug %}" class="noprint">
+      Retour
+    </a>
+  </body>
+</html>
