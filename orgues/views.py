@@ -314,6 +314,7 @@ class Avancement(View):
             moy["total"] = regions['Avancement'].mean(axis=0)
         return JsonResponse(moy, safe=False)
 
+
 class OrgueDetail(DetailView):
     """
     Vue de détail (lecture seule) d'un orgue
@@ -367,6 +368,27 @@ class OrgueDetailExemple(View):
     def get(self, request, *args, **kwargs):
         orgue = Orgue.objects.order_by('-completion').first()
         return redirect(orgue.get_absolute_url())
+
+class OrgueQrcode(DetailView):
+    """
+    Affiche une page avec un QrCode
+    """
+    model = Orgue
+    slug_field = 'slug'
+    slug_url_kwarg = 'slug'
+    template_name_suffix = '_qrcode'
+
+    def get_object(self, queryset=None):
+        orgue = Orgue.objects.filter(Q(slug=self.kwargs['slug']) | Q(codification=self.kwargs['slug'])).first()
+        if not orgue:
+            raise Http404
+        return orgue
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["orgue_url"] = self.request.build_absolute_uri(self.object.get_short_url())
+        return context
+
 
 class ContributionOrgueMixin:
     """
@@ -748,6 +770,7 @@ class CommuneListJS(FabListView):
         if context["object_list"]:
             results = [{"id": u["id"], "text": u["nom"]} for u in context["object_list"]]
         return JsonResponse({"results": results, "pagination": {"more": more}})
+
 
 class DesignationListJS(FabListView):
     """
