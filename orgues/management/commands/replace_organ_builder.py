@@ -4,6 +4,7 @@ from orgues.models import Evenement
 from django.core.management.base import BaseCommand
 import requests
 
+
 class Command(BaseCommand):
     """
     Remplace dans tous les événements un facteur d'orgue par un autre.
