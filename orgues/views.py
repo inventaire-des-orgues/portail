@@ -164,7 +164,7 @@ class FacteurLonLatLeaflet(View):
 
     def get(self, request, *args, **kwargs):
         nom = self.request.GET.get("facteur")
-        data = Facteur.objects.filter(nom=nom).values("nom", "latitude_atelier", "longitude_atelier")
+        data = Facteur.objects.filter(pk=nom).values("nom", "latitude_atelier", "longitude_atelier")
         return JsonResponse(list(data), safe=False)
 
 

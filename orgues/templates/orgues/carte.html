@@ -21,6 +21,7 @@
         </div>
       </form>
     <button class='btn' id='afficher_tous_orgues'>Afficher tous les orgues</button>
+    <button class='btn' id='afficher_orgues_facteurs'>Voir les orgues du facteur</button>
     <form id="chercher_facteur" action="">
       <b>Rechercher une manufacture d'orgues :</b>
       <select type="text" id="nom_facteur_recherche"></select>
@@ -108,6 +109,7 @@
 
     $.getJSON("{% url 'orgues:orgue-list-js' %}", function (orgues) {//Affiche les orgues à l'ouverture de la page.
       $("#afficher_tous_orgues").hide();
+      $("#afficher_orgues_facteurs").hide();
       afficher_orgue(orgues);
     });
 
@@ -147,6 +149,7 @@
       e.preventDefault();
       markersCluster.clearLayers();
       $("#afficher_tous_orgues").show();
+      $("#afficher_orgues_facteurs").show();
       $("#facteur_pk")[0].placeholder = 'Choisir un facteur';
       if ($('#construction').is(':checked')){
         var data_filtre = {"pk": $("#facteur_pk").val(), "type":"construction"}
@@ -194,7 +197,7 @@
       markersClusterFacteur.clearLayers();
       document.getElementById("manufacture").checked = true;
       afficher_manufactures();
-      data_filtre = {"facteur_pk": $("#nom_facteur_recherche").val(), "type":"tout_type"}
+      data_filtre = {"facteur": $("#nom_facteur_recherche").val(), "type":"tout_type"}
       $.ajax({
         type: "GET",
         url: "{% url 'orgues:facteur-js-lonlat' %}",
@@ -210,9 +213,24 @@
     $("#afficher_tous_orgues").click(function(){//Affiche tous les orgues lorsque l'on clique sur le bouton
       markersCluster.clearLayers();
       $("#afficher_tous_orgues").hide();
+      $("#afficher_orgues_facteurs").hide();
       $.getJSON("{% url 'orgues:orgue-list-js' %}", function (orgues) {
         afficher_orgue(orgues)
       });
+    })
+
+    $("#afficher_orgues_facteurs").click(function(){//Affiche la liste des orgues du facteur
+      data_filtre = {"facteur": $("#facteur_pk").val(), "type":"tout_type"}
+      $.ajax({
+        type: "GET",
+        url: "{% url 'orgues:facteur-js-lonlat' %}",
+        data: data_filtre,
+        success: function (data) {
+          window.location.href="{% url 'orgues:orgue-list' %}"+"?query="+data[0].nom;
+        },
+        error: function () {
+        }
+      })
     })
 
     function afficher_orgue(orgues){
