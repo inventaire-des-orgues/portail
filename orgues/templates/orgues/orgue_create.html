@@ -1,39 +1,45 @@
 {% extends 'base.html' %}
 {% load static %}
 
-
-{% block orgue_active %} active {% endblock %}
 {% block content %}
 
-  <div class="my-50 text-center">
-    <h2 class="font-w700 text-black mb-10">Nouvel orgue</h2>
-      <h3 class="h5 text-muted mb-0">Commencez par compléter les informations basiques</h3>
-
-  </div>
-  <div class="block ">
-    <div class="block-content tab-content">
-      {% if form.errors %}
-        {% for error in user_form.non_field_errors %}
-          <div class="alert alert-danger">
-            <strong>{{ error|escape }}</strong>
+  <section>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-4">
+          <div class="my-50 text-center">
+            <h2 class="font-w700 text-black">Nouvel orgue</h2>
+            <h3 class="h5 text-muted my-50">Commencez par compléter les informations basiques</h3>
           </div>
-        {% endfor %}
-      {% endif %}
-      <form action="" method="post" id="mainform" enctype="multipart/form-data">{% csrf_token %}
-        {% for field in form %}
-          {% include 'stack_field.html' with with_helptext='true' %}
-        {% endfor %}
-        <hr>
-        <div class="form-group text-right">
-          <a href="{% url 'orgues:orgue-list' %}" class="btn btn-secondary" id="create">Annuler</a>
-          <button type="submit" class="btn btn-primary" id="create">Enregistrer</button>
-        </div>
-      </form>
-    </div>
-  </div>
-  {% endblock %}
+          <div class="block">
+            <div class="block-body">
+              {% if form.errors %}
+                {% for error in user_form.non_field_errors %}
+                  <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                  </div>
+                {% endfor %}
+              {% endif %}
+              <form action="" method="post" id="mainform" enctype="multipart/form-data">{% csrf_token %}
+                {% for field in form %}
+                  {% include 'stack_field.html' with with_helptext='true' %}
+                {% endfor %}
+                <hr>
+                <div class="form-group text-right">
+                  <a href="{% url 'orgues:orgue-list' %}" class="btn btn-secondary" id="create">Annuler</a>
+                  <button type="submit" class="btn btn-primary" id="create">Enregistrer</button>
+                </div>
+              </form>
+            </div>
 
-  {% block js_extra %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block js_extra %}
   <script>
     $(function () {
       $("#id_commune").select2({
@@ -56,12 +62,15 @@
             return "Aucune commune trouvée ...";
           }
         },
-        
+
         width: '100%'
-      });
+      }).focus(function () { $(this).select2('open'); });
 
       $("#id_designation").select2({
-        placeholder: 'Choisir une désignation',
+        placeholder: {
+          id: 'orgue',
+          text:'orgue'
+        },
         ajax: {
           url: '{% url 'orgues:designation-list-js' %}',
           data: function (params) {
@@ -80,20 +89,11 @@
             return "Aucune désignation trouvée ...";
           }
         },
-        
+
         width: '100%'
       });
-
-
-  });
-
-
-
-
-
-
-
-
+      $("#id_commune").trigger( "focus" );
+    });
   </script>
 
 

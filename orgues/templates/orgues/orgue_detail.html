@@ -44,7 +44,7 @@
         <div class="col-lg-9 order-2 col-md-12 order-lg-1  ">
           <div class="card mb-4 box-shadow">
             {% if object.image_principale %}
-              <img class="card-img-top" src="{{ orgue.image_principale.image.url }}" alt="Card image cap">
+              <img class="card-img-top d-none d-lg-block" src="{{ orgue.image_principale.image.url }}" alt="Card image cap">
             {% endif %}
             <div class="card-body">
               <div class="row">
@@ -210,7 +210,11 @@
           <p class="text-center">Code de l'orgue : {{ orgue.codification }}</p>
         </div>
         <div class="col-lg-3 order-1 col-md-12 order-lg-2  mb-3">
+
           <div class="card mb-4 box-shadow">
+          {% if object.image_principale %}
+              <img class="card-img-top d-lg-none" src="{{ orgue.image_principale.image.url }}" alt="Card image cap">
+            {% endif %}
             <div class="card-body">
               <dl>
                 <dt>Facteurs</dt>
@@ -273,12 +277,12 @@
                     <a href="{{ lien.href }}" target="_blank" rel="noopener noreferrer">{{ lien.title }}</a> <br>
                   {% endfor %}
                 </dd>
-                <img src="{% static "img/MH3A_simplifiee_RVB.png" %}" class="img-fluid mb-3" alt="">
+                <img src="{% static "img/MH3A_simplifiee_RVB.png" %}" id="logo_mh" alt="">
               {% endif %}
               {% if orgue.latitude and orgue.longitude %}
                 <div id="mapid" style="height:150px;margin-bottom:10px"></div>
               {% endif %}
-                            
+
               {% if orgue.osm_type and orgue.osm_id %}
                 <dt>Localiser l'édifice</dt>
                 <dd>
@@ -287,14 +291,21 @@
                 {% endwith %}
                 </dd>
               {% endif %}
-              
+
             </div>
           </div>
           <div class="mb-4  box-shadow">
-            <a href="{% url 'orgues:orgue-update' object.uuid %}" class="btn btn-primary  btn-block">
+            <a href="{% url 'orgues:orgue-update' object.uuid %}" class="btn btn-primary btn-block">
               <i class="fa fa-edit"></i> Compléter la fiche
             </a>
-            <small class="text-justify">Actualisé le {{ orgue.modified_date|date:'d/m/Y' }} par {{ orgue.updated_by_user }}</small>
+            <small class="text-justify">Mise à jour {{ contributions.count }} fois par {{ contributions.contributeurs }} contributeur{{ contributions.contributeurs|pluralize }} <a href="{% url 'orgues:orgue-detail-contributions' orgue.uuid %}" class="pl-1">voir détail</a>
+              {% if contributions.count > 0 %}
+                Actualisé le {{ contributions.modified_date|date:'d/m/Y' }} par {{ contributions.updated_by_user | default:"Personne" }}
+              {% endif %}
+            </small>
+            <a href="{% url 'orgues:orgue-qrcode' object.slug %}" class="text-center block" target="_blank">
+              <i class="fa fa-qrcode"></i> Imprimer un qrcode
+            </a>
           </div>
         </div>
       </div>

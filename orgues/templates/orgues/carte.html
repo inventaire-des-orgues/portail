@@ -7,31 +7,32 @@
 {% endblock %}
 
 {% block content %}
-<div id="carte_generale">  
+<div id="carte_generale">
   <div class="container-fluid" id="carte">
       <div id="mapid" style="height:700px"></div>
   </div>
   <div id="div_filtre">
     <b>Filtrer les orgues par facteur :</b>
     <form id="filtre_formulaire" action="" >
-        <select type="text" id="nom_facteur"></select>
+        <select type="text" id="facteur_pk"></select>
         <label><input type="checkbox" name="construction" id="construction">N'afficher que les orgues pour lesquels le facteur a participé à la construction ou à la reconstruction.</label>
         <div class="form-group text-right">
-          <button id="validation" class="btn btn-primary btn-sm btn-slide"><i id="search-btn" class="fa fa-search"></i></button>
+          <button id="validation" class="btn btn-primary btn-sm btn-rounded"><i id="search-btn" class="fa fa-search"></i></button>
         </div>
       </form>
     <button class='btn' id='afficher_tous_orgues'>Afficher tous les orgues</button>
+    <button class='btn' id='afficher_orgues_facteurs'>Voir les orgues du facteur</button>
     <form id="chercher_facteur" action="">
       <b>Rechercher une manufacture d'orgues :</b>
       <select type="text" id="nom_facteur_recherche"></select>
       <div class="form-group text-right" id="valider_recherche_manufacture">
-        <button id="validation_facteur" class="btn  btn-sm btn-slide"><i id="search-btn" class="fa fa-search"></i></button>
+        <button id="validation_facteur" class="btn btn-primary btn-sm btn-rounded"><i id="search-btn" class="fa fa-search"></i></button>
       </div>
     </form>
     <label><input type="checkbox" name="manufacture" id="manufacture">Afficher toutes les manufactures d'orgues.</label>
-  </div>  
-</div>  
-  
+  </div>
+</div>
+
 {% endblock %}
 
 {% block js_extra %}
@@ -80,12 +81,9 @@
 
     var facteur_icon = L.icon({
       iconUrl: '{% static 'img/icone_facteur_carte.png' %}',
-      shadowUrl: '{% static 'img/marker-shadow.png' %}',
 
-      iconSize: [25, 41], // size of the icon
-      shadowSize: [41, 41], // size of the shadow
-      iconAnchor: [12, 41], // point of the icon which will correspond to marker's location
-      shadowAnchor: [12, 41],  // the same for the shadow
+      iconSize: [25, 25], // size of the icon
+      iconAnchor: [3, 35], // point of the icon which will correspond to marker's location
       {#popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor#}
     });
 
@@ -109,25 +107,13 @@
       }
     });
 
-    $.getJSON("{% url 'orgues:orgue-list-js' %}", function (orgues) {
+    $.getJSON("{% url 'orgues:orgue-list-js' %}", function (orgues) {//Affiche les orgues à l'ouverture de la page.
       $("#afficher_tous_orgues").hide();
+      $("#afficher_orgues_facteurs").hide();
       afficher_orgue(orgues);
     });
 
-    function afficher_manufactures(){
-      $.getJSON("{% url 'orgues:facteur-list-js-leaflet' %}", function (facteurs) {
-          for (var i = 0; i < facteurs.length; i++) {
-            var popup = '<p> <b>' + facteurs[i].nom + '</p> </b>';
-            var latLng = new L.LatLng(facteurs[i].latitude_atelier, facteurs[i].longitude_atelier);
-            var marker = new L.Marker(latLng, {icon:facteur_icon}).bindPopup(popup);
-            markersClusterFacteur.addLayer(marker);
-          }
-          carte_orgues.addLayer(markersClusterFacteur);
-        });
-    }
-
-
-    $('#manufacture').change(function(){
+    $('#manufacture').change(function(){//Affiche ou cache les manufactures d'orgues en fonction de l'état du bouton.
       if ($('#manufacture').is(':checked')){
         afficher_manufactures();
       }
@@ -136,54 +122,7 @@
       }
     })
 
-    $("#nom_facteur_recherche").select2({
-      placeholder: 'Choisir un facteur',
-      ajax: {
-        url: '{% url 'orgues:facteur-list-js-lonlat' %}',
-        data: function (params) {
-          var query = {
-            search: params.term,
-            page: params.page || 1
-          }
-          return query;
-        }
-      },
-      escapeMarkup: function (markup) {
-        return markup;
-      },
-      language: {
-          noResults: function () {
-            return "Aucun facteur trouvé ... contactez-nous si vous souhaitez ajouter un nouveau facteur.";
-          }
-      },
-      width: '100%'
-    });
-
-    $("#validation_facteur").click(function(e){
-      e.preventDefault();
-      markersClusterFacteur.clearLayers();
-      document.getElementById("manufacture").checked = true;
-      afficher_manufactures();
-      $.getJSON("{% url 'orgues:facteur-list-js-lonlat' %}", function (facteurs) {
-        var listeFacteurs = facteurs.results;
-        for (var i = 0; i < listeFacteurs.length; i++) {
-          if (listeFacteurs[i].id == $("#nom_facteur_recherche").val()){
-            carte_orgues.setView([listeFacteurs[i].latitude, listeFacteurs[i].longitude], 10);
-          }
-        }
-      })
-    })
-
-    $("#afficher_tous_orgues").click(function(){
-      markersCluster.clearLayers();
-      $("#afficher_tous_orgues").hide();
-      $.getJSON("{% url 'orgues:orgue-list-js' %}", function (orgues) {
-        afficher_orgue(orgues)
-      });
-    })
-
-
-    $("#nom_facteur").select2({
+    $("#facteur_pk").select2({//Liste des facteurs proposée dans le champ "Filtrer les orgues par facteur"
       placeholder: 'Choisir un facteur',
       ajax: {
         url: '{% url 'orgues:facteur-list-js' %}',
@@ -206,40 +145,92 @@
       width: '100%'
     });
 
-    $("#validation").click(function(e){
+    $("#validation").click(function(e){//Affiche seulement les orgues dont le facteur choisi a participé à la construction ou à l'entretien.
       e.preventDefault();
       markersCluster.clearLayers();
-        $.getJSON("{% url 'orgues:facteur-filtre-js' %}", function (facteurs) {
-          var facteur =  null;
-          for (var i = 0; i < facteurs.results.length; i++) {
-            if (facteurs.results[i].id==$("#nom_facteur").val()){
-              facteur = facteurs.results[i].text;
-            }
+      $("#afficher_tous_orgues").show();
+      $("#afficher_orgues_facteurs").show();
+      $("#facteur_pk")[0].placeholder = 'Choisir un facteur';
+      if ($('#construction').is(':checked')){
+        var data_filtre = {"pk": $("#facteur_pk").val(), "type":"construction"}
+      }
+      else{
+        var data_filtre = {"pk": $("#facteur_pk").val(), "type":"tout_type"}
+      }
+      $.ajax({
+        type: "GET",
+        url: "{% url 'orgues:orgue-filtre-js' %}",
+        data: data_filtre,
+        success: function (data) {
+          afficher_orgue(data)
+        },
+        error: function () {
+        }
+      })
+    })
+
+    $("#nom_facteur_recherche").select2({//Liste des facteurs proposés dans le champ "Rechercher une manufacture d'orgues"
+      placeholder: 'Choisir un facteur',
+      ajax: {
+        url: '{% url 'orgues:facteur-list-js-lonlat' %}',
+        data: function (params) {
+          var query = {
+            search: params.term,
+            page: params.page || 1
           }
-          if (facteur==null){
-            var data_filtre = {}
+          return query;
+        }
+      },
+      escapeMarkup: function (markup) {
+        return markup;
+      },
+      language: {
+          noResults: function () {
+            return "Aucun facteur trouvé ... contactez-nous si vous souhaitez ajouter un nouveau facteur.";
           }
-          else {
-            $("#afficher_tous_orgues").show();
-            $("#nom_facteur")[0].placeholder = 'Choisir un facteur';
-            if ($('#construction').is(':checked')){
-              var data_filtre = {"facteur": facteur, "type":"construction"}
-            }
-            else{
-              var data_filtre = {"facteur": facteur, "type":"tout_type"}
-            }
-          }
-          $.ajax({
-            type: "GET",
-            url: "{% url 'orgues:orgue-filtre-js' %}",
-            data: data_filtre,
-            success: function (data) {
-              afficher_orgue(data)
-            },
-            error: function () {
-            }
-          })
-        })
+      },
+      width: '100%'
+    });
+
+    $("#validation_facteur").click(function(e){//Affiche les manufactures d'orgues et centre la carte sur celle choisie
+      e.preventDefault();
+      markersClusterFacteur.clearLayers();
+      document.getElementById("manufacture").checked = true;
+      afficher_manufactures();
+      data_filtre = {"facteur": $("#nom_facteur_recherche").val(), "type":"tout_type"}
+      $.ajax({
+        type: "GET",
+        url: "{% url 'orgues:facteur-js-lonlat' %}",
+        data: data_filtre,
+        success: function (data) {
+          carte_orgues.setView([data[0].latitude_atelier, data[0].longitude_atelier], 10);
+        },
+        error: function () {
+        }
+      })
+    })
+
+    $("#afficher_tous_orgues").click(function(){//Affiche tous les orgues lorsque l'on clique sur le bouton
+      markersCluster.clearLayers();
+      $("#afficher_tous_orgues").hide();
+      $("#afficher_orgues_facteurs").hide();
+      $.getJSON("{% url 'orgues:orgue-list-js' %}", function (orgues) {
+        afficher_orgue(orgues)
+      });
+    })
+
+    $("#afficher_orgues_facteurs").click(function(){//Affiche la liste des orgues du facteur
+      data_filtre = {"facteur": $("#facteur_pk").val(), "type":"tout_type"}
+      $.ajax({
+        type: "GET",
+        url: "{% url 'orgues:facteur-js-lonlat' %}",
+        data: data_filtre,
+        success: function (data) {
+          window.location.href="{% url 'orgues:orgue-list' %}"+"?query="+data[0].nom;
+        },
+        error: function () {
+        }
+      })
     })
 
     function afficher_orgue(orgues){
@@ -257,6 +248,18 @@
         markersCluster.addLayer(marker);
         }
         carte_orgues.addLayer(markersCluster);
+    }
+
+    function afficher_manufactures(){
+      $.getJSON("{% url 'orgues:facteur-list-js-leaflet' %}", function (facteurs) {
+          for (var i = 0; i < facteurs.length; i++) {
+            var popup = '<p> <b>' + facteurs[i].nom + '</p> </b>';
+            var latLng = new L.LatLng(facteurs[i].latitude_atelier, facteurs[i].longitude_atelier);
+            var marker = new L.Marker(latLng, {icon:facteur_icon}).bindPopup(popup);
+            markersClusterFacteur.addLayer(marker);
+          }
+          carte_orgues.addLayer(markersClusterFacteur);
+        });
     }
   </script>
 

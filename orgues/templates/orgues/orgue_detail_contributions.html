@@ -1,0 +1,77 @@
+{% extends 'orgues/base_edition.html' %}
+{% load static %}
+
+{% block help-link %}#{% endblock %}
+
+
+
+{% block card-body %}
+
+  <table class="table table-bordered" data-order='[[ 0, "desc" ]]'>
+    <thead>
+    <tr>
+      <th>Date</th>
+      <th>Détail</th>
+      <th>Utilisateur</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for contribution in orgue.contributions.all %}
+      <tr>
+        <td data-order="{{ contribution.date | date:'U' }}" data-search="{{ contribution.date | date:'d/m/Y H:i j F Y G:i' }}">{{ contribution.date | date:'d/m/Y G:i' }}</td>
+        <td>
+          {{ contribution.description }}
+        </td>
+        <td>
+          {{ contribution.user }}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+
+{% endblock %}
+
+
+{% block head_extra %}
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4-4.1.1/dt-1.10.24/datatables.min.css"/>
+
+{% endblock %}
+{% block js_extra %}
+
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4-4.1.1/dt-1.10.24/datatables.min.js"></script>
+
+  <script>
+    $(document).ready(function () {
+      $('table').DataTable({
+        paging: false,
+        language: {
+          processing:     "Traitement en cours...",
+          search:         "Rechercher&nbsp;:",
+          lengthMenu:    "Afficher _MENU_ &eacute;l&eacute;ments",
+          info:           "Affichage de l'&eacute;lement _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
+          infoEmpty:      "Affichage de l'&eacute;lement 0 &agrave; 0 sur 0 &eacute;l&eacute;ments",
+          infoFiltered:   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
+          infoPostFix:    "",
+          loadingRecords: "Chargement en cours...",
+          zeroRecords:    "Aucun &eacute;l&eacute;ment &agrave; afficher",
+          emptyTable:     "Aucune donnée disponible dans le tableau",
+          paginate: {
+              first:      "Premier",
+              previous:   "Pr&eacute;c&eacute;dent",
+              next:       "Suivant",
+              last:       "Dernier"
+          },
+          aria: {
+              sortAscending:  ": activer pour trier la colonne par ordre croissant",
+              sortDescending: ": activer pour trier la colonne par ordre décroissant"
+          }
+      }
+      });
+    });
+  </script>
+
+{% endblock %}
+
+

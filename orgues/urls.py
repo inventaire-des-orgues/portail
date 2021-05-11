@@ -8,16 +8,17 @@ urlpatterns = [
     path('orgues/csv/', v.OrgueExport.as_view(), name='orgue-csv'),
     path('recherche/', v.OrgueSearch.as_view(), name='orgue-search'),
     path('liste.json', v.OrgueListJS.as_view(), name='orgue-list-js'),
-    path('listeFacteur.json', v.FacteurListJSLeaflet.as_view(), name='facteur-list-js-leaflet'),
     path('etats.json', v.OrgueEtatsJS.as_view(), name='orgue-etats-js'),
     path('etats2.json', v.OrgueEtatsJSDep.as_view(), name='orgue-etats-js2'),
     path('references_palissy.json', v.OrgueHistJS.as_view(), name='orgue-hist-js'),
     path('references_palissyDep.json', v.OrgueHistJSDep.as_view(), name='orgue-histDep-js'),
     path('carte/', v.OrgueCarte.as_view(), name='orgue-carte'),
     path('detail/<slug:slug>/', v.OrgueDetail.as_view(), name='orgue-detail'),
+    path('detail/<slug:slug>/qrcode', v.OrgueQrcode.as_view(), name='orgue-qrcode'),
     path('exemple/', v.OrgueDetailExemple.as_view(), name='orgue-detail-exemple'),
     path('conseils/', v.ConseilsFicheView.as_view(),name='orgue-fiche-conseils'),
     path('orgues/filtre', v.OrgueFiltreJS.as_view(), name='orgue-filtre-js'),
+    path('avancement.json', v.Avancement.as_view(), name = 'orgue-av-js'),
 
     # Administration
     path('creation/', v.OrgueCreate.as_view(), name='orgue-create'),
@@ -25,6 +26,7 @@ urlpatterns = [
     path('edition/instrumentale/<uuid:orgue_uuid>/', v.OrgueUpdateInstrumentale.as_view(), name='orgue-update-instrumentale'),
     path('edition/composition/<uuid:orgue_uuid>/', v.OrgueUpdateComposition.as_view(), name='orgue-update-composition'),
     path('edition/avancement/<uuid:orgue_uuid>/', v.OrgueDetailAvancement.as_view(), name='orgue-detail-avancement'),
+    path('edition/contributions/<uuid:orgue_uuid>/', v.OrgueDetailContributions.as_view(), name='orgue-detail-contributions'),
     path('edition/buffet/<uuid:orgue_uuid>/', v.OrgueUpdateBuffet.as_view(), name='orgue-update-buffet'),
     path('edition/localisation/<uuid:orgue_uuid>/', v.OrgueUpdateLocalisation.as_view(), name='orgue-update-localisation'),
     path('suppression/<uuid:orgue_uuid>/', v.OrgueDelete.as_view(), name='orgue-delete'),
@@ -45,10 +47,11 @@ urlpatterns = [
     path('clavier/suppression/<int:pk>/', v.ClavierDelete.as_view(), name='clavier-delete'),
 
     # facteurs
+    path('listeFacteur.json', v.FacteurListJSLeaflet.as_view(), name='facteur-list-js-leaflet'),
     path('js/facteurs/', v.FacteurListJS.as_view(), name='facteur-list-js'),
     path('js/facteurs/creation/', v.FacteurCreateJS.as_view(), name='facteur-create-js'),
-    path('js/facteurs/filtre/', v.FacteurListJSFiltre.as_view(), name='facteur-filtre-js'),
     path('js/facteurs/lonlat/', v.FacteurListJSlonlat.as_view(), name='facteur-list-js-lonlat'),
+    path('js/facteurs/lonlatLeaflet/', v.FacteurLonLatLeaflet.as_view(), name='facteur-js-lonlat'),
 
     # types jeux
     path('types_jeux/creation/', v.TypeJeuCreateJS.as_view(), name='typejeu-create-js'),

@@ -1,6 +1,7 @@
 from django import forms
 import csv
 
+from fabutils.forms import Select2Single, Select2Multiple
 from .models import Orgue, Evenement, Clavier, Facteur, Jeu, Fichier, Image, Source
 
 
@@ -14,6 +15,7 @@ class OrgueGeneralInfoForm(forms.ModelForm):
             "etat",
             "proprietaire",
             "references_palissy",
+            "references_inventaire_regions",
             "entretien",
             "organisme",
             "lien_reference",
@@ -25,6 +27,7 @@ class OrgueGeneralInfoForm(forms.ModelForm):
         widgets = {
             'resume': forms.Textarea(attrs={'rows': 5, 'cols': 15}),
             'commentaire_admin': forms.Textarea(attrs={'rows': 2, 'cols': 15}),
+            'entretien':Select2Multiple
         }
 
     def __init__(self, *args, **kwargs):
@@ -35,6 +38,8 @@ class OrgueGeneralInfoForm(forms.ModelForm):
             self.fields['edifice'].help_text = 'Cette information est figée'
             self.fields['references_palissy'].disabled = True
             self.fields['references_palissy'].help_text = 'Cette information est figée'
+            self.fields['references_inventaire_regions'].disabled = True
+            self.fields['references_inventaire_regions'].help_text = 'Cette information est figée'
 
 
 INSTRUMENTALE_COLUMNS = {
@@ -137,6 +142,10 @@ class EvenementForm(forms.ModelForm):
             "facteurs",
             "resume",
         ]
+
+        widgets = {
+            "facteurs":Select2Multiple
+        }
 
 
 class ClavierForm(forms.ModelForm):
