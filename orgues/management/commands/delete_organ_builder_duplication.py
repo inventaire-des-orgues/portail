@@ -5,6 +5,7 @@ from orgues.models import Facteur, Evenement, Orgue
 from tqdm import tqdm
 from django.db.models import Count
 
+
 class Command(BaseCommand):
     help = "Supprime les doublons de facteurs."
 
