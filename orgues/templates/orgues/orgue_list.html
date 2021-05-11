@@ -28,7 +28,7 @@
                   recommandations <i class="fa fa-chevron-right"></i> </a>
                 <hr>
                 {% if perms.orgues.change_orgue %}
-                  <a href="{% url 'orgues:orgue-csv' %}" class="btn btn-primary rounded-pill mt-3 btn-block">
+                  <a href="{% url 'orgues:orgue-csv' %}" class="btn btn-warning rounded-pill mt-3 btn-block">
                     Export des orgues en csv <i class="fa fa-chevron-right"></i></a>
                 {% endif %}
                 {% if perms.orgues.add_orgue %}
