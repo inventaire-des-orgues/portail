@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+  <section class="bg-primary pt-5" id="mon-compte">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-12">
+          <h3 class="text-center text-white mb-5">Mon compte</h3>
+        </div>
+        <div class="col-lg-9">
+          <div class="card">
+            <div class="card-body">
+              <ul class="nav nav-tabs">
+                <li class="nav-item">
+                  <a class="nav-link active" href="{% url 'accounts:mon-compte' %}">Mon Compte</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'password_change' %}">Mon mot de passe</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://docs.inventaire-des-orgues.fr/charte-du-contributeur/">La charte du contributeur</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Mes contributions</a>
+                </li>
+              </ul>
+              <div class="alert-primary p-20 my-2">
+                Modifier les informations de mon compte (nom, prenom ou email).
+                <a href="/password_change/">Modifier mon mot de passe</a>
+              </div>
+              <form action="" method="post" id="inscription-form">{% csrf_token %}
+                {% if form.errors %}
+                  {% for error in user_form.non_field_errors %}
+                    <div class="alert alert-danger">
+                      <strong>{{ error|escape }}</strong>
+                    </div>
+                  {% endfor %}
+                {% endif %}
+                {% for field in form %}
+                  {% include 'stack_field.html' with with_helptext='true' %}
+                {% endfor %}
+
+
+                <div class="form-group">
+                  <button type="submit" class="btn btn-primary rounded-pill"
+                  >Modifier
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+
+
+{% block js_extra %}
+{% endblock %}

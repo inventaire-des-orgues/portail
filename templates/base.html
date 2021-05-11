@@ -33,9 +33,17 @@
       <div class="row">
         <div class="col-md-6">
           <ul class="top-menu">
+            {% if request.user.is_staff %}
             <li><a href="/admin/"><i class="fa fa-cog"></i></a></li>
+            <li>
+              <a href="{% url 'orgues:dashboard' %}"> <i class="fa fa-chart-line"></i> Dashboard</a>
+            </li>
+            {% endif %}
             <li><a href="https://github.com/inventaire-des-orgues/portail/projects/1"><i class="fa fa-columns"></i></a></li>
             {% if request.user.is_authenticated %}
+              <li>
+                <a href="{% url 'accounts:mon-compte' %}">Mon compte</a>
+              </li>
               <li>
                 <a href="{% url 'logout' %}">Déconnexion</a>
               </li>
