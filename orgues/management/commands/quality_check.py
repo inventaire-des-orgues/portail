@@ -28,7 +28,7 @@ class Command(BaseCommand):
             if len(orgue.codification) != 24:  # TODO regexp
                 print("ERROR : {} est un code mal formatté pour l'orgue {}".format(orgue.codification, orgue))
             # Palissy :
-            if len(orgue.references_palissy.split(';')) > 6:
+            if orgue.references_palissy is not None and len(orgue.references_palissy.split(';')) > 6:
                 print("ERROR : {} Référence Palissy trop longues pour l'orgue {}".format(orgue.references_palissy, orgue))
             # TODO organisme doit être une chaîne sans chiffres
             # TODO lien_reference doit être une URL
