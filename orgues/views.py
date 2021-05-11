@@ -204,6 +204,7 @@ class OrgueFiltreJS(View):
         queryset = Orgue.objects.all()
         if facteur_pk:
             queryset = queryset.filter(evenements__facteurs__pk=facteur_pk)
+            queryset = queryset.filter(Q(latitude__isnull=False) & Q(longitude__isnull=False)).distinct()
             if type_requete == "construction":
                 queryset = queryset.filter(Q(evenements__type="construction") | Q(evenements__type="reconstruction")).distinct()
         data = queryset.distinct().values("slug", "commune", "edifice", "latitude", "longitude", 'emplacement', "references_palissy")
