@@ -7,6 +7,9 @@
       <p class="card-text font-weight-bold" style="font-size:0.9em;">
         {% if clavier.etendue %}
           Etendue : {{ clavier.etendue }}
+          {% with notes=clavier.notes %}
+            {% if notes %} ({{ notes }} notes){% endif %}
+          {% endwith %}
         {% endif %}
       </p>
     </div>

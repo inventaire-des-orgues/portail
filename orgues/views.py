@@ -891,7 +891,8 @@ class ClavierCreate(FabView, ContributionOrgueMixin):
         context = {
             "jeux_formset": JeuFormset(queryset=Jeu.objects.none()),
             "clavier_form": orgue_forms.ClavierForm(),
-            "orgue": orgue
+            "orgue": orgue,
+            "notes": None,
         }
         return render(request, "orgues/clavier_form.html", context)
 
@@ -917,7 +918,8 @@ class ClavierCreate(FabView, ContributionOrgueMixin):
             context = {
                 "jeux_formset": jeux_formset,
                 "clavier_form": clavier_form,
-                "orgue": orgue
+                "orgue": orgue,
+                "notes": None,
             }
             return render(request, "orgues/clavier_form.html", context)
 
@@ -937,7 +939,8 @@ class ClavierUpdate(FabUpdateView, ContributionOrgueMixin):
             "jeux_formset": JeuFormset(queryset=clavier.jeux.all()),
             "clavier_form": orgue_forms.ClavierForm(instance=clavier),
             "orgue": clavier.orgue,
-            "clavier": clavier
+            "clavier": clavier,
+            "notes": clavier.notes,
         }
         return render(request, "orgues/clavier_form.html", context)
 

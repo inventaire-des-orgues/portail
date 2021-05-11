@@ -30,6 +30,7 @@
 
   <script src="https://unpkg.com/filepond-plugin-image-transform/dist/filepond-plugin-image-transform.min.js"></script>
   <script src="https://unpkg.com/filepond-plugin-image-resize/dist/filepond-plugin-image-resize.min.js"></script>
+  <script src="https://unpkg.com/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.js"></script>
   <script src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.min.js"></script>
   <script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.js"></script>
   <script src="https://unpkg.com/filepond/dist/filepond.min.js"></script>
@@ -50,6 +51,7 @@
     FilePond.registerPlugin(FilePondPluginFileValidateType);
     FilePond.registerPlugin(FilePondPluginImageTransform);
     FilePond.registerPlugin(FilePondPluginImagePreview);
+    FilePond.registerPlugin(FilePondPluginFileValidateSize);
 
     const pond = FilePond.create(inputElement, {
       acceptedFileTypes: ['image/*'],
@@ -57,11 +59,13 @@
       allowMultiple: true,
       allowRevert: false,
       allowImageResize: true,
+      minFileSize: '5KB',
       imageResizeTargetWidth: {{MAX_PIXEL_WIDTH}},
       imageResizeUpscale: false,
       imageResizeMode: 'contain',
       labelTapToCancel: 'Cliquez pour annuler',
       labelIdle: 'Cliquez ou déposez vos images ici',
+      labelMinFileSize: 'Fichier trop petit',
       labelFileProcessing: 'Chargement',
       labelFileProcessingComplete: 'Chargement terminé',
       credits: null,
