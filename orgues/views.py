@@ -164,7 +164,7 @@ class FacteurLonLatLeaflet(View):
 
     def get(self, request, *args, **kwargs):
         nom = self.request.GET.get("facteur")
-        data = Facteur.objects.filter(nom=nom).values("nom", "latitude_atelier", "longitude_atelier")
+        data = Facteur.objects.filter(pk=nom).values("nom", "latitude_atelier", "longitude_atelier")
         return JsonResponse(list(data), safe=False)
 
 
@@ -204,6 +204,7 @@ class OrgueFiltreJS(View):
         queryset = Orgue.objects.all()
         if facteur_pk:
             queryset = queryset.filter(evenements__facteurs__pk=facteur_pk)
+            queryset = queryset.filter(Q(latitude__isnull=False) & Q(longitude__isnull=False)).distinct()
             if type_requete == "construction":
                 queryset = queryset.filter(Q(evenements__type="construction") | Q(evenements__type="reconstruction")).distinct()
         data = queryset.distinct().values("slug", "commune", "edifice", "latitude", "longitude", 'emplacement', "references_palissy")
