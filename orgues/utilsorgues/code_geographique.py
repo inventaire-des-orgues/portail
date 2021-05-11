@@ -14,16 +14,6 @@ FIC_FRANCE_DEPARTEMENTS_INSEE = REP_GEODATA + 'departement2021.csv'
 FIC_FRANCE_REGIONS_INSEE = REP_GEODATA + 'region2021.csv'
 
 loggerCodegeogaphique = logging.getLogger('codegeographique')
-loggerCodegeogaphique.setLevel(logging.DEBUG)
-# create file handler which logs even debug messages
-# create console handler with a higher log level
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
-# create formatter and add it to the handlers
-formatter = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
-ch.setFormatter(formatter)
-# add the handlers to the logger
-loggerCodegeogaphique.addHandler(ch)
 
 
 class Region(object):
@@ -267,7 +257,6 @@ class Communes(list):
                 if commune.code_insee not in communes_par_code.keys():
                     communes_par_code[commune.code_insee] = commune
                 else:
-                    print("Code INSEE {} en double !".format(commune.code_insee))
                     loggerCodegeogaphique.critical("Code INSEE {} en double !".format(commune.code_insee))
         return communes_par_code
 

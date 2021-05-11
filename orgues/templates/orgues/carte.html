@@ -149,10 +149,10 @@
       $("#afficher_tous_orgues").show();
       $("#facteur_pk")[0].placeholder = 'Choisir un facteur';
       if ($('#construction').is(':checked')){
-        var data_filtre = {"pk": $("#nom_facteur").val(), "type":"construction"}
+        var data_filtre = {"pk": $("#facteur_pk").val(), "type":"construction"}
       }
       else{
-        var data_filtre = {"pk": $("#nom_facteur").val(), "type":"tout_type"}
+        var data_filtre = {"pk": $("#facteur_pk").val(), "type":"tout_type"}
       }
       $.ajax({
         type: "GET",

@@ -6,16 +6,6 @@ import logging
 import orgues.utilsorgues.tools.generiques as gen
 
 logger_codification = logging.getLogger('codification')
-logger_codification.setLevel(logging.DEBUG)
-# create file handler which logs even debug messages
-# create console handler with a higher log level
-chd = logging.StreamHandler()
-chd.setLevel(logging.INFO)
-# create formatter and add it to the handlers
-formatter = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
-chd.setFormatter(formatter)
-# add the handlers to the logger
-logger_codification.addHandler(chd)
 
 
 ABREVIATIONS_4 = {'BEAU': 'BX',
@@ -42,6 +32,62 @@ ABREVIATIONS_6 = {'BELLEV': 'BV',
                   'PIERRE': 'PRR'}
 
 ABREVIATIONS_8 = {'CHAMPAGN': 'CPN'}
+
+DENOMINATION_ORGUE = {'G.O.': 'T',
+                           'Grand Orgue': 'T',
+                           'orgue de tribune': 'T',
+                           'orgue de transept': 'C',
+                           'orgue positif': 'D',
+                           'orgue régale': 'D',
+                           "orgue d'accompagnement": 'C',
+                           'petit orgue': 'D',
+                           "orgue d'étude": 'D',
+                           'positif': 'D',
+                           'grand positif': 'D',
+                           'chapelle': 'D',
+                           'oratoire': 'D',
+                           "chapelle d'hiver": 'D',
+                           'chapelle de la Vierge': 'D',
+                           'sacristie': 'D',
+                           'O.C.': 'C',
+                           'O.C.1': 'C',
+                           'O.C.2': 'D',
+                           'O.C. 1': 'C',
+                           'O.C. 2': 'D',
+                           'crypte': 'Y',
+                           'coffre': '0',
+                           'Coffre': '0',
+                           'orgue coffre': '0',
+                           'auditorium': '1',
+                           'orgue 1': '1',
+                           'orgue 2': '2',
+                           'ancien': '1',
+                           'nouveau': '2',
+                           '1': '1',
+                           '2': '2',
+                           '3': '3',
+                           '4': '4',
+                           '5': '5',
+                           '6': '6',
+                           '7': '7',
+                           'I': '1',
+                           'II': '2',
+                           'III': '3',
+                           'IV': '4',
+                           'V': '5',
+                           'VI': '6',
+                           'VII': '7',
+                           "Orgue d'étude": '1',
+                           'Orgue espagnol': '2',
+                           'Orgue majorquin': '3',
+                           'Orgue napolitain': '4',
+                           "orgue d'étude (1982)": '1',
+                           "orgue d'étude (1968)": '2',
+                           'polyphone': 'P',
+                           'buffet': 'B',
+                           'orgue à rouleau': 'R',
+                           'orgue à cylindre': 'R',
+                           '': 'X'}
 
 
 def codifie_commune(commune):
@@ -242,7 +288,7 @@ def codifie_edifice(edifice, type_edif):
                         deuxieme_saint = saint.split('&')[1].lstrip().lstrip('Sainte-')
                     code_edifice = 'SS' + premier_saint[0] + premier_saint[-1] + deuxieme_saint[0] + deuxieme_saint[-1]
                 else:
-                    logger_codification.error("Nom d'édifice avec plusieurs saints non géré : {}".format(edifice))
+                    logger_codification.warning("Nom d'édifice avec plusieurs saints non géré : {}".format(edifice))
                     code_edifice = 'SS' + saint[:4]
             else:
                 code_edifice = 'ST' + saint[:4]
@@ -299,65 +345,9 @@ def codifie_denomination(denomination):
     :return: code (str)
     Dans les ouvrages d'inventaire, et d'une façon générale, dénomination et emplacement sont souvent confondus.
     """
-    denominations_orgue = {'G.O.': 'T',
-                           'Grand Orgue': 'T',
-                           'orgue de tribune': 'T',
-                           'orgue de transept': 'C',
-                           'orgue positif': 'D',
-                           'orgue régale': 'D',
-                           "orgue d'accompagnement": 'C',
-                           'orgue de chœur': 'C',
-                           'petit orgue': 'D',
-                           "orgue d'étude": 'D',
-                           'positif': 'D',
-                           'grand positif': 'D',
-                           'chapelle': 'D',
-                           'oratoire': 'D',
-                           "chapelle d'hiver": 'D',
-                           'chapelle de la Vierge': 'D',
-                           'sacristie': 'D',
-                           'O.C.': 'C',
-                           'O.C.1': 'C',
-                           'O.C.2': 'D',
-                           'O.C. 1': 'C',
-                           'O.C. 2': 'D',
-                           'crypte': 'Y',
-                           'coffre': '0',
-                           'Coffre': '0',
-                           'orgue coffre': '0',
-                           'auditorium': '1',
-                           'orgue 1': '1',
-                           'orgue 2': '2',
-                           'ancien': '1',
-                           'nouveau': '2',
-                           '1': '1',
-                           '2': '2',
-                           '3': '3',
-                           '4': '4',
-                           '5': '5',
-                           '6': '6',
-                           '7': '7',
-                           'I': '1',
-                           'II': '2',
-                           'III': '3',
-                           'IV': '4',
-                           'V': '5',
-                           'VI': '6',
-                           'VII': '7',
-                           "Orgue d'étude": '1',
-                           'Orgue espagnol': '2',
-                           'Orgue majorquin': '3',
-                           'Orgue napolitain': '4',
-                           "orgue d'étude (1982)": '1',
-                           "orgue d'étude (1968)": '2',
-                           'polyphone': 'P',
-                           'buffet': 'B',
-                           'orgue à rouleau': 'R',
-                           'orgue à cylindre': 'R',
-                           'orgue': 'X',
-                           '': 'X'}
-    if denomination in denominations_orgue.keys():
-        code_denomination = denominations_orgue[denomination]
+    if denomination in DENOMINATION_ORGUE.keys():
+        code_denomination = DENOMINATION_ORGUE[denomination]
+
     # Les dénominations de type 1--blabla sont décryptées
     elif '--' in denomination:
         code_denomination = denomination.split('--')[0]
@@ -374,7 +364,7 @@ def codifier_instrument(code_insee, commune, edifice_standard, type_edifice, des
     :param orgue: objet de la classe OrgueInventaire
     :return: codification (str)
     """
-    logger_codification.debug('codifier_instrument {} {}'.format(str(edifice_standard), str(commune)))
+    logger_codification.info('codifier_instrument {}, {}, {}'.format(str(commune), str(edifice_standard), str(designation)))
     code_orgue = ''
     code_orgue += 'FR'
     code_orgue += '-'
@@ -386,6 +376,7 @@ def codifier_instrument(code_insee, commune, edifice_standard, type_edifice, des
     code_orgue += '1' # TODO gestion de l'indice édifice
     code_orgue += '-'
     code_orgue += codifie_denomination(designation)
+    logger_codification.info('Codification : {}'.format(str(code_orgue)))
     return code_orgue
 
 

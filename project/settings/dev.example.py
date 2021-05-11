@@ -28,10 +28,15 @@ LOGGING = {
             'style': '{'
         },
         'simple': {
-            'format': '[{asctime}] [{levelname}] {message}',
+            'format': '[{asctime}] [{levelname}] [{name}] {message}',
             'datefmt': LOG_DATEFMT,
             'style': '{'
-        }
+        },
+        'csvformatted_codif': {
+            'format': '{asctime};{name};{levelname};{message}',
+            'datefmt': LOG_DATEFMT,
+            'style': '{'
+        },
     },
     'handlers': {
         'fabaccesslogfile': {
@@ -48,6 +53,18 @@ LOGGING = {
             'backupCount': 3,
             'formatter': 'csvformatted'
         },
+        'codificationlogfile': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': CODIFICATIONLOG_FILE,
+            'maxBytes': 3 * 1024 * 1024,
+            'backupCount': 3,
+            'formatter': 'csvformatted_codif'
+        },
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        }
     },
     'loggers': {
         'fabaccess': {
@@ -58,6 +75,18 @@ LOGGING = {
             'handlers': ['searchlogfile'],
             'level': 'INFO',
         },
+        'codegeographique': {
+            'handlers': ['codificationlogfile', 'console'],
+            'level': 'INFO',
+        },
+        'codification': {
+            'handlers': ['codificationlogfile', 'console'],
+            'level': 'INFO',
+        },
+        'correcteurogues': {
+            'handlers': ['codificationlogfile', 'console'],
+            'level': 'INFO',
+        }
     },
 }
 

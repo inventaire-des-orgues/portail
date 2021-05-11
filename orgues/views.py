@@ -199,7 +199,7 @@ class OrgueFiltreJS(View):
     JSON renvoyant la liste des orgues auxquels le facteur a participé.
     """
     def get(self, request, *args, **kwargs):
-        facteur_pk = request.GET.get("facteur_pk")
+        facteur_pk = request.GET.get("pk")
         type_requete = request.GET.get("type")
         queryset = Orgue.objects.all()
         if facteur_pk:
@@ -412,13 +412,10 @@ class OrgueCreate(FabCreateView, ContributionOrgueMixin):
     model = Orgue
     permission_required = 'orgues.add_orgue'
     form_class = orgue_forms.OrgueCreateForm
-    success_url = reverse_lazy('orgues:orgue-list')
-    success_message = 'Nouvel orgue créé'
     template_name = "orgues/orgue_create.html"
 
     def form_valid(self, form):
         form.instance.updated_by_user = self.request.user
-
         commune, departement, code_departement, region, code_insee = co.geographie_administrative(form.instance.commune)
         edifice, type_edifice = co.reduire_edifice(form.instance.edifice, commune)
         codification = codif.codifier_instrument(code_insee, commune, edifice, type_edifice, form.instance.designation)
@@ -432,9 +429,13 @@ class OrgueCreate(FabCreateView, ContributionOrgueMixin):
             messages.error(self.request, 'Cette codification existe déjà !')
             return super().form_invalid(form)
         else:
+            messages.success(self.request, "Nouvel orgue créé : {}".format(form.instance.codification))
             return super().form_valid(form)
 
-          
+    def get_success_url(self):
+        success_url = reverse('orgues:orgue-detail', args=(self.object.slug,))
+        return self.request.POST.get("next", success_url)
+         
 class OrgueUpdateMixin(FabUpdateView, ContributionOrgueMixin):
     """
     Mixin de modification d'un orgue qui permet de systématiquement:
@@ -784,12 +785,7 @@ class DesignationListJS(FabListView):
 
     def get_queryset(self):
         query = self.request.GET.get("search")
-        liste_designation = ['G.O.', 'orgue', 'Grand Orgue', 'orgue de tribune', 'orgue de transept', 'orgue positif','orgue régale',
-"orgue d'accompagnement",'petit orgue', "orgue d'étude", 'positif', 'grand positif', 'chapelle', 'oratoire',
-"chapelle d'hiver", 'chapelle de la Vierge', 'sacristie', 'O.C.', 'O.C.1', 'O.C.2', 'crypte', 'Orgue coffre','auditorium',
-'orgue 1', 'orgue 2','ancien','nouveau','1', '2', '3', '4', '5', '6', '7', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII',
-"Orgue d'étude", 'Orgue espagnol', 'Orgue majorquin', 'Orgue napolitain', "orgue d'étude (1982)", "orgue d'étude (1968)",
-'polyphone', 'buffet', 'orgue à rouleau', 'orgue à cylindre', '']
+        liste_designation = codif.DENOMINATION_ORGUE
         results = []
         for denomination in liste_designation:
             if query :
