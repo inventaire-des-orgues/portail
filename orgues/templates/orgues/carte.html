@@ -82,7 +82,7 @@
     var facteur_icon = L.icon({
       iconUrl: '{% static 'img/icone_facteur_carte.png' %}',
 
-      iconSize: [25, 41], // size of the icon
+      iconSize: [25, 25], // size of the icon
       iconAnchor: [3, 35], // point of the icon which will correspond to marker's location
       {#popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor#}
     });
@@ -252,6 +252,7 @@
 
     function afficher_manufactures(){
       $.getJSON("{% url 'orgues:facteur-list-js-leaflet' %}", function (facteurs) {
+        console.log(facteurs);
           for (var i = 0; i < facteurs.length; i++) {
             var popup = '<p> <b>' + facteurs[i].nom + '</p> </b>';
             var latLng = new L.LatLng(facteurs[i].latitude_atelier, facteurs[i].longitude_atelier);
