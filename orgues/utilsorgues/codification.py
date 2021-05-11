@@ -7,6 +7,7 @@ import orgues.utilsorgues.tools.generiques as gen
 
 logger_codification = logging.getLogger('codification')
 
+
 ABREVIATIONS_4 = {'BEAU': 'BX',
                   'BOUR': 'BZ',
                   'BONN': 'BN',
@@ -346,13 +347,14 @@ def codifie_denomination(denomination):
     """
     if denomination in DENOMINATION_ORGUE.keys():
         code_denomination = DENOMINATION_ORGUE[denomination]
+
     # Les dénominations de type 1--blabla sont décryptées
     elif '--' in denomination:
         code_denomination = denomination.split('--')[0]
     # Code dénomination par défaut :
     else:
         logger_codification.error('Dénomination inconnue : {}'.format(denomination))
-        code_denomination = 'A'
+        code_denomination = 'X'
     return code_denomination
 
 
@@ -371,6 +373,7 @@ def codifier_instrument(code_insee, commune, edifice_standard, type_edifice, des
     code_orgue += codifie_commune(commune)
     code_orgue += '-'
     code_orgue += codifie_edifice(edifice_standard, type_edifice)
+    code_orgue += '1' # TODO gestion de l'indice édifice
     code_orgue += '-'
     code_orgue += codifie_denomination(designation)
     logger_codification.info('Codification : {}'.format(str(code_orgue)))

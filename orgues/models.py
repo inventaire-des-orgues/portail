@@ -383,6 +383,9 @@ class Orgue(models.Model):
     def get_absolute_url(self):
         return reverse('orgues:orgue-detail', args=(self.slug,))
 
+    def get_short_url(self):
+        return reverse('orgues:orgue-detail', args=(self.codification,))
+
     def get_update_url(self):
         return reverse('orgues:orgue-update', args=(self.uuid,))
 
@@ -505,8 +508,63 @@ class TypeClavier(models.Model):
 
 
 def validate_etendue(value):
-    if not re.match("^([A-G]|CD)#?[0-7]-([A-G]|CD)#?[1-7]$", value):
+    if not re.match("^(([CDEFGAB][#♭]?)+)([0-7])-([CDEFGAB][#♭]?)([1-8])$", value):
+
         raise ValidationError("De la forme F1-G5. Absence du premier Ut dièse notée CD1-F5.")
+    notes = countNotes(value)
+    if notes is None:
+        raise ValidationError("L'etendue du clavier est invalide.")
+    if notes <= 0:
+        raise ValidationError("L'etendue du clavier est invalide, borne inversées.")
+    if notes < 5:
+        raise ValidationError("L'etendue du clavier est invalide, moins de 5 notes.")
+    if notes > 88:
+        raise ValidationError("L'etendue du clavier est invalide, trop de notes.")
+
+def notesToHauteur(value):
+    """
+    Prend le nom d'une note et retourne la hauteur de la note :
+    C = 0
+    """
+    etendu_diese = ['C', 'C#','D', 'D#', 'E', 'F','F#','G','G#','A','A#','B']
+    etendu_bemole = ['B#', 'D♭','D', 'E♭', 'F♭', 'E#','G♭','G','A♭','A','B♭','C♭']
+    return etendu_diese.index(value) if value in etendu_diese else etendu_bemole.index(value)
+
+def countNotes(etendu):
+    """
+    Retourne le nombre de note en fonction d'une étendu de clavier de la forme :
+    Groupe de note initiale (format internationnal CDEFGAB suivit eventuellement d'un #)
+    L'octave initiale
+    Un tiret de séparation -
+    Une note et une octave finale
+
+    IE:
+    C1-G5
+    CD1-G5
+    CFDGEAA#BC1-C4 : Octave courte italienne : Do Fa Ré Sol Mi La Sib Si Do
+    """
+    val = re.match(r"""^
+    #Premier groupe Suite de Note (ABDC#) avec une note final et un octave
+    (?P<notes> # Bloc contenant toutes les notes
+        (?P<startNote>[CDEFGAB][#♭]?) # Match une note (et garde en mémoire la dernière)
+    +)
+    (?P<start>[0-7]) # Octave de début
+    -
+    (?P<endNote>[CDEFGAB][#♭]?)(?P<end>[1-8]) # Deuxième groupe Une note et une octave de fin
+    $""", etendu, re.X)
+    if not val:
+        raise ValidationError("Etendue vide")
+
+    start = notesToHauteur(val.group("startNote")) + (int(val.group("start"))*12)
+    end = notesToHauteur(val.group("endNote")) + (int(val.group("end"))*12)
+    # Compte le nombre de note dans le groupe de note initiale
+    notes = len(re.findall(r'([ABCDEFG]#?)', val.group('notes')))
+    count = end - start + notes
+    if count <= 0:
+        raise ValidationError("Etendue inversé")
+    if count < 5:
+        raise ValidationError("Clavier court")
+    return end - start + notes
 
 
 class Clavier(models.Model):
@@ -517,7 +575,7 @@ class Clavier(models.Model):
     type = models.ForeignKey(TypeClavier, verbose_name="Nom", null=True, on_delete=models.CASCADE, db_index=True)
     is_expressif = models.BooleanField(verbose_name="Cocher si expressif", default=False)
     etendue = models.CharField(validators=[validate_etendue], max_length=10, null=True, blank=True,
-                               help_text="De la forme F1-G5, C1-F#5, CD1-G5 (pour absence premier Ut dièse)...")
+                               help_text="De la forme F1-G5, CD1-G5 (pour absence premier Ut dièse), FGC1-G5 (pour un ravalement), ...")
     commentaire = models.CharField(max_length=200, null=True, blank=True,
                                    help_text="Particularités specifiques du clavier (transmission, ravalement, etc.)")
 
@@ -542,6 +600,16 @@ class Clavier(models.Model):
         if self.is_expressif:
             return "expressive" if self.type.nom in ["Pédale", "Bombarde", "Résonnance"] else "expressif"
         return ""
+
+    @property
+    def notes(self):
+        """
+        Retourne le nombre de notes en fonction de l'étendu du clavier
+        """
+        try:
+            return countNotes(self.etendue)
+        except:
+            return None
 
     def save(self, *args, **kwargs):
         self.orgue.completion = self.orgue.calcul_completion()

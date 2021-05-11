@@ -27,7 +27,7 @@ from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdate
 from orgues.api.serializers import OrgueSerializer, OrgueResumeSerializer
 from project import settings
 
-from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source
+from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source, Contribution
 import orgues.utilsorgues.correcteurorgues as co
 import orgues.utilsorgues.tools.generiques as gen
 import orgues.utilsorgues.codification as codif
@@ -314,6 +314,7 @@ class Avancement(View):
             moy["total"] = regions['Avancement'].mean(axis=0)
         return JsonResponse(moy, safe=False)
 
+
 class OrgueDetail(DetailView):
     """
     Vue de détail (lecture seule) d'un orgue
@@ -367,6 +368,27 @@ class OrgueDetailExemple(View):
     def get(self, request, *args, **kwargs):
         orgue = Orgue.objects.order_by('-completion').first()
         return redirect(orgue.get_absolute_url())
+
+class OrgueQrcode(DetailView):
+    """
+    Affiche une page avec un QrCode
+    """
+    model = Orgue
+    slug_field = 'slug'
+    slug_url_kwarg = 'slug'
+    template_name_suffix = '_qrcode'
+
+    def get_object(self, queryset=None):
+        orgue = Orgue.objects.filter(Q(slug=self.kwargs['slug']) | Q(codification=self.kwargs['slug'])).first()
+        if not orgue:
+            raise Http404
+        return orgue
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["orgue_url"] = self.request.build_absolute_uri(self.object.get_short_url())
+        return context
+
 
 class ContributionOrgueMixin:
     """
@@ -750,6 +772,7 @@ class CommuneListJS(FabListView):
             results = [{"id": u["id"], "text": u["nom"]} for u in context["object_list"]]
         return JsonResponse({"results": results, "pagination": {"more": more}})
 
+
 class DesignationListJS(FabListView):
     """
     Liste dynamique utilisée pour filtrer les désignations dans le menu déroulant select2 pour créer un nouvel orgue.
@@ -864,7 +887,8 @@ class ClavierCreate(FabView, ContributionOrgueMixin):
         context = {
             "jeux_formset": JeuFormset(queryset=Jeu.objects.none()),
             "clavier_form": orgue_forms.ClavierForm(),
-            "orgue": orgue
+            "orgue": orgue,
+            "notes": None,
         }
         return render(request, "orgues/clavier_form.html", context)
 
@@ -890,7 +914,8 @@ class ClavierCreate(FabView, ContributionOrgueMixin):
             context = {
                 "jeux_formset": jeux_formset,
                 "clavier_form": clavier_form,
-                "orgue": orgue
+                "orgue": orgue,
+                "notes": None,
             }
             return render(request, "orgues/clavier_form.html", context)
 
@@ -910,7 +935,8 @@ class ClavierUpdate(FabUpdateView, ContributionOrgueMixin):
             "jeux_formset": JeuFormset(queryset=clavier.jeux.all()),
             "clavier_form": orgue_forms.ClavierForm(instance=clavier),
             "orgue": clavier.orgue,
-            "clavier": clavier
+            "clavier": clavier,
+            "notes": clavier.notes,
         }
         return render(request, "orgues/clavier_form.html", context)
 

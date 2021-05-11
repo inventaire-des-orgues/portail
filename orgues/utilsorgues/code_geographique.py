@@ -15,6 +15,7 @@ FIC_FRANCE_REGIONS_INSEE = REP_GEODATA + 'region2021.csv'
 
 loggerCodegeogaphique = logging.getLogger('codegeographique')
 
+
 class Region(object):
     """
     Une région
