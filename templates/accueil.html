@@ -3,7 +3,7 @@
 
 {% block content %}
 
-  <div class="alert-warning topbar-fullwidth">
+  <div class="alert-warning des topbar-fullwidth">
     <div class="container p-35">
       <h3>Pré-ouverture de l'Inventaire national des orgues</h3>
         <p class="text-justify">De nombreuses données, à commencer par la localisation des orgues sur la carte de France, vont être ajoutées d'ici quelques semaines, pour l'inauguration officielle du site. Les livres d'inventaire seront à ce moment mis en ligne à titre documentaire à la rubrique Fichiers.</p>
@@ -48,7 +48,7 @@
             <div class="mt-4">
               <h5>Quelques conseils pour éditer la photo principale d'une fiche d'orgue</h5>
               <a href="{% url 'orgues:orgue-fiche-conseils' %}" class="btn btn-primary rounded-pill mt-3">
-                voir les recommandations <i class="fa fa-chevron-right"></i></a>
+                voir les recommandations</a>
             </div>
           </div>
         </div>
@@ -358,18 +358,20 @@
           <h3 id="selected-region">France</h3>
           <p class="text-bold" id="nb-etat-total">
             <span class="puce-etat bg-primary"></span>
-            Nombre d'orgues recensés
+            <span>Nombre d'orgues recensés</span>
           </p>
-	  <p id="nbInsCla">
+	      <p id="nbInsCla">
             <span class="puce-etat " style="background-color:#C31A38;"></span>
             <span>Orgues inscrits ou classés</span>
           </p>
-	  <p id="Avancement">
-            <span class="puce-etat " style="background-color:#FF4500;"></span>
-            <span>Avancement complétion orgues</span>
+          <br>
+	      <p id="Avancement">
+            <span class="puce-etat " style="background-color:#F6D501;"></span>
+            <span>Avancement des contributions</span>
           </p>
           <p class="mt-5 mb-4">
-            Etat général des orgues
+
+          <h3>Etat général des orgues</h3>
           </p>
           <p class="mb-4" id="nb-etat-bon">
             <span class="puce-etat" style="background-color:#252525;"></span>
