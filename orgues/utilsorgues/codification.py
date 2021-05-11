@@ -100,6 +100,8 @@ def codifie_commune(commune):
     """
     # REGLE : L'article inital est omis.
     commune_modifiee = gen.supprimer_article(commune)
+    # On corrige l'apostrophe (hors articles)
+    commune_modifiee = commune_modifiee.replace("'", "")
     # On corrige les e dans l'o (car deux caractères au lieu d'un seul):
     commune_modifiee = commune_modifiee.replace('œ', 'oe')
     #
