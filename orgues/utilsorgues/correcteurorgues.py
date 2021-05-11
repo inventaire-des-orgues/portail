@@ -9,18 +9,6 @@ import orgues.utilsorgues.tools.generiques as gen
 import orgues.utilsorgues.code_geographique as codegeo
 
 loggerCorrecteurorgues = logging.getLogger('correcteurogues')
-loggerCorrecteurorgues.setLevel(logging.DEBUG)
-# create file handler which logs even debug messages
-# create console handler with a higher log level
-chc = logging.StreamHandler()
-chc.setLevel(logging.WARNING)
-# create formatter and add it to the handlers
-formatter = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
-chc.setFormatter(formatter)
-# add the handlers to the logger
-loggerCorrecteurorgues.addHandler(chc)
-
-
 
 
 listeMinuscule = ["le", "la", "les", "de", "des", "du", "en", "et", "aux", "ès"]
@@ -262,7 +250,6 @@ def detecter_type_edifice(chaine):
     type_edifice = None
     if not chaine:
         loggerCorrecteurorgues.error("Pas de libellé d'édifice, détection de type impossible.")
-        pass
     else:
         chaine_minuscule = gen.supprimer_accents(chaine).lower()
         type_trouve = False
@@ -282,9 +269,9 @@ def detecter_type_edifice(chaine):
         if not type_trouve:
             type_edifice = None
             new_chaine = chaine
-            loggerCorrecteurorgues.debug("Aucun type d'édifice reconnu dans : {}.".format(chaine))
+            loggerCorrecteurorgues.info("Aucun type d'édifice reconnu dans : {}.".format(chaine))
         else:
-            loggerCorrecteurorgues.debug("Type d'édifice reconnu dans : {}.".format(chaine))
+            loggerCorrecteurorgues.info("Type d'édifice reconnu dans : {}.".format(chaine))
     return new_chaine, type_edifice
 
 
@@ -444,6 +431,7 @@ def reduire_edifice(edifice, lacommune):
 
     # On corrige le nom
     edifice4 = corriger_nom_edifice(edifice3, lacommune)
+    loggerCorrecteurorgues.info("Nom de l'édifice et type de l'édifice :  {}, {}".format(edifice4, type_edifice))
     return edifice4, type_edifice
 
 def geographie_administrative(code_insee):
