@@ -18,11 +18,11 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # Affichage des valeurs de certains champs :
         designations = Orgue.objects.values('designation')
-        for des in designations:
-            print("INFO : Désingation {}".format(des))
+        for des in set(designations.values()):
+            print("INFO : Désignation {}".format(des))
         emplacements = Orgue.objects.values('emplacement')
-        for emp in emplacements:
-            print("INFO : Désingation {}".format(emp))
+        for emp in set(emplacements.values()):
+            print("INFO : Emplacement {}".format(emp))
         for orgue in tqdm(Orgue.objects.all()):
             # Codification :
             if len(orgue.codification) != 24:  # TODO regexp
