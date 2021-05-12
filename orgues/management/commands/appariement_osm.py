@@ -37,6 +37,7 @@ class Command(BaseCommand):
         self.liste_appariements = []
         self.liste_multi = []
         self.liste_none = []
+        self.liste_partiel = []
         
     def add_arguments(self, parser):
         parser.add_argument('dep', nargs=1, type=str,
@@ -49,16 +50,15 @@ class Command(BaseCommand):
             print("Appariement pour tous les orgues")
         else :
             BDO = Orgue.objects.filter(code_departement=options['dep'][0])
-            print("Appariement uniquement le département "+ options['dep'][0])
+            print("Appariement uniquement pour le département "+ options['dep'][0])
         #print(BDO)
         for orgue in tqdm(BDO):
         #for orgue in tqdm(Orgue.objects.all()):
-            print(orgue.edifice)
-            
+                        
             # On ne recherche que les osm_id qui ne sont pas déjà présents (et pour lesquels on a bien un code INSEE):
             if orgue.code_insee and not orgue.osm_id:
                 self.tenter_appariement_osm_via_nom(orgue)
-                time.sleep(30) #Timer permettant d'espacer les requêtes OSM (30secondes)
+                time.sleep(30) #Timer permettant d'espacer les requêtes OSM (1 seconde)
             
         
         with open("orgues/appariement/appariements_osm_"+options['dep'][0]+".json", 'w') as f:
@@ -67,28 +67,34 @@ class Command(BaseCommand):
             json.dump(self.liste_multi, f)
         with open("orgues/appariement/non-appariements_osm_"+options['dep'][0]+".json", 'w') as f:
             json.dump(self.liste_none, f)
+        with open("orgues/appariement/appariements_partiels_osm_"+options['dep'][0]+".json", 'w') as f:
+            json.dump(self.liste_partiel, f)
 
         
 
     def tenter_appariement_osm_via_nom(self, orgue):        
         nom_edifice,type_edifice = co.detecter_type_edifice(orgue.edifice)
         if nom_edifice!="":
-            nom_edifice_decompo = ".*".join(re.split('-| ',nom_edifice)) #Décomposition du nom d'édifice en mots séparés par des tirets ou espaces
-        else :
-            nom_edifice_decompo = ".*".join(re.split('-| ',orgue.edifice)) #Décomposition du nom d'édifice en mots séparés par des tirets ou espaces
+            decompo = re.split("-| |'|’",nom_edifice)
 
-        overpass_query = "[out:json]; area[boundary=administrative]['ref:INSEE']['ref:INSEE'={}] -> .commune;".format(int(orgue.code_insee))
-        #overpass_query +=" ((way[name~'{}',i] {}; ".format(orgue.edifice.capitalize(), filtre_type_commune) #On met ~ au lieu de = pour que l'option Insensible à la casse ",i" fonctionne
-        #overpass_query +=" relation[name~'{}',i] {}; ); ._;)->.a; ".format(orgue.edifice.capitalize(), filtre_type_commune)
-        #>> Changement en "wr" pour simplifier les requêtes et les alléger pour l'API
+        else :
+            decompo = re.split("-| |'|’",orgue.edifice)
+        
+
+
+        print("Nom d'édifice : "+nom_edifice)
+
+        overpass_query = "[out:json]; area[boundary=administrative]['ref:INSEE']['ref:INSEE'={}] -> .commune;".format(orgue.code_insee)
         overpass_query +=" ((wr[name~'{}',i] {}; ); ._;)->.a; ".format(orgue.edifice.capitalize(), filtre_type_commune)
         
 
         overpass_query +="if (a.count(wr)>0){ .a out; } else {"
-        #overpass_query +=" ((way[name~'{}',i] {}; ".format(nom_edifice_decompo, filtre_type_commune)
-        #overpass_query +=" relation[name~'{}',i] {}; ); ._;)->.b; ".format(nom_edifice_decompo, filtre_type_commune)
-        #>> Changement en "wr" pour simplifier les requêtes et les alléger pour l'API
-        overpass_query +=" ((wr[name~'{}',i] {}; ); ._;)->.b; ".format(nom_edifice_decompo, filtre_type_commune)
+        overpass_query +=" ((wr"
+        for mot in decompo:
+            if len(mot) > 2: #Filtre pour ne pas rechercher les mots de liaisons (de, l, la, en...)
+                overpass_query +=" [name~'{}',i]".format(mot)
+        overpass_query +=" {}; ); ._;)->.b; ".format(filtre_type_commune)
+        
         overpass_query += ".b out; }"
         
               
@@ -132,13 +138,21 @@ class Command(BaseCommand):
 
             # Si aucun appariement strict
             else:
-                print("Aucun chemin ou relation OSM à apparier : {}".format(orgue))
-                print ("Code INSEE de la commune : ", orgue.code_insee)
-                print("Nom sans type d'édifice : ", nom_edifice)
                 if nom_edifice =="":
                     print("ATTENTION : Pas de nom, seulement un type d'édifice")
-                self.liste_none.append({"codification": orgue.codification, "edifice": orgue.edifice, "code_departement": orgue.code_departement,
-                                    "commune": orgue.commune, "code_insee": orgue.code_insee})
+                
+                partiel = self.tenter_appariement_partiel_osm_via_nom(orgue)
+                
+                if len(partiel) > 0:
+                    self.liste_partiel.append({"codification": orgue.codification, "edifice": orgue.edifice, "code_departement": orgue.code_departement,
+                                    "commune": orgue.commune, "code_insee": orgue.code_insee, "correspondances partielles" : partiel})
+                    print("Un ou plusieurs bâtiment donne une correspondance partielle pour l'orgue {}".format(orgue))
+                else:
+                    print("Aucun chemin ou relation OSM à apparier : {}".format(orgue))
+                    print ("Code INSEE de la commune : ", orgue.code_insee)
+                    print("Nom sans type d'édifice : ", nom_edifice)
+                    self.liste_none.append({"codification": orgue.codification, "edifice": orgue.edifice, "code_departement": orgue.code_departement,
+                                        "commune": orgue.commune, "code_insee": orgue.code_insee})
 
         return
 
@@ -189,8 +203,63 @@ class Command(BaseCommand):
         else:
             data = response.json()
             elements = data['elements']
+            
 
 
         pass
         return
 
+    def tenter_appariement_partiel_osm_via_nom(self, orgue):
+        """
+        :param list_osm:
+        :param edifice:
+        :return:
+        Fonction d'appariement utilisant les noms des édifices de sorte à obtenir un pourcentage d'appariement entre l'édifice de l'orgue
+        et les édifices religieux issus d'OSM de la même commune.
+
+        Le but est de chercher à associer des cas comme "église Notre-Dame-de-l'Assomption" et "église Notre-Dame" (ce qui donnerait 87,5% de correspondance moyenne)
+
+        """
+        #Découpe du nom de l'édifice de l'orgue
+        dec_Orgue = re.split("-| |'|’",orgue.edifice.lower())
+        dec_Orgue = [i for i in dec_Orgue if len(i) >2]
+
+        #Initialisation de variables :
+        partiel = []
+
+        #Récupération des édifices potentiels de la commune
+        overpass_query = "[out:json]; area[boundary=administrative]['ref:INSEE']['ref:INSEE'={}] -> .commune;".format(int(orgue.code_insee))
+        overpass_query +=" ((wr {}; ); ._;)->.a; .a out;".format(filtre_type_commune)
+
+        #L'Overpass_query récupère tous les édifices susceptibles de comporter un orgue dans la commune où se trouve l'orgue
+        response = requests.get(overpass_url, params={'data': overpass_query})
+
+        # Erreur dans la requête QL Overpass
+        if response.status_code != 200:
+            print("Echec de la requête QL Overpass pour la commune : {}".format(orgue.commune))
+            print("Status code : {}".format(response.status_code))
+            print("")
+        # Résultats
+        else:
+            data = response.json()
+            
+            for elem in data['elements']:
+                if 'name' in elem['tags']:
+                    dec_OSM = re.split("-| |'|’",elem['tags']['name'].lower())
+                    dec_OSM = [i for i in dec_OSM if len(i) >2]
+
+                    cor_org = 0
+                    for mot in dec_Orgue:
+                        if mot in dec_OSM:
+                            cor_org += 1/len(dec_Orgue)
+                    cor_osm = 0
+                    for mot in dec_OSM:
+                        if mot in dec_Orgue:
+                            cor_org += 1/len(dec_OSM)
+
+                    cor_moy = (cor_org+cor_osm)/2
+                    print(elem['tags']['name']+" correspond à "+str(cor_moy)+" à l'orgue "+orgue.edifice)
+                    if cor_moy>0.6:
+                        partiel.append({"Correspondance": cor_moy, "nom":elem['tags']['name'], "type":elem['type'], "id":elem['id']})
+
+        return partiel
