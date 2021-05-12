@@ -434,6 +434,7 @@ def reduire_edifice(edifice, lacommune):
     loggerCorrecteurorgues.info("Nom de l'édifice et type de l'édifice :  {}, {}".format(edifice4, type_edifice))
     return edifice4, type_edifice
 
+
 def geographie_administrative(code_insee):
     communes_francaises = codegeo.Communes()
     dictionnaire_communes = communes_francaises.to_dict_par_code()
