@@ -4,13 +4,13 @@ from collections import deque
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model, authenticate, login
-from django.contrib.auth.forms import AdminPasswordChangeForm
+from django.contrib.auth.forms import AdminPasswordChangeForm, UserChangeForm
 from django.contrib.auth.models import Group
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy, reverse
-from django.views.generic import CreateView
+from django.views.generic import CreateView, UpdateView
 
-from accounts.forms import InscriptionForm
+from accounts.forms import InscriptionForm, MonCompteForm
 from fabutils.mixins import FabUpdateView, FabView
 from project.views import verify_captcha
 
@@ -41,6 +41,23 @@ class Inscription(CreateView):
         user = authenticate(username=user.email, password=form.cleaned_data["password1"])
         login(self.request, user)
         return redirect(next)
+
+class MonCompte(UpdateView):
+    """
+    Les utilisateurs peuvent s'inscrire eux-mêmes ici.
+    Ils sont ajoutés par défaut dans le groupe des utilisateurs standards.
+    """
+    model = User
+    success_message = "Votre compte a bien été mis à jour !"
+    success_url = reverse_lazy("orgues:orgue-list")
+    form_class = MonCompteForm
+    template_name = "accounts/mon-compte.html"
+    class Meta:
+        model=User
+        fields=['prenom', 'nom', 'email']
+
+    def get_object(self):
+        return self.request.user
 
 
 class UserUpdatePassword(FabUpdateView):
