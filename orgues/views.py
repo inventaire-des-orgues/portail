@@ -163,8 +163,8 @@ class FacteurLonLatLeaflet(View):
     """
 
     def get(self, request, *args, **kwargs):
-        nom = self.request.GET.get("facteur")
-        data = Facteur.objects.filter(pk=nom).values("nom", "latitude_atelier", "longitude_atelier")
+        facteur_id = self.request.GET.get("facteur")
+        data = Facteur.objects.filter(pk=facteur_id).values("nom", "latitude_atelier", "longitude_atelier")
         return JsonResponse(list(data), safe=False)
 
 
@@ -190,7 +190,7 @@ class FacteurListJSlonlat(FabListView):
         results = []
         more = context["page_obj"].number < context["paginator"].num_pages
         if context["object_list"]:
-            results = [{"id": u.nom, "text": u.nom} for u in context["object_list"]]
+            results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
         return JsonResponse({"results": results, "pagination": {"more": more}})
 
 
