@@ -58,7 +58,7 @@ class Command(BaseCommand):
             # On ne recherche que les osm_id qui ne sont pas déjà présents (et pour lesquels on a bien un code INSEE):
             if orgue.code_insee and not orgue.osm_id:
                 self.tenter_appariement_osm_via_nom(orgue)
-                time.sleep(30) #Timer permettant d'espacer les requêtes OSM (1 seconde)
+                time.sleep(1) #Timer permettant d'espacer les requêtes OSM (1 seconde)
             
         
         with open("orgues/appariement/appariements_osm_"+options['dep'][0]+".json", 'w') as f:

@@ -87,6 +87,7 @@ DENOMINATION_ORGUE = {'G.O.': 'T',
                            'buffet': 'B',
                            'orgue à rouleau': 'R',
                            'orgue à cylindre': 'R',
+                           'orgue': 'X',
                            '': 'X'}
 
 
@@ -109,7 +110,7 @@ def codifie_commune(commune):
         if code[:8] in ABREVIATIONS_8:
             code = ABREVIATIONS_8[code[:8]] + code[8:10]
         elif code[:6] in ABREVIATIONS_6:
-            code = ABREVIATIONS_6[code[:6]] + code[6:11 - len(ABREVIATIONS_6[code[:6]])]
+            code = ABREVIATIONS_6[code[:6]] + code[6:9]
         elif code[:5] in ABREVIATIONS_5:
             code = ABREVIATIONS_5[code[:5]] + code[5:8]
         elif code[:4] in ABREVIATIONS_4:

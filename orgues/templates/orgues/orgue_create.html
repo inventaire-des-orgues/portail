@@ -67,7 +67,10 @@
       }).focus(function () { $(this).select2('open'); });
 
       $("#id_designation").select2({
-        placeholder: 'Choisir une désignation',
+        placeholder: {
+          id: 'orgue',
+          text:'orgue'
+        },
         ajax: {
           url: '{% url 'orgues:designation-list-js' %}',
           data: function (params) {

@@ -56,7 +56,7 @@
         }
       }
     </style>
-    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <script src="{% static 'polo/js/qrcode.min.js' %}"></script>
   </head>
   <body>
     <img src="{% static 'img/logo.png' %}" alt="" width="200px">
@@ -69,16 +69,11 @@
     <h2>
         Retrouvez l'historique complet et la composition de cet instrument sur l'Inventaire national des orgues
     </h2>
-
     <div id="qrcode"></div>
     <script type="text/javascript">
     new QRCode(document.getElementById("qrcode"), "{{ orgue_url }}");
     </script>
-
     <h3>inventaire-des-orgues.fr</h3>
-
-
-
     <div class="noprint info">
       Imprimez cette page et affichez-la à côté de l'orgue pour permettre aux visiteurs de retrouver les infos sur l'orgue via le qrcode
     </div>

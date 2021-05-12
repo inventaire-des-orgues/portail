@@ -251,7 +251,7 @@ class Orgue(models.Model):
     edifice = models.CharField(max_length=300)
     adresse = models.CharField(max_length=300, null=True, blank=True)
     commune = models.CharField(max_length=100)
-    code_insee = models.CharField(max_length=5)
+    code_insee = models.CharField(max_length=5, verbose_name="Code_INSEE")
     ancienne_commune = models.CharField(max_length=100, null=True, blank=True)
     departement = models.CharField(verbose_name="Département", choices=[(c[1], c[1]) for c in CHOIX_DEPARTEMENT],
                                    max_length=50)

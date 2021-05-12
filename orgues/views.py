@@ -163,8 +163,8 @@ class FacteurLonLatLeaflet(View):
     """
 
     def get(self, request, *args, **kwargs):
-        nom = self.request.GET.get("facteur")
-        data = Facteur.objects.filter(pk=nom).values("nom", "latitude_atelier", "longitude_atelier")
+        facteur_id = self.request.GET.get("facteur")
+        data = Facteur.objects.filter(pk=facteur_id).values("nom", "latitude_atelier", "longitude_atelier")
         return JsonResponse(list(data), safe=False)
 
 
@@ -190,7 +190,7 @@ class FacteurListJSlonlat(FabListView):
         results = []
         more = context["page_obj"].number < context["paginator"].num_pages
         if context["object_list"]:
-            results = [{"id": u.nom, "text": u.nom} for u in context["object_list"]]
+            results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
         return JsonResponse({"results": results, "pagination": {"more": more}})
 
 
@@ -416,6 +416,7 @@ class OrgueCreate(FabCreateView, ContributionOrgueMixin):
     template_name = "orgues/orgue_create.html"
 
     def form_valid(self, form):
+        print("designation : ", form.instance.designation)
         form.instance.updated_by_user = self.request.user
         commune, departement, code_departement, region, code_insee = co.geographie_administrative(form.instance.commune)
         edifice, type_edifice = co.reduire_edifice(form.instance.edifice, commune)
@@ -788,6 +789,7 @@ class DesignationListJS(FabListView):
         query = self.request.GET.get("search")
         liste_designation = codif.DENOMINATION_ORGUE
         results = []
+        results.append({"id": "", "nom": ""})
         for denomination in liste_designation:
             if query :
                 if query in denomination.lower():
