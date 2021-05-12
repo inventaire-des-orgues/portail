@@ -17,19 +17,25 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # Affichage des valeurs de certains champs :
-        designations = Orgue.objects.values('designation')
-        for des in designations:
-            print("INFO : Désingation {}".format(des))
-        emplacements = Orgue.objects.values('emplacement')
-        for emp in emplacements:
-            print("INFO : Désingation {}".format(emp))
+        designations = list(Orgue.objects.values('designation'))
+        for des in set([item['designation'] for item in designations]):
+            print("INFO : Désignation {}".format(des))
+        emplacements = list(Orgue.objects.values('emplacement'))
+        for emp in set([item['emplacement'] for item in emplacements]):
+            print("INFO : Emplacement {}".format(emp))
+
+        # Vérification des champs
         for orgue in tqdm(Orgue.objects.all()):
             # Codification :
             if len(orgue.codification) != 24:  # TODO regexp
                 print("ERROR : {} est un code mal formatté pour l'orgue {}".format(orgue.codification, orgue))
+            # Désignation
+            if orgue.designation is None:
+                print("ERROR : L'orgue {} {} n'a pas de désignation".format(orgue.codification, orgue))
             # Palissy :
-            if len(orgue.references_palissy.split(';')) > 6:
-                print("ERROR : {} Référence Palissy trop longues pour l'orgue {}".format(orgue.references_palissy, orgue))
+            if orgue.references_palissy is not None :
+                if len(orgue.references_palissy.split(';')) > 6:
+                    print("ERROR : {} Référence Palissy trop longues pour l'orgue {}".format(orgue.references_palissy, orgue))
             # TODO organisme doit être une chaîne sans chiffres
             # TODO lien_reference doit être une URL
             # TODO commentaire_admin : afficher tous, ils doivent être rares.

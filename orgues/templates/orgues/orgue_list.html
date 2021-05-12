@@ -22,17 +22,22 @@
                 <img src="{% static 'img/conseil_image_principale.png' %}" alt="" style="width: 100%">
               </div>
               <div class="text-center d-none d-xl-block">
-                <hr>
+
                 <h5>Quelques conseils pour éditer la photo principale d'une fiche d'orgue</h5>
-                <a href="{% url 'orgues:orgue-fiche-conseils' %}" class="btn btn-primary rounded-pill mt-3">voir les
-                  recommandations <i class="fa fa-chevron-right"></i> </a>
-                {% if perms.orgues.add_orgue %}
-                  <a href="{% url 'orgues:orgue-create' %}" class="btn btn-primary rounded-pill mt-3">
-                    Créer un nouvel orgue <i class="fa fa-chevron-right"></i></a>
-                {% endif %}
+
+                <a href="{% url 'orgues:orgue-fiche-conseils' %}" class="btn btn-primary rounded-pill mt-3 btn-block">voir les
+                  recommandations</a>
+                <hr>
+
                 {% if perms.orgues.change_orgue %}
-                  <a href="{% url 'orgues:orgue-csv' %}" class="btn btn-primary rounded-pill mt-3">
-                    Export des orgues en csv <i class="fa fa-chevron-right"></i></a>
+                <a href="{% url 'orgues:orgue-csv' %}" class="btn btn-warning rounded-pill mt-3 btn-block">
+                    Export des orgues en csv</a>
+                {% endif %}
+                <hr>
+
+                {% if perms.orgues.add_orgue %}
+                <a href="{% url 'orgues:orgue-create' %}" class="btn btn-info rounded-pill mt-3 btn-block">
+                    Créer un nouvel orgue</i></a>
                 {% endif %}
               </div>
             </div>

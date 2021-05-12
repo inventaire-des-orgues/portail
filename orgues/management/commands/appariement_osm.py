@@ -4,6 +4,7 @@ from tqdm import tqdm
 import requests
 import json
 import time
+import re
 
 import orgues.utilsorgues.correcteurorgues as co
 
@@ -57,29 +58,40 @@ class Command(BaseCommand):
             # On ne recherche que les osm_id qui ne sont pas déjà présents (et pour lesquels on a bien un code INSEE):
             if orgue.code_insee and not orgue.osm_id:
                 self.tenter_appariement_osm_via_nom(orgue)
-                time.sleep(30) #Timer permettant d'espacer les requêtes OSM (30secondes)
+                time.sleep(1) #Timer permettant d'espacer les requêtes OSM (30secondes)
             
         
-        with open("appariements_osm_"+options['dep'][0]+".json", 'w') as f:
+        with open("orgues/appariement/appariements_osm_"+options['dep'][0]+".json", 'w') as f:
             json.dump(self.liste_appariements, f)
-        with open("multi-appariements_osm_"+options['dep'][0]+".json", 'w') as f:
-            json.dump(self.liste_appariements, f)
-        with open("non-appariements_osm_"+options['dep'][0]+".json", 'w') as f:
-            json.dump(self.liste_appariements, f)
+        with open("orgues/appariement/multi-appariements_osm_"+options['dep'][0]+".json", 'w') as f:
+            json.dump(self.liste_multi, f)
+        with open("orgues/appariement/non-appariements_osm_"+options['dep'][0]+".json", 'w') as f:
+            json.dump(self.liste_none, f)
 
         
 
     def tenter_appariement_osm_via_nom(self, orgue):        
         nom_edifice,type_edifice = co.detecter_type_edifice(orgue.edifice)
+        if nom_edifice!="":
+            nom_edifice_decompo = ".*".join(re.split('-| ',nom_edifice)) #Décomposition du nom d'édifice en mots séparés par des tirets ou espaces
+        else :
+            nom_edifice_decompo = ".*".join(re.split('-| ',orgue.edifice)) #Décomposition du nom d'édifice en mots séparés par des tirets ou espaces
+
         overpass_query = "[out:json]; area[boundary=administrative]['ref:INSEE']['ref:INSEE'={}] -> .commune;".format(int(orgue.code_insee))
-        overpass_query +=" ((way[name~'{}',i] {}; ".format(orgue.edifice.capitalize(), filtre_type_commune) #On met ~ au lieu de = pour que l'option Insensible à la casse ",i" fonctionne
-        overpass_query +=" relation[name~'{}',i] {}; ); ._;)->.a; ".format(orgue.edifice, filtre_type_commune)
+        #overpass_query +=" ((way[name~'{}',i] {}; ".format(orgue.edifice.capitalize(), filtre_type_commune) #On met ~ au lieu de = pour que l'option Insensible à la casse ",i" fonctionne
+        #overpass_query +=" relation[name~'{}',i] {}; ); ._;)->.a; ".format(orgue.edifice.capitalize(), filtre_type_commune)
+        #>> Changement en "wr" pour simplifier les requêtes et les alléger pour l'API
+        overpass_query +=" ((wr[name~'{}',i] {}; ); ._;)->.a; ".format(orgue.edifice.capitalize(), filtre_type_commune)
+        
 
         overpass_query +="if (a.count(wr)>0){ .a out; } else {"
-        overpass_query +=" ((way[name~'{}',i] {}; ".format(nom_edifice, filtre_type_commune)
-        overpass_query +=" relation[name~'{}',i] {}; ); ._;)->.b; ".format(nom_edifice, filtre_type_commune)
+        #overpass_query +=" ((way[name~'{}',i] {}; ".format(nom_edifice_decompo, filtre_type_commune)
+        #overpass_query +=" relation[name~'{}',i] {}; ); ._;)->.b; ".format(nom_edifice_decompo, filtre_type_commune)
+        #>> Changement en "wr" pour simplifier les requêtes et les alléger pour l'API
+        overpass_query +=" ((wr[name~'{}',i] {}; ); ._;)->.b; ".format(nom_edifice_decompo, filtre_type_commune)
         overpass_query += ".b out; }"
         
+              
 
         #L'Overpass_query fait un premier test sur le nom exact (avec insensibilité à la casse),
         #puis, en l'absence de résultat, teste en enlevant le type d'édifice dans la requête sur name
@@ -101,7 +113,7 @@ class Command(BaseCommand):
             # Si un seul appariement, c'est gagné :
             if len(elements) == 1:
                 elem = elements[0]
-                print("Un seul objet OSM possibles pour cet orgue : {} {} {} {}"
+                print("Un seul objet OSM possibles pour cet orgue : {}, {}, {}, {}"
                       .format(elem['tags']['name'], elem['type'], elem['tags']['amenity'], elem['tags']['building']))
                 self.liste_appariements.append({"codification": orgue.codification,
                                                 "type": data['elements'][0]['type'],
@@ -113,18 +125,20 @@ class Command(BaseCommand):
                 correspondances = []
                 for elem in data['elements']:
                     correspondances.append({"nom":elem['tags']['name'], "type":elem['type'], "id":elem['id']})
-                    print("Appariement possible : {} {} {} {}"
+                    print("Appariement possible : {}, {}, {}, {}"
                           .format(elem['tags']['name'], elem['type'], elem['tags']['amenity'], elem['tags']['building']))
-                liste_none.append({"codification": orgue.codification, "edifice": orgue.edifice, "code_departement": orgue.code_departement,
-                                    "commune": orgue.commune, "code_insee": orgue.code_insee})
+                self.liste_multi.append({"codification": orgue.codification, "edifice": orgue.edifice, "code_departement": orgue.code_departement,
+                                    "commune": orgue.commune, "code_insee": orgue.code_insee, "correspondances" : correspondances})
 
             # Si aucun appariement strict
             else:
                 print("Aucun chemin ou relation OSM à apparier : {}".format(orgue))
                 print ("Code INSEE de la commune : ", orgue.code_insee)
                 print("Nom sans type d'édifice : ", nom_edifice)
-                liste_multi.append({"codification": orgue.codification, "edifice": orgue.edifice, "code_departement": orgue.code_departement,
-                                    "commune": orgue.commune, "code_insee": orgue.code_insee, "correspondances" : correspondances})
+                if nom_edifice =="":
+                    print("ATTENTION : Pas de nom, seulement un type d'édifice")
+                self.liste_none.append({"codification": orgue.codification, "edifice": orgue.edifice, "code_departement": orgue.code_departement,
+                                    "commune": orgue.commune, "code_insee": orgue.code_insee})
 
         return
 

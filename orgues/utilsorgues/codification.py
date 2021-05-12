@@ -87,6 +87,7 @@ DENOMINATION_ORGUE = {'G.O.': 'T',
                            'buffet': 'B',
                            'orgue à rouleau': 'R',
                            'orgue à cylindre': 'R',
+                           'orgue': 'X',
                            '': 'X'}
 
 

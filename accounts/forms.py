@@ -49,3 +49,12 @@ class InscriptionForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+class MonCompteForm(forms.ModelForm):
+    """
+    Permet de modifier son compte utilisateur
+    """
+
+    class Meta:
+        model = User
+        fields = ("first_name","last_name","email",)

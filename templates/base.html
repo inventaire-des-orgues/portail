@@ -33,18 +33,47 @@
       <div class="row">
         <div class="col-md-6">
           <ul class="top-menu">
-            <li><a href="/admin/"><i class="fa fa-cog"></i></a></li>
-            <li><a href="https://github.com/inventaire-des-orgues/portail/projects/1"><i class="fa fa-columns"></i></a></li>
+            {% if request.user.is_staff %}
+            <li>
+              <a href="/admin/">
+                <i class="fa fa-cog"></i>
+                Administration
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'orgues:dashboard' %}"> <i class="fa fa-chart-line"></i> Dashboard</a>
+            </li>
+            {% endif %}
+            <li>
+              <a href="https://github.com/inventaire-des-orgues/portail/projects/1">
+                <i class="fa fa-columns"></i>
+                Code source
+              </a></li>
             {% if request.user.is_authenticated %}
               <li>
-                <a href="{% url 'logout' %}">Déconnexion</a>
+                <a href="{% url 'accounts:mon-compte' %}">
+                  <i class="fa fa-user"></i>
+                  Mon compte
+                </a>
+              </li>
+              <li>
+                <a href="{% url 'logout' %}">
+                  <i class="fa fa-sign-out-alt"></i>
+                  Déconnexion
+                </a>
               </li>
             {% else %}
               <li>
-                <a href="{% url 'login' %}">Connexion</a>
+                <a href="{% url 'login' %}">
+                  <i class="fa fa-sign-out-alt"></i>
+                  Connexion
+                </a>
               </li>
               <li>
-                <a href="{% url 'accounts:inscription' %}">Inscription</a>
+                <a href="{% url 'accounts:inscription' %}">
+                  <i class="far fa-user"></i>
+                  Inscription
+                </a>
               </li>
             {% endif %}
           </ul>
