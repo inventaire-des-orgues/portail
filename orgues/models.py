@@ -681,7 +681,6 @@ class Evenement(models.Model):
     def is_locked(self):
         return self.type in ["classement_mh","inscription_mh"]
 
-
     def __str__(self):
         return "{} ({})".format(self.type, self.dates)
 
