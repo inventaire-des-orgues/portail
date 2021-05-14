@@ -655,7 +655,7 @@ class Evenement(models.Model):
                                         validators=[RegexValidator(regex='^[1-2][0-9][0-9][0-9]$', message="Une année !")])
     annee_fin = models.PositiveIntegerField(verbose_name="Année de fin de l'évènement", null=True, blank=True,
                                             validators=[RegexValidator(regex='^[1-2][0-9][0-9][0-9]$', message="Une année !")],
-                                             help_text="Optionnelle")
+                                            help_text="Optionnelle")
     circa = models.BooleanField(default=False, verbose_name="Cocher si dates approximatives")
     type = models.CharField(max_length=20, choices=CHOIX_TYPE)
     facteurs = models.ManyToManyField(Facteur, blank=True, related_name="evenements")
