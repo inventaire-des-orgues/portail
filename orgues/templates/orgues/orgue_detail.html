@@ -23,16 +23,19 @@
 
   <section class="py-3 bg-light" id="orgue-detail">
     <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-lg-12 my-4 text-center text-md-left">
+      <div class="row justify-content-left text-md-left">
           <div class="mb-3">
             <a href="{% if request.session.orgues_url %}{{ request.session.orgues_url }}{% else %}{% url 'orgues:orgue-list' %}{% endif %}">
               Résultats de recherche
             </a> <span class="px-2 font-weight-600 text">></span> Fiche orgue
           </div>
+      </div>
+      <div class="row justify-content-center text-md-left">
+        <div class="col-lg-9 my-4 text-center text-md-left">
           <h2 class="mb-0">
             {{ orgue.edifice|capfirst }} <br>
           </h2>
+
           <h4 class="text-muted">
             <a href="/orgues/?query={{ orgue.commune|urlencode }}" class="link">{{ orgue.commune }}</a>
             {% if orgue.ancienne_commune %} (<a href="/orgues/?query={{ orgue.ancienne_commune|urlencode }}" class="link">{{ orgue.ancienne_commune }}</a>){% endif %}, <a href="/orgues/?query={{ orgue.departement|urlencode }}" class="link">{{ orgue.departement }}</a>
@@ -41,6 +44,13 @@
             </small>
           </h4>
         </div>
+        <div class="col-lg-3 my-4 text-center text-md-left">
+          <a href="{% url 'orgues:orgue-update' object.uuid %}" class="btn btn-primary rounded-pill mt-3 btn-block">
+            <i class="fa fa-edit"></i> Compléter la fiche
+          </a>
+        </div>
+        </div>
+      <div class="row justify-content-center">
         <div class="col-lg-9 order-2 col-md-12 order-lg-1  ">
           <div class="card mb-4 box-shadow">
             {% if object.image_principale %}
@@ -295,9 +305,6 @@
             </div>
           </div>
           <div class="mb-4  box-shadow">
-            <a href="{% url 'orgues:orgue-update' object.uuid %}" class="btn btn-primary btn-block">
-              <i class="fa fa-edit"></i> Compléter la fiche
-            </a>
             <small class="text-justify">Mise à jour {{ contributions.count }} fois par {{ contributions.contributeurs }} contributeur{{ contributions.contributeurs|pluralize }} <a href="{% url 'orgues:orgue-detail-contributions' orgue.uuid %}" class="pl-1">voir détail</a>
               {% if contributions.count > 0 %}
                 Actualisé le {{ contributions.modified_date|date:'d/m/Y' }} par {{ contributions.updated_by_user | default:"Personne" }}
