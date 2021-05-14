@@ -24,11 +24,13 @@
   <section class="py-3 bg-light" id="orgue-detail">
     <div class="container">
       <div class="row justify-content-left text-md-left">
+        <div class="col-lg-12 text-center text-md-left">
           <div class="mb-3">
             <a href="{% if request.session.orgues_url %}{{ request.session.orgues_url }}{% else %}{% url 'orgues:orgue-list' %}{% endif %}">
               Résultats de recherche
             </a> <span class="px-2 font-weight-600 text">></span> Fiche orgue
           </div>
+         </div>
       </div>
       <div class="row justify-content-center text-md-left">
         <div class="col-lg-9 my-4 text-center text-md-left">
