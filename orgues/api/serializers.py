@@ -56,11 +56,15 @@ class FacteurSerializer(serializers.ModelSerializer):
         model = Facteur
         exclude = ["id"]
 
+
 class ContributionSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()
+
     class Meta:
         model = Contribution
         exclude = ["id", "orgue"]
+
+
 class OrgueSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name="orgues:orgue-detail", lookup_field="slug")
     updated_by_user = serializers.StringRelatedField()
