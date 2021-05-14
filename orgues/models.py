@@ -621,6 +621,7 @@ class Clavier(models.Model):
     class Meta:
         verbose_name = "Plan sonore"
 
+
 class Evenement(models.Model):
     """
     Décrit les différents événements relatifs à un orgue
@@ -650,9 +651,11 @@ class Evenement(models.Model):
         ("inscription_mh", "Inscription au titre des monuments historiques"),
     )
 
-    annee = models.IntegerField(verbose_name="Année de début de l'évènement")
-    annee_fin = models.IntegerField(verbose_name="Année de fin de l'évènement", null=True, blank=True,
-                                    help_text="Optionnelle")
+    annee = models.PositiveIntegerField(verbose_name="Année de début de l'évènement",
+                                        validators=[RegexValidator(regex='^[1-2][0-9][0-9][0-9]$', message="Une année !")])
+    annee_fin = models.PositiveIntegerField(verbose_name="Année de fin de l'évènement", null=True, blank=True,
+                                            validators=[RegexValidator(regex='^[1-2][0-9][0-9][0-9]$', message="Une année !")],
+                                             help_text="Optionnelle")
     circa = models.BooleanField(default=False, verbose_name="Cocher si dates approximatives")
     type = models.CharField(max_length=20, choices=CHOIX_TYPE)
     facteurs = models.ManyToManyField(Facteur, blank=True, related_name="evenements")
