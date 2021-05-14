@@ -15,7 +15,7 @@ class Command(BaseCommand):
     (dans ce dernier cas, utiliser le script manage.py delete_organ_builder_duplication).
 
     Ex :
-    py manage.py replace_organ_builder --delete facteurs_remplacement.csv
+    py manage.py replace_organ_builder --delete fic.csv
     """
     help = "Change le facteur d'orgue"
 
