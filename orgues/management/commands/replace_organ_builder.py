@@ -9,7 +9,7 @@ class Command(BaseCommand):
     """
     Remplace dans tous les événements un facteur d'orgue par un autre.
     La fonction prend un argument obligatoire et un optionnel:
-    - Le fichier csv contenant les modifications : une colonne pour les facteurs à remplacer, une autre pour les facteurs qui remplacent;
+    - Le fichier csv contenant les modifications : une colonne pour les facteurs à remplacer, les autres pour les facteurs qui remplacent;
     - optionnel : --delete : efface de la base de données les facteurs à retirer.
     La fonction renvoie un message d'erreur si l'un des facteurs du fichier csv n'existe pas dans la base de données ou s'il existe plusieurs fois 
     (dans ce dernier cas, utiliser le script manage.py delete_organ_builder_duplication).
@@ -21,9 +21,9 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('codestable', nargs=1, type=str,
-                            help='Chemin vers le fichier (CSV, points-virgules, utf-8) contenant deux colonnes : facteurs à remplacer et facteurs qui remplacent.')
+                            help='Chemin vers le fichier (CSV, points-virgules, utf-8) contenant au moins deux colonnes : facteurs à remplacer dans la première et facteurs qui remplacent dans les suivantes.')
         parser.add_argument('--delete', action='store_true',
-                            help="Efface le facteur d'orgue de la base de données")
+                            help="Efface le facteur d'orgues de la base de données")
 
     def handle(self, *args, **options):
         if not os.path.exists(options['codestable'][0]):
