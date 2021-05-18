@@ -288,6 +288,9 @@ class OrgueHistJSDep(View):
         return JsonResponse(references_palissy, safe=False)
     
 class Avancement(View):
+    """
+    JSON contenant le taux d'avancement moyen selon le niveau de zoom
+    """
     def get(self, request, *args, **kwargs):
         entite = request.GET.get("entite")
 
@@ -297,16 +300,17 @@ class Avancement(View):
 
         moy = {}
 
-        # departements
+        # Aggrégation par départements
         departements = df.groupby('departement').agg({'completion': ['count', 'mean']}).reset_index().round()
         departements.columns = ["Département", "Orgues", "Avancement"]
         
-        # regions
+        # Aggrégation par régions
         regions = df.groupby('region').agg({'completion': ['count', 'mean']}).reset_index().round()
         regions.columns = ["Region", "Orgues", "Avancement"]
         # Réglage du bug sur Mayotte
         regions.loc[[0], "Region"] = "Mayotte"
-
+        
+        # Calcul de la moyenne selon le niveau de zoom
         if entite in regions["Region"].values:
             moy["total"] = (regions.loc[regions["Region"] == entite, ["Region", "Avancement"]]).iloc[0,1]
         elif entite in departements["Département"].values:
