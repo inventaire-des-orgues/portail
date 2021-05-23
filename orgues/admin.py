@@ -13,6 +13,7 @@ class ClavierInline(admin.StackedInline):
 @admin.register(Fichier)
 class FichierAdmin(admin.ModelAdmin):
     list_display = ('pk', 'file', 'description', 'orgue')
+    search_fields = ('orgue',)
 
 
 @admin.register(Image)
