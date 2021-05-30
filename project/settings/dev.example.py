@@ -17,6 +17,8 @@ WSGI_APPLICATION = 'project.wsgi.application'
 
 FABACCESSLOG_FILE = 'fabaccess.log'
 SEARCHLOG_FILE = 'search.log'
+CODIFICATIONLOG_FILE = 'orgues/utilsorgues/logs/codificaton.log'
+APPARIEMENTLOG_FILE = 'orgues/utilsorgues/logs/appariement.log'
 LOG_DATEFMT = '%Y-%m-%d %H:%M'
 LOGGING = {
     'version': 1,
@@ -60,6 +62,13 @@ LOGGING = {
             'backupCount': 3,
             'formatter': 'csvformatted_codif'
         },
+        'appariementlogfile': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': APPARIEMENTLOG_FILE,
+            'maxBytes': 3 * 1024 * 1024,
+            'backupCount': 3,
+            'formatter': 'csvformatted_codif'
+        },
         'console': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
@@ -85,6 +94,26 @@ LOGGING = {
         },
         'correcteurogues': {
             'handlers': ['codificationlogfile', 'console'],
+            'level': 'INFO',
+        },
+        'echecrequete': {
+            'handlers': ['appariementlogfile', 'console'],
+            'level': 'INFO',
+        },
+        'appariementreussi': {
+            'handlers': ['appariementlogfile', 'console'],
+            'level': 'INFO',
+        },
+        'appariementmultiple': {
+            'handlers': ['appariementlogfile', 'console'],
+            'level': 'INFO',
+        },
+        'appariementcorrelation': {
+            'handlers': ['appariementlogfile', 'console'],
+            'level': 'INFO',
+        },
+        'appariementnul': {
+            'handlers': ['appariementlogfile', 'console'],
             'level': 'INFO',
         }
     },
