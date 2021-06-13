@@ -18,7 +18,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('path', nargs=1, type=str,
-                            help='Nom du facteur à retirer de la base de données.')
+                            help='Nom du fichier JSON contenant les latitudes et longitudes des orgues.')
         parser.add_argument('--ecraseif',
                 help="Ecrase la position latitude/longitude de l'orgue si la distance est supérieure à 30 mètres.")
         parser.add_argument('--ecraseall',
@@ -30,7 +30,6 @@ class Command(BaseCommand):
         with open(options['path'][0], "r", encoding="utf-8") as f:
             print('Lecture JSON et import des coordonnées des orgues.')
             rows = json.load(f)
-            compte = 0
             for row in tqdm(rows):
                 codification = row['codification']
                 orgue = Orgue.objects.get(codification=codification)
