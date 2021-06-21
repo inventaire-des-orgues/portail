@@ -75,7 +75,7 @@
           y: r.geometry.coordinates[1],
           label: r.properties.label,
           bounds: new L.LatLng(r.geometry.coordinates[1], r.geometry.coordinates[0]).toBounds(10),
-          raw: r.properties,
+          raw: r,
         }));
       }
     }
@@ -86,7 +86,7 @@
       autoComplete: true, // optional: true|false  - default true
       autoCompleteDelay: 150,
       zoomLevel: 12,
-      resultFormat: ({ result }) => '<b>' + result.label + '</b><br/><i>' + result.raw.context + '</i>',
+      resultFormat: ({ result }) => '<b>' + result.label + '</b><br/><i>' + result.raw.properties.context + '</i>',
       provider: new FrenchBanProvider(),
     });
     console.log(search);
