@@ -585,6 +585,10 @@ a.link, a.link:visited, a.link:active {
     }
 }
 
+.leaflet-touch .leaflet-control-geosearch a.reset {
+    line-height: 38px;
+}
+
 #valider_recherche_manufacture{
     padding-top: 5px;
 }

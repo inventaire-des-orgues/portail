@@ -61,25 +61,6 @@
     }
     ).addTo(carte_orgues);
 
-    class FrenchBanProvider extends GeoSearch.JsonProvider {
-      endpoint({ query, type }) {
-        return this.getUrl('https://api-adresse.data.gouv.fr/search', {
-          q: query,
-          type: 'municipality',
-          autocomplete: 1,
-        });
-      }
-      parse({ data }) {
-        return data.features.map((r) => ({
-          x: r.geometry.coordinates[0],
-          y: r.geometry.coordinates[1],
-          label: r.properties.label,
-          bounds: new L.LatLng(r.geometry.coordinates[1], r.geometry.coordinates[0]).toBounds(10),
-          raw: r,
-        }));
-      }
-    }
-
     const search = new GeoSearch.GeoSearchControl({
       style: 'bar',
       searchLabel: 'Rechercher par adresse',
@@ -87,7 +68,12 @@
       autoCompleteDelay: 150,
       zoomLevel: 12,
       resultFormat: ({ result }) => '<b>' + result.label + '</b><br/><i>' + result.raw.properties.context + '</i>',
-      provider: new FrenchBanProvider(),
+      provider: new GeoSearch.GeoApiFrProvider({
+        params: {
+          type: 'municipality',
+          autocomplete: 1,
+        }
+      }),
     });
     console.log(search);
     carte_orgues.addControl(search);
