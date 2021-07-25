@@ -11,7 +11,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Q, Count, Sum
 from django.forms import modelformset_factory
 from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -142,7 +142,7 @@ class OrgueListJS(View):
     """
 
     def get(self, request, *args, **kwargs):
-        data = Orgue.objects.filter(latitude__isnull=False).values("slug", "commune", "edifice", "latitude",
+        data = Orgue.objects.filter(latitude__isnull=False, longitude__isnull=False).values("slug", "commune", "edifice", "latitude",
                                                                    "longitude", 'emplacement', "references_palissy")
         return JsonResponse(list(data), safe=False)
 
@@ -196,17 +196,46 @@ class FacteurListJSlonlat(FabListView):
 
 class OrgueFiltreJS(View):
     """
-    JSON renvoyant la liste des orgues auxquels le facteur a participé.
+    JSON renvoyant la liste des orgues correspondant aux conditions à droite de la carte
     """
     def get(self, request, *args, **kwargs):
         facteur_pk = request.GET.get("pk")
-        type_requete = request.GET.get("type")
         queryset = Orgue.objects.all()
+
+        #sélection des orgues qui ont une position géographique
+        queryset = queryset.filter(Q(latitude__isnull=False) & Q(longitude__isnull=False)).distinct()
+
+        #Sélection des orgues par le facteur qui a participé aux travaux
         if facteur_pk:
-            queryset = queryset.filter(evenements__facteurs__pk=facteur_pk)
-            queryset = queryset.filter(Q(latitude__isnull=False) & Q(longitude__isnull=False)).distinct()
-            if type_requete == "construction":
-                queryset = queryset.filter(Q(evenements__type="construction") | Q(evenements__type="reconstruction")).distinct()
+            if int(facteur_pk) != -1:
+                queryset = queryset.filter(evenements__facteurs__pk=facteur_pk)
+                if request.GET.get("construction"):
+                    queryset = queryset.filter(Q(evenements__type="construction") | Q(evenements__type="reconstruction")).distinct()
+        #Sélection des orgues par leur état
+        liste_etat = []
+        for etat in ['tres_bon', 'bon', 'altere', 'degrade', 'restauration']:
+            if request.GET.get(etat):
+                liste_etat.append(etat)
+        if request.GET.get("non renseigne"):
+            queryset = queryset.filter(Q(etat__in=liste_etat) | Q(etat__isnull=True)).distinct()
+        else:
+            queryset = queryset.filter(etat__in=liste_etat).distinct()   
+        
+        #Sélection des orgues par leur nombre de claviers        
+        queryset = queryset.annotate(num_claviers = Count('claviers', distinct=True))
+        nombre_claviers_max = int(request.GET.get("max_claviers"))
+        nombre_claviers_min = int(request.GET.get("min_claviers")) 
+        queryset = queryset.filter(num_claviers__gte=nombre_claviers_min, num_claviers__lte=nombre_claviers_max).distinct()
+
+        #Sélection des orgues par leur nombre de jeux
+        queryset=queryset.annotate(nombre_jeux=Count('claviers__jeux', distinct=True))
+        nombre_jeux_max = int(request.GET.get("max_jeux"))
+        nombre_jeux_min = int(request.GET.get("min_jeux"))
+        queryset = queryset.filter(nombre_jeux__gte=nombre_jeux_min, nombre_jeux__lte=nombre_jeux_max)
+        
+        orgue_classe = request.GET.get("classes")
+        if orgue_classe=="true":
+            queryset = queryset.filter(references_palissy__isnull=False)
         data = queryset.distinct().values("slug", "commune", "edifice", "latitude", "longitude", 'emplacement', "references_palissy")
         return JsonResponse(list(data), safe=False)
 
@@ -740,10 +769,12 @@ class FacteurListJS(FabListView):
         return queryset
 
     def render_to_response(self, context, **response_kwargs):
-        results = []
+        results = [{"id": -1, "text":"Tous les facteurs"}]
         more = context["page_obj"].number < context["paginator"].num_pages
         if context["object_list"]:
-            results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
+            for u in context["object_list"]:
+            #results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
+                results.append({"id":u.id, "text":u.nom})
         return JsonResponse({"results": results, "pagination": {"more": more}})
 
 

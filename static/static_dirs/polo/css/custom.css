@@ -351,6 +351,7 @@ section.triangle::before {
 
 #carte {
     padding: 30px;
+    padding-right: 15px;
 }
 
 
@@ -554,7 +555,7 @@ a.link, a.link:visited, a.link:active {
 
 #carte_generale{
     display: grid;
-    grid-template-columns: 80% 1fr;
+    grid-template-columns: 75% 1fr;
 }
 
 #mapid{
@@ -567,7 +568,7 @@ a.link, a.link:visited, a.link:active {
     flex-direction: column;
     justify-content: center;
     text-align: left;
-    padding: 15px;
+    padding: 5px;
     padding-right: 30px;
 }
 
@@ -603,4 +604,15 @@ a.link, a.link:visited, a.link:active {
     width:100%;
     max-width:250px;
     margin-bottom:15px;
+}
+
+.list_checkbox{
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+}
+
+.div_carte{
+    margin-top: 7px;
+    margin-bottom: 7px;
 }
