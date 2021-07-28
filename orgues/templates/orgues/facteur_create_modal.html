@@ -10,7 +10,7 @@
       <form action="{% url 'orgues:facteur-create-js' %}" id="nouveauFacteurForm">{% csrf_token %}
         <div class="modal-body">
           <div class="form-group">
-            <label for="">Nom</label>
+            <label for="">Nom Prénom (ex : Cavaillé-Coll Aristide. Un seul facteur)</label>
             <input type="text" name="nom" class="form-control" required>
           </div>
         </div>
@@ -87,7 +87,7 @@
           }
         {% else %}
           noResults: function () {
-            return "Aucun facteur trouvé ... contactez-nous si vous souhaitez ajouter un nouveau facteur.";
+            return "Aucun facteur trouvé ... contactez-nous en cas de doute.";
           }
 
         {% endif %}

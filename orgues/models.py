@@ -214,7 +214,8 @@ class Orgue(models.Model):
     )
 
     # Informations générales
-    designation = models.CharField(max_length=300, null=True, verbose_name="Désignation", default="orgue", blank=True)
+    designation = models.CharField(max_length=50, null=True, verbose_name="Désignation de l'instrument",
+                                   default="orgue", blank=True, help_text="orgue de tribune, orgue coffre, etc.")
     is_polyphone = models.BooleanField(default=False, verbose_name="Orgue polyphone de la manufacture Debierre ?")
     codification = models.CharField(max_length=24, unique=True, db_index=True)
     references_palissy = models.CharField(max_length=60, null=True, verbose_name="Référence(s) Palissy pour les monuments historiques.", blank=True,
@@ -233,7 +234,7 @@ class Orgue(models.Model):
 
     etat = models.CharField(max_length=20, choices=CHOIX_ETAT, null=True, blank=True,
                             help_text="Se rapporte au fait que l'orgue est jouable ou non.")
-    emplacement = models.CharField(max_length=50, null=True, blank=True, verbose_name="Emplacement",
+    emplacement = models.CharField(max_length=100, null=True, blank=True, verbose_name="Emplacement",
                                    help_text="Ex: sol, tribune ...")
     buffet = models.TextField(verbose_name="Description du buffet", null=True, blank=True,
                               help_text="Description du buffet et de son état.")
@@ -621,6 +622,7 @@ class Clavier(models.Model):
     class Meta:
         verbose_name = "Plan sonore"
 
+
 class Evenement(models.Model):
     """
     Décrit les différents événements relatifs à un orgue
@@ -650,9 +652,11 @@ class Evenement(models.Model):
         ("inscription_mh", "Inscription au titre des monuments historiques"),
     )
 
-    annee = models.IntegerField(verbose_name="Année de début de l'évènement")
-    annee_fin = models.IntegerField(verbose_name="Année de fin de l'évènement", null=True, blank=True,
-                                    help_text="Optionnelle")
+    annee = models.PositiveIntegerField(verbose_name="Année de début de l'évènement",
+                                        validators=[RegexValidator(regex='^[1-2][0-9][0-9][0-9]$', message="Une année !")])
+    annee_fin = models.PositiveIntegerField(verbose_name="Année de fin de l'évènement", null=True, blank=True,
+                                            validators=[RegexValidator(regex='^[1-2][0-9][0-9][0-9]$', message="Une année !")],
+                                            help_text="Optionnelle")
     circa = models.BooleanField(default=False, verbose_name="Cocher si dates approximatives")
     type = models.CharField(max_length=20, choices=CHOIX_TYPE)
     facteurs = models.ManyToManyField(Facteur, blank=True, related_name="evenements")
@@ -677,7 +681,6 @@ class Evenement(models.Model):
     @property
     def is_locked(self):
         return self.type in ["classement_mh","inscription_mh"]
-
 
     def __str__(self):
         return "{} ({})".format(self.type, self.dates)
@@ -756,6 +759,7 @@ class Source(models.Model):
     def __str__(self):
         return "{} ({})".format(self.type, self.description)
 
+
 class Contribution(models.Model):
     """
     Historique des contributions
@@ -792,7 +796,6 @@ class Fichier(models.Model):
         auto_now_add=False,
         verbose_name='Update date'
     )
-
 
 def chemin_image(instance, filename):
     return os.path.join(str(instance.orgue.code_departement), instance.orgue.codification, "images", filename)
