@@ -572,6 +572,24 @@ a.link, a.link:visited, a.link:active {
     padding-right: 30px;
 }
 
+@media (max-width: 767px) {
+    #carte_generale {
+        display: block;
+    }
+
+    #carte {
+        padding: 15px;
+    }
+
+    #div_filtre {
+        display: none;
+    }
+}
+
+.leaflet-touch .leaflet-control-geosearch a.reset {
+    line-height: 38px;
+}
+
 #valider_recherche_manufacture{
     padding-top: 5px;
 }

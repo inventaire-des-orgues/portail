@@ -5,6 +5,8 @@
   <link rel="stylesheet" href="{% static 'plugins/leaflet/leaflet.css' %}">
   <link rel="stylesheet" href="{% static 'plugins/leafletcluster/MarkerCluster.Default.css' %}">
   <link rel="stylesheet" href="{% static 'plugins/slider/jquery-ui.css' %}">  
+  <link rel="stylesheet" href="{% static 'plugins/leafletgeosearch/geosearch.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/leafletlocate/L.Control.Locate.min.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -76,7 +78,9 @@
   <script src="{% static 'plugins/leaflet/leaflet.js' %}"></script>
   <script src="{% static 'plugins//leafletcluster/leaflet.markercluster.js' %}"></script>
   <script src="{% static 'plugins/slider/jquery-ui.js' %}"></script>
-  
+  <script src="{% static 'plugins/leafletcluster/leaflet.markercluster.js' %}"></script>
+  <script src="{% static 'plugins/leafletgeosearch/geosearch.js' %}"></script>
+  <script src="{% static 'plugins/leafletlocate/L.Control.Locate.min.js' %}"></script>
   <script>
     var carte_orgues = L.map('mapid',
         {
@@ -95,6 +99,28 @@
       zoomOffset: -1
     }
     ).addTo(carte_orgues);
+
+    const search = new GeoSearch.GeoSearchControl({
+      style: 'bar',
+      searchLabel: 'Rechercher par adresse',
+      autoComplete: true, // optional: true|false  - default true
+      autoCompleteDelay: 150,
+      zoomLevel: 12,
+      resultFormat: ({ result }) => '<b>' + result.label + '</b><br/><i>' + result.raw.properties.context + '</i>',
+      provider: new GeoSearch.GeoApiFrProvider({
+        params: {
+          type: 'municipality',
+          autocomplete: 1,
+        }
+      }),
+    });
+    console.log(search);
+    carte_orgues.addControl(search);
+    L.control.locate({
+      showPopup: false,
+      drawCircle: false,
+      initialZoomLevel: 10,
+    }).addTo(carte_orgues);
 
     var mh_icon = L.icon({
       iconUrl: '{% static 'img/mh_icon.png' %}',
