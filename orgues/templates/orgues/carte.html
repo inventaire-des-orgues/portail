@@ -4,8 +4,7 @@
 {% block head_extra %}
   <link rel="stylesheet" href="{% static 'plugins/leaflet/leaflet.css' %}">
   <link rel="stylesheet" href="{% static 'plugins/leafletcluster/MarkerCluster.Default.css' %}">
-  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-  
+  <link rel="stylesheet" href="{% static 'plugins/slider/jquery-ui.css' %}">  
 {% endblock %}
 
 {% block content %}
@@ -14,17 +13,25 @@
       <div id="mapid" style="height:700px"></div>
   </div>
   <div id="div_filtre">
-    <b style="font-size: x-large;">Les orgues</b>
+    <b class="titre_filtre">Filtrer les orgues</b>
     
-    <form id="filtre_formulaire" style="margin-left: 15px;" action="" >
+    <form id="filtre_formulaire" class="carte_formulaire" action="" >
       <div class="div_carte">
         <label><b>Uniquement les orgues classés monuments historiques : </b><input type="checkbox" name="classes" id="classes"></label>
       </div>
 
       <div class="div_carte">
         <b>Par nombre de claviers : </b>
-        <div id="slider-range-claviers"></div>
-        <p id="claviers-range"></p>
+        <div >
+          <label class="checkbox_claviers"><input type="checkbox" name="clavier" value="I"  checked>I</label>
+          <label class="checkbox_claviers"><input type="checkbox" name="clavier" value="II" checked>II</label>
+          <label class="checkbox_claviers"><input type="checkbox" name="clavier" value="III" checked>III</label>
+          <label class="checkbox_claviers"><input type="checkbox" name="clavier" value="IV" checked>IV</label>
+          <label class="checkbox_claviers"><input type="checkbox" name="clavier" value="V" checked>V</label>
+          <label class="checkbox_claviers"><input type="checkbox" name="clavier" value="VI" checked>VI</label>
+          <label class="checkbox_claviers"><input type="checkbox" name="Pedalier" value="P" checked>P</label>
+          <label class="checkbox_claviers"><input type="checkbox" name="clavier_NR" value="non renseigne" checked>Non renseigné</label>
+        </div>
       </div>
 
       <div class="div_carte">
@@ -36,12 +43,12 @@
       <div class="div_carte">
         <b>Par état de fonctionnement : </b>
         <div class="list_checkbox">
-          <label><input type="checkbox" name="etat1" value="tres_bon" checked>Très bon, tout à fait jouable</label>
-          <label><input type="checkbox" name="etat2" value="bon" checked>Bon : jouable, défauts mineurs</label>
-          <label><input type="checkbox" name="etat3" value="altere" checked>Altéré : difficilement jouable</label>
-          <label><input type="checkbox" name="etat4" value="degrade" checked>Dégradé ou en ruine : injouable</label>
-          <label><input type="checkbox" name="etat5" value="restauration" checked>En restauration (ou projet initié)</label>
-          <label><input type="checkbox" name="etat6" value="non renseigne" checked>Non renseigné</label>
+          <label><input type="checkbox" name="etat" value="tres_bon" checked>Très bon, tout à fait jouable</label>
+          <label><input type="checkbox" name="etat" value="bon" checked>Bon : jouable, défauts mineurs</label>
+          <label><input type="checkbox" name="etat" value="altere" checked>Altéré : difficilement jouable</label>
+          <label><input type="checkbox" name="etat" value="degrade" checked>Dégradé ou en ruine : injouable</label>
+          <label><input type="checkbox" name="etat" value="restauration" checked>En restauration (ou projet initié)</label>
+          <label><input type="checkbox" name="etat_NR" value="non renseigne" checked>Non renseigné</label>
         </div>
       </div>
 
@@ -52,8 +59,8 @@
       </div>
       </form>
 
-    <b style="font-size: x-large;">Les manufactures d'orgues</b>
-    <form id="chercher_facteur" style="margin-left: 15px;" action="">
+    <b class="titre_filtre">Les manufactures d'orgues</b>
+    <form id="chercher_facteur" class="carte_formulaire" action="">
       <div class="div_carte">
         <b>Rechercher une manufacture d'orgues :</b>
         <select type="text" id="nom_facteur_recherche" placeholder="Choisir un facteur"></select>
@@ -68,7 +75,7 @@
 {% block js_extra %}
   <script src="{% static 'plugins/leaflet/leaflet.js' %}"></script>
   <script src="{% static 'plugins//leafletcluster/leaflet.markercluster.js' %}"></script>
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="{% static 'plugins/slider/jquery-ui.js' %}"></script>
   
   <script>
     var carte_orgues = L.map('mapid',
@@ -139,67 +146,120 @@
       }
     });
 
+    var liste_orgues;
+    var min_jeux;
+    var max_jeux;
+    var composition_filter;
+    var etat_filter;
+    var orgues_ajoutes;
+
     $.getJSON("{% url 'orgues:orgue-list-js' %}", function (orgues) {//Affiche les orgues à l'ouverture de la page.
-      afficher_orgue(orgues);
+    orgues_ajoutes = [];
+    liste_orgues = orgues;
+    orgues_affiches = [];
+    orgues.forEach(orgue => {
+      if (! orgues_ajoutes.includes(orgue.slug)) {
+        orgues_affiches.push(orgue);
+        orgues_ajoutes.push(orgue.slug);
+      }
+    });      
+    afficher_orgue(orgues_affiches);
     });
 
     $('#filtre_formulaire').change(function(){
       // Lorsqu'un élément du formulaire change, récupère les valeurs des deux sliders et effectue la requête
-      var min_jeux = $( "#slider-range" ).slider( "values", 0 );
-      var max_jeux = $( "#slider-range" ).slider( "values", 1 );
-      var min_claviers = $( "#slider-range-claviers" ).slider( "values", 0 );
-      var max_claviers = $( "#slider-range-claviers" ).slider( "values", 1 );
-      requete(min_jeux, max_jeux, min_claviers, max_claviers);
+      min_jeux = $( "#slider-range" ).slider( "values", 0 );
+      max_jeux = $( "#slider-range" ).slider( "values", 1 );
+      requete();
     })
 
-    function requete(min_jeux, max_jeux,  min_claviers, max_claviers) {
-      // Récupère les éléments du formulaire et effectue la requête
-      markersCluster.clearLayers();
-      
-      //Récupère les éléments du formulaire
-      var data_filtre = {"pk": $("#facteur_pk").val()}
-      data_filtre["classes"] = $('#classes').is(':checked');
-      data_filtre["construction"] = $('#construction').is(':checked');
-      data_filtre["construction"] = $('#construction').is(':checked');
-      
-      var liste_etat = ["etat1", "etat2", "etat3", "etat4", "etat5", "etat6"]
-      liste_etat.forEach(element => {
-        if ($("input[name='"+element+"']").is(':checked')) {
-          data_filtre[$("input[name='"+element+"']").val()] = true;
+    function check_organ(orgue){
+      //Renvoie un booléen indiquant si l'orgue satisfait les critères requis définis dans le filtre
+      //Si l'orgue a déjà été ajouté, on ne l'ajoute pas (chaque orgue apparaît autant de fois qu'un facteur d'orgues lui a été associé)
+      if (orgues_ajoutes.includes(orgue.slug)) {
+        return false;
+      }
+
+      //Sélection des orgues classés
+      if ($('#classes').is(':checked') && orgue.references_palissy === null) {
+        return false;        
+      }
+
+      //Sélection des orgues par le nombre de jeux
+      if (orgue.nombre_jeux < min_jeux || orgue.nombre_jeux > max_jeux) {
+        return false;
+      }
+
+      //Sélection des orgues par leur composition
+      if (orgue.resume_composition !== null) {
+        var resume = orgue.resume_composition.split(" ")[1];
+        if (! composition_filter.includes(resume)) {
+          return false;          
         }
-      });
-
-      data_filtre["min_jeux"] = min_jeux;
-      data_filtre["max_jeux"] = max_jeux;
-
-      data_filtre["min_claviers"] = min_claviers;
-      data_filtre["max_claviers"] = max_claviers;
-
-      //Requête
-      $.ajax({
-        type: "GET",
-        url: "{% url 'orgues:orgue-filtre-js' %}",
-        data: data_filtre,
-        success: function (data) {
-          afficher_orgue(data)
-        },
-        error: function () {
+      }
+      else{
+        if (! $("input[name='clavier_NR']").is(':checked')) {
+          return false;
         }
-      })
+      }
+    
+      //Sélection des orgues par leur état
+      if (orgue.etat === null) {
+        if (! $("input[name='etat_NR']").is(':checked')) {
+          return false;          
+        }
+      }
+      else{
+        if (! etat_filter.includes(orgue.etat)) {
+          return false;
+        }
+      }
+
+      //Sélection des orgues par facteur
+      facteur = $("#facteur_pk").val()
+      if (facteur != -1 && facteur!==null) {
+        if (orgue.evenements__facteurs__pk != facteur) {
+          return false;
+        }
+        else{
+          if ($("input[name='construction']").is(':checked')) {
+            if (orgue.evenements__type != "construction" && orgue.evenements__type != "reconstruction") {
+              return false;              
+            }
+          }
+        }
+      }
+      orgues_ajoutes.push(orgue.slug);
+      return true;
     }
 
-    /* Avec les sliders (sélection du nombre de jeux et de claviers), si un 
-    trop grand nombre de requêtes se font en un temps réduit, les orgues apparaissent plusieurs fois. Pour éviter cela,
-    on crée une variable locale à partir d'une variable globale qui s'incrémente de 1 à chaque requête. 
-    Au bout de 300ms, si les deux valeurs sont égales, alors on effectue la requête.
-    */
-    var nombre_change = 0; // variable globale
+    function write_etat(){
+      //Crée une liste contenant tous les états autorisés définis dans le filtre
+      etat_filter = [];
+      $('input[name="etat"]:checked').each(function() { 
+        etat_filter.push($(this).val());
+      });     
+    }
 
-    function attente_requete(min_jeux, max_jeux,  min_claviers, max_claviers, value_nombre_change){
-      // Fonction qui vérifie que la variable locale et la variable globale sont égales, auquel cas la requête est effectuée.
-      if(value_nombre_change == nombre_change){
-        requete(min_jeux, max_jeux,  min_claviers, max_claviers);
-      }
+    function write_composition(){
+      //Crée une liste contenant toutes les composiitons autorisées définies dans le filtre
+      composition_filter = [];
+      $('input[name="clavier"]:checked').each(function() { 
+        composition_filter.push($(this).val());
+        if ($("input[name='Pedalier']").is(':checked')) {
+          composition_filter.push($(this).val()+"/P");
+        }
+      });
+    }
+    
+    function requete() {
+      // Effectue la requête
+      markersCluster.clearLayers();
+      write_composition();
+      write_etat();
+      orgues_ajoutes = [];
+      orgues_affiches = liste_orgues.filter(check_organ);
+      afficher_orgue(orgues_affiches);
     }
 
     $( "#slider-range" ).slider({
@@ -210,11 +270,9 @@
       values: [ 0, 130 ],
       slide: function( event, ui ) {
         $( "#jeu-range" ).html("Nombre de jeux : " + ui.values[ 0 ] + " - " + ui.values[ 1 ] );
-        var min_claviers = $( "#slider-range-claviers" ).slider( "values", 0 );
-        var max_claviers = $( "#slider-range-claviers" ).slider( "values", 1 );
-        nombre_change = nombre_change + 1;
-        var value_nombre_change = nombre_change;
-        setTimeout(attente_requete, 300, ui.values[ 0 ], ui.values[ 1 ], min_claviers, max_claviers, value_nombre_change);
+        min_jeux = ui.values[ 0 ];
+        max_jeux = ui.values[ 1 ];
+        requete();
       }
     });
 
@@ -222,27 +280,8 @@
       "Nombre de jeux : " + $( "#slider-range" ).slider( "values", 0 ) + " - " +  $( "#slider-range" ).slider( "values", 1 ) 
     )
 
-    $( "#slider-range-claviers" ).slider({
-      //Slider qui permet la sélection du nombre de claviers
-      range: true,
-      min: 0,
-      max: 6,
-      values: [ 0, 6 ],
-      slide: function( event, ui ) {
-        $( "#claviers-range" ).html("Nombre de claviers : " + ui.values[ 0 ] + " - " + ui.values[ 1 ] );
-        var min_jeux = $( "#slider-range" ).slider( "values", 0 );
-        var max_jeux = $( "#slider-range" ).slider( "values", 1 );
-        nombre_change = nombre_change + 1;
-        var value_nombre_change = nombre_change;
-        setTimeout(attente_requete, 300, min_jeux, max_jeux, ui.values[ 0 ], ui.values[ 1 ], value_nombre_change);
-      }
-    });
-
-    $( "#claviers-range" ).html( 
-      "Nombre de claviers : " + $( "#slider-range-claviers" ).slider( "values", 0 ) + " - " +  $( "#slider-range-claviers" ).slider( "values", 1 ) 
-    )
-
-    $('#manufacture').change(function(){//Affiche ou cache les manufactures d'orgues en fonction de l'état du bouton.
+    $('#manufacture').change(function(){
+      //Affiche ou cache les manufactures d'orgues en fonction de l'état du bouton.
       if ($('#manufacture').is(':checked')){
         afficher_manufactures();
       }
@@ -251,7 +290,8 @@
       }
     })
 
-    $("#facteur_pk").select2({//Liste des facteurs proposée dans le champ "Filtrer les orgues par facteur"
+    $("#facteur_pk").select2({
+      //Liste des facteurs proposés dans le champ "Filtrer les orgues par facteur"
       ajax: {
         url: '{% url 'orgues:facteur-list-js' %}',
         data: function (params) {
@@ -261,6 +301,10 @@
           }
           return query;
         }
+      },
+      placeholder: {
+        id: '-1',
+        text: 'Tous les facteurs'
       },
       escapeMarkup: function (markup) {
         return markup;
@@ -273,7 +317,8 @@
       width: '100%'
     });
 
-    $("#nom_facteur_recherche").select2({//Liste des facteurs proposés dans le champ "Rechercher une manufacture d'orgues"
+    $("#nom_facteur_recherche").select2({
+      //Liste des facteurs proposés dans le champ "Rechercher une manufacture d'orgues"
       ajax: {
         url: '{% url 'orgues:facteur-list-js-lonlat' %}',
         data: function (params) {
@@ -295,7 +340,8 @@
       width: '100%'
     });
 
-    $("#nom_facteur_recherche").change(function(e){//Affiche les manufactures d'orgues et centre la carte sur celle choisie
+    $("#nom_facteur_recherche").change(function(e){
+      //Affiche les manufactures d'orgues et centre la carte sur celle choisie
       e.preventDefault();
       markersClusterFacteur.clearLayers();
       document.getElementById("manufacture").checked = true;
@@ -315,6 +361,7 @@
 
 
     function afficher_orgue(orgues){
+      //Affiche les orgues contenus dans la liste donnée en argument
       for (var i = 0; i < orgues.length; i++) {
         var popup = '<p> <b>' + orgues[i].commune + '</b>' + '</br>' + orgues[i].edifice + '</br><a href="/detail/' + orgues[i].slug + '">Voir l\'orgue</a></p>';
         var ttip = '<b>' + orgues[i].commune + '</b>' + '</br>' + orgues[i].edifice;
@@ -332,6 +379,7 @@
     }
 
     function afficher_manufactures(){
+      //Affiche les manufactures d'orgues
       $.getJSON("{% url 'orgues:facteur-list-js-leaflet' %}", function (facteurs) {
           for (var i = 0; i < facteurs.length; i++) {
             var popup = '<p> <b>' + facteurs[i].nom + '</p> </b>';

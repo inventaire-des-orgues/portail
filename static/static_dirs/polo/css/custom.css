@@ -616,3 +616,15 @@ a.link, a.link:visited, a.link:active {
     margin-top: 7px;
     margin-bottom: 7px;
 }
+
+.carte_formulaire{
+    margin-left: 15px;
+}
+
+.titre_filtre{
+    font-size: x-large;
+}
+
+.checkbox_claviers{
+    margin: 5px;
+}

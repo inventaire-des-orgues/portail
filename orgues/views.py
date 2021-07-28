@@ -138,13 +138,17 @@ class OrgueCarte(TemplateView):
 
 class OrgueListJS(View):
     """
-    Cette vue est requêtée par Leaflet lors de l'affichage de la carte de France dans "orgues/carte.html"
+    Cette vue est requêtée par Leaflet lors de l'affichage de la carte de France dans "orgues/carte.html". Elle 
+    renvoie sous format json tous les orgues disposant d'une latitude et d'une longitude.
     """
-
     def get(self, request, *args, **kwargs):
-        data = Orgue.objects.filter(latitude__isnull=False, longitude__isnull=False).values("slug", "commune", "edifice", "latitude",
-                                                                   "longitude", 'emplacement', "references_palissy")
-        return JsonResponse(list(data), safe=False)
+        queryset = Orgue.objects.all()
+        queryset = queryset.annotate(nombre_jeux=Count('claviers__jeux', distinct=True))
+        queryset = queryset.filter(latitude__isnull=False, longitude__isnull=False)
+        queryset = queryset.values("slug", "commune", "edifice", "latitude",
+            "longitude", 'emplacement', "references_palissy", "nombre_jeux", "resume_composition",
+            "etat", "evenements__facteurs__pk", "evenements__type")
+        return JsonResponse(list(queryset), safe=False)
 
 
 class FacteurListJSLeaflet(View):
@@ -166,7 +170,6 @@ class FacteurLonLatLeaflet(View):
         facteur_id = self.request.GET.get("facteur")
         data = Facteur.objects.filter(pk=facteur_id).values("nom", "latitude_atelier", "longitude_atelier")
         return JsonResponse(list(data), safe=False)
-
 
 
 class FacteurListJSlonlat(FabListView):
@@ -192,52 +195,6 @@ class FacteurListJSlonlat(FabListView):
         if context["object_list"]:
             results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
         return JsonResponse({"results": results, "pagination": {"more": more}})
-
-
-class OrgueFiltreJS(View):
-    """
-    JSON renvoyant la liste des orgues correspondant aux conditions à droite de la carte
-    """
-    def get(self, request, *args, **kwargs):
-        facteur_pk = request.GET.get("pk")
-        queryset = Orgue.objects.all()
-
-        #sélection des orgues qui ont une position géographique
-        queryset = queryset.filter(Q(latitude__isnull=False) & Q(longitude__isnull=False)).distinct()
-
-        #Sélection des orgues par le facteur qui a participé aux travaux
-        if facteur_pk:
-            if int(facteur_pk) != -1:
-                queryset = queryset.filter(evenements__facteurs__pk=facteur_pk)
-                if request.GET.get("construction"):
-                    queryset = queryset.filter(Q(evenements__type="construction") | Q(evenements__type="reconstruction")).distinct()
-        #Sélection des orgues par leur état
-        liste_etat = []
-        for etat in ['tres_bon', 'bon', 'altere', 'degrade', 'restauration']:
-            if request.GET.get(etat):
-                liste_etat.append(etat)
-        if request.GET.get("non renseigne"):
-            queryset = queryset.filter(Q(etat__in=liste_etat) | Q(etat__isnull=True)).distinct()
-        else:
-            queryset = queryset.filter(etat__in=liste_etat).distinct()   
-        
-        #Sélection des orgues par leur nombre de claviers        
-        queryset = queryset.annotate(num_claviers = Count('claviers', distinct=True))
-        nombre_claviers_max = int(request.GET.get("max_claviers"))
-        nombre_claviers_min = int(request.GET.get("min_claviers")) 
-        queryset = queryset.filter(num_claviers__gte=nombre_claviers_min, num_claviers__lte=nombre_claviers_max).distinct()
-
-        #Sélection des orgues par leur nombre de jeux
-        queryset=queryset.annotate(nombre_jeux=Count('claviers__jeux', distinct=True))
-        nombre_jeux_max = int(request.GET.get("max_jeux"))
-        nombre_jeux_min = int(request.GET.get("min_jeux"))
-        queryset = queryset.filter(nombre_jeux__gte=nombre_jeux_min, nombre_jeux__lte=nombre_jeux_max)
-        
-        orgue_classe = request.GET.get("classes")
-        if orgue_classe=="true":
-            queryset = queryset.filter(references_palissy__isnull=False)
-        data = queryset.distinct().values("slug", "commune", "edifice", "latitude", "longitude", 'emplacement', "references_palissy")
-        return JsonResponse(list(data), safe=False)
 
 
 class OrgueEtatsJS(View):
