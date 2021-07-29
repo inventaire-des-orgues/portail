@@ -175,116 +175,126 @@
     var liste_orgues;
     var min_jeux;
     var max_jeux;
-    var composition_filter;
-    var etat_filter;
-    var orgues_ajoutes;
 
     $.getJSON("{% url 'orgues:orgue-list-js' %}", function (orgues) {//Affiche les orgues à l'ouverture de la page.
-    orgues_ajoutes = [];
-    liste_orgues = orgues;
-    orgues_affiches = [];
-    orgues.forEach(orgue => {
-      if (! orgues_ajoutes.includes(orgue.slug)) {
-        orgues_affiches.push(orgue);
-        orgues_ajoutes.push(orgue.slug);
-      }
-    });      
-    afficher_orgue(orgues_affiches);
+    liste_orgues = orgues;    
+    afficher_orgue(orgues);
     });
 
     $('#filtre_formulaire').change(function(){
-      // Lorsqu'un élément du formulaire change, récupère les valeurs des deux sliders et effectue la requête
-      min_jeux = $( "#slider-range" ).slider( "values", 0 );
-      max_jeux = $( "#slider-range" ).slider( "values", 1 );
-      requete();
+      // Lorsqu'un élément du formulaire change, effectue la requête
+      update_filter();
     })
 
-    function check_organ(orgue){
+    function check_organ(filter){
       //Renvoie un booléen indiquant si l'orgue satisfait les critères requis définis dans le filtre
-      //Si l'orgue a déjà été ajouté, on ne l'ajoute pas (chaque orgue apparaît autant de fois qu'un facteur d'orgues lui a été associé)
-      if (orgues_ajoutes.includes(orgue.slug)) {
-        return false;
-      }
-
-      //Sélection des orgues classés
-      if ($('#classes').is(':checked') && orgue.references_palissy === null) {
-        return false;        
-      }
-
-      //Sélection des orgues par le nombre de jeux
-      if (orgue.nombre_jeux < min_jeux || orgue.nombre_jeux > max_jeux) {
-        return false;
-      }
-
-      //Sélection des orgues par leur composition
-      if (orgue.resume_composition !== null) {
-        var resume = orgue.resume_composition.split(" ")[1];
-        if (! composition_filter.includes(resume)) {
-          return false;          
+      return function(organ){
+        //Sélection des orgues classés
+        if (filter.classes && organ.references_palissy === null) {
+          return false;        
         }
-      }
-      else{
-        if (! $("input[name='clavier_NR']").is(':checked')) {
+
+        //Sélection des orgues par le nombre de jeux
+        if (organ.nombre_jeux < filter.min_jeux || organ.nombre_jeux > filter.max_jeux) {
           return false;
         }
-      }
-    
-      //Sélection des orgues par leur état
-      if (orgue.etat === null) {
-        if (! $("input[name='etat_NR']").is(':checked')) {
-          return false;          
-        }
-      }
-      else{
-        if (! etat_filter.includes(orgue.etat)) {
-          return false;
-        }
-      }
 
-      //Sélection des orgues par facteur
-      facteur = $("#facteur_pk").val()
-      if (facteur != -1 && facteur!==null) {
-        if (orgue.evenements__facteurs__pk != facteur) {
-          return false;
-        }
-        else{
-          if ($("input[name='construction']").is(':checked')) {
-            if (orgue.evenements__type != "construction" && orgue.evenements__type != "reconstruction") {
-              return false;              
-            }
+        //Sélection des orgues par leur composition
+        if (organ.resume_composition !== null) {
+          var resume = organ.resume_composition.split(" ")[1];
+          if (! filter.composition_filter.includes(resume)) {
+            return false;          
           }
         }
+        else{
+          if (! filter.clavier_NR) {
+            return false;
+          }
+        }
+      
+        //Sélection des orgues par leur état
+        if (organ.etat === null) {
+          if (! filter.etat_NR) {
+            return false;          
+          }
+        }
+        else{
+          if (! filter.etat_filter.includes(organ.etat)) {
+            return false;
+          }
+        }
+
+        //Sélection des orgues par facteur
+        if (filter.facteur_pk != -1 && filter.facteur_pk !== null) {
+          if (! organ_builder_event_satisfied(filter.facteur_pk, filter.construction, organ.facteurs)) {
+            return false;
+          }
+        }
+        return true;
+      }     
+    }
+
+    function organ_builder_event_satisfied(facteur_pk, construction, organ_facteurs) {
+      if (organ_facteurs == "") {
+        return false;
       }
-      orgues_ajoutes.push(orgue.slug);
-      return true;
+      var liste_facteurs = organ_facteurs.split(",");
+      var result = false;
+      liste_facteurs.forEach(evenement => {
+        var evenement_facteur = evenement.split("&")[0];
+        var evenement_type = evenement.split("&")[1];
+        if (evenement_facteur == facteur_pk) {
+          if (construction) {
+            if (evenement_type == "construction" || evenement_type == "reconstruction") {
+              result = true;
+            }
+          }
+          else{
+            result = true;
+          }          
+        }
+      });
+      return result;
     }
 
     function write_etat(){
       //Crée une liste contenant tous les états autorisés définis dans le filtre
-      etat_filter = [];
+      var etat_filter = [];
       $('input[name="etat"]:checked').each(function() { 
         etat_filter.push($(this).val());
-      });     
+      });
+      return etat_filter;
     }
 
     function write_composition(){
       //Crée une liste contenant toutes les composiitons autorisées définies dans le filtre
-      composition_filter = [];
+      var composition_filter = [];
       $('input[name="clavier"]:checked').each(function() { 
         composition_filter.push($(this).val());
         if ($("input[name='Pedalier']").is(':checked')) {
           composition_filter.push($(this).val()+"/P");
         }
       });
+      return composition_filter;
     }
     
-    function requete() {
-      // Effectue la requête
+    function update_filter() {
+      // Met à jour la liste des orgues à afficher
       markersCluster.clearLayers();
-      write_composition();
-      write_etat();
-      orgues_ajoutes = [];
-      orgues_affiches = liste_orgues.filter(check_organ);
+      composition_filter = write_composition();
+      etat_filter = write_etat();
+      const filter = {
+        classes: $('#classes').is(':checked'),
+        etat_filter: etat_filter,
+        composition_filter: composition_filter,
+        clavier_NR: $("input[name='clavier_NR']").is(':checked'),
+        etat_NR: $("input[name='etat_NR']").is(':checked'),
+        facteur_pk: $("#facteur_pk").val(),
+        construction: $("input[name='construction']").is(':checked'),
+        min_jeux: $( "#slider-range" ).slider( "values", 0 ),
+        max_jeux: $( "#slider-range" ).slider( "values", 1 ),
+      }
+      orgues_affiches = liste_orgues.filter(check_organ(filter));
       afficher_orgue(orgues_affiches);
     }
 
@@ -294,11 +304,9 @@
       min: 0,
       max: 130,
       values: [ 0, 130 ],
-      slide: function( event, ui ) {
+      change: function( event, ui ) {
         $( "#jeu-range" ).html("Nombre de jeux : " + ui.values[ 0 ] + " - " + ui.values[ 1 ] );
-        min_jeux = ui.values[ 0 ];
-        max_jeux = ui.values[ 1 ];
-        requete();
+        update_filter();
       }
     });
 

@@ -83,7 +83,7 @@ class OrgueSerializer(serializers.ModelSerializer):
 
 class OrgueResumeSerializer(serializers.ModelSerializer):
     """
-    Serializers utilisé pour constuire l'index de recherche
+    Serializers utilisé pour construire l'index de recherche
     """
     facteurs = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField()
@@ -119,3 +119,39 @@ class OrgueResumeSerializer(serializers.ModelSerializer):
                 seen_facteurs.add(nouveau_facteur)
                 facteurs.append(nouveau_facteur)
         return ", ".join(facteurs)
+
+
+class OrgueCarteSerializer(serializers.ModelSerializer):
+    """
+    Serializers utilisé pour afficher les orgues sur la carte
+    """
+    facteurs = serializers.SerializerMethodField()
+    nombre_jeux = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Orgue
+        fields = [
+            "slug",
+            "latitude",
+            "longitude",
+            "commune",
+            "emplacement",
+            "edifice",
+            "references_palissy",
+            "nombre_jeux",
+            "resume_composition",
+            "etat",
+            "facteurs"
+        ]
+
+    def get_nombre_jeux(self, obj):
+        return obj.jeux_count
+
+    def get_facteurs(self, obj):
+        facteurs = []
+        evenements = Evenement.objects.filter(orgue=obj, facteurs__isnull=False).prefetch_related('facteurs')
+        for evenement in evenements:
+            nouveaux_facteurs = evenement.facteurs.values_list('pk', flat=True)
+            for nouveau_facteur in nouveaux_facteurs:
+                facteurs.append(str(nouveau_facteur)+"&"+evenement.type)
+        return ",".join(facteurs)

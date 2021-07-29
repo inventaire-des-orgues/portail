@@ -24,7 +24,7 @@ from accounts.models import User
 from fabutils.fablog import load_fabaccess_logs
 from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdateView, FabView, FabCreateViewJS, \
     FabDetailView
-from orgues.api.serializers import OrgueSerializer, OrgueResumeSerializer
+from orgues.api.serializers import OrgueSerializer, OrgueResumeSerializer, OrgueCarteSerializer
 from project import settings
 
 from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source, Contribution
@@ -145,10 +145,7 @@ class OrgueListJS(View):
         queryset = Orgue.objects.all()
         queryset = queryset.annotate(nombre_jeux=Count('claviers__jeux', distinct=True))
         queryset = queryset.filter(latitude__isnull=False, longitude__isnull=False)
-        queryset = queryset.values("slug", "commune", "edifice", "latitude",
-            "longitude", 'emplacement', "references_palissy", "nombre_jeux", "resume_composition",
-            "etat", "evenements__facteurs__pk", "evenements__type")
-        return JsonResponse(list(queryset), safe=False)
+        return JsonResponse(OrgueCarteSerializer(list(queryset), many=True).data, safe=False)
 
 
 class FacteurListJSLeaflet(View):
