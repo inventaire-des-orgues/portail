@@ -153,5 +153,5 @@ class OrgueCarteSerializer(serializers.ModelSerializer):
         for evenement in evenements:
             nouveaux_facteurs = evenement.facteurs.values_list('pk', flat=True)
             for nouveau_facteur in nouveaux_facteurs:
-                facteurs.append(str(nouveau_facteur)+"&"+evenement.type)
-        return ",".join(facteurs)
+                facteurs.append([nouveau_facteur, evenement.type])
+        return facteurs
