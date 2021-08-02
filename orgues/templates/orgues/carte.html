@@ -395,8 +395,17 @@
     function afficher_orgue(orgues){
       //Affiche les orgues contenus dans la liste donnée en argument
       for (var i = 0; i < orgues.length; i++) {
-        var popup = '<p> <b>' + orgues[i].commune + '</b>' + '</br>' + orgues[i].edifice + '</br><a href="/detail/' + orgues[i].slug + '">Voir l\'orgue</a></p>';
-        var ttip = '<b>' + orgues[i].commune + '</b>' + '</br>' + orgues[i].edifice;
+        var popup = '<p> <b>' + orgues[i].commune + '</b>' + '</br>' + orgues[i].edifice;
+        var ttip = '<p> <b>' + orgues[i].commune + '</b>' + '</br>' + orgues[i].edifice;
+        if (orgues[i].resume_composition) {
+          popup += ', ' + orgues[i].resume_composition;
+          ttip += ', ' + orgues[i].resume_composition + '</p>';
+        }
+        popup += '</br><a href="/detail/' + orgues[i].slug + '">Voir l\'orgue</a></p>';
+        if (orgues[i].vignette != '/static/img/default.png') {
+          popup += '<div ><img style="width:170px" src="'+orgues[i].vignette+'" alt="Photo orgue" style=""></div>';
+        }
+        
         var latLng = new L.LatLng(orgues[i].latitude, orgues[i].longitude);
         if (orgues[i].references_palissy) {
           var marker = new L.marker(latLng, {icon: mh_icon}).bindPopup(popup);
