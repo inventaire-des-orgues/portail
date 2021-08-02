@@ -422,6 +422,12 @@
           carte_orgues.addLayer(markersClusterFacteur);
         });
     }
+
+    carte_orgues.on("zoom, move", function(event){
+      coord_url = '?lat='+carte_orgues.getCenter().lat+'&lon='+carte_orgues.getCenter().lng+'&z='+carte_orgues.getZoom();
+      window.history.pushState('', '', coord_url);
+    })
+
   </script>
 
 {% endblock %}
