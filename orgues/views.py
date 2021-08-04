@@ -11,7 +11,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Q, Count, Sum
 from django.forms import modelformset_factory
 from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -24,7 +24,7 @@ from accounts.models import User
 from fabutils.fablog import load_fabaccess_logs
 from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdateView, FabView, FabCreateViewJS, \
     FabDetailView
-from orgues.api.serializers import OrgueSerializer, OrgueResumeSerializer
+from orgues.api.serializers import OrgueSerializer, OrgueResumeSerializer, OrgueCarteSerializer
 from project import settings
 
 from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source, Contribution
@@ -138,13 +138,14 @@ class OrgueCarte(TemplateView):
 
 class OrgueListJS(View):
     """
-    Cette vue est requêtée par Leaflet lors de l'affichage de la carte de France dans "orgues/carte.html"
+    Cette vue est requêtée par Leaflet lors de l'affichage de la carte de France dans "orgues/carte.html". Elle 
+    renvoie sous format json tous les orgues disposant d'une latitude et d'une longitude.
     """
-
     def get(self, request, *args, **kwargs):
-        data = Orgue.objects.filter(latitude__isnull=False).values("slug", "commune", "edifice", "latitude",
-                                                                   "longitude", 'emplacement', "references_palissy")
-        return JsonResponse(list(data), safe=False)
+        queryset = Orgue.objects.all()
+        queryset = queryset.annotate(nombre_jeux=Count('claviers__jeux', distinct=True))
+        queryset = queryset.filter(latitude__isnull=False, longitude__isnull=False)
+        return JsonResponse(OrgueCarteSerializer(list(queryset), many=True).data, safe=False)
 
 
 class FacteurListJSLeaflet(View):
@@ -166,7 +167,6 @@ class FacteurLonLatLeaflet(View):
         facteur_id = self.request.GET.get("facteur")
         data = Facteur.objects.filter(pk=facteur_id).values("nom", "latitude_atelier", "longitude_atelier")
         return JsonResponse(list(data), safe=False)
-
 
 
 class FacteurListJSlonlat(FabListView):
@@ -192,23 +192,6 @@ class FacteurListJSlonlat(FabListView):
         if context["object_list"]:
             results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
         return JsonResponse({"results": results, "pagination": {"more": more}})
-
-
-class OrgueFiltreJS(View):
-    """
-    JSON renvoyant la liste des orgues auxquels le facteur a participé.
-    """
-    def get(self, request, *args, **kwargs):
-        facteur_pk = request.GET.get("pk")
-        type_requete = request.GET.get("type")
-        queryset = Orgue.objects.all()
-        if facteur_pk:
-            queryset = queryset.filter(evenements__facteurs__pk=facteur_pk)
-            queryset = queryset.filter(Q(latitude__isnull=False) & Q(longitude__isnull=False)).distinct()
-            if type_requete == "construction":
-                queryset = queryset.filter(Q(evenements__type="construction") | Q(evenements__type="reconstruction")).distinct()
-        data = queryset.distinct().values("slug", "commune", "edifice", "latitude", "longitude", 'emplacement', "references_palissy")
-        return JsonResponse(list(data), safe=False)
 
 
 class OrgueEtatsJS(View):
@@ -288,6 +271,9 @@ class OrgueHistJSDep(View):
         return JsonResponse(references_palissy, safe=False)
     
 class Avancement(View):
+    """
+    JSON contenant le taux d'avancement moyen selon le niveau de zoom
+    """
     def get(self, request, *args, **kwargs):
         entite = request.GET.get("entite")
 
@@ -297,16 +283,17 @@ class Avancement(View):
 
         moy = {}
 
-        # departements
+        # Aggrégation par départements
         departements = df.groupby('departement').agg({'completion': ['count', 'mean']}).reset_index().round()
         departements.columns = ["Département", "Orgues", "Avancement"]
         
-        # regions
+        # Aggrégation par régions
         regions = df.groupby('region').agg({'completion': ['count', 'mean']}).reset_index().round()
         regions.columns = ["Region", "Orgues", "Avancement"]
         # Réglage du bug sur Mayotte
         regions.loc[[0], "Region"] = "Mayotte"
-
+        
+        # Calcul de la moyenne selon le niveau de zoom
         if entite in regions["Region"].values:
             moy["total"] = (regions.loc[regions["Region"] == entite, ["Region", "Avancement"]]).iloc[0,1]
         elif entite in departements["Département"].values:
@@ -736,10 +723,12 @@ class FacteurListJS(FabListView):
         return queryset
 
     def render_to_response(self, context, **response_kwargs):
-        results = []
+        results = [{"id": -1, "text":"Tous les facteurs"}]
         more = context["page_obj"].number < context["paginator"].num_pages
         if context["object_list"]:
-            results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
+            for u in context["object_list"]:
+            #results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
+                results.append({"id":u.id, "text":u.nom})
         return JsonResponse({"results": results, "pagination": {"more": more}})
 
 

@@ -44,7 +44,7 @@
           </div>
         </div>
         <div class="col-xl-8" v-cloak>
-          <p class="text-muted text-center" v-if="!loading">((hits)) orgue<span v-if="hits>0">s</span></p>
+          <p class="text-muted text-center" v-if="!loading">((hits)) orgue<span v-if="hits>1">s</span></p>
           <div class="card" v-if="loading">
             <div class="card-body">
               <div class="d-flex align-items-center">
@@ -100,16 +100,16 @@
             </div>
           </div>
           <ul class="pagination" v-if="!loading && hits > 0 && page <=pages">
-            <li class="page-item">
-              <button class="page-link" @click="previous_page" v-if="page > 1">
+            <li class="page-item" style="display: flex; align-items: center;">
+              <button class="page-link " @click="previous_page" v-if="page > 1">
                 <span class="fa fa-chevron-left"></span>
               </button>
             </li>
             <li class="page-item">
-              <span class="page-link" style="background:transparent;border:none;width:130px;  ">Page ((page))  / ((pages))</span>
+              <span class="page-link" style="background:transparent;border:none;">Page <input id="query_page" style="padding: 5px; width: 40px;" v-on:keyup.enter="new_page" v-model="requete_page" >  / ((pages))</span>
             </li>
-            <li class="page-item" v-if="page < pages">
-              <button class="page-link" @click="next_page">
+            <li class="page-item" style="display: flex; align-items: center;" v-if="page < pages">
+              <button class="page-link"  @click="next_page">
                 <span class="fa fa-chevron-right"></span>
               </button>
             </li>
@@ -141,7 +141,8 @@
         loading: false,
         orgues: [],
         departement: '{{ departement|default_if_none:'' }}',
-        departements: departements
+        departements: departements,
+        requete_page: {% if page %}{{ page}}{% else %}1{% endif %}
       },
       created: function () {
         this.fetchData();
@@ -177,6 +178,7 @@
           var departement = self.departement
           var page = self.page
           this.loading = true
+          this.requete_page = this.page;
 
           var pageUrl = '?page=' + page;
           if (departement) {
@@ -229,6 +231,16 @@
         ,
         select: function (orgue) {
           window.location.href = orgue.url;
+        }
+        ,
+        new_page: function(){
+          if (this.requete_page <= this.pages && this.requete_page>=1){
+            this.page = parseInt(this.requete_page);
+          }
+          else{
+            this.requete_page = this.page;
+          }
+          this.fetchData(true);
         }
       }
       ,

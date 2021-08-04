@@ -21,9 +21,9 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('codestable', nargs=1, type=str,
-                            help='Chemin vers le fichier (CSV, points-virgules, utf-8) contenant deux colonnes : facteurs à remplacer et facteurs qui remplacent.')
+                            help='Chemin vers le fichier (CSV, points-virgules, utf-8) contenant au moins deux colonnes : facteurs à remplacer dans la première et facteurs qui remplacent dans les suivantes.')
         parser.add_argument('--delete', action='store_true',
-                            help="Efface le facteur d'orgue de la base de données")
+                            help="Efface le facteur d'orgues de la base de données")
 
     def handle(self, *args, **options):
         if not os.path.exists(options['codestable'][0]):

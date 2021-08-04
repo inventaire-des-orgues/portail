@@ -65,6 +65,7 @@
           <p id = "selectionner">Sélectionnez une région</p>
         </div>
         <div class="col-lg-5">
+	  <!-- Carte de France avec régions -->
           <div id="map">
             <button class='btn' id='retour'>Retour à la vue régionale</button>
             <svg class="REGIONS" height="700" version="1.1" width="620" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 700"
@@ -107,7 +108,7 @@
                   d="M420.56,481.07l1.33-4.57-2.69-3.75-3.34,1.86-7.41.21-3.32-5.71-5.87-.25,1.37,1.6-1.58.23.51,1.22,1.78,1.14-1.74,1.62L389,472.81l.35-3.51L387,467.59l-12.57-.46h0l.44-2.25,9.15-5.16.43-1.32-1.9-.66,2.47-4.19,5.91.67,1.64-9.12-1.07-1.25,8.41-7.05-2.4-4.4-2.74-.91.05-6.11-3-4.8h0l.05-3.44,5.73,1,1.26,5,10-4.64,2,1.74,2.42-2.16-.6,4.8,8.42,1,1.16,3.41,3,2.08,3.59-.77,2.5-3.39,1.72,1.15,1.79-1.43V420.8l-3.26-2.27.88-1.58-5.65-.24-2.61-2.15-.47-2.91,3.27-.69-1.66-3.59,6.47,1.6,2.07-1.78-2.77-2.42,1.91-6.25,6.08-.1,1.7-2.15-1.31-.93,1.17-3.09,5.15-.06,1.21-1.23-1.27-1.36,2.83-1.8,1.61,1.15,3.21-2.82,4.71.72,1.83-1.28,2.67,1.11-1.32-8.41-5-1,1.71-6.12,3.64-.16,1.31,3.11,3.58,1.06,2.46-3.36,5,0h0l1.75,5.3,2.94.33.28,6.36,4.67,3.22,3-.68,3.6,2.26-.94,2,3.16,6.15-4.73.36.22,3.35-4.66,5.22,3.85,5.72-2.31.48-.22,3.42,4.95,7.33,7.5,2,7,5,13.58-3.43.88,7.64L510,443.51l1.45,5.19-7.95,4-1,.34-6.58,3.05-1.46,3.78-1,.91-2.48,2-3.15-.39-3,6.44-6.05.33-1.19,4.27-5.88,4.3,5.08.32-2.09,5.62-3.55-1.22-2.69,2.17-4.65.37-.85,3.29-7.35-1.62-1.31,5-2.49-.12,1.21-2.85-4.28.06-4.09-2.63-1.66,1.26,2.77,2-5,1-1.47-1.07.63-2.63-4.7-1.61-.38-2.05-2.68-.38-.74,1.51-2.84-3.09Z"/>
             </svg>
 
-
+	    <!-- Départements de chaque région -->
             <svg data-value="Grand Est" class="Grand-Est" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="225 -20 320 400"
                 preserveAspectRatio="xMinYMax meet" style="overflow: hidden; position: absolute; left: -0.15625px;">
               <path data-action="filter2" data-value="Meuse"
@@ -358,12 +359,14 @@
           <h3 id="selected-region">France</h3>
           <p class="text-bold" id="nb-etat-total">
             <span class="puce-etat bg-primary"></span>
-            <span>Nombre d'orgues recensés</span>
+            <span>Nombre d'orgues recensés</span>  
           </p>
+          <!-- Puce contenant le nombre d'orgues inscrits ou classés -->
 	      <p id="nbInsCla">
             <span class="puce-etat " style="background-color:#C31A38;"></span>
             <span>Orgues inscrits ou classés</span>
           </p>
+	  <!-- Puce contenant le taux d'avancement moyen -->
           <br>
 	      <p id="Avancement">
             <span class="puce-etat " style="background-color:#F6D501;"></span>
@@ -450,15 +453,18 @@
 
 
   <script>
+	  
+    /* Requetes sur les régions ou au niveau national */
     var update_states = function (region) {
       var region = region || "";
+      /* Requete sur les états des orgues */
       $.ajax({
         type: "GET",
         url: "{% url 'orgues:orgue-etats-js' %}",
         data: {"region": region},
         success: function (data) {
           var total = data.total || 0;
-
+	  /* Si le nombre d'orgues est différent 0, l'autre condition étant pour des cas particuliers */
           if (total > 0) {
             var bons = Math.round(100 * ((data.bon || 0)+(data.tres_bon || 0)) / total) + " %";
             var alteres = Math.round(100 * (data.altere || 0) / total) + " %";
@@ -480,7 +486,11 @@
         error: function () {
         }
       })
-      /* Requête sur les monuments classés ou inscrits */
+      /* 
+      Requête sur les monuments classés ou inscrits, la distinction entre les deux n'étant
+      pas possible la somme des monuments possédant un matricule aux monuments historiques
+      est pris en compte
+      */
       $.ajax({
         type: "GET",
         url: "{% url 'orgues:orgue-hist-js' %}",
@@ -490,14 +500,14 @@
           if (total > 0) {
             var tot_insc_class = data.total - data.PasCla || 0
           } else {
-            var tot_insc_class = "0% "
+            var tot_insc_class = "0 "
           }
           $("#nbInsCla .puce-etat").html(tot_insc_class);
         },
         error: function () {
         }
       })
-      /* Requete sur le taux d'avancement par région */
+      /* Requete sur le taux d'avancement moyen par région */
       $.ajax({
         type: "GET",
         url: "{% url 'orgues:orgue-av-js' %}",
@@ -515,8 +525,10 @@
       })
     }
 
+    /* Requêtes sur les départements */
     var update_states2 = function (dep){
       var dep = dep;
+      /* Requete sur les états des orgues */	    
       $.ajax({
         type: "GET",
         url: "{% url 'orgues:orgue-etats-js2' %}",
@@ -545,7 +557,7 @@
         error: function () {
         }
       })
-	/* Requête sur les monuments classés ou inscrits */
+      /* Requête sur les monuments classés ou inscrits */
       $.ajax({
         type: "GET",
         url: "{% url 'orgues:orgue-histDep-js' %}",
@@ -562,6 +574,7 @@
         error: function () {
         }
       })
+      /* Requete sur le taux d'avancement moyen par département */
       $.ajax({
         type: "GET",
         url: "{% url 'orgues:orgue-av-js' %}",
@@ -579,16 +592,21 @@
       })
     }
 
+    /* Bouton de retour qui servira lors du zoom à la vue départementale */
     $("button#retour").hide()
+    /* A l'état initial, lorsque la page est générée on accède aux statistiques au niveau national */
     update_states()
+	  
+    /* Au clic sur une région on arrive à la vue départementale */
     $("[data-action=filter]").click(function () {
-
+      /* Condition à modifier car obsolète */
       if ($(this).hasClass('active')) {
         $(this).removeClass('active');
         $("#selected-region").html("France")
         $("#selectionner").html("Sélectionnez une région")
         update_states("")
       } else {
+	/* Zoom sur la vue départementale */
         $("[data-action=filter]").removeClass('active')
         $(this).addClass('active');
         var reg = $(this).attr('id');
@@ -596,6 +614,7 @@
         $("#selected-region").html(region)
 	$("button#retour").show()
         $("#selectionner").html("Sélectionnez un département")
+	/* Cas particulier des DOMTOM qui sont des régions */
         if((region != "Mayotte") && (region != "La Réunion") && (region != "Guadeloupe") && (region != "Martinique") && (region != "Guyane")){
           $(".REGIONS").addClass('opacity')
           $("."+reg).show()
@@ -603,6 +622,8 @@
         update_states(region)
       }
     })
+	  
+    /* Au survol de la carte des régions */
     $("[data-action=filter]").mouseover(function () {
       if ($(this).hasClass('active')) {
         //$(this).removeClass('active');
@@ -616,6 +637,8 @@
         update_states(region)
       }
     })
+    
+    /* On cache l'ensemble des svg départementaux au démarrage */
     $(".Grand-Est").hide();
     $(".IDF").hide();
     $(".NA").hide();
@@ -630,6 +653,7 @@
     $(".PDLL").hide()
     $(".PACA").hide()
 
+    /* Evenement clic sur la carte départementale actuelle */
     $("[data-action=filter2]").click(function () {
       if ($(this).hasClass('active')) {
         $(this).removeClass('active');
@@ -647,6 +671,7 @@
       }
     })
 
+    /* Permet de faire un retour sur la carte des régions */
     //$(".REGIONS").hide()
     $("button#retour").click(function () {
       $('active').removeClass('active')
