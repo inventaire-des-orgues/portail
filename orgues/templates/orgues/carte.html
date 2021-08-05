@@ -394,6 +394,7 @@
 
     function afficher_orgue(orgues){
       //Affiche les orgues contenus dans la liste donnée en argument
+      markers = []
       for (var i = 0; i < orgues.length; i++) {
         var popup = '<p> <b>' + orgues[i].commune + '</b>' + '</br>' + orgues[i].edifice + '</br><a href="/detail/' + orgues[i].slug + '">Voir l\'orgue</a></p>';
         var ttip = '<b>' + orgues[i].commune + '</b>' + '</br>' + orgues[i].edifice;
@@ -405,8 +406,9 @@
           var marker = new L.Marker(latLng, {icon:nonmh_icon}).bindPopup(popup);
         }
         marker.bindTooltip(ttip);
-        markersCluster.addLayer(marker);
+        markers.push(marker);
         }
+        markersCluster.addLayers(markers);
         carte_orgues.addLayer(markersCluster);
     }
 
