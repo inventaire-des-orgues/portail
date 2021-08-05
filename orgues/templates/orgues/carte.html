@@ -4,7 +4,7 @@
 {% block head_extra %}
   <link rel="stylesheet" href="{% static 'plugins/leaflet/leaflet.css' %}">
   <link rel="stylesheet" href="{% static 'plugins/leafletcluster/MarkerCluster.Default.css' %}">
-  <link rel="stylesheet" href="{% static 'plugins/slider/jquery-ui.css' %}">  
+  <link rel="stylesheet" href="{% static 'plugins/slider/jquery-ui.css' %}">
   <link rel="stylesheet" href="{% static 'plugins/leafletgeosearch/geosearch.css' %}">
   <link rel="stylesheet" href="{% static 'plugins/leafletlocate/L.Control.Locate.min.css' %}">
 {% endblock %}
@@ -16,7 +16,7 @@
   </div>
   <div id="div_filtre">
     <b class="titre_filtre">Filtrer les orgues</b>
-    
+
     <form id="filtre_formulaire" class="carte_formulaire" action="" >
       <div class="div_carte">
         <label><b>Uniquement les orgues classés monuments historiques : </b><input type="checkbox" name="mh" id="mh"></label>
@@ -177,7 +177,7 @@
 
     $.getJSON("{% url 'orgues:orgue-list-js' %}", function (orgues) {
       //Affiche les orgues à l'ouverture de la page.
-      liste_orgues = orgues;  
+      liste_orgues = orgues;
       afficher_orgue(orgues);
     });
 
@@ -191,7 +191,7 @@
       return function(organ){
         //Sélection des orgues classés
         if (filter.mh && organ.references_palissy === null) {
-          return false;        
+          return false;
         }
 
         //Sélection des orgues par le nombre de jeux
@@ -203,7 +203,7 @@
         if (organ.resume_composition !== null) {
           var resume = organ.resume_composition.split(" ")[1];
           if (! filter.composition_filter.includes(resume)) {
-            return false;          
+            return false;
           }
         }
         else{
@@ -211,11 +211,11 @@
             return false;
           }
         }
-      
+
         //Sélection des orgues par leur état
         if (organ.etat === null) {
           if (! filter.etat_NR) {
-            return false;          
+            return false;
           }
         }
         else{
@@ -231,7 +231,7 @@
           }
         }
         return true;
-      }     
+      }
     }
 
     function organ_builder_event_satisfied(facteur_pk, construction, organ_facteurs) {
@@ -250,7 +250,7 @@
           }
           else{
             result = true;
-          }          
+          }
         }
       });
       return result;
@@ -261,7 +261,7 @@
       const claviers = $('input[name="clavier"]:checked').map((_, item) => $(item).val()).get();
       return $("input[name='Pedalier']").is(':checked') ? claviers.concat(claviers.map(item => item + "/P")) : claviers ;
     }
-    
+
     function update_filter() {
       // Met à jour la liste des orgues à afficher
       markersCluster.clearLayers();
@@ -294,8 +294,8 @@
     });
 
     function update_jeu_range(){
-      $( "#jeu-range" ).html( 
-        "Nombre de jeux : " + $( "#slider-range" ).slider( "values", 0 ) + " - " +  $( "#slider-range" ).slider( "values", 1 ) 
+      $( "#jeu-range" ).html(
+        "Nombre de jeux : " + $( "#slider-range" ).slider( "values", 0 ) + " - " +  $( "#slider-range" ).slider( "values", 1 )
       );
     }
 
@@ -318,7 +318,7 @@
       $("input[name='etat']").prop('checked', true);
       $("input[name='etat_NR']").prop('checked', true);
       $("#construction").prop('checked', false);
-      $("#facteur_pk").empty();  
+      $("#facteur_pk").empty();
       $( "#slider-range" ).slider( "values", [0, 130]);
     })
 
@@ -334,6 +334,7 @@
           return query;
         }
       },
+      allowClear: true,
       placeholder: {
         id: '-1',
         text: 'Tous les facteurs'
@@ -361,6 +362,7 @@
           return query;
         }
       },
+      allowClear: true,
       escapeMarkup: function (markup) {
         return markup;
       },
