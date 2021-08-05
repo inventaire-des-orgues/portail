@@ -16,7 +16,7 @@ from django.forms import modelformset_factory
 from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy, reverse
-from django.views.generic import DetailView, TemplateView
+from django.views.generic import DetailView, TemplateView, ListView
 from django.views.generic.base import View
 
 import orgues.forms as orgue_forms
@@ -138,7 +138,7 @@ class OrgueCarte(TemplateView):
 
 class OrgueListJS(View):
     """
-    Cette vue est requêtée par Leaflet lors de l'affichage de la carte de France dans "orgues/carte.html". Elle 
+    Cette vue est requêtée par Leaflet lors de l'affichage de la carte de France dans "orgues/carte.html". Elle
     renvoie sous format json tous les orgues disposant d'une latitude et d'une longitude.
     """
     def get(self, request, *args, **kwargs):
@@ -169,7 +169,7 @@ class FacteurLonLatLeaflet(View):
         return JsonResponse(list(data), safe=False)
 
 
-class FacteurListJSlonlat(FabListView):
+class FacteurListJSlonlat(ListView):
     """
     Liste dynamique utilisée pour filtrer les facteurs d'orgue dans les menus déroulants select2. Utilisée pour le filtre de la carte.
     documentation : https://select2.org/data-sources/ajax
@@ -269,7 +269,7 @@ class OrgueHistJSDep(View):
             references_palissy["PasCla"] = references_palissy.get(None, 0)
             del references_palissy[None]
         return JsonResponse(references_palissy, safe=False)
-    
+
 class Avancement(View):
     """
     JSON contenant le taux d'avancement moyen selon le niveau de zoom
@@ -286,13 +286,13 @@ class Avancement(View):
         # Aggrégation par départements
         departements = df.groupby('departement').agg({'completion': ['count', 'mean']}).reset_index().round()
         departements.columns = ["Département", "Orgues", "Avancement"]
-        
+
         # Aggrégation par régions
         regions = df.groupby('region').agg({'completion': ['count', 'mean']}).reset_index().round()
         regions.columns = ["Region", "Orgues", "Avancement"]
         # Réglage du bug sur Mayotte
         regions.loc[[0], "Region"] = "Mayotte"
-        
+
         # Calcul de la moyenne selon le niveau de zoom
         if entite in regions["Region"].values:
             moy["total"] = (regions.loc[regions["Region"] == entite, ["Region", "Avancement"]]).iloc[0,1]
@@ -424,7 +424,7 @@ class OrgueCreate(FabCreateView, ContributionOrgueMixin):
     def get_success_url(self):
         success_url = reverse('orgues:orgue-detail', args=(self.object.slug,))
         return self.request.POST.get("next", success_url)
-         
+
 class OrgueUpdateMixin(FabUpdateView, ContributionOrgueMixin):
     """
     Mixin de modification d'un orgue qui permet de systématiquement:
@@ -706,7 +706,7 @@ class TypeJeuListJS(FabView):
         }
 
 
-class FacteurListJS(FabListView):
+class FacteurListJS(ListView):
     """
     Liste dynamique utilisée pour filtrer les facteurs d'orgue dans les menus déroulants select2.
     documentation : https://select2.org/data-sources/ajax
