@@ -141,7 +141,8 @@ class OrgueCarteSerializer(serializers.ModelSerializer):
             "nombre_jeux",
             "resume_composition",
             "etat",
-            "facteurs"
+            "facteurs",
+            "vignette",
         ]
 
     def get_nombre_jeux(self, obj):
