@@ -3,7 +3,7 @@
 
 {% block content %}
 
-  <div class="alert-warning des topbar-fullwidth">
+  <div class="alert-warning des topbar-fullwidth pre-ouverture">
     <div class="container p-35">
       <h3>Pré-ouverture de l'Inventaire national des orgues</h3>
         <p class="text-justify">De nombreuses données, à commencer par la localisation des orgues sur la carte de France, vont être ajoutées d'ici quelques semaines. L'inauguration officielle du site aura lieu le 22 octobre. Les livres d'inventaire seront à ce moment mis en ligne à titre documentaire à la rubrique Fichiers.</p>
@@ -359,7 +359,7 @@
           <h3 id="selected-region">France</h3>
           <p class="text-bold" id="nb-etat-total">
             <span class="puce-etat bg-primary"></span>
-            <span>Nombre d'orgues recensés</span>  
+            <span>Nombre d'orgues recensés</span>
           </p>
           <!-- Puce contenant le nombre d'orgues inscrits ou classés -->
 	      <p id="nbInsCla">
@@ -453,7 +453,7 @@
 
 
   <script>
-	  
+
     /* Requetes sur les régions ou au niveau national */
     var update_states = function (region) {
       var region = region || "";
@@ -486,7 +486,7 @@
         error: function () {
         }
       })
-      /* 
+      /*
       Requête sur les monuments classés ou inscrits, la distinction entre les deux n'étant
       pas possible la somme des monuments possédant un matricule aux monuments historiques
       est pris en compte
@@ -528,7 +528,7 @@
     /* Requêtes sur les départements */
     var update_states2 = function (dep){
       var dep = dep;
-      /* Requete sur les états des orgues */	    
+      /* Requete sur les états des orgues */
       $.ajax({
         type: "GET",
         url: "{% url 'orgues:orgue-etats-js2' %}",
@@ -596,7 +596,7 @@
     $("button#retour").hide()
     /* A l'état initial, lorsque la page est générée on accède aux statistiques au niveau national */
     update_states()
-	  
+
     /* Au clic sur une région on arrive à la vue départementale */
     $("[data-action=filter]").click(function () {
       /* Condition à modifier car obsolète */
@@ -622,7 +622,7 @@
         update_states(region)
       }
     })
-	  
+
     /* Au survol de la carte des régions */
     $("[data-action=filter]").mouseover(function () {
       if ($(this).hasClass('active')) {
@@ -637,7 +637,7 @@
         update_states(region)
       }
     })
-    
+
     /* On cache l'ensemble des svg départementaux au démarrage */
     $(".Grand-Est").hide();
     $(".IDF").hide();
