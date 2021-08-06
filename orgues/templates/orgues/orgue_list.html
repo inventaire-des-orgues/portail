@@ -16,7 +16,7 @@
               </div>
               <div class="form-group">
                 <label for="query">Recherche <i class="fa fa-info-circle tex-primary" data-toggle="tooltip" data-title="Rechercher une commune, une église, un facteur ..."></i></label>
-                <input id="query" v-model="input" placeholder="Commune, facteur, église ..." class="form-control" value="{{ request.GET.facteur }}"/>
+                <input id="query" v-model="input" placeholder="Commune, facteur, église ..." class="form-control" value="{{ request.GET.query }}"/>
               </div>
               <div class="text-center d-none d-xl-block">
                 <img src="{% static 'img/conseil_image_principale.png' %}" alt="" style="width: 100%">
@@ -134,7 +134,7 @@
     var app = new Vue({
       el: '#app',
       data: {
-        debouncedInput: '{{ query|default_if_none:'' }}',
+        debouncedInput: '{{ query|default_if_none:''|escapejs }}',
         hits: 0,
         page: {% if page %}{{ page}}{% else %}1{% endif %},
         pages: 0,
