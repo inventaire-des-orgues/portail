@@ -646,3 +646,7 @@ a.link, a.link:visited, a.link:active {
 .checkbox_claviers{
     margin: 5px;
 }
+
+.pre-ouverture {
+    background-color: #F6D501;
+}
