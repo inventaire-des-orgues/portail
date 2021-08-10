@@ -262,9 +262,10 @@ class Orgue(models.Model):
     region = models.CharField(verbose_name="Région", choices=CHOIX_REGION, max_length=50)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
-    osm_type = models.CharField(choices=CHOIX_TYPE_OSM, verbose_name="Type open street map", max_length=20, null=True,
+    osm_type = models.CharField(choices=CHOIX_TYPE_OSM, verbose_name="Type OpenStreetMap", max_length=20, null=True,
                                 blank=True, help_text="Type OSM de l'objet représenant l'édifice.")
-    osm_id = models.CharField(verbose_name="Id open street map", max_length=20, null=True, blank=True, help_text="Id OSM de l'objet décrivant l'édifice.")
+    osm_id = models.CharField(verbose_name="Id OpenStreetMap", max_length=20, null=True, blank=True,
+                              help_text="Identifiant OSM de l'objet décrivant l'édifice.")
 
     # Partie instrumentale
     diapason = models.CharField(max_length=20, null=True, blank=True,
