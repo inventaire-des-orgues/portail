@@ -217,9 +217,10 @@ class Orgue(models.Model):
     designation = models.CharField(max_length=300, null=True, verbose_name="Désignation", default="orgue", blank=True)
     is_polyphone = models.BooleanField(default=False, verbose_name="Orgue polyphone de la manufacture Debierre ?")
     codification = models.CharField(max_length=24, unique=True, db_index=True)
-    references_palissy = models.CharField(max_length=60, null=True, verbose_name="Référence(s) Palissy pour les monuments historiques.", blank=True,
+    references_palissy = models.CharField(max_length=60, null=True, blank=True,
+                                          verbose_name="Référence(s) Palissy pour les monuments historiques.",
                                           help_text="Séparer les codes par des virgules.")
-    references_inventaire_regions = models.CharField(verbose_name = "Code inventaire régional", max_length=60, null=True, blank=True)
+    references_inventaire_regions = models.CharField(verbose_name="Code inventaire régional", max_length=60, null=True, blank=True)
     resume = models.TextField(max_length=500, null=True, verbose_name="Résumé", blank=True,
                               help_text="Présentation en quelques lignes de l'instrument \
                               en insistant sur son originalité (max 500 caractères).")
@@ -227,7 +228,8 @@ class Orgue(models.Model):
                                     verbose_name="Propriétaire")
     organisme = models.CharField(verbose_name="Organisme auquel s'adresser", max_length=100, null=True, blank=True,
                                  help_text="Notamment pour accéder à l'instrument.")
-    lien_reference = models.URLField(verbose_name="Lien de référence", max_length=300, null=True, blank=True)
+    lien_reference = models.URLField(verbose_name="Lien de référence", max_length=300, null=True, blank=True,
+                                     help_text="Lien internet de l'organisme auquel s'adresser.")
 
     entretien = models.ManyToManyField(Facteur, blank=True, verbose_name="Facteur en charge de l'entretien")
 
