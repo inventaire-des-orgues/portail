@@ -61,10 +61,10 @@ LOCALISATION_COLUMNS = {
     "adresse": 12,
     "departement": 4,
     "region": 5,
-    "latitude": 6,
-    "longitude": 6,
     "osm_type": 6,
     "osm_id": 6,
+    "latitude": 6,
+    "longitude": 6,
 }
 
 
