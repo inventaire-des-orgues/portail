@@ -9,6 +9,7 @@ urlpatterns = [
     path('recherche/', v.OrgueSearch.as_view(), name='orgue-search'),
     path('liste.json', v.OrgueListJS.as_view(), name='orgue-list-js'),
     path('etats.json', v.OrgueEtatsJS.as_view(), name='orgue-etats-js'),
+    path('stats.json', v.Stats.as_view(), name='orgue-stats-js'),
     path('etats2.json', v.OrgueEtatsJSDep.as_view(), name='orgue-etats-js2'),
     path('references_palissy.json', v.OrgueHistJS.as_view(), name='orgue-hist-js'),
     path('references_palissyDep.json', v.OrgueHistJSDep.as_view(), name='orgue-histDep-js'),

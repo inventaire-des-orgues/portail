@@ -1377,3 +1377,28 @@ class Dashboard(FabView):
         }
 
         return render(request, 'orgues/dashboard.html', context=context)
+
+class Stats(View):
+
+    def get(self, request, *args, **kwargs):
+        context = {}
+        columns = ['departement', 'region', 'completion', 'etat', 'references_palissy']
+        df = pd.DataFrame(Orgue.objects.values(*columns), columns=columns)
+
+        # departements
+        context["departement"] = self.calc(df, 'departement')
+        # regions
+        context["region"] = self.calc(df, 'region')
+
+        # France
+        completion = df.agg({'completion': ['count', 'mean'], 'references_palissy': ['count']}).round()
+        etats = df.value_counts(subset='etat')
+        context["France"] = {**etats.to_dict(), 'count': completion.loc['count', 'completion'], 'avancement': completion.loc['mean', 'completion'], 'mh': completion.loc['count','references_palissy']}
+
+        return JsonResponse(context)
+
+    def calc(self, df, type):
+        completion = df.groupby(type, as_index=True).agg({'completion': ['count', 'mean'], 'references_palissy': ['count']}).round()
+        completion.columns = ['count', 'avancement', 'mh']
+        etats = df.groupby(by=[type, 'etat'], as_index=True).size().unstack(fill_value=0)
+        return pd.merge(completion, etats, left_index=True, right_index=True).to_dict(orient='index')
