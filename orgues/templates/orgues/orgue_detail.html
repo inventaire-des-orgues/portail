@@ -43,7 +43,7 @@
             {% if orgue.ancienne_commune %} (<a href="/orgues/?query={{ orgue.ancienne_commune|urlencode }}" class="link">{{ orgue.ancienne_commune }}</a>){% endif %}, <a href="/orgues/?query={{ orgue.departement|urlencode }}" class="link">{{ orgue.departement }}</a>
             <small>
               | <a href="/orgues/?query={{ orgue.commune|add:' '|add:orgue.edifice|urlencode }}" class="link">{{ orgue.designation|default_if_none:"Orgue" }}</a>
-              {% if orgue.emplacement %} | {{ orgue.emplacement }} {% endif %}
+              {% if orgue.emplacement %} | {% filter lower %}{{ orgue.emplacement }}{% endfilter %} {% endif %}
             </small>
           </h4>
         </div>
