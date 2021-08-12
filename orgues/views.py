@@ -10,7 +10,7 @@ import meilisearch
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
-from django.db import transaction
+from django.db import connection, transaction
 from django.db.models import Q, Count, Sum
 from django.forms import modelformset_factory
 from django.http import JsonResponse, Http404, HttpResponse
@@ -142,10 +142,20 @@ class OrgueListJS(View):
     renvoie sous format json tous les orgues disposant d'une latitude et d'une longitude.
     """
     def get(self, request, *args, **kwargs):
-        queryset = Orgue.objects.all()
-        queryset = queryset.annotate(nombre_jeux=Count('claviers__jeux', distinct=True))
-        queryset = queryset.filter(latitude__isnull=False, longitude__isnull=False)
-        return JsonResponse(OrgueCarteSerializer(list(queryset), many=True).data, safe=False)
+        with connection.cursor() as cursor:
+            cursor.execute(sql="SELECT o.id, o.slug, o.commune, o.latitude, o.longitude, o.emplacement, o.edifice, o.resume_composition, o.references_palissy, o.etat, group_concat(DISTINCT f.facteur_id || ':' || e.type) as facteurs  FROM orgues_orgue o JOIN orgues_evenement e ON e.orgue_id = o.id JOIN orgues_evenement_facteurs f ON f.evenement_id = e.id WHERE o.latitude IS NOT NULL AND o.longitude IS NOT NULL GROUP BY o.id")
+            columns = [col[0] for col in cursor.description]
+            rows = [self.convert(dict(zip(columns, row))) for row in cursor.fetchall()]
+            return JsonResponse(rows, safe=False)
+
+    def convert(self, item):
+        if item['resume_composition'] is not None:
+            split = item.pop('resume_composition').split(', ')
+            item['nombre_jeux'] = int(split[0])
+            item['composition'] = split[1]
+        item['facteurs'] = list(map(lambda item: item.split(':'), item['facteurs'].split(',')))
+        item['mh'] = item.pop('references_palissy') is not None
+        return item
 
 
 class FacteurListJSLeaflet(View):
