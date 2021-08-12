@@ -173,7 +173,7 @@
       }
     });
 
-    var liste_orgues;
+    var liste_orgues = [];
 
     $.getJSON("{% url 'orgues:orgue-list-js' %}", function (orgues) {
       //Affiche les orgues à l'ouverture de la page.
@@ -190,7 +190,7 @@
       //Renvoie un booléen indiquant si l'orgue satisfait les critères requis définis dans le filtre
       return function(organ){
         //Sélection des orgues classés
-        if (filter.mh && organ.references_palissy === null) {
+        if (filter.mh && organ.mh === true) {
           return false;
         }
 
@@ -200,9 +200,8 @@
         }
 
         //Sélection des orgues par leur composition
-        if (organ.resume_composition !== null) {
-          var resume = organ.resume_composition.split(" ")[1];
-          if (! filter.composition_filter.includes(resume)) {
+        if (organ.composition !== null) {
+          if (! filter.composition_filter.includes(organ.composition)) {
             return false;
           }
         }
@@ -411,7 +410,7 @@
         popup += '</br><a href="/detail/' + orgues[i].slug + '">Voir l\'orgue</a></p>';
 
         var latLng = new L.LatLng(orgues[i].latitude, orgues[i].longitude);
-        var marker = new L.Marker(latLng, {icon:(orgues[i].references_palissy) ? mh_icon : nonmh_icon});
+        var marker = new L.Marker(latLng, {icon:(orgues[i].mh) ? mh_icon : nonmh_icon});
         marker.bindPopup(popup,{
             maxWidth : 400,
             autoPan: true,
