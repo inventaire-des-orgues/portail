@@ -1,0 +1,49 @@
+{% block content %}
+<div class="row no-gutters">
+  <div class="la_vignette" style="background: #868e96;">
+    <img class="card-img-top" src="{{orgue.vignette}}" alt="Photo orgue" style="">
+  </div>
+  <div>
+
+    <h4 class="card-title mb-0">
+      {{orgue.edifice}}
+      | {{orgue.commune}}, {{orgue.departement}}
+    </h4>
+    {% spaceless %}
+      <p class=" my-0">
+        {{orgue.designation|default_if_none:"Orgue"}}
+        {% if orgue.emplacement %}, {% filter lower %}{{ orgue.emplacement }}{% endfilter %} {% endif %}
+        {% if orgue.resume_composition %}, {{ orgue.resume_composition }} {% endif %}
+      </p>
+    {% endspaceless %}
+    {% spaceless %}
+      <p class="my-0">
+        <b>Localisation : </b>
+        {{orgue.commune}}
+        {% if orgue.ancienne_commune %} ({{ orgue.ancienne_commune }}){% endif %}
+        {% if orgue.resume_composition %}, {{ orgue.resume_composition }} {% endif %}
+        {{orgue.departement}} ({{orgue.region}})
+      </p>
+    {% endspaceless %}
+    {% if facteurs_evenements %}
+    <p class="my-0">
+      <b>Facteurs :</b>
+      {% for evenement in facteurs_evenements %}
+        {% for facteur in evenement.facteurs.all %}
+              <a href="/orgues/?query={{ facteur|urlencode }}" class="link">{{ facteur }}</a>
+              {% if not forloop.last %} & {% endif %}
+        {% endfor %}
+        {% if not forloop.last %}, {% endif %}
+      {% endfor %}
+    </p>
+    {% endif %}
+    <a href="{{orgue_url}}" class="btn btn-primary rounded-pill mt-3 btn-block">Voir l'orgue</a>
+    {% if user.is_authenticated %}
+      <div style="color:#5C1C54">
+      Avancement de la fiche
+        : {{orgue.completion}}%
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

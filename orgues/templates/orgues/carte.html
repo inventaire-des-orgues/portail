@@ -131,7 +131,7 @@
       shadowSize: [41, 41], // size of the shadow
       iconAnchor: [12, 41], // point of the icon which will correspond to marker's location
       shadowAnchor: [12, 41],  // the same for the shadow
-      {#popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor#}
+      popupAnchor:  [0, -30] // point from which the popup should open relative to the iconAnchor
     });
 
     var nonmh_icon = L.icon({
@@ -142,7 +142,7 @@
       shadowSize: [41, 41], // size of the shadow
       iconAnchor: [12, 41], // point of the icon which will correspond to marker's location
       shadowAnchor: [12, 41],  // the same for the shadow
-      {#popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor#}
+      popupAnchor:  [0, -30] // point from which the popup should open relative to the iconAnchor
     });
 
     var facteur_icon = L.icon({
@@ -409,22 +409,30 @@
           ttip += ', ' + orgues[i].resume_composition + '</p>';
         }
         popup += '</br><a href="/detail/' + orgues[i].slug + '">Voir l\'orgue</a></p>';
-        if (orgues[i].vignette != '/static/img/default.png') {
-          popup += '<div ><img style="width:170px" src="'+orgues[i].vignette+'" alt="Photo orgue" style=""></div>';
-        }
-        
+
         var latLng = new L.LatLng(orgues[i].latitude, orgues[i].longitude);
-        if (orgues[i].references_palissy) {
-          var marker = new L.marker(latLng, {icon: mh_icon}).bindPopup(popup);
-        }
-        else {
-          var marker = new L.Marker(latLng, {icon:nonmh_icon}).bindPopup(popup);
-        }
+        var marker = new L.Marker(latLng, {icon:(orgues[i].references_palissy) ? mh_icon : nonmh_icon});
+        marker.bindPopup(popup,{
+            maxWidth : 400,
+            autoPan: true,
+        });
         marker.bindTooltip(ttip);
+        marker.on('popupopen', updatePopup(orgues[i].slug));
         markers.push(marker);
-        }
-        markersCluster.addLayers(markers);
-        carte_orgues.addLayer(markersCluster);
+      }
+      markersCluster.addLayers(markers);
+      carte_orgues.addLayer(markersCluster);
+    }
+
+    function updatePopup(slug) {
+      return function(e) {
+          var popup = e.target.getPopup();
+          var url='/resume/' + slug;
+          $.get(url).done(function(data) {
+              popup.setContent(data);
+              popup.update();
+          })
+        };
     }
 
     function afficher_manufactures(){

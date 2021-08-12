@@ -305,6 +305,8 @@ div.leaflet-popup-content h6 {
     text-transform: capitalize;
 }
 
+.leaflet-popup-pane   { z-index: 1200; }
+
 /* Utilitaire */
 
 .py-50 {

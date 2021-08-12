@@ -14,6 +14,7 @@ urlpatterns = [
     path('references_palissyDep.json', v.OrgueHistJSDep.as_view(), name='orgue-histDep-js'),
     path('carte/', v.OrgueCarte.as_view(), name='orgue-carte'),
     path('detail/<slug:slug>/', v.OrgueDetail.as_view(), name='orgue-detail'),
+    path('resume/<slug:slug>/', v.OrgueResume.as_view(), name='orgue-resume'),
     path('detail/<slug:slug>/qrcode', v.OrgueQrcode.as_view(), name='orgue-qrcode'),
     path('exemple/', v.OrgueDetailExemple.as_view(), name='orgue-detail-exemple'),
     path('conseils/', v.ConseilsFicheView.as_view(),name='orgue-fiche-conseils'),
