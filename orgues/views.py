@@ -347,6 +347,29 @@ class OrgueDetail(DetailView):
         }
 
 
+class OrgueResume(DetailView):
+    """
+    Vue de détail (lecture seule) d'un orgue
+    """
+    model = Orgue
+    slug_field = 'slug'
+    slug_url_kwarg = 'slug'
+    template_name_suffix = '_resume'
+
+    def get_object(self, queryset=None):
+
+        orgue = Orgue.objects.filter(Q(slug=self.kwargs['slug']) | Q(codification=self.kwargs['slug'])).first()
+        if not orgue:
+            raise Http404
+        return orgue
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["facteurs_evenements"] = self.object.evenements.filter(facteurs__isnull=False).prefetch_related(
+            'facteurs').distinct()
+        context["orgue_url"] = self.request.build_absolute_uri(self.object.get_absolute_url())
+        return context
+
 class OrgueDetailExemple(View):
     """
     Redirige vers la fiche la mieux complétée du site
