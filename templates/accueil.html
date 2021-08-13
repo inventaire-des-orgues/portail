@@ -453,7 +453,7 @@
 </div>
 {% endblock %}
 {% block js_extra %}
-  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.0"></script>
   <script>
     var defaultData = {
           "total": 0,
@@ -464,7 +464,6 @@
           "degrade": 0,
           "inconnu": 0
         };
-    Vue.config.devtools = true;
     var app = new Vue({
       el: '#carte_de_france',
       data: {
@@ -478,13 +477,6 @@
       },
       created: function () {
         this.fetchData();
-        console.log('created');
-      },
-      mounted: function() {
-        console.log('mounted');
-      },
-      activated: function() {
-        console.log('activated');
       },
       methods: {
         fetchData: function () {
