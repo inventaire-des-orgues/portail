@@ -178,7 +178,6 @@ class FacteurLonLatLeaflet(View):
         data = Facteur.objects.filter(pk=facteur_id).values("nom", "latitude_atelier", "longitude_atelier")
         return JsonResponse(list(data), safe=False)
 
-
 class FacteurListJSlonlat(ListView):
     """
     Liste dynamique utilisée pour filtrer les facteurs d'orgue dans les menus déroulants select2. Utilisée pour le filtre de la carte.
@@ -201,116 +200,6 @@ class FacteurListJSlonlat(ListView):
         if context["object_list"]:
             results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
         return JsonResponse({"results": results, "pagination": {"more": more}})
-
-
-class OrgueEtatsJS(View):
-    """
-    JSON décrivant les états des orgues pour une région
-    Si pas de région alors envoie les infos aggrégées pour toutes les régions
-    """
-
-    def get(self, request, *args, **kwargs):
-        region = request.GET.get("region")
-        queryset = Orgue.objects.all()
-        if region:
-            queryset = queryset.filter(region=region)
-        valeurs = queryset.values_list("etat", flat=True)
-        etats = dict(Counter(valeurs))
-        etats["total"] = sum(list(etats.values()))
-        if None in etats.keys():
-            etats["inconnu"] = etats.get(None, 0)
-            del etats[None]
-        return JsonResponse(etats, safe=False)
-
-
-class OrgueHistJS(View):
-    """
-    JSON décrivant les orgues classés ou inscrits au monument historique pour un département
-    """
-    def get(self, request, *args, **kwargs):
-        region = request.GET.get("region")
-        queryset = Orgue.objects.all()
-        if region:
-            queryset = queryset.filter(region=region)
-        valeurs = queryset.values_list("references_palissy", flat=True)
-        references_palissy = dict(Counter(valeurs))
-        references_palissy["total"] = sum(list(references_palissy.values()))
-        if None in references_palissy.keys():
-            references_palissy["PasCla"] = references_palissy.get(None, 0)
-            del references_palissy[None]
-        # if evenementstot["type"]
-        return JsonResponse(references_palissy, safe=False)
-
-
-class OrgueEtatsJSDep(View):
-    """
-    JSON décrivant les états des orgues pour un département
-    Si pas de région alors envoie les infos aggrégées pour toutes les régions
-    """
-    def get(self, request, *args, **kwargs):
-        """Un if ou deux fonctions"""
-        departement = request.GET.get("departement")
-        queryset = Orgue.objects.all()
-        if departement:
-            queryset = queryset.filter(departement=departement)
-        valeurs = queryset.values_list("etat", flat=True)
-        etats = dict(Counter(valeurs))
-        etats["total"] = sum(list(etats.values()))
-        if None in etats.keys():
-            etats["inconnu"] = etats.get(None, 0)
-            del etats[None]
-        return JsonResponse(etats, safe=False)
-
-
-class OrgueHistJSDep(View):
-    """
-    JSON décrivant les orgues classés ou inscrits au monument historique pour un département
-    """
-    def get(self, request, *args, **kwargs):
-        departement = request.GET.get("departement")
-        queryset = Orgue.objects.all()
-        if departement:
-            queryset = queryset.filter(departement=departement)
-        valeurs = queryset.values_list("references_palissy", flat=True)
-        references_palissy = dict(Counter(valeurs))
-        references_palissy["total"] = sum(list(references_palissy.values()))
-        if None in references_palissy.keys():
-            references_palissy["PasCla"] = references_palissy.get(None, 0)
-            del references_palissy[None]
-        return JsonResponse(references_palissy, safe=False)
-
-class Avancement(View):
-    """
-    JSON contenant le taux d'avancement moyen selon le niveau de zoom
-    """
-    def get(self, request, *args, **kwargs):
-        entite = request.GET.get("entite")
-
-        pd.options.display.html.border = 0
-        columns = ['departement', 'region', 'completion']
-        df = pd.DataFrame(Orgue.objects.values(*columns), columns=columns)
-
-        moy = {}
-
-        # Aggrégation par départements
-        departements = df.groupby('departement').agg({'completion': ['count', 'mean']}).reset_index().round()
-        departements.columns = ["Département", "Orgues", "Avancement"]
-
-        # Aggrégation par régions
-        regions = df.groupby('region').agg({'completion': ['count', 'mean']}).reset_index().round()
-        regions.columns = ["Region", "Orgues", "Avancement"]
-        # Réglage du bug sur Mayotte
-        regions.loc[[0], "Region"] = "Mayotte"
-
-        # Calcul de la moyenne selon le niveau de zoom
-        if entite in regions["Region"].values:
-            moy["total"] = (regions.loc[regions["Region"] == entite, ["Region", "Avancement"]]).iloc[0,1]
-        elif entite in departements["Département"].values:
-            moy["total"] = (departements.loc[departements["Département"] == entite, ["Département", "Avancement"]]).iloc[0,1]
-        else:
-            moy["total"] = regions['Avancement'].mean(axis=0)
-        return JsonResponse(moy, safe=False)
-
 
 class OrgueDetail(DetailView):
     """
