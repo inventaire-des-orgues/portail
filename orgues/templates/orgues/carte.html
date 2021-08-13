@@ -190,7 +190,7 @@
       //Renvoie un booléen indiquant si l'orgue satisfait les critères requis définis dans le filtre
       return function(organ){
         //Sélection des orgues classés
-        if (filter.mh && organ.mh === true) {
+        if (filter.mh && organ.mh === false) {
           return false;
         }
 
@@ -200,7 +200,7 @@
         }
 
         //Sélection des orgues par leur composition
-        if (organ.composition !== null) {
+        if (organ.composition !== undefined) {
           if (! filter.composition_filter.includes(organ.composition)) {
             return false;
           }
