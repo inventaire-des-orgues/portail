@@ -796,6 +796,11 @@ class Fichier(models.Model):
         verbose_name='Update date'
     )
 
+    def delete(self):
+        if self.file:
+            print("Fichier présent")
+            self.file.delete()
+        return super().delete()
 
 def chemin_image(instance, filename):
     return os.path.join(str(instance.orgue.code_departement), instance.orgue.codification, "images", filename)
