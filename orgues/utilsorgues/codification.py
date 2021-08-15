@@ -7,7 +7,6 @@ import orgues.utilsorgues.tools.generiques as gen
 
 logger_codification = logging.getLogger('codification')
 
-
 ABREVIATIONS_4 = {'BEAU': 'BX',
                   'BOUR': 'BZ',
                   'BONN': 'BN',
@@ -34,61 +33,62 @@ ABREVIATIONS_6 = {'BELLEV': 'BV',
 ABREVIATIONS_8 = {'CHAMPAGN': 'CPN'}
 
 DENOMINATION_ORGUE = {'G.O.': 'T',
-                           'Grand Orgue': 'T',
-                           'orgue de tribune': 'T',
-                           'orgue de transept': 'C',
-                           'orgue positif': 'D',
-                           'orgue régale': 'D',
-                           "orgue d'accompagnement": 'C',
-                           'petit orgue': 'D',
-                           "orgue d'étude": 'D',
-                           'positif': 'D',
-                           'grand positif': 'D',
-                           'chapelle': 'D',
-                           'oratoire': 'D',
-                           "chapelle d'hiver": 'D',
-                           'chapelle de la Vierge': 'D',
-                           'sacristie': 'D',
-                           'O.C.': 'C',
-                           'O.C.1': 'C',
-                           'O.C.2': 'D',
-                           'O.C. 1': 'C',
-                           'O.C. 2': 'D',
-                           'crypte': 'Y',
-                           'coffre': '0',
-                           'Coffre': '0',
-                           'orgue coffre': '0',
-                           'auditorium': '1',
-                           'orgue 1': '1',
-                           'orgue 2': '2',
-                           'ancien': '1',
-                           'nouveau': '2',
-                           '1': '1',
-                           '2': '2',
-                           '3': '3',
-                           '4': '4',
-                           '5': '5',
-                           '6': '6',
-                           '7': '7',
-                           'I': '1',
-                           'II': '2',
-                           'III': '3',
-                           'IV': '4',
-                           'V': '5',
-                           'VI': '6',
-                           'VII': '7',
-                           "Orgue d'étude": '1',
-                           'Orgue espagnol': '2',
-                           'Orgue majorquin': '3',
-                           'Orgue napolitain': '4',
-                           "orgue d'étude (1982)": '1',
-                           "orgue d'étude (1968)": '2',
-                           'polyphone': 'P',
-                           'buffet': 'B',
-                           'orgue à rouleau': 'R',
-                           'orgue à cylindre': 'R',
-                           'orgue': 'X',
-                           '': 'X'}
+                      'Grand orgue': 'T',
+                      'orgue de tribune': 'T',
+                      'orgue de transept': 'C',
+                      'orgue positif': 'D',
+                      'orgue régale': 'D',
+                      "orgue d'accompagnement": 'C',
+                      'petit orgue': 'D',
+                      "orgue d'étude": 'D',
+                      "orgue de salon": 'D',
+                      'positif': 'D',
+                      'grand positif': 'D',
+                      'chapelle': 'D',
+                      'oratoire': 'D',
+                      "chapelle d'hiver": 'D',
+                      'chapelle de la Vierge': 'D',
+                      'sacristie': 'D',
+                      'O.C.': 'C',
+                      'O.C.1': 'C',
+                      'O.C.2': 'D',
+                      'O.C. 1': 'C',
+                      'O.C. 2': 'D',
+                      'crypte': 'Y',
+                      'coffre': '0',
+                      'Coffre': '0',
+                      'orgue coffre': '0',
+                      'auditorium': '1',
+                      'orgue 1': '1',
+                      'orgue 2': '2',
+                      'ancien': '1',
+                      'nouveau': '2',
+                      '1': '1',
+                      '2': '2',
+                      '3': '3',
+                      '4': '4',
+                      '5': '5',
+                      '6': '6',
+                      '7': '7',
+                      'I': '1',
+                      'II': '2',
+                      'III': '3',
+                      'IV': '4',
+                      'V': '5',
+                      'VI': '6',
+                      'VII': '7',
+                      "Orgue d'étude": '1',
+                      'Orgue espagnol': '2',
+                      'Orgue majorquin': '3',
+                      'Orgue napolitain': '4',
+                      "orgue d'étude (1982)": '1',
+                      "orgue d'étude (1968)": '2',
+                      'polyphone': 'P',
+                      'buffet': 'B',
+                      'orgue à rouleau': 'R',
+                      'orgue à cylindre': 'R',
+                      'orgue': 'X',
+                      '': 'X'}
 
 
 def codifie_commune(commune):
@@ -157,17 +157,17 @@ def codifie_edifice(edifice, type_edif):
     # Si l'edifice n'a pas de nom (qu'un type), exemple fréquent : '[Temple]'
     elif (edifice == '' or edifice is None) and type_edif is not None:
         if type_edif in [
-                'temple',
-                'grand temple',
-                'temple protestant',
-                'temple réformé',
-                ]:
+            'temple',
+            'grand temple',
+            'temple protestant',
+            'temple réformé',
+        ]:
             code_edifice = 'TEMPLE'
         elif type_edif in [
-                'église protestante',
-                'temple prostestant',
-                'chapelle protestante',
-                ]:
+            'église protestante',
+            'temple prostestant',
+            'chapelle protestante',
+        ]:
             code_edifice = 'PROTES'
         elif type_edif == 'église réformée':
             code_edifice = 'REFORM'
@@ -179,11 +179,11 @@ def codifie_edifice(edifice, type_edif):
                            'église néo-apostolique']:
             code_edifice = 'EVANGE'
         elif type_edif in [
-                'église catholique',
-                'église paroissiale',
-                'église',
-                'église abbatiale',
-                ]:
+            'église catholique',
+            'église paroissiale',
+            'église',
+            'église abbatiale',
+        ]:
             code_edifice = 'EGLISE'
         elif type_edif == 'église mixte':
             code_edifice = 'EMIXTE'
@@ -194,13 +194,13 @@ def codifie_edifice(edifice, type_edif):
         elif type_edif == 'loge maçonnique':
             code_edifice = 'LOGEFM'
         elif type_edif in [
-                'conservatoire national de région',
-                'conservatoire national de musique',
-                'conservatoire national régional',
-                'conservatoire',
-                'conservatoire municipal',
-                'école de musique',
-                ]:
+            'conservatoire national de région',
+            'conservatoire national de musique',
+            'conservatoire national régional',
+            'conservatoire',
+            'conservatoire municipal',
+            'école de musique',
+        ]:
             code_edifice = 'MUSIQU'
         elif type_edif == 'séminaire' or type_edif == 'grand séminaire':
             code_edifice = 'SEMINA'
@@ -367,7 +367,8 @@ def codifier_instrument(code_insee, commune, edifice_standard, type_edifice, des
     :param orgue: objet de la classe OrgueInventaire
     :return: codification (str)
     """
-    logger_codification.info('codifier_instrument {}, {}, {}'.format(str(commune), str(edifice_standard), str(designation)))
+    logger_codification.info(
+        'codifier_instrument {}, {}, {}'.format(str(commune), str(edifice_standard), str(designation)))
     code_orgue = ''
     code_orgue += 'FR'
     code_orgue += '-'
@@ -376,7 +377,7 @@ def codifier_instrument(code_insee, commune, edifice_standard, type_edifice, des
     code_orgue += codifie_commune(commune)
     code_orgue += '-'
     code_orgue += codifie_edifice(edifice_standard, type_edifice)
-    code_orgue += '1' # TODO gestion de l'indice édifice
+    code_orgue += '1'  # TODO gestion de l'indice édifice
     code_orgue += '-'
     code_orgue += codifie_denomination(designation)
     logger_codification.info('Codification : {}'.format(str(code_orgue)))
@@ -387,6 +388,7 @@ def test_codifie_edifice():
     for edifice_et_type in edifices_tests:
         logger_codification.info('Codage édifice : {} {}'.format(codifie_edifice(*edifice_et_type), edifice_et_type))
         pass
+
 
 def test_codifie_commune():
     for com in communes_tests:
