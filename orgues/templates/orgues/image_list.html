@@ -10,37 +10,39 @@
 {% block card-body %}
   <div class="row" id="image_list">
   {% with image=orgue.image_principale %}
-    <div class="col-lg-4 image">
-      <div class="card">
-        <div class="portfolio-item img-zoom pb-0">
-          <div class="portfolio-item-wrap border-radius-top-5 ">
-            <div class="portfolio-image">
-              <a href="#"><img src="{{ orgue.vignette }}" alt=""></a>
-            </div>
-            <div class="portfolio-description p-0">
-              <a href="{% url 'orgues:image-update' image.pk %}">
-                <i class="icon icon-edit"></i>
-              </a>
-              <a href="{% url 'orgues:image-principale' image.pk %}">
-                <i class="icon icon-crop"></i>
-              </a>
-            </div>
+  {% if image %}
+  <div class="col-lg-4 image">
+    <div class="card">
+      <div class="portfolio-item img-zoom pb-0">
+        <div class="portfolio-item-wrap border-radius-top-5 ">
+          <div class="portfolio-image">
+            <a href="#"><img src="{{ orgue.vignette }}" alt=""></a>
+          </div>
+          <div class="portfolio-description p-0">
+            <a href="{% url 'orgues:image-update' image.pk %}">
+              <i class="icon icon-edit"></i>
+            </a>
+            <a href="{% url 'orgues:image-principale' image.pk %}">
+              <i class="icon icon-crop"></i>
+            </a>
           </div>
         </div>
-        <div class="card-body py-2 px-3">
-          <i class="fa fa-star fa-2x text-warning" style="position:absolute;z-index:100;top:10px;right:10px;"></i>
-          <small>
-            Vignette principale
-          </small>
-        </div>
-        <div class="card-footer text-muted">
-          <a href="{% url 'orgues:image-principale' image.pk %}" class="btn btn-primary btn-block">
-            <i class="fa fa-crop"></i> Recadrer l'image
-          </a>
-        </div>
+      </div>
+      <div class="card-body py-2 px-3">
+        <i class="fa fa-star fa-2x text-warning" style="position:absolute;z-index:100;top:10px;right:10px;"></i>
+        <small>
+          Vignette principale
+        </small>
+      </div>
+      <div class="card-footer text-muted">
+        <a href="{% url 'orgues:image-principale' image.pk %}" class="btn btn-primary btn-block">
+          <i class="fa fa-crop"></i> Recadrer l'image
+        </a>
       </div>
     </div>
-    {% endwith %}
+  </div>
+  {% endif %}
+  {% endwith %}
     <div class="col">
       <p>
         Cliquer sur <i class="icon icon-edit"></i> pour modifier le crédit ou la légende d'une image<br>
