@@ -721,6 +721,7 @@ class Jeu(models.Model):
     CHOIX_CONFIGURATION = (
         ('basse', 'Basse'),
         ('dessus', 'Dessus'),
+        ('basse_et_dessus', 'Basse et Dessus')
     )
 
     type = models.ForeignKey(TypeJeu, on_delete=models.CASCADE, related_name='jeux', db_index=True)
