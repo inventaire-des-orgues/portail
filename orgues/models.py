@@ -514,7 +514,7 @@ def validate_etendue(value):
     if not re.match("^(([CDEFGAB][#♭]?)+)([0-7])-([CDEFGAB][#♭]?)([1-8])$", value):
 
         raise ValidationError("De la forme F1-G5. Absence du premier Ut dièse notée CD1-F5.")
-    notes = countNotes(value)
+    notes = count_notes(value)
     if notes is None:
         raise ValidationError("L'etendue du clavier est invalide.")
     if notes <= 0:
@@ -524,16 +524,18 @@ def validate_etendue(value):
     if notes > 88:
         raise ValidationError("L'etendue du clavier est invalide, trop de notes.")
 
-def notesToHauteur(value):
+
+def note_to_hauteur(value):
     """
     Prend le nom d'une note et retourne la hauteur de la note :
     C = 0
     """
-    etendu_diese = ['C', 'C#','D', 'D#', 'E', 'F','F#','G','G#','A','A#','B']
-    etendu_bemole = ['B#', 'D♭','D', 'E♭', 'F♭', 'E#','G♭','G','A♭','A','B♭','C♭']
+    etendu_diese = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+    etendu_bemole = ['B#', 'D♭', 'D', 'E♭', 'F♭', 'E#', 'G♭', 'G', 'A♭', 'A', 'B♭', 'C♭']
     return etendu_diese.index(value) if value in etendu_diese else etendu_bemole.index(value)
 
-def countNotes(etendu):
+
+def count_notes(etendu):
     """
     Retourne le nombre de note en fonction d'une étendu de clavier de la forme :
     Groupe de note initiale (format internationnal CDEFGAB suivit eventuellement d'un #)
@@ -558,8 +560,8 @@ def countNotes(etendu):
     if not val:
         raise ValidationError("Etendue vide")
 
-    start = notesToHauteur(val.group("startNote")) + (int(val.group("start"))*12)
-    end = notesToHauteur(val.group("endNote")) + (int(val.group("end"))*12)
+    start = note_to_hauteur(val.group("startNote")) + (int(val.group("start")) * 12)
+    end = note_to_hauteur(val.group("endNote")) + (int(val.group("end")) * 12)
     # Compte le nombre de note dans le groupe de note initiale
     notes = len(re.findall(r'([ABCDEFG]#?)', val.group('notes')))
     count = end - start + notes
@@ -610,7 +612,7 @@ class Clavier(models.Model):
         Retourne le nombre de notes en fonction de l'étendu du clavier
         """
         try:
-            return countNotes(self.etendue)
+            return count_notes(self.etendue)
         except:
             return None
 
@@ -680,8 +682,7 @@ class Evenement(models.Model):
 
     @property
     def is_locked(self):
-        return self.type in ["classement_mh","inscription_mh"]
-
+        return self.type in ["classement_mh", "inscription_mh"]
 
     def __str__(self):
         return "{} ({})".format(self.type, self.dates)
@@ -760,6 +761,7 @@ class Source(models.Model):
     def __str__(self):
         return "{} ({})".format(self.type, self.description)
 
+
 class Contribution(models.Model):
     """
     Historique des contributions
@@ -802,6 +804,7 @@ class Fichier(models.Model):
             print("Fichier présent")
             self.file.delete()
         return super().delete()
+
 
 def chemin_image(instance, filename):
     return os.path.join(str(instance.orgue.code_departement), instance.orgue.codification, "images", filename)
@@ -858,9 +861,9 @@ class Image(models.Model):
         img = PilImage.open(self.thumbnail.path)
         width, height = img.size
         for x in range(0, width, width // 10):
-            for y in range(0, height,height // 10):
+            for y in range(0, height, height // 10):
                 r, g, b = img.getpixel((x, y))
-                if (abs(r-g) > 30 or abs(g-b) > 30):
+                if abs(r-g) > 30 or abs(g-b) > 30:
                     return False
         return True
 

@@ -11,7 +11,7 @@ from django.urls import reverse
 
 from django.conf import settings
 from accounts.models import User
-from orgues.models import Jeu, validate_etendue, notesToHauteur, countNotes, Orgue, Clavier, Image
+from orgues.models import Jeu, validate_etendue, note_to_hauteur, count_notes, Orgue, Clavier, Image
 
 
 
@@ -68,12 +68,12 @@ class OrgueTestCase(TestCase):
         self.assertIsNone(validate_etendue("CFDGEAB♭BC1-C2")) #Ocatave courte à l'italienne
 
     def test_nombre_notes(self):
-        self.assertEqual(notesToHauteur("F"), 5)
-        self.assertEqual(notesToHauteur("A#"), 10)
-        self.assertEqual(notesToHauteur("C♭"), 11)
-        self.assertEqual(notesToHauteur("D♭"), 1)
-        self.assertEqual(notesToHauteur("D"), 2)
-        self.assertRaises(ValueError, notesToHauteur, "H")
+        self.assertEqual(note_to_hauteur("F"), 5)
+        self.assertEqual(note_to_hauteur("A#"), 10)
+        self.assertEqual(note_to_hauteur("C♭"), 11)
+        self.assertEqual(note_to_hauteur("D♭"), 1)
+        self.assertEqual(note_to_hauteur("D"), 2)
+        self.assertRaises(ValueError, note_to_hauteur, "H")
 
         self.assertNotes("", None)
         self.assertNotes("J3-F1", None)
@@ -115,9 +115,9 @@ class OrgueTestCase(TestCase):
 
     def assertNotes(self, etendue, notes):
         if notes is not None:
-            self.assertEqual(countNotes(etendue), notes, "etendue %s = %i notes" % (etendue, notes))
+            self.assertEqual(count_notes(etendue), notes, "etendue %s = %i notes" % (etendue, notes))
         else:
-            self.assertRaises(ValidationError, countNotes, etendue)
+            self.assertRaises(ValidationError, count_notes, etendue)
         self.assertIsNone(validate_etendue("G#7-A1"))
 
     def test_has_pedalier(self):
