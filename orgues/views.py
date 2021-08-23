@@ -143,7 +143,7 @@ class OrgueListJS(View):
     """
     def get(self, request, *args, **kwargs):
         with connection.cursor() as cursor:
-            cursor.execute(sql="SELECT o.id, o.slug, o.commune, o.latitude, o.longitude, o.emplacement, o.edifice, o.resume_composition, o.references_palissy, o.etat, group_concat(DISTINCT f.facteur_id || ':' || e.type) as facteurs  FROM orgues_orgue o JOIN orgues_evenement e ON e.orgue_id = o.id JOIN orgues_evenement_facteurs f ON f.evenement_id = e.id WHERE o.latitude IS NOT NULL AND o.longitude IS NOT NULL GROUP BY o.id")
+            cursor.execute(sql="SELECT o.id, o.slug, o.commune, o.latitude, o.longitude, o.emplacement, o.edifice, o.resume_composition, o.references_palissy, o.etat, group_concat(DISTINCT f.facteur_id || ':' || e.type) as facteurs  FROM orgues_orgue o LEFT JOIN orgues_evenement e ON e.orgue_id = o.id LEFT JOIN orgues_evenement_facteurs f ON f.evenement_id = e.id WHERE o.latitude IS NOT NULL AND o.longitude IS NOT NULL GROUP BY o.id")
             columns = [col[0] for col in cursor.description]
             rows = [self.convert(dict(zip(columns, row))) for row in cursor.fetchall()]
             return JsonResponse(rows, safe=False)
@@ -153,7 +153,10 @@ class OrgueListJS(View):
             split = item.pop('resume_composition').split(', ')
             item['nombre_jeux'] = int(split[0])
             item['composition'] = split[1]
-        item['facteurs'] = list(map(lambda item: item.split(':'), item['facteurs'].split(',')))
+        if item['facteurs'] is not None:
+            item['facteurs'] = list(map(lambda item: item.split(':'), item['facteurs'].split(',')))
+        else:
+            item['facteurs'] = []
         item['mh'] = item.pop('references_palissy') is not None
         return item
 
