@@ -8,13 +8,55 @@
 
 
 {% block card-body %}
+  <div class="row" id="image_list">
+  {% with image=orgue.image_principale %}
+  {% if image %}
+  <div class="col-lg-4 image">
+    <div class="card">
+      <div class="portfolio-item img-zoom pb-0">
+        <div class="portfolio-item-wrap border-radius-top-5 ">
+          <div class="portfolio-image">
+            <a href="#"><img src="{{ orgue.vignette }}" alt=""></a>
+          </div>
+          <div class="portfolio-description p-0">
+            <a href="{% url 'orgues:image-update' image.pk %}">
+              <i class="icon icon-edit"></i>
+            </a>
+            <a href="{% url 'orgues:image-principale' image.pk %}">
+              <i class="icon icon-crop"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="card-body py-2 px-3">
+        <i class="fa fa-star fa-2x text-warning" style="position:absolute;z-index:100;top:10px;right:10px;"></i>
+        <small>
+          Vignette principale
+        </small>
+      </div>
+      <div class="card-footer text-muted">
+        <a href="{% url 'orgues:image-principale' image.pk %}" class="btn btn-primary btn-block">
+          <i class="fa fa-crop"></i> Recadrer l'image
+        </a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+  {% endwith %}
+    <div class="col">
+      <p>
+        Cliquer sur <i class="icon icon-edit"></i> pour modifier le crédit ou la légende d'une image<br>
+        Cliquer sur <i class="icon icon-star"></i> pour définir une image comme vignette principale <br>
+        Cliquer sur <i class="icon icon-crop"></i> pour recadrer la vignette principale <br>
+        Cliquer sur <i class="icon icon-trash"></i> pour supprimer une image <br>
+        Cliquer sur <i class="icon icon-move"></i> pour déplacer les images et les réordonner
+      </p>
+    </div>
+  </div>
   <p>
-    Cliquer sur <i class="icon icon-edit"></i> pour modifier le crédit ou la légende d'une image<br>
-    Cliquer sur <i class="icon icon-star"></i> pour définir une image comme vignette principale <br>
-    Cliquer sur <i class="icon icon-trash"></i> pour supprimer une image <br>
-    Cliquer sur <i class="icon icon-move"></i> pour déplacer les images et les réordonner
+    <a href="{% url 'orgues:image-create' orgue.uuid %}" class="btn btn-sm btn-primary">
+      <i class="fa fa-plus"></i> Ajouter des images</a>
   </p>
-
   <div class="row" id="image_list">
     {% for image in object_list %}
       <div class="col-lg-4 image" data-imagepk="{{ image.pk }}">
@@ -28,9 +70,15 @@
                 <a href="{% url 'orgues:image-update' image.pk %}">
                   <i class="icon icon-edit"></i>
                 </a>
-                <a href="{% url 'orgues:image-principale' image.pk %}">
-                  <i class="icon icon-star"></i>
-                </a>
+                {% if image.is_principale %}
+                  <a href="{% url 'orgues:image-principale' image.pk %}">
+                    <i class="icon icon-crop"></i>
+                  </a>
+                {% else %}
+                  <a href="{% url 'orgues:image-principale' image.pk %}">
+                    <i class="icon icon-star"></i>
+                  </a>
+                {% endif %}
                 <a href="{% url 'orgues:image-delete' image.pk %}">
                   <i class="icon icon-trash-2"></i>
                 </a>
@@ -51,10 +99,7 @@
       </div>
     {% endfor %}
   </div>
-  <p>
-    <a href="{% url 'orgues:image-create' orgue.uuid %}" class="btn btn-sm btn-primary">
-      <i class="fa fa-plus"></i> Ajouter des images</a>
-  </p>
+
 
 {% endblock %}
 
