@@ -236,7 +236,7 @@ class Orgue(models.Model):
 
     etat = models.CharField(max_length=20, choices=CHOIX_ETAT, null=True, blank=True,
                             help_text="Se rapporte au fait que l'orgue est jouable ou non.")
-    emplacement = models.CharField(max_length=50, null=True, blank=True, verbose_name="Emplacement",
+    emplacement = models.CharField(max_length=60, null=True, blank=True, verbose_name="Emplacement",
                                    help_text="Ex: sol, tribune ...")
     buffet = models.TextField(verbose_name="Description du buffet", null=True, blank=True,
                               help_text="Description du buffet et de son état.")
