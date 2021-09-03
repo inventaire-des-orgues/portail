@@ -249,6 +249,10 @@ class Orgue(models.Model):
     # Localisation
     code_dep_validator = RegexValidator(regex='^(97[12346]|0[1-9]|[1-8][0-9]|9[0-5]|2[AB])$',
                                         message="Renseigner un code de département valide")
+    latitude_validator = RegexValidator(regex='^([-]*([0-9]|[0-8][0-9])[.][0-9]*)$',
+                                        message="Renseigner une latitude valide")
+    longitude_validator = RegexValidator(regex='^([-]*([0-9]|[0-8][0-9]|1[0-7][0-9])[.][0-9]*)$',
+                                        message="Renseigner une longitude valide")
 
     edifice = models.CharField(max_length=300)
     adresse = models.CharField(max_length=300, null=True, blank=True)
@@ -260,8 +264,8 @@ class Orgue(models.Model):
     code_departement = models.CharField(choices=[(c[0], c[0]) for c in CHOIX_DEPARTEMENT],
                                         verbose_name="Code département", max_length=3)
     region = models.CharField(verbose_name="Région", choices=CHOIX_REGION, max_length=50)
-    latitude = models.FloatField(null=True, blank=True)
-    longitude = models.FloatField(null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True, validators=[latitude_validator])
+    longitude = models.FloatField(null=True, blank=True, validators=[longitude_validator])
     osm_type = models.CharField(choices=CHOIX_TYPE_OSM, verbose_name="Type OpenStreetMap", max_length=20, null=True,
                                 blank=True, help_text="Type OSM de l'objet représenant l'édifice.")
     osm_id = models.CharField(verbose_name="Id OpenStreetMap", max_length=20, null=True, blank=True,
