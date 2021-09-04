@@ -249,9 +249,9 @@ class Orgue(models.Model):
     # Localisation
     code_dep_validator = RegexValidator(regex='^(97[12346]|0[1-9]|[1-8][0-9]|9[0-5]|2[AB])$',
                                         message="Renseigner un code de département valide")
-    latitude_validator = RegexValidator(regex='^([-]*([0-9]|[0-8][0-9])[.][0-9]*)$',
+    latitude_validator = RegexValidator(regex='^([-]?([0-9]|[0-8][0-9])[.][0-9]*)$',
                                         message="Renseigner une latitude valide")
-    longitude_validator = RegexValidator(regex='^([-]*([0-9]|[0-8][0-9]|1[0-7][0-9])[.][0-9]*)$',
+    longitude_validator = RegexValidator(regex='^([-]?([0-9]|[0-9][0-9]|1[0-7][0-9])[.][0-9]*)$',
                                         message="Renseigner une longitude valide")
 
     edifice = models.CharField(max_length=300)
