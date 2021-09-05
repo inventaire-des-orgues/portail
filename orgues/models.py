@@ -363,6 +363,13 @@ class Orgue(models.Model):
         return Jeu.objects.filter(clavier__orgue=self).count()
 
     @property
+    def claviers_count(self):
+        """
+        Nombre de calvier de l'instrument
+        """
+        return self.claviers.count() if self.has_pedalier else self.claviers.count() - 1
+
+    @property
     def liens_pop(self):
         """
         Liens vers le site des classements du patrimoine mobilier (PM) du ministère de la culture
@@ -395,27 +402,32 @@ class Orgue(models.Model):
     def get_delete_url(self):
         return reverse('orgues:orgue-delete', args=(self.uuid,))
 
-    def calcul_resume_composition(self):
-        """
-        On stocke dans la base de données l'information Clavier et Pédale de façon commune, sous le format :
-        [nombre de claviers en chiffres romains]["/P" si Pédale]
-        """
-
+    def resume_composition_clavier(self):
         has_pedalier = self.has_pedalier
         claviers_count = self.claviers.count()
-        jeux_count = self.jeux_count
         cr = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV",
               "XVI", "XVII", "XVIII", "XIX", "XX", "XXI", "XXII", "XXIII", "XIV", "XV"]
         if claviers_count == 0:
             return
 
         if has_pedalier and claviers_count > 1:
-            return "{}, {}/P".format(jeux_count, cr[claviers_count - 2])
+            return "{}/P".format(cr[claviers_count - 2])
 
         elif has_pedalier and claviers_count == 1:
-            return "{}, P".format(jeux_count)
+            return "P"
 
-        return "{}, {}".format(jeux_count, cr[claviers_count - 1])
+        return cr[claviers_count - 1]
+
+
+    def calcul_resume_composition(self):
+        """
+        On stocke dans la base de données l'information Clavier et Pédale de façon commune, sous le format :
+        [nombre de claviers en chiffres romains]["/P" si Pédale]
+        """
+        jeux_count = self.jeux_count
+        if jeux_count == 0:
+            return
+        return "{}, {}".format(self.jeux_count, self.resume_composition_clavier())
 
     def infos_completions(self):
         """

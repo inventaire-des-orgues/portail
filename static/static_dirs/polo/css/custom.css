@@ -159,6 +159,24 @@ span.puce-etat {
 
 }
 
+#search-form h3 {
+    font-size: 1.1em;
+    color: #5c1c54;
+} 
+
+#orgue-list .facets {
+    cursor: pointer;
+}
+#orgue-list .facets:hover {
+    text-decoration: underline;
+}
+#orgue-list .facets.selected {
+    font-weight: bold;
+}
+#orgue-list .facets.selected:hover {
+    text-decoration: line-through;
+}
+
 /* CLAVIERS */
 
 #claviers {

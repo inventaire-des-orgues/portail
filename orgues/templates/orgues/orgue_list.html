@@ -18,6 +18,13 @@
                 <label for="query">Recherche <i class="fa fa-info-circle tex-primary" data-toggle="tooltip" data-title="Rechercher une commune, une église, un facteur ..."></i></label>
                 <input id="query" v-model="input" placeholder="Commune, facteur, église ..." class="form-control" value="{{ request.GET.query }}"/>
               </div>
+              <div v-for="facet in facets">
+                <h3>((facet.label))</h3>
+                <ul>
+                  <li v-for="selected in filter[facet.field]" @click="unselectFacet(facet.field, selected)" class="facets selected">((selected))</li>
+                  <li v-for="item in facet.items" v-if="!filter[facet.field] || !filter[facet.field].includes(item.name)" @click="selectFacet(facet.field, item.name)" class="facets">((item.name)) [((item.count))]</li>
+                </li>
+              </div>
               <div class="text-center d-none d-xl-block">
                 <img src="{% static 'img/conseil_image_principale.png' %}" alt="" style="width: 100%">
               </div>
@@ -140,6 +147,8 @@
         pages: 0,
         loading: false,
         orgues: [],
+        facets: {},
+        filter: {},
         departement: '{{ departement|default_if_none:'' }}',
         departements: departements,
         requete_page: {% if page %}{{ page}}{% else %}1{% endif %}
@@ -150,10 +159,12 @@
       watch: {
         debouncedInput: function () {
           this.page = 1
+          this.filter = {}
           this.fetchData()
         },
         departement: function () {
           this.page = 1
+          this.filter = {}
           this.fetchData()
         },
       },
@@ -171,6 +182,24 @@
         }
       },
       methods: {
+        selectFacet: function(facet, value) {
+          if (this.filter[facet]) {
+            if (!this.filter[facet].includes(value))
+              this.filter[facet].push(value)
+          }
+          else
+            this.filter[facet] = [value]
+          this.fetchData()
+        },
+        unselectFacet: function(facet, value) {
+          var index = this.filter[facet].indexOf(value);
+          if (index !== -1) {
+            this.filter[facet].splice(index, 1);
+          }
+          if (this.filter[facet].length == 0)
+            delete this.filter[facet]
+          this.fetchData()
+        },
         fetchData: function (scrolltop) {
           var scrolltop = scrolltop || false;
           var self = this;
@@ -187,6 +216,13 @@
           if (query) {
             pageUrl += '&query=' + query
           }
+          let filters = {}
+          if (self.filter) {
+            for (const [key, values] of Object.entries(self.filter)) {
+                pageUrl += '&filter_' + key + '=' + values.join(',');
+                filters['filter_' + key] = values.join(',');
+            }
+          }
 
           $.ajax({
             type: "POST",
@@ -196,7 +232,8 @@
               query: query,
               pageUrl: pageUrl,
               page: page,
-              departement: departement
+              departement: departement,
+              ...filters,
             },
             error: function (resp) {
               self.loading = false
@@ -207,6 +244,9 @@
               self.orgues = results.hits
               self.hits = results.nbHits
               self.pages = results.pages
+              if (results.facets)
+                self.facets = results.facets
+              self.filter = results.filter
               if (scrolltop) window.scrollTo(0, 0);
               window.history.pushState('', '', pageUrl);
             },

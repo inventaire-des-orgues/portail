@@ -86,7 +86,9 @@ class OrgueResumeSerializer(serializers.ModelSerializer):
     Serializers utilisé pour construire l'index de recherche
     """
     facteurs = serializers.SerializerMethodField()
+    facet_facteurs = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField()
+    jeux = serializers.SerializerMethodField()
 
     class Meta:
         model = Orgue
@@ -103,11 +105,22 @@ class OrgueResumeSerializer(serializers.ModelSerializer):
             "emplacement",
             "resume_composition",
             "facteurs",
-            "url"
+            "facet_facteurs",
+            "url",
+            "latitude",
+            "longitude", 
+            "jeux",
+            "claviers_count",
+            "has_pedalier",
+            "resume_composition_clavier",
         ]
 
     def get_url(self, obj):
         return obj.get_absolute_url()
+
+    def get_jeux(self, obj):
+        jeux = obj.jeux_count // 10
+        return "{0}-{1}".format(jeux * 10, (jeux+1) * 10)
 
     def get_facteurs(self, obj):
         facteurs = []
@@ -119,6 +132,13 @@ class OrgueResumeSerializer(serializers.ModelSerializer):
                 seen_facteurs.add(nouveau_facteur)
                 facteurs.append(nouveau_facteur)
         return ", ".join(facteurs)
+    
+    def get_facet_facteurs(self, obj):
+        facteurs = set()
+        evenements = Evenement.objects.filter(orgue=obj, facteurs__isnull=False).prefetch_related('facteurs').order_by('annee')
+        for evenement in evenements:
+            facteurs.update(evenement.facteurs.values_list('nom', flat=True))
+        return list(facteurs)
 
 
 class OrgueCarteSerializer(serializers.ModelSerializer):

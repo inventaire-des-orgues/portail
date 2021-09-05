@@ -26,11 +26,36 @@ class Command(BaseCommand):
             'region',
             'facteurs',
             'departement',
-            'placeholder'
+            'placeholder',
+            'latitude',
+            'longitude'
         ])
 
-        index.update_attributes_for_faceting([
-            'departement'
+        index.update_filterable_attributes([
+            'departement',
+            'region',
+            'resume_composition_clavier',
+            'facet_facteurs',
+            'jeux',
+        ])
+
+        index.update_displayed_attributes([
+            'id',
+            'designation',
+            'edifice',
+            'commune',
+            'ancienne_commune',
+            'departement',
+            'region',
+            'completion',
+            'vignette',
+            'emplacement',
+            'resume_composition',
+            'facteurs',
+            'facet_facteurs',
+            'url',
+            'latitude',
+            'longitude',
         ])
 
         index.update_ranking_rules([
@@ -44,7 +69,8 @@ class Command(BaseCommand):
         ])
         orgues = OrgueResumeSerializer(Orgue.objects.all(), many=True).data
         index.delete_all_documents()
-        index.add_documents(orgues)
+        update = index.add_documents(orgues)
+        print(update)
 
         # types de jeux
         try:

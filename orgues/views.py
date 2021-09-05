@@ -70,7 +70,7 @@ class OrgueSearch(View):
         departement = request.POST.get('departement', '')
         query = request.POST.get('query')
         if settings.MEILISEARCH_URL:
-            results = self.search_meilisearch(page, departement, query)
+            results = self.search_meilisearch(page, departement, query, request)
         else:
             results = self.search_sql(page, departement, query)
         return JsonResponse(results)
@@ -104,7 +104,7 @@ class OrgueSearch(View):
         }
 
     @staticmethod
-    def search_meilisearch(page, departement, query):
+    def search_meilisearch(page, departement, query, request):
         """
         Moteur de recherche avancé
         """
@@ -118,14 +118,35 @@ class OrgueSearch(View):
             offset = (int(page) - 1) * OrgueSearch.paginate_by
         except:
             offset = 0
-        options = {'attributesToHighlight': ['*'], 'offset': offset, 'limit': OrgueSearch.paginate_by}
-        if departement:
-            options['facetFilters'] = ['departement:{}'.format(departement)]
+        facets = ['departement', 'region', 'resume_composition_clavier', 'facet_facteurs', 'jeux']
+        options = {'attributesToHighlight': ['*'], 'facetsDistribution': facets, 'offset': offset, 'limit': OrgueSearch.paginate_by}
+        filter = []
+        filterResult = {}
+        for facet in facets:
+            arg = request.POST.get('filter_'+facet)
+            if arg:
+                values = arg.split(',')
+                filter.extend(['{}="{}"'.format(facet, value) for value in values])
+                filterResult[facet] = values
+        print(filter)
+        if (departement):
+            filter.extend('departement="{}"'.format(departement))
+        if len(filter) > 0:
+            options['filter'] = filter
         if not query:
             query = None
         results = index.search(query, options)
         results['pages'] = 1 + results['nbHits'] // OrgueSearch.paginate_by
+        if results['facetsDistribution']:
+            results['facets'] = OrgueSearch.convertFacets(results['facetsDistribution'])
+            del results['facetsDistribution']
+        results['filter'] = filterResult
         return results
+
+    @staticmethod
+    def convertFacets(facetsDistribution):
+        labels = {'departement': 'Département', 'region': 'Régions', 'resume_composition_clavier': 'Nombres de claviers', 'facet_facteurs': 'Facteurs', 'jeux': 'Jeux'}
+        return [{'label': labels[name], 'field': name, 'items': sorted([{'name': item, 'count': count} for item, count in values.items()], key=lambda k: k['count'], reverse=True)} for name, values in facetsDistribution.items()]
 
 
 class OrgueCarte(TemplateView):
