@@ -159,6 +159,7 @@ span.puce-etat {
 
 }
 
+
 #search-form h3 {
     font-size: 1.1em;
     color: #5c1c54;
@@ -175,6 +176,13 @@ span.puce-etat {
 }
 #orgue-list .facets.selected:hover {
     text-decoration: line-through;
+}
+#orgue-list .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
+
 }
 
 /* CLAVIERS */
