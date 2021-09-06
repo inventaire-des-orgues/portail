@@ -69,8 +69,7 @@ class Command(BaseCommand):
         ])
         orgues = OrgueResumeSerializer(Orgue.objects.all(), many=True).data
         index.delete_all_documents()
-        update = index.add_documents(orgues)
-        print(update)
+        index.add_documents(orgues)
 
         # types de jeux
         try:
