@@ -189,6 +189,7 @@
           }
           else
             this.filter[facet] = [value]
+          this.page = 1
           this.fetchData()
         },
         unselectFacet: function(facet, value) {
@@ -198,6 +199,7 @@
           }
           if (this.filter[facet].length == 0)
             delete this.filter[facet]
+          this.page = 1
           this.fetchData()
         },
         fetchData: function (scrolltop) {

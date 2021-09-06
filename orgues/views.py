@@ -119,25 +119,26 @@ class OrgueSearch(View):
         except:
             offset = 0
         facets = ['departement', 'region', 'resume_composition_clavier', 'facet_facteurs', 'jeux']
-        options = {'attributesToHighlight': ['*'], 'facetsDistribution': facets, 'offset': offset, 'limit': OrgueSearch.paginate_by}
+        options = {'attributesToHighlight': ['*'], 'offset': offset, 'limit': OrgueSearch.paginate_by}
         filter = []
         filterResult = {}
         for facet in facets:
             arg = request.POST.get('filter_'+facet)
             if arg:
                 values = arg.split(',')
-                filter.extend(['{}="{}"'.format(facet, value) for value in values])
+                filter.append(['{}="{}"'.format(facet, value) for value in values])
                 filterResult[facet] = values
-        print(filter)
+        if not filterResult and page == '1':
+            options['facetsDistribution'] = facets
         if (departement):
-            filter.extend('departement="{}"'.format(departement))
+            filter.append('departement="{}"'.format(departement))
         if len(filter) > 0:
             options['filter'] = filter
         if not query:
             query = None
         results = index.search(query, options)
         results['pages'] = 1 + results['nbHits'] // OrgueSearch.paginate_by
-        if results['facetsDistribution']:
+        if 'facetsDistribution' in results:
             results['facets'] = OrgueSearch.convertFacets(results['facetsDistribution'])
             del results['facetsDistribution']
         results['filter'] = filterResult
