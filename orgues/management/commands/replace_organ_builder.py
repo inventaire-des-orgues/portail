@@ -7,11 +7,11 @@ import os
 
 class Command(BaseCommand):
     """
-    Remplace dans tous les événements et entretien un facteur d'orgue par un autre.
+    Remplace dans tous les événements et entretien d'un facteur d'orgue par un autre.
     La fonction prend un argument obligatoire et un optionnel:
     - Le fichier csv séparateur ";" contenant les modifications : une colonne pour les facteurs à remplacer, une autre pour les facteurs qui remplacent;
     - optionnel : --delete : efface de la base de données les facteurs à retirer.
-    La fonction renvoie un message d'erreur si l'un des facteurs du fichier csv n'existe pas dans la base de données ou s'il existe plusieurs fois 
+    La fonction renvoie un message d'erreur si l'un des facteurs du fichier csv n'existe pas dans la base de données ou s'il existe plusieurs fois.
     (dans ce dernier cas, utiliser le script manage.py delete_organ_builder_duplication).
 
     Ex :

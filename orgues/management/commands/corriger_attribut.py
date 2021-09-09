@@ -16,4 +16,4 @@ class Command(BaseCommand):
             field = options['replace'][0]
             old_value = options['replace'][1]
             new_value = options['replace'][2]
-            Orgue.objects.filter(**{field:old_value}).update(**{field:new_value})
+            Orgue.objects.filter(**{field: old_value}).update(**{field: new_value})
