@@ -53,6 +53,7 @@ class Orgue(models.Model):
         ("etablissement_scolaire", "Etablissement scolaire"),
         ("conservatoire", "Conservatoire ou Ecole de musique"),
         ("hopital", "Hôpital"),
+        ("particulier", "Particulier (propriété privée)"),
     )
 
     CHOIX_ETAT = (
