@@ -12,7 +12,7 @@ import orgues.utilsorgues.correcteurorgues as co
 import orgues.utilsorgues.tools.generiques as gen
 import orgues.utilsorgues.codification as codif
 
-#Initialisation de certaines variables utiles dans plusieurs méthodes
+# Initialisation de certaines variables utiles dans plusieurs méthodes
 AMENITY = ['place_of_worship', 'monastery', 'music_school', 'college', 'school', 'clinic', 'hospital']
 BUILDING = ['yes', 'cathedral', 'chapel', 'church', 'monastery', 'religious', 'shrine', 'synagogue', 'temple']
 filtre_type_commune = "[amenity~'{}'][building~'{}'] (area.commune)".format("|".join(AMENITY), "|".join(BUILDING))
@@ -58,16 +58,16 @@ class Command(BaseCommand):
                             help='Département à traiter. "all" pour traiter toute la base de données')
 
     def handle(self, *args, **options):
-        #Récupération des orgues à traiter
-        if options['dep'][0] =='all':
-            BDO = Orgue.objects.all()
-        else :
-            BDO = Orgue.objects.filter(code_departement=options['dep'][0])
+        # Récupération des orgues à traiter
+        if options['dep'][0] == 'all':
+            bdo = Orgue.objects.all()
+        else:
+            bdo = Orgue.objects.filter(code_departement=options['dep'][0])
         
         # On ne recherche que les osm_id qui ne sont pas déjà présents (et pour lesquels on a bien un code INSEE):
-        BDO = BDO.filter(Q(code_insee__isnull=False) & Q(osm_id__isnull=True)).distinct()
+        bdo = bdo.filter(Q(code_insee__isnull=False) & Q(osm_id__isnull=True)).distinct()
         
-        for orgue in tqdm(BDO):
+        for orgue in tqdm(bdo):
             self.tenter_appariement_osm_via_nom(orgue)
             
         logger_echec_requete.info("Nombre d'orgues : {}".format(self.compte_echec_requete))
@@ -76,29 +76,26 @@ class Command(BaseCommand):
         logger_appariement_correlation.info("Nombre d'orgues : {}".format(self.compte_appariement_correlation))
         logger_appariement_nul.info("Nombre d'orgues : {}".format(self.compte_appariement_nul))
         
-        #Ecriture des fichiers de résultats
+        # Ecriture des fichiers de résultats
         with open("orgues/temp/appariements_osm_"+options['dep'][0]+".json", 'w') as f:
             json.dump(self.liste_appariements, f)
 
-
-
     def tenter_appariement_osm_via_nom(self, orgue):
-        #Récupération du nom de l'édifice de l'orgue
-        nom_edifice,type_edifice = co.detecter_type_edifice(orgue.edifice)
-        if nom_edifice!="":
-            #Décomposition du nom en une liste de mots
-            decompo = re.split("-| |'|’",nom_edifice)
+        # Récupération du nom de l'édifice de l'orgue
+        nom_edifice, type_edifice = co.detecter_type_edifice(orgue.edifice)
+        if nom_edifice != "":
+            # Décomposition du nom en une liste de mots
+            decompo = re.split("-| |'|’", nom_edifice)
         else :
-            #Cas particulier des édifices sans dédicaces (par exemple, "temple réformé" ou "chapelle du lycée")
-            #On prend alors le nom complet plutôt que la dédicace.
-            #Décomposition du nom en une liste de mots
-            decompo = re.split("-| |'|’",orgue.edifice)
-        
+            # Cas particulier des édifices sans dédicaces (par exemple, "temple réformé" ou "chapelle du lycée")
+            # On prend alors le nom complet plutôt que la dédicace.
+            # Décomposition du nom en une liste de mots
+            decompo = re.split("-| |'|’", orgue.edifice)
 
-        #Requête Overpass
-        #Après délimitation de la zone de recherche sur le territoire de la commune, 
-        #l'Overpass_query fait un premier test sur le nom exact (avec insensibilité à la casse),
-        #puis, en l'absence de résultat, effectue un second test en cherchant de manière séparé les mots composant le nom.
+        # Requête Overpass
+        # Après délimitation de la zone de recherche sur le territoire de la commune,
+        # l'Overpass_query fait un premier test sur le nom exact (avec insensibilité à la casse),
+        # puis, en l'absence de résultat, effectue un second test en cherchant de manière séparé les mots composant le nom.
         overpass_query = "[out:json]; area[boundary=administrative]['ref:INSEE']['ref:INSEE'={}] -> .commune;".format(orgue.code_insee)
         
         overpass_query +=" ((wr[name~{},i] {}; ); ._;)->.a; ".format('"'+orgue.edifice.capitalize()+'"', filtre_type_commune)
@@ -133,14 +130,14 @@ class Command(BaseCommand):
     def traitement_reponse_osm(self, response, orgue):
         data = response.json()
         elements = data['elements']
-        if len(elements) == 1:# Si un seul élément dans data, il y a un appariement unique, c'est donc validé :
+        if len(elements) == 1:  # Si un seul élément dans data, il y a un appariement unique, c'est donc validé :
             logger_appariement_reussite.info("Appariement direct")
             self.reponse_unique(elements, orgue)
-        elif len(elements) > 1:# Si plusieurs appariements, pour l'instant on ne fait que les sortir en traces :
+        elif len(elements) > 1:  # Si plusieurs appariements, pour l'instant on ne fait que les sortir en traces :
             logger_appariement_reussite.info("Appariement réponse multiple")
             self.traitement_reponse_multiple(elements, orgue)     
-        else:# Si aucun appariement 
-            #Tentative d'appariement partiel (méthode à part)
+        else:  # Si aucun appariement
+            # Tentative d'appariement partiel (méthode à part)
             logger_appariement_reussite.info("Appariement partiel")
             self.tenter_appariement_partiel_osm_via_nom(orgue) 
     
@@ -151,34 +148,34 @@ class Command(BaseCommand):
         self.liste_appariements.append({"codification": orgue.codification, "type": elements[0]['type'], "id": elements[0]['id']})
         
     def traitement_reponse_multiple(self, elements, orgue):
-        #Découpe du nom de l'édifice de l'orgue
-        dec_Orgue = re.split("-| |'|’",orgue.edifice.lower())
-        dec_Orgue = [i for i in dec_Orgue if len(i) >2]
+        # Découpe du nom de l'édifice de l'orgue
+        dec_orgue = re.split("-| |'|’",orgue.edifice.lower())
+        dec_orgue = [i for i in dec_orgue if len(i) >2]
         resultat = []
         for elem in elements:
-            if  'tags' in elem and  'name' in elem['tags']:
-                #Découpe du nom du bâtiment OSM
-                dec_OSM = re.split("-| |'|’",elem['tags']['name'].lower())
-                dec_OSM = [i for i in dec_OSM if len(i) >2]
+            if 'tags' in elem and  'name' in elem['tags']:
+                # Découpe du nom du bâtiment OSM
+                dec_osm = re.split("-| |'|’", elem['tags']['name'].lower())
+                dec_osm = [i for i in dec_osm if len(i) >2]
 
-                #Calcul du taux (entre 0 et 1) de correspondance pour le nom de l'édifice de l'orgue
+                # Calcul du taux (entre 0 et 1) de correspondance pour le nom de l'édifice de l'orgue
                 # (taux de présence des mots du nom de l'édifice de l'orgue dans le nom du bâtiment OSM)
                 cor_org = 0
-                for mot in dec_Orgue:
-                    if mot in dec_OSM:
-                        cor_org += 1/len(dec_Orgue)
+                for mot in dec_orgue:
+                    if mot in dec_osm:
+                        cor_org += 1/len(dec_orgue)
 
-                #Calcul du taux (entre 0 et 1) de correspondance pour le nom de l'édifice de l'orgue
+                # Calcul du taux (entre 0 et 1) de correspondance pour le nom de l'édifice de l'orgue
                 # (taux de présence des mots du nom du bâtiment OSM dans le nom de l'édifice de l'orgue)
                 cor_osm = 0
-                for mot in dec_OSM:
-                    if mot in dec_Orgue:
-                        cor_osm += 1/len(dec_OSM)
+                for mot in dec_osm:
+                    if mot in dec_orgue:
+                        cor_osm += 1/len(dec_osm)
 
-                #Calcul du taux moyen de correspondance
+                # Calcul du taux moyen de correspondance
                 cor_moy = (cor_org+cor_osm)/2
                 if cor_moy>0.6:
-                    #Si le taux est assez important, le bâtiment OSM est conservé dans une liste d'appariement partiel
+                    # Si le taux est assez important, le bâtiment OSM est conservé dans une liste d'appariement partiel
                     resultat.append({"Correspondance": cor_moy, "elem":elem})
                     logger_appariement_multiple.info("L'orgue {} a une corrélation de {} avec {}".format(orgue, cor_moy, elem['tags']['name']))
         if len(resultat) != 0:
@@ -243,10 +240,10 @@ class Command(BaseCommand):
 
         Le but est de chercher à associer des cas comme "église Notre-Dame-de-l'Assomption" et "église Notre-Dame" (ce qui donnerait 87,5% de correspondance moyenne)
         """
-        #Récupération des édifices potentiels de la commune
+        # Récupération des édifices potentiels de la commune
         overpass_query = "[out:json]; area[boundary=administrative]['ref:INSEE']['ref:INSEE'={}] -> .commune;".format(orgue.code_insee)
         overpass_query +=" ((wr {}; ); ._;)->.a; (.a;.a >;)->.a; .a out;".format(filtre_type_commune)
-        #L'Overpass_query récupère tous les édifices susceptibles de comporter un orgue dans la commune où se trouve l'orgue
+        # L'Overpass_query récupère tous les édifices susceptibles de comporter un orgue dans la commune où se trouve l'orgue
         done = False
         while not done:
             response = requests.get(overpass_url, params={'data': overpass_query})
@@ -266,7 +263,3 @@ class Command(BaseCommand):
         else:
             data = response.json()
             self.traitement_reponse_multiple(data['elements'], orgue)
-            
-
-
-
