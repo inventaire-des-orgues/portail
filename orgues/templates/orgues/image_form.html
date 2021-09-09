@@ -12,14 +12,54 @@
       </div>
     {% endfor %}
   {% endif %}
-  <form action="" method="post" id="mainform" enctype="multipart/form-data">{% csrf_token %}
-    {% for field in form %}
-      {% include 'stack_field.html' %}
-    {% endfor %}
-    <div class="form-group text-right">
-      <button type="submit" class="btn btn-sm btn-primary" id="create">Enregistrer</button>
-      <a href="{% url 'orgues:image-principale' object.id %}" class="btn btn-sm btn-warning" id="create">Définir comme vignette</a>
-      <a href="{% url 'orgues:image-delete' object.id %}" class="btn btn-sm btn-danger" id="create">Supprimer</a>
+  <div class="col-lg-12 image" data-imagepk="{{ image.pk }}">
+    <div class="card">
+      <div class="portfolio-item img-zoom pb-0">
+        <div class="portfolio-item-wrap border-radius-top-5 ">
+          <div class="portfolio-image">
+            <a href="#"><img src="{{ image.thumbnail.url }}" alt=""></a>
+          </div>
+          <div class="portfolio-description p-0">
+            {% if image.is_principale %}
+              <a href="{% url 'orgues:image-principale' image.pk %}">
+                <i class="icon icon-crop"></i>
+              </a>
+            {% else %}
+              <a href="{% url 'orgues:image-principale' image.pk %}">
+                <i class="icon icon-star"></i>
+              </a>
+            {% endif %}
+            <a href="{% url 'orgues:image-delete' image.pk %}">
+              <i class="icon icon-trash-2"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="card-body py-2 px-3">
+        {% if image.is_principale %}
+          <i class="fa fa-star fa-2x text-warning" style="position:absolute;z-index:100;top:10px;right:10px;"></i>
+        {% endif %}
+        <form action="" method="post" id="mainform" enctype="multipart/form-data">{% csrf_token %}
+          {% for field in form %}
+            {% include 'stack_field.html' %}
+          {% endfor %}
+          <div class="form-group text-right">
+            <button type="submit" class="btn btn-sm btn-primary" id="create">Enregistrer</button>
+          </div>
+        </form>
+        {% if image.is_principale %}
+          <a href="{% url 'orgues:image-principale' image.pk %}" class="btn btn-sm btn-warning" id="create">
+            <i class="icon icon-crop"></i> Redimentionner la vignette
+          </a>
+        {% else %}
+          <a href="{% url 'orgues:image-principale' image.pk %}" class="btn btn-sm btn-warning" id="create">
+            <i class="icon icon-star"></i> Définir comme vignette
+          </a>
+        {% endif %}
+        <a href="{% url 'orgues:image-delete' image.pk %}" class="btn btn-sm btn-danger">
+          <i class="icon icon-trash-2"></i> Supprimer
+        </a>
+      </div>
     </div>
-  </form>
+  </div>
 {% endblock %}
