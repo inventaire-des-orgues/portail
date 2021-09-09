@@ -205,7 +205,12 @@ py manage.py verif_presence_insee
 
 Corriger un attribut sur toutes les fiches :
 ```python
-py manage.py corriger_attribut designation "G.O." "grand orgue" 
+py manage.py corriger_attribut --replace designation "G.O." "grand orgue" 
+```
+
+Remplir toutes les valeurs None de l'attribut designation par une valeur par défaut :
+```python
+py manage.py corriger_designatio_none --replace "orgue"
 ```
 
 Supprimer tous les doublons dans la liste des facteurs d'orgues :
