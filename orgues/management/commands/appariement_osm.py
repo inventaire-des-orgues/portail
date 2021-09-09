@@ -77,7 +77,7 @@ class Command(BaseCommand):
         logger_appariement_nul.info("Nombre d'orgues : {}".format(self.compte_appariement_nul))
         
         #Ecriture des fichiers de résultats
-        with open("orgues/appariement/appariements_osm_"+options['dep'][0]+".json", 'w') as f:
+        with open("orgues/temp/appariements_osm_"+options['dep'][0]+".json", 'w') as f:
             json.dump(self.liste_appariements, f)
 
 
