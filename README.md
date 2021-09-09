@@ -164,8 +164,9 @@ pipmain(['install', "Chemin\\vers\\fichier.whl"])
 ## Localisation et correspondance avec OpenStreetMap
 
 Lancer l’appariement sur tous les orgues qui n’ont pas déjà le champ id_osm rempli :
+Attention, en raison du timer entre requêtes OpenStreetMap, la commande peut être très longue.
 ```python
-py manage.py appariement_osm all
+nohup py manage.py appariement_osm all &
 ```
 
 Associer à chaque orgue les id d’OSM trouvés dans appariement_osm :
