@@ -7,7 +7,7 @@ from orgues.models import Orgue
 
 
 class Command(BaseCommand):
-    help = "Effacer les lien vers fichiers et images"
+    help = "DANGER ! Effacer tous les liens vers fichiers et images"
 
     def handle(self, *args, **options):
         print("Début effacement des liens vers fichiers et images.")

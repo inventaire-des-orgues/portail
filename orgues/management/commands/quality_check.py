@@ -31,7 +31,7 @@ class Command(BaseCommand):
                 print("ERROR : {} est un code mal formatté pour l'orgue {}".format(orgue.codification, orgue))
             # Désignation
             if orgue.designation is None:
-                print("ERROR : L'orgue {} {} n'a pas de désignation".format(orgue.codification, orgue))
+                print("ERROR : {} L'orgue {} n'a pas de désignation".format(orgue.codification, orgue))
             # Palissy :
             if orgue.references_palissy is not None :
                 if len(orgue.references_palissy.split(';')) > 6:
@@ -44,6 +44,6 @@ class Command(BaseCommand):
             # TODO code_insee : 5 chiffres
             # edifice
             if len(orgue.edifice) <= 6 and orgue.edifice != 'temple':
-                print("WARN : {} édifice incomplet pour l'orgue {}".format(orgue.edifice, orgue))
+                print("WARN : {} {} édifice incomplet pour l'orgue {}".format(orgue.codification, orgue.edifice, orgue))
             # TODO lat et lon
             # TODO osm_id
