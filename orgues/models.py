@@ -53,6 +53,7 @@ class Orgue(models.Model):
         ("etablissement_scolaire", "Etablissement scolaire"),
         ("conservatoire", "Conservatoire ou Ecole de musique"),
         ("hopital", "Hôpital"),
+        ("particulier", "Particulier (propriété privée)"),
     )
 
     CHOIX_ETAT = (
@@ -214,7 +215,8 @@ class Orgue(models.Model):
     )
 
     # Informations générales
-    designation = models.CharField(max_length=300, null=True, verbose_name="Désignation de l'orgue", default="orgue", blank=True)
+    designation = models.CharField(max_length=300, null=True, verbose_name="Désignation de l'orgue", default="orgue",
+                                   blank=True, help_text="Type d'orgue : grand orgue, orgue coffre, orgue portatif, etc.")
     is_polyphone = models.BooleanField(default=False, verbose_name="Orgue polyphone de la manufacture Debierre ?")
     codification = models.CharField(max_length=24, unique=True, db_index=True)
     references_palissy = models.CharField(max_length=60, null=True, blank=True,
@@ -235,8 +237,8 @@ class Orgue(models.Model):
 
     etat = models.CharField(max_length=20, choices=CHOIX_ETAT, null=True, blank=True,
                             help_text="Se rapporte au fait que l'orgue est jouable ou non.")
-    emplacement = models.CharField(max_length=50, null=True, blank=True, verbose_name="Emplacement",
-                                   help_text="Ex: sol, tribune ...")
+    emplacement = models.CharField(max_length=60, null=True, blank=True, verbose_name="Emplacement",
+                                   help_text="Emplacement dans l'édifice : sol, tribune, crypte ...")
     buffet = models.TextField(verbose_name="Description du buffet", null=True, blank=True,
                               help_text="Description du buffet et de son état.")
     console = models.TextField(verbose_name="Description de la console", null=True, blank=True,
@@ -249,6 +251,10 @@ class Orgue(models.Model):
     # Localisation
     code_dep_validator = RegexValidator(regex='^(97[12346]|0[1-9]|[1-8][0-9]|9[0-5]|2[AB])$',
                                         message="Renseigner un code de département valide")
+    latitude_validator = RegexValidator(regex='^([-]?([0-9]|[0-8][0-9])[.][0-9]*)$',
+                                        message="Renseigner une latitude valide")
+    longitude_validator = RegexValidator(regex='^([-]?([0-9]|[0-9][0-9]|1[0-7][0-9])[.][0-9]*)$',
+                                        message="Renseigner une longitude valide")
 
     edifice = models.CharField(max_length=300)
     adresse = models.CharField(max_length=300, null=True, blank=True)
@@ -260,8 +266,8 @@ class Orgue(models.Model):
     code_departement = models.CharField(choices=[(c[0], c[0]) for c in CHOIX_DEPARTEMENT],
                                         verbose_name="Code département", max_length=3)
     region = models.CharField(verbose_name="Région", choices=CHOIX_REGION, max_length=50)
-    latitude = models.FloatField(null=True, blank=True)
-    longitude = models.FloatField(null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True, validators=[latitude_validator])
+    longitude = models.FloatField(null=True, blank=True, validators=[longitude_validator])
     osm_type = models.CharField(choices=CHOIX_TYPE_OSM, verbose_name="Type OpenStreetMap", max_length=20, null=True,
                                 blank=True, help_text="Type OSM de l'objet représenant l'édifice.")
     osm_id = models.CharField(verbose_name="Id OpenStreetMap", max_length=20, null=True, blank=True,

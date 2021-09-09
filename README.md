@@ -1,4 +1,4 @@
-# Installation :
+# Installation
 
 Installer python 3.4+
 Installer les librairies listées dans le fichier `requirements.txt`.
@@ -70,8 +70,7 @@ Si l'installation de meilisearch ne fonctionne pas, on peut utiliser un moteur d
 MEILISEARCH_URL = False
 ```
 
-# Faire un import de données sur le serveur : 
-
+# Faire un import de données sur le serveur
 
 Placer le fichier JSON d'importation quelque part sur le disque. (s'inspirer du format de `exemple_orgue-v3.json`) 
 A noter : la colonne `codification` est utilisée comme pivot pour retrouver des orgues potentiellement déjà existants dans la base de données avant
@@ -108,19 +107,6 @@ Exemple : corriger les noms erronés du champ ancienne_commune :
 Orgue.objects.filter(ancienne_commune="/").update(ancienne_commune="")
 ```
 
-# Renouveler manuellement le certificat
-
-```python
-sudo service nginx stop
-sudo certbot renew
-sudo service nginx start
-```
-
-# Export CSV
-
-Bien pratique pour travailler sur un tableur type OpenOffice ou Excel...
-https://inventaire-des-orgues.fr/orgues/csv
-
 # Renouvellement des certificats
 
 Via un fichier cron. Pour le voir :
@@ -129,16 +115,20 @@ sudo su
 crontab -l
 ```
 
-Commandes correspondantes :
+Commandes manuelles correspondantes si besoin de renouvellement manuel :
 ```shell
-service nginx stop
-certbot renew
-service nginx start
+sudo service nginx stop
+sudo certbot renew
+sudo service nginx start
 ```
 
 # Rétablir les permissions sur les fichiers
 
+Lors de manipulations sur le serveur, il faut veiller à ne pas modifier les permissions des fichiers manipulés par Django.
+Pour rétablir les bonnes permissions :
+```python
 sudo chown -R fabdev:www-data /var/www/portail/static/media
+```
 
 # Création d'un diagramme UML à partir du modèle de données Django
 
@@ -152,8 +142,13 @@ python manage.py graph_models orgues -a -g > orgue.dot
 Puis générer un diagramme .svg (ou .png) en ligne :
 https://dreampuf.github.io/GraphvizOnline
 
-# Api : 
-[Voir la documentation](https://docs.inventaire-des-orgues.fr/api)
+# Export CSV
+
+Bien pratique pour travailler sur un tableur type OpenOffice ou Excel...
+https://inventaire-des-orgues.fr/orgues/csv
+
+# Api
+[Voir la documentation de l'API](https://docs.inventaire-des-orgues.fr/api)
 
 # Pense-bête Python
 
@@ -163,3 +158,74 @@ import pip
 from pip._internal import main as pipmain
 pipmain(['install', "Chemin\\vers\\fichier.whl"])
 ```
+
+# Scripts manage.py
+
+## Localisation et correspondance avec OpenStreetMap
+
+Lancer l’appariement sur tous les orgues qui n’ont pas déjà le champ id_osm rempli :
+Attention, en raison du timer entre requêtes OpenStreetMap, la commande peut être très longue.
+```python
+nohup py manage.py appariement_osm all &
+```
+
+Associer à chaque orgue les id d’OSM trouvés dans appariement_osm :
+```python
+py manage.py import_organ_osm_id orgues/appariement/appariements_osm_all.json
+```
+
+Calculer le barycentre de chaque bâtiment. On recalcule pour tous les orgues, mais cela permet de corriger les orgues pour lesquels la position est erronée pour le moment :
+```python
+py manage.py calcul_barycenter_osm --calculall calculall
+```
+
+Associer à chaque orgue les positions en latitude longitude calculées dans calcul_barycenter_osm :
+```python
+py manage.py import_organ_lonlat coordonnees_osm.json --ecrase if
+```
+
+A condition qu’on ne lance pas appariement_osm et calcul_barycenter_osm le même jour, on sera en-dessous de la limite des 10000 requêtes par jour.
+
+## Corrections de données
+
+Supprimer en base de données les liens cassés pointant vers des images
+```python
+py manage.py remove_broken_images
+```
+
+Contrôle général de la qualité des données (casse, nom d'édifice non complétés, etc.) :
+```python
+py manage.py quality_check
+```
+
+Vérification de la présence du code INSEE dans chaque fiche :
+```python
+py manage.py verif_presence_insee
+```
+
+Corriger un attribut sur toutes les fiches :
+```python
+py manage.py corriger_attribut --replace designation "G.O." "grand orgue" 
+```
+
+Remplir toutes les valeurs None de l'attribut designation par une valeur par défaut :
+```python
+py manage.py corriger_designatio_none --replace "orgue"
+```
+
+Supprimer tous les doublons dans la liste des facteurs d'orgues :
+```python
+py manage.py delete_organ_builder_duplication
+```
+
+Renommer des codes de fiche à l'aide d'une liste CSV ancien_code;nouveau_code.
+Attention, cette manipulation n'est pas anodine et il ne doit pas y avoir d'erreur de données, car en plus du changement de code les fichiers et images sont déplacés et le fichier PDF extrait du livre d'inventaire est renommé.
+```python
+py manage.py replace_codes
+```
+
+Déployer à partir d'un fichier archive TAR les PDF extraits des livres d'inventaire aux bons endroits sur le disque du serveur :
+```python
+py manage.py deployer_pdfs
+```
+
