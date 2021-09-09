@@ -3,6 +3,7 @@ from django.core.management.base import BaseCommand
 from tqdm import tqdm
 import requests
 import json
+import time
 
 class Command(BaseCommand):
     """
@@ -33,16 +34,20 @@ class Command(BaseCommand):
     def mettre_a_jour_barycentre(self, orgue, liste_coordonnees):
         overpass_url = "http://overpass-api.de/api/interpreter"
         overpass_query = """[out:json];{}({});(._;>;);out;""".format(orgue.osm_type, orgue.osm_id)
-        response = requests.get(overpass_url,params={'data': overpass_query})
+
+        done = False
+        while not done:
+            response = requests.get(overpass_url,params={'data': overpass_query})
+            if response.status_code == 429 or response.status_code == 504:
+                time.sleep(30)
+            else:
+                done = True
+
         if response.status_code == 200:
             data = response.json()
             if len(data['elements']) > 0:
                 latitude, longitude, coef=self.calculer_barycentre(orgue, data['elements'], orgue.osm_type)
                 liste_coordonnees.append({"codification" : orgue.codification, "latitude" : latitude, "longitude" : longitude})
-        else:
-            print("Erreur avec l'orgue : ", orgue)
-            print("Status code : ", response.status_code)
-            print("")
         return liste_coordonnees
 
     def calculer_barycentre(self, orgue, list_osm, osm_type):
@@ -62,8 +67,16 @@ class Command(BaseCommand):
             else:
                 overpass_url = "http://overpass-api.de/api/interpreter"
                 overpass_query = """[out:json];{}({});(._;>;);out;""".format(element['type'], element['id'])
-                response = requests.get(overpass_url, params={'data': overpass_query})
-                if response.status_code == 200:
+
+                done = False
+                while not done:
+                    response = requests.get(overpass_url, params={'data': overpass_query})
+                    if response.status_code == 429 or response.status_code == 504:
+                        time.sleep(30)
+                    else:
+                        done = True
+
+                if response.status_code == 200 :
                     data = response.json()
                     latitude, longitude, coef = self.calculer_barycentre(orgue, data['elements'], element['type'])
                     sum_latitude += latitude*coef

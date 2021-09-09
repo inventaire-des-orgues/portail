@@ -11,18 +11,17 @@ class Command(BaseCommand):
     Importe les coordonnées latitude/longitude du fichier fourni dans la base de données. Le fichier à fournir doit être celui 
     créé par la fonction calcul_barycenter_osm. Par défaut, la fonction ne complète les champs latitude/longitude que pour les orgues 
     où ces deux champs ne sont pas déjà renseignés.
-    L'option --ecraseif écrase les latitude/longitude si l'écart entre les anciennes et les nouvelles est supérieur à 30 mètres.
-    L'option --ecraseall écrase toutes les latitude/longitude.
+    L'option --ecrase :
+        if : écrase les latitude/longitude si l'écart entre les anciennes et les nouvelles est supérieur à 30 mètres.
+        all : écrase toutes les latitude/longitude.
     """
     help = ''
 
     def add_arguments(self, parser):
         parser.add_argument('path', nargs=1, type=str,
                             help='Nom du fichier JSON contenant les latitudes et longitudes des orgues.')
-        parser.add_argument('--ecraseif',
-                help="Ecrase la position latitude/longitude de l'orgue si la distance est supérieure à 30 mètres.")
-        parser.add_argument('--ecraseall',
-                help="Ecrase la position latitude/longitude de l'orgue.")
+        parser.add_argument('--ecrase',
+              help="Ecrase la position latitude/longitude de l'orgue si la distance est supérieure à 30 mètres (valeur if) ou pour tous les orgues (valeur all).")
 
     def handle(self, *args, **options):
         if not os.path.exists(options['path'][0]):
@@ -37,7 +36,7 @@ class Command(BaseCommand):
                     orgue.latitude = row['latitude']
                     orgue.longitude = row['longitude']
                 else:
-                    if options['ecraseif']:
+                    if options['ecrase'] == "if":
                         phi1 = row['latitude'] * np.pi / 180
                         phi2 = orgue.latitude * np.pi / 180
                         l1 = row['longitude'] * np.pi / 180
@@ -46,7 +45,7 @@ class Command(BaseCommand):
                         if d >= 30:
                             orgue.latitude = row['latitude']
                             orgue.longitude = row['longitude']
-                    elif options['ecraseall']:
+                    elif options['ecrase'] == "all":
                         orgue.latitude = row['latitude']
                         orgue.longitude = row['longitude']
                 orgue.save()

@@ -111,7 +111,13 @@ class Command(BaseCommand):
         overpass_query +=" {}; ); ._;)->.b; ".format(filtre_type_commune)
         overpass_query += ".b out; }"
         
-        response = requests.get(overpass_url, params={'data': overpass_query})
+        done = False
+        while not done:
+            response = requests.get(overpass_url, params={'data': overpass_query})
+            if response.status_code == 429 or response.status_code == 504:
+                time.sleep(30)
+            else:
+                done = True
 
         # Erreur dans la requête QL Overpass
         if response.status_code != 200:
@@ -241,7 +247,13 @@ class Command(BaseCommand):
         overpass_query = "[out:json]; area[boundary=administrative]['ref:INSEE']['ref:INSEE'={}] -> .commune;".format(orgue.code_insee)
         overpass_query +=" ((wr {}; ); ._;)->.a; (.a;.a >;)->.a; .a out;".format(filtre_type_commune)
         #L'Overpass_query récupère tous les édifices susceptibles de comporter un orgue dans la commune où se trouve l'orgue
-        response = requests.get(overpass_url, params={'data': overpass_query})
+        done = False
+        while not done:
+            response = requests.get(overpass_url, params={'data': overpass_query})
+            if response.status_code == 429 or response.status_code == 504:
+                time.sleep(30)
+            else:
+                done = True
 
         # Erreur dans la requête QL Overpass
         if response.status_code != 200:
