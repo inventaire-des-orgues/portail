@@ -63,7 +63,7 @@
           <h2 class="mb-0">Carte</h2>
           <p id = "selectionner">((type == 'France' ? 'Sélectionnez une région' : 'Sélectionnez un département'))</p>
         </div>
-        <div class="col-lg-5">
+        <div class="col-lg-5 col-md-6 col-sm-12">
 	  <!-- Carte de France avec régions -->
           <div id="map">
             <button class='btn' id='retour' v-show="type != 'France'" v-on:click="select('France')">Retour à la vue régionale</button>
@@ -71,9 +71,9 @@
                 preserveAspectRatio="xMinYMax meet" style="overflow: hidden; position: absolute; left: -0.15625px;">
               <path data-action="filter" :class="{active: region == 'Guadeloupe'}" @click.stop="select('region', 'Guadeloupe')" @mousemove.stop="preview('region', 'Guadeloupe')" @mouseout.stop="unpreview()"
                   d="M58.35,566.27l-3.26.77-3,2.65.13,5.94,2.33.39.13,3.68-2.3,1.77L52,584.38v.52l-2,2.13-.13.38-4.49-.25L44.75,585l-3.26-1.87-5.81-3H29.29l-3,4.55.13,6.55.81,2.68.13.49.42,5.06,1.9,9.37,1.91,4.94a9.91,9.91,0,0,1,1.61,1.9A26.07,26.07,0,0,0,35,618.28l3,.38.83-1.55.13.17h3l4.49-3.81,2.84-3.91-.13-9.1-1.64-4.81.55-3.94,3.09-.62h0l.93,1.13,2.59.62,2,.77.19-.09.23.74,3.94.22,6.78-1.25,3.81-2.78,6.65-.26,5.68-1.9-3.52-2-.42-1.9-4.49-2.91L67,581.34l-2.58-4.42V572l-1.78-3.81Z"/>
-              <path data-action="filter" :class="{active: region == 'Martinique'}" @click.stop="select('region', 'Martinique')" @mousemove.stop="preview('region', 'Martinique')" @mousemove.stop="preview('region', 'Martinique')" @mouseout.stop="unpreview()"
+              <path data-action="filter" :class="{active: region == 'Martinique'}" @click.stop="select('region', 'Martinique')" @mousemove.stop="preview('region', 'Martinique')" @mouseout.stop="unpreview()"
                   d="M122.45,564.34s-7.85.19-8.81.55a51.15,51.15,0,0,0-4.81,3l-.58.16L106,571.51l.77,4.45,6.72,6.62-1.17,1.81V588l2.88,3.94,9.23,8.23h9l2.29-.19h.39l-.39,1.61v1.26l2.71.71,1.13.71s-.38,3,.58,3.23l-2.87.16-4-1.23-2.68-.55-3.45,1.43-1.94,2.32-.93,2.68.74,2.71,1.94,2.68,2.48,1.42s2.5-.71,3.46-1.06,1.74-2,1.74-2,2.85-.18,4.2-.36,2.71,1.62,2.71,1.62l6.32.87,2.88,1.61,1.71-.16v-1.81l1.55-.87,1.55.87L154.7,620,153,621.61l.78,3.2,2.29,1.25,2.71-.16,2.68-2.16.77-2.84,2.68-2.87-1.74-3.59L162,611.21l-1.36-4.29-1.35-3S156,600.66,156,600s-3.07-2.33-3.07-2.33l-.39-2.87a5.27,5.27,0,0,1,1.75-1.23c1-.36-.58-2-.58-2l-1.91.36-2.91.71-.74-.91L147,590.46l.19-1.62,2.1.39,1.75-2-2.49-2-1.94-.55-.58-1.06h0v-1.26l2.13-.91,1.52,1.26,2.68,1.07,1.36-1.62v-1.77L154.9,579l-1-1.1-2.1-.87-1.36,1.22-5.35.55-1.75,1.26-2.29-.71-2.68-4.29-6.17-6.1-3.45-1.42Z"/>
-              <path data-action="filter" :class="{active: region == 'Guyane'}" @click.stop="select('region', 'Guyane')" @mousemove.stop="preview('region', 'Guyane')" @mousemove.stop="preview('region', 'Guyane')" @mouseout.stop="unpreview()"
+              <path data-action="filter" :class="{active: region == 'Guyane'}" @click.stop="select('region', 'Guyane')" @mousemove.stop="preview('region', 'Guyane')" @mouseout.stop="unpreview()"
                   d="M211.92,559.79a.59.59,0,0,0-.35.11L208.35,564l-2.8,3.22-3.22,3.22.47,8.61-.24,8,2.8,3.88,2.75,4.92,1.59,3-1.59,1.94-1.86,5.16.23,7.1-2.29,4.07-3.68,3,1.12,1.28,2.8,1.71,2.52,1.51,3.68-1.09,3.92-2.36,8.07-.2,3,2.14,3.22.23,3.22.66,4.62-3.69,5.31-9.23,3.92-8,3.92-5.82L254,592l2.29-4.11-1.82-3.65-1.4-5.16-3-1.08-3.41-2.33-2.83-2.6-3.69-2.37-2.52-.85-7.37-5.16-4.85-1.75-4.62-.62s-2.07-.85-3.22-1.28A23.28,23.28,0,0,0,211.92,559.79Z"/>
               <path data-action="filter" :class="{active: region == 'La Réunion'}" @click.stop="select('region', 'La Réunion')" @mousemove.stop="preview('region', 'La Réunion')" @mouseout.stop="unpreview()"
                   d="M311.9,568.31l-5.07.1-1.84.9-2.1,1.61-.38.36h-1.46L298,572.44l-1.33,1.16-4.23.62-.38,2.22-1.17,4.65a20.7,20.7,0,0,1-2.09,1.26c-.48.18-3.17,1.62-3.17,1.62l-.48,4.94,1.16,2.93,3.16,3.75L291,597.3l1.23-.26-.74.36.09,6.71,3.17,3.94,3.26,3,5.74,3.39.39-.22-.45.32,6.81,4.1,5.26,1.91,5.65,1,4.52,1.62,2.88.55s4.42-.91,5-.91,5.16-.9,5.16-.9l4.72-1.52,3.16-2.87-.29-5.1.58-3.2,1.26-1.81,2.1-2.77,1.06-3.49-.29-3.39L349,596.49l-2.88-1.32-1.32-.1-2.13-3a29.86,29.86,0,0,1-3.26-3.68c-.19-.45-1.91-4.3-1.91-4.3l-.58-6-3.26-3.13-3.84-2.13a30,30,0,0,0-3.65-1.88c-.57-.09-5.65-1.16-6-1.16s-4.14.27-4.23.36l-.49-.2Z"/>
@@ -354,7 +354,7 @@
 
           </div>
         </div>
-        <div class="col-lg-5" v-if="!loading">
+        <div class="col-lg-5 col-md-6 col-sm-12" v-if="!loading">
           <h3 id="selected-region">((selected))</h3>
           <p class="text-bold" id="nb-etat-total">
             <span class="puce-etat bg-primary">((data.total))</span>
@@ -390,7 +390,7 @@
             <span class="puce-etat " style="background-color:#cccccc;">((data.inconnu)) %</span>
             <span>Etat inconnu</span>
           </p>
-	        <a class='btn' id='voir-orgue' href="/orgues/" :href="'/orgues/?' + (type == 'departement' ? 'departement='+departement : 'query='+region)">Voir les orgues</a>
+	        <a class='btn' id='voir-orgue' @click.stop="" href="/orgues/" :href="'/orgues/?' + (type == 'departement' ? 'departement='+departement : (type == 'region' ? 'filter_region='+region : ''))">Voir les orgues</a>
         </div>
         <div class="col-lg-5" v-else>
             <strong>Chargement...</strong>
@@ -530,6 +530,10 @@
           if (this.departement) {
             this.data = this.stats['departement'][this.departement] || defaultData;
             this.selected = this.departement;
+          }
+          else if (this.region) {
+            this.data = this.stats['region'][this.region] || defaultData;
+            this.selected = this.region;
           }
           else {
             this.data = this.stats['France'];
