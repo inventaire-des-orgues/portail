@@ -185,6 +185,29 @@
                       {% for fichier in orgue.fichiers.all %}
                         <li>
                           <a href="{{ fichier.file.url }}" target="_blank" rel="noopener noreferrer">
+                          {% if fichier.extension in ".pdf" %}
+                              <i class="fa fa-file-pdf"></i>
+                            {% elif fichier.extension in ".png,.jpg,.jpeg,.gif" %}
+                              <i class="fa fa-file-image"></i>
+                            {% elif fichier.extension in ".txt" %}
+                              <i class="fa fa-file-alt"></i>
+                            {% elif fichier.extension in ".mp3" %}
+                              <i class="fa fa-file-audio"></i>
+                            {% elif fichier.extension in ".mpg,.mpeg,.mp4,.mov" %}
+                              <i class="fa fa-file-video"></i>
+                            {% elif fichier.extension in ".pages,.doc,.docx,.odt" %}
+                              <i class="fa fa-file-word"></i>
+                            {% elif fichier.extension in ".numbers,.xls,.xlsx,.ods" %}
+                              <i class="fa fa-file-excel"></i>
+                            {% elif fichier.extension in ".ppt,.pptx,.key,.odp" %}
+                              <i class="fa fa-file-powerpoint"></i>
+                            {% elif fichier.extension in ".htm,.html,.json" %}
+                              <i class="fa fa-file-code"></i>
+                            {% elif fichier.extension in ".gzip,.gz,.tar,.zip,.7z" %}
+                              <i class="fa fa-file-archive"></i>
+                            {% else %}
+                              <i class="fa fa-file" title="{{fichier.extension}}"></i>
+                          {% endif %}
                             {% if fichier.description %}
                               {{ fichier.description }}
                             {% else %}

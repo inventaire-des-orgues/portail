@@ -824,6 +824,11 @@ class Fichier(models.Model):
             print("Fichier présent")
             self.file.delete()
         return super().delete()
+    
+    def extension(self):
+        if self.file:
+            return os.path.splitext(self.file.path)[1]
+        return ''
 
 
 def chemin_image(instance, filename):
