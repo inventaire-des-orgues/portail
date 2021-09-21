@@ -128,7 +128,7 @@ class OrgueSearch(View):
                 values = arg.split(',')
                 filter.append(['{}="{}"'.format(facet, value) for value in values])
                 filterResult[facet] = values
-        if not filterResult and page == '1':
+        if not filterResult and page == '1' and (query or departement):
             options['facetsDistribution'] = facets
         if (departement):
             filter.append('departement="{}"'.format(departement))

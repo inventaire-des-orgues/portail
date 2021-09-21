@@ -187,8 +187,45 @@ span.puce-etat {
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;  
     overflow: hidden;
-
 }
+#orgue-list .facet-list {
+    position: relative;
+}
+#orgue-list .facet-list ul {
+    max-height: 200px;
+    overflow: hidden;
+    padding: 10px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease-out;
+}
+#orgue-list .facet-open ul {
+    max-height: 2000px;
+    overflow: auto;
+}
+
+#orgue-list .facet-open ul {
+    margin-bottom: 20px;
+}
+#orgue-list .facet-list a {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    display: block;
+    width: 100%;
+    height: 60px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 16px;
+    padding-top: 40px;
+    background-image: linear-gradient(to bottom, transparent, white);
+    cursor: pointer;
+}
+#orgue-list .facet-open a {
+    height: 0px;
+    padding-top: 5px;
+}
+
+
 
 /* CLAVIERS */
 

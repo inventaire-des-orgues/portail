@@ -18,12 +18,17 @@
                 <label for="query">Recherche <i class="fa fa-info-circle tex-primary" data-toggle="tooltip" data-title="Rechercher une commune, une église, un facteur ..."></i></label>
                 <input id="query" v-model="input" placeholder="Commune, facteur, église ..." class="form-control" value="{{ request.GET.query }}"/>
               </div>
-              <div v-for="facet in facets">
-                <h3>((facet.label))</h3>
-                <ul>
-                  <li v-for="selected in filter[facet.field]" @click="unselectFacet(facet.field, selected)" class="facets selected">((selected))</li>
-                  <li v-for="item in facet.items" v-if="!filter[facet.field] || !filter[facet.field].includes(item.name)" @click="selectFacet(facet.field, item.name)" class="facets">((item.name)) [((item.count))]</li>
-                </li>
+              <div class="d-none d-xl-block">
+                <div v-for="facet in facets" v-if="facet.items.length > 1">
+                  <h3>((facet.label))</h3>
+                  <div :class="{'facet-open': facetOpen[facet.field], 'facet-list': facet.items.length > 6 }" class="facet-list">
+                    <ul>
+                      <li v-for="selected in filter[facet.field]" @click="unselectFacet(facet.field, selected)" class="facets selected">((selected))</li>
+                      <li v-for="item in facet.items" v-if="!filter[facet.field] || !filter[facet.field].includes(item.name)" @click="selectFacet(facet.field, item.name)" class="facets">((item.name)) [((item.count))]</li>
+                    </ul>
+                    <a @click="openFacet(facet.field)" v-if="facet.items.length > 6">Voir ((facetOpen[facet.field] ? "moins" : "plus"))</a>
+                  </div>
+                </div>
               </div>
               <div class="text-center d-none d-xl-block">
                 <img src="{% static 'img/conseil_image_principale.png' %}" alt="" style="width: 100%">
@@ -148,9 +153,11 @@
         page: {% if page %}{{ page}}{% else %}1{% endif %},
         pages: 0,
         loading: false,
+        open: false,
         orgues: [],
         facets: {},
         filter: {},
+        facetOpen: {},
         departement: '{{ departement|default_if_none:'' }}',
         departements: departements,
         requete_page: {% if page %}{{ page}}{% else %}1{% endif %}
@@ -184,6 +191,9 @@
         }
       },
       methods: {
+        openFacet: function(field) {
+          this.$set(this.facetOpen, field, !this.facetOpen[field])
+        },
         selectFacet: function(facet, value) {
           if (this.filter[facet]) {
             if (!this.filter[facet].includes(value))
@@ -248,8 +258,10 @@
               self.orgues = results.hits
               self.hits = results.nbHits
               self.pages = results.pages
-              if (results.facets)
+              if (results.facets) {
                 self.facets = results.facets
+                self.facetOpen = {}
+              }
               self.filter = results.filter
               if (scrolltop) window.scrollTo(0, 0);
               window.history.pushState('', '', pageUrl);
