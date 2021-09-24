@@ -668,7 +668,10 @@ class FacteurListJS(ListView):
         return queryset
 
     def render_to_response(self, context, **response_kwargs):
-        results = [{"id": -1, "text":"Tous les facteurs"}]
+        if self.request.GET.get("tous_facteurs") == "true":
+            results = [{"id": -1, "text":"Tous les facteurs"}]
+        else:
+            results = []
         more = context["page_obj"].number < context["paginator"].num_pages
         if context["object_list"]:
             for u in context["object_list"]:
