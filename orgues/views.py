@@ -937,9 +937,12 @@ class FacteurCreateJS(FabCreateViewJS):
 
     def post(self, request, *args, **kwargs):
         nom = request.POST.get("nom")
-        facteur, created = Facteur.objects.get_or_create(nom=nom)
-        return JsonResponse(
-            {'message': self.success_message, 'facteur': {'id': facteur.id, 'nom': facteur.nom}})
+        if " " in nom:
+            facteur, created = Facteur.objects.get_or_create(nom=nom)
+            return JsonResponse(
+                {'success': "true", 'facteur': {'id': facteur.id, 'nom': facteur.nom}})
+        else:
+            return JsonResponse({'success': "false"})
 
 
 class FichierList(FabListView):

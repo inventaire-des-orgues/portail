@@ -10,8 +10,11 @@
       <form action="{% url 'orgues:facteur-create-js' %}" id="nouveauFacteurForm">{% csrf_token %}
         <div class="modal-body">
           <div class="form-group">
-            <label for="">Nom Prénom (ex : Cavaillé-Coll Aristide. Un seul facteur)</label>
-            <input type="text" name="nom" class="form-control" required>
+            <label for="">Nom Prénom (ex : Cavaillé-Coll Aristide) : </label>
+            <input type="text" name="nom" class="form-control" id="new_facteur" required>
+            <p id="error_facteur" class="alert-info">Le nom du facteur doit être sous le format Nom Prénom</p>
+            <a href="/nous_contacter/">En cas de doutes, n'hésitez pas à nous contacter</a>
+            <div><a href="https://docs.inventaire-des-orgues.fr/conventions/" target="_blank" rel="noopener noreferrer">Voir les conventions du site</a></div>
           </div>
         </div>
         <div class="modal-footer">
@@ -29,6 +32,7 @@
   }
   $(function () {
 
+    $("#error_facteur").hide();
 
     $("#nouveauFacteurForm").submit(function (e) {
       e.preventDefault(); // avoid to execute the actual submit of the form.
@@ -46,17 +50,21 @@
         url: url,
         data: form.serialize(), // serializes the form's elements.
         success: function (data) {
-          var facteur = data.facteur;
-
-          if ($('#id_facteurs,#id_facteur, #id_entretien').find("option[value='" + facteur.id + "']").length) {
-            $('#id_facteurs').val(facteur.id).trigger('change');
-          } else {
-            // Create a DOM Option and pre-select by default
-            var newOption = new Option(facteur.nom, facteur.id, true, true);
-            // Append it to the select
-            $('#id_facteurs,#id_facteur, #id_entretien').append(newOption).trigger('change');
+          if (data.success=="true") {
+            var facteur = data.facteur;
+            if ($('#id_facteurs,#id_facteur, #id_entretien').find("option[value='" + facteur.id + "']").length) {
+              $('#id_facteurs').val(facteur.id).trigger('change');
+            } else {
+              // Create a DOM Option and pre-select by default
+              var newOption = new Option(facteur.nom, facteur.id, true, true);
+              // Append it to the select
+              $('#id_facteurs,#id_facteur, #id_entretien').append(newOption).trigger('change');
+            }
+            $('#nouveauFacteurModal').modal('hide'); 
           }
-          $('#nouveauFacteurModal').modal('hide');
+          else{
+            $("#error_facteur").show();
+          }
         },
         complete: function() {
             form.data('requestRunning', false);
@@ -65,7 +73,7 @@
     })
 
 
-    $("#id_facteurs,#id_facteur,#id_entretien").select2({
+    $("#id_facteurs, #id_facteur, #id_entretien").select2({
       placeholder: 'Choisir un facteur',
       ajax: {
         url: '{% url 'orgues:facteur-list-js' %}',
