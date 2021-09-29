@@ -34,7 +34,8 @@ class Command(BaseCommand):
 
         print('Import des types de jeux')
         for jeu in data["types_jeux"]:
-            TypeJeu.objects.get_or_create(nom=jeu["nom"].strip(), hauteur=jeu["hauteur"].strip())
+            hauteur = jeu["hauteur"].strip() if jeu["hauteur"] is not None else None
+            TypeJeu.objects.get_or_create(nom=jeu["nom"].strip(), hauteur=hauteur)
 
         print('Import des facteurs')
         for facteur in data["facteurs"]:

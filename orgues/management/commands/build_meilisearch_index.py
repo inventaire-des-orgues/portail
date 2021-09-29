@@ -69,7 +69,8 @@ class Command(BaseCommand):
         ])
         orgues = OrgueResumeSerializer(Orgue.objects.all(), many=True).data
         index.delete_all_documents()
-        index.add_documents(orgues)
+        if orgues:
+            index.add_documents(orgues)
 
         # types de jeux
         try:
@@ -79,4 +80,6 @@ class Command(BaseCommand):
 
         index.update_searchable_attributes(['nom'])
         index.delete_all_documents()
-        index.add_documents([{'id':t.id,'nom':str(t)} for t in TypeJeu.objects.all()])
+        typesJeu = TypeJeu.objects.all()
+        if typesJeu:
+            index.add_documents([{'id':t.id,'nom':str(t)} for t in typesJeu])
