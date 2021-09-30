@@ -229,3 +229,9 @@ Déployer à partir d'un fichier archive TAR les PDF extraits des livres d'inven
 py manage.py deployer_pdfs
 ```
 
+# Accès au serveur
+
+- ajouter utilisateur au groupe Unix qui convient
+- si accès root attribuer les droit (visudo) et permettre l'accès sans mot de passe (clé RSA)
+- ajouter sa clé publique /home/utilisateur/.ssh/authorized_keys
+
