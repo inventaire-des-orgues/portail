@@ -13,8 +13,8 @@ import orgues.utilsorgues.tools.generiques as gen
 import orgues.utilsorgues.codification as codif
 
 # Initialisation de certaines variables utiles dans plusieurs méthodes
-AMENITY = ['place_of_worship', 'monastery', 'music_school', 'college', 'school', 'clinic', 'hospital']
-BUILDING = ['yes', 'cathedral', 'chapel', 'church', 'monastery', 'religious', 'shrine', 'synagogue', 'temple']
+AMENITY = ['place_of_worship', 'monastery', 'music_school', 'college', 'school', 'clinic', 'hospital', 'theatre', 'arts_centre']
+BUILDING = ['yes', 'cathedral', 'chapel', 'church', 'monastery', 'religious', 'shrine', 'synagogue', 'temple', 'public']
 filtre_type_commune = "[amenity~'{}'][building~'{}'] (area.commune)".format("|".join(AMENITY), "|".join(BUILDING))
 overpass_url = "http://overpass-api.de/api/interpreter"
         
@@ -96,17 +96,28 @@ class Command(BaseCommand):
         # Après délimitation de la zone de recherche sur le territoire de la commune,
         # l'Overpass_query fait un premier test sur le nom exact (avec insensibilité à la casse),
         # puis, en l'absence de résultat, effectue un second test en cherchant de manière séparé les mots composant le nom.
-        overpass_query = "[out:json]; area[boundary=administrative]['ref:INSEE']['ref:INSEE'={}] -> .commune;".format(orgue.code_insee)
-        
-        overpass_query +=" ((wr[name~{},i] {}; ); ._;)->.a; ".format('"'+orgue.edifice.capitalize()+'"', filtre_type_commune)
-        overpass_query +="if (a.count(wr)>0){ .a out; } else {"
-        
-        overpass_query +=" ((wr"
+        # S'il n'y a toujours pas de résultats, une nouvelle requête est effectuée sans tenir compte du champ Building, puis si nécessaire sans le champ Amenity
+
+        decompo_query = ""
         for mot in decompo:
             if len(mot) > 2: #Filtre pour ne pas rechercher les mots de liaisons (de, l, la, en...)
-                overpass_query +=" [name~'{}',i]".format(mot)
-        overpass_query +=" {}; ); ._;)->.b; ".format(filtre_type_commune)
-        overpass_query += ".b out; }"
+                decompo_query +=" [name~'{}',i]".format(mot)
+
+        AMENITY = ['place_of_worship', 'monastery', 'music_school', 'college', 'school', 'clinic', 'hospital', 'theatre', 'arts_centre']
+        BUILDING = ['yes', 'cathedral', 'chapel', 'church', 'monastery', 'religious', 'shrine', 'synagogue', 'temple', 'public']
+        filtre_amenity = "[amenity~'{}']".format("|".join(AMENITY))
+        filtre_building = "[building~'{}']".format("|".join(BUILDING))
+        filtre_type_commune = "[amenity~'{}'][building~'{}'] (area.commune)".format("|".join(AMENITY), "|".join(BUILDING))
+
+        overpass_query = "[out:json]; area[boundary=administrative]['ref:INSEE']['ref:INSEE'='{}'] -> .commune;".format(orgue.code_insee)
+        overpass_query += " ((wr[name~{},i] {}; ); ._;)->.a; ".format('"'+orgue.edifice.capitalize()+'"', filtre_type_commune)
+        overpass_query +="if (a.count(wr)>0){ .a out; } else{"
+        overpass_query += " ((wr {} {} ; ); ._;)->.b; ".format(decompo_query, filtre_type_commune)
+        overpass_query +="if (b.count(wr)>0){ .b out; } else{"
+        overpass_query += " ((wr {} {} (area.commune); ); ._;)->.c; ".format(decompo_query, filtre_amenity)
+        overpass_query +="if (c.count(wr)>0){ .c out; } else{"
+        overpass_query += " ((wr {} {} (area.commune); ); ._;)->.d; ".format(decompo_query, filtre_building)
+        overpass_query +="if (d.count(wr)>0){ .d out; } ;}}}"
         
         done = False
         while not done:

@@ -163,6 +163,8 @@ pipmain(['install', "Chemin\\vers\\fichier.whl"])
 
 ## Localisation et correspondance avec OpenStreetMap
 
+### Avec Open Street Map 
+
 Lancer l’appariement sur tous les orgues qui n’ont pas déjà le champ id_osm rempli :
 Attention, en raison du timer entre requêtes OpenStreetMap, la commande peut être très longue.
 ```python
@@ -185,6 +187,18 @@ py manage.py import_organ_lonlat coordonnees_osm.json --ecrase if
 ```
 
 A condition qu’on ne lance pas appariement_osm et calcul_barycenter_osm le même jour, on sera en-dessous de la limite des 10000 requêtes par jour.
+
+### Avec la BD Topo
+
+Lancer l’appariement sur tous les orgues qui n’ont pas déjà le champ id_osm rempli :
+```python
+py manage.py appariement_topo
+```
+
+Importer les coordonnées des orgues :
+```python
+python manage.py import_organ_lonlat orgues/temp/appariements_topo.json --ecrase if
+```
 
 ## Corrections de données
 
