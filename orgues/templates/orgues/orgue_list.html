@@ -56,24 +56,7 @@
           </div>
         </div>
         <div class="col-xl-8" v-cloak>
-          <div class="text-muted" v-if="!loading">
-            <div class="dropdown float-right" v-if="orgues.length != 0">
-              <button class="btn btn-link dropdown-toggle" type="button" id="filterMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Trier
-              </button>
-              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="filterMenuButton">
-                <a class="dropdown-item" href="#" @click.prevent="changeSort('completion:desc')" :class="{ active: sort == 'completion:desc' }">+ Complétés</a>
-                <a class="dropdown-item" href="#" @click.prevent="changeSort('pertinence')" :class="{ active: sort == 'pertinence' }">Pertinence</a>
-                <a class="dropdown-item" href="#" @click.prevent="changeSort('commune:asc')" :class="{ active: sort == 'commune:asc' }">Commune A-Z</a>
-                <a class="dropdown-item" href="#" @click.prevent="changeSort('commune:desc')" :class="{ active: sort == 'commune:desc' }">Commune Z-A</a>
-                <a class="dropdown-item" href="#" @click.prevent="changeSort('construction:asc')" :class="{ active: sort == 'construction:asc' }">Ancien - Récent</a>
-                <a class="dropdown-item" href="#" @click.prevent="changeSort('construction:desc')" :class="{ active: sort == 'construction:desc' }">Récent - Ancient</a>
-                <a class="dropdown-item" href="#" @click.prevent="changeSort('jeux_count:desc')" :class="{ active: sort == 'jeux_count:desc' }">+ de jeux</a>
-              </div>
-            </div>
-            <p class="text-center" v-if="!loading">((hits)) orgue<span v-if="hits>1">s</span></p>
-          </div>
-          <div class="clearfix"></div>
+          <p class="text-muted text-center" v-if="!loading">((hits)) orgue<span v-if="hits>1">s</span></p>
           <div class="card" v-if="loading">
             <div class="card-body">
               <div class="d-flex align-items-center">
@@ -168,7 +151,6 @@
         debouncedInput: '{{ query|default_if_none:''|escapejs }}',
         hits: 0,
         page: {% if page %}{{ page}}{% else %}1{% endif %},
-        sort: 'completion:desc',
         pages: 0,
         loading: false,
         open: false,
@@ -222,10 +204,6 @@
           this.page = 1
           this.fetchData()
         },
-        changeSort: function(sort) {
-          this.sort = sort
-          this.fetchData()
-        },
         unselectFacet: function(facet, value) {
           var index = this.filter[facet].indexOf(value);
           if (index !== -1) {
@@ -242,7 +220,6 @@
           var query = self.debouncedInput
           var departement = self.departement
           var page = self.page
-          var sort = self.sort
           this.loading = true
           this.requete_page = this.page;
 
@@ -252,9 +229,6 @@
           }
           if (query) {
             pageUrl += '&query=' + query
-          }
-          if (sort) {
-            pageUrl += '&sort=' + sort
           }
           let filters = {}
           if (self.filter) {
@@ -273,7 +247,6 @@
               pageUrl: pageUrl,
               page: page,
               departement: departement,
-              sort: sort,
               ...filters,
             },
             error: function (resp) {
