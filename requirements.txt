@@ -12,7 +12,7 @@ gunicorn==20.0.4
 django-dbbackup==3.3.0
 django-debug-toolbar==2.2.1
 requests==2.23.0
-meilisearch==0.16.0
+meilisearch==0.16.1
 django-extensions==3.1.1
 pydotplus==2.0.1
 pandas==1.1.5

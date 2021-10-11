@@ -136,6 +136,9 @@ class OrgueSearch(View):
             options['filter'] = filter
         if not query:
             query = None
+        sort = request.POST.get('sort')
+        if sort and sort != 'pertinence':
+            options['sort'] = [sort]
         results = index.search(query, options)
         results['pages'] = 1 + results['nbHits'] // OrgueSearch.paginate_by
         if 'facetsDistribution' in results:
