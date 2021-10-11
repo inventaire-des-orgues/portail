@@ -89,7 +89,6 @@ class OrgueResumeSerializer(serializers.ModelSerializer):
     facet_facteurs = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField()
     jeux = serializers.SerializerMethodField()
-    construction = serializers.SerializerMethodField()
 
     class Meta:
         model = Orgue
@@ -112,8 +111,7 @@ class OrgueResumeSerializer(serializers.ModelSerializer):
             "longitude", 
             "jeux",
             "claviers_count",
-            "jeux_count",
-            "construction",
+            "has_pedalier",
             "resume_composition_clavier",
         ]
 
@@ -139,16 +137,8 @@ class OrgueResumeSerializer(serializers.ModelSerializer):
         facteurs = set()
         evenements = Evenement.objects.filter(orgue=obj, facteurs__isnull=False).prefetch_related('facteurs').order_by('annee')
         for evenement in evenements:
-            if evenement.type in ['construction', 'reconstruction']:
-                facteurs.update(evenement.facteurs.values_list('nom', flat=True))
+            facteurs.update(evenement.facteurs.values_list('nom', flat=True))
         return list(facteurs)
-
-    def get_construction(self, obj):
-        evenements = Evenement.objects.filter(orgue=obj).order_by('-annee')
-        for evenement in evenements:
-            if evenement.type in ['construction', 'reconstruction']:
-                return evenement.annee
-        return ''
 
 
 class OrgueCarteSerializer(serializers.ModelSerializer):
