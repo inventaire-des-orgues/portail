@@ -70,6 +70,23 @@ Si l'installation de meilisearch ne fonctionne pas, on peut utiliser un moteur d
 MEILISEARCH_URL = False
 ```
 
+
+# Mettre à jour meilisearch sur le serveur
+
+```
+sudo su
+rm -rf /usr/bin/meilisearch
+curl -L https://install.meilisearch.com | sh
+mv ./meilisearch /usr/bin/
+nano /etc/systemd/system/meilisearch.service
+systemctl start meilisearch
+systemctl status meilisearch
+cd /var/www
+source pythonenv/bin/activate
+cd portail/
+python manage.py build_meilisearch_index
+```
+
 # Faire un import de données sur le serveur
 
 Placer le fichier JSON d'importation quelque part sur le disque. (s'inspirer du format de `exemple_orgue-v3.json`) 
