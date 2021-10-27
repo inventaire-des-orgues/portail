@@ -18,14 +18,13 @@ class Command(BaseCommand):
             index = client.get_index(uid='orgues')
         except:
             index = client.create_index(uid='orgues')
-
         index.update_searchable_attributes([
             'commune',
-            'ancienne_commune',
             'edifice',
-            'region',
             'facteurs',
             'departement',
+            'region',
+            'ancienne_commune',
             'placeholder',
             'latitude',
             'longitude'
@@ -56,6 +55,7 @@ class Command(BaseCommand):
             'url',
             'latitude',
             'longitude',
+            'construction',
         ])
 
         index.update_ranking_rules([
@@ -63,9 +63,15 @@ class Command(BaseCommand):
             'words',
             'proximity',
             'attribute',
-            'wordsPosition',
+            'sort',
+            'completion:desc',
             'exactness',
-            'desc(completion)',
+        ])
+        index.update_sortable_attributes([
+            'commune',
+            'completion',
+            'jeux_count',
+            'construction',
         ])
         orgues = OrgueResumeSerializer(Orgue.objects.all(), many=True).data
         index.delete_all_documents()

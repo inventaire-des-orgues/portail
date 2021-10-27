@@ -93,6 +93,22 @@ Démarre un serveur qui sera automatiquement relancé lors de changement dans le
 python manage.py runserver
 ````
 
+# Mettre à jour meilisearch sur le serveur
+
+```
+sudo su
+rm -rf /usr/bin/meilisearch
+curl -L https://install.meilisearch.com | sh
+mv ./meilisearch /usr/bin/
+nano /etc/systemd/system/meilisearch.service
+systemctl start meilisearch
+systemctl status meilisearch
+cd /var/www
+source pythonenv/bin/activate
+cd portail/
+python manage.py build_meilisearch_index
+```
+
 # Faire un import de données sur le serveur
 
 Placer le fichier JSON d'importation quelque part sur le disque. (s'inspirer du format de `exemple_orgue-v3.json`) 
@@ -186,69 +202,89 @@ pipmain(['install', "Chemin\\vers\\fichier.whl"])
 
 ## Localisation et correspondance avec OpenStreetMap
 
+### Avec Open Street Map 
+
 Lancer l’appariement sur tous les orgues qui n’ont pas déjà le champ id_osm rempli :
 Attention, en raison du timer entre requêtes OpenStreetMap, la commande peut être très longue.
 ```python
-nohup py manage.py appariement_osm all &
+nohup python manage.py appariement_osm all &
 ```
 
 Associer à chaque orgue les id d’OSM trouvés dans appariement_osm :
 ```python
-py manage.py import_organ_osm_id orgues/appariement/appariements_osm_all.json
+python manage.py import_organ_osm_id orgues/temp/appariements_osm_all.json
 ```
 
 Calculer le barycentre de chaque bâtiment. On recalcule pour tous les orgues, mais cela permet de corriger les orgues pour lesquels la position est erronée pour le moment :
 ```python
-py manage.py calcul_barycenter_osm --calculall calculall
+python manage.py calcul_barycenter_osm --calculall calculall
 ```
 
 Associer à chaque orgue les positions en latitude longitude calculées dans calcul_barycenter_osm :
 ```python
-py manage.py import_organ_lonlat coordonnees_osm.json --ecrase if
+python manage.py import_organ_lonlat coordonnees_osm.json --ecrase if
 ```
 
 A condition qu’on ne lance pas appariement_osm et calcul_barycenter_osm le même jour, on sera en-dessous de la limite des 10000 requêtes par jour.
+
+### Avec la BD Topo
+
+Lancer l’appariement sur tous les orgues qui n’ont pas déjà le champ id_osm rempli :
+```python
+py manage.py appariement_topo
+```
+
+Importer les coordonnées des orgues :
+```python
+python manage.py import_organ_lonlat orgues/temp/appariements_topo.json --ecrase if
+```
 
 ## Corrections de données
 
 Supprimer en base de données les liens cassés pointant vers des images
 ```python
-py manage.py remove_broken_images
+python manage.py remove_broken_images
 ```
 
 Contrôle général de la qualité des données (casse, nom d'édifice non complétés, etc.) :
 ```python
-py manage.py quality_check
+python manage.py quality_check
 ```
 
 Vérification de la présence du code INSEE dans chaque fiche :
 ```python
-py manage.py verif_presence_insee
+python manage.py verif_presence_insee
 ```
 
 Corriger un attribut sur toutes les fiches :
 ```python
-py manage.py corriger_attribut --replace designation "G.O." "grand orgue" 
+python manage.py corriger_attribut --replace designation "G.O." "grand orgue" 
 ```
 
 Remplir toutes les valeurs None de l'attribut designation par une valeur par défaut :
 ```python
-py manage.py corriger_designatio_none --replace "orgue"
+python manage.py corriger_designatio_none --replace "orgue"
 ```
 
 Supprimer tous les doublons dans la liste des facteurs d'orgues :
 ```python
-py manage.py delete_organ_builder_duplication
+python manage.py delete_organ_builder_duplication
 ```
 
 Renommer des codes de fiche à l'aide d'une liste CSV ancien_code;nouveau_code.
 Attention, cette manipulation n'est pas anodine et il ne doit pas y avoir d'erreur de données, car en plus du changement de code les fichiers et images sont déplacés et le fichier PDF extrait du livre d'inventaire est renommé.
 ```python
-py manage.py replace_codes
+python manage.py replace_codes
 ```
 
 Déployer à partir d'un fichier archive TAR les PDF extraits des livres d'inventaire aux bons endroits sur le disque du serveur :
 ```python
-py manage.py deployer_pdfs
+python manage.py deployer_pdfs
 ```
+
+# Accès au serveur
+
+- ajouter utilisateur au groupe Unix qui convient
+- si accès root attribuer les droit (visudo) et permettre l'accès sans mot de passe (clé RSA)
+- ajouter sa clé publique /home/utilisateur/.ssh/authorized_keys
 
