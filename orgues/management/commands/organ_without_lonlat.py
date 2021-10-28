@@ -15,13 +15,12 @@ class Command(BaseCommand):
     """
 
     def add_arguments(self, parser):
-        parser.add_argument('lonlat', nargs=1, type=str,
-                            help="Si False, renvoie la liste des orgues dont seul l'identifiant OSM n'est pas renseigné.")
+        parser.add_argument('lonlat', help="Si présent, renvoie la liste des orgues dont les latitudes et longitudes ne sont pas renseigné.")
 
     def handle(self, *args, **options):
         bdo = Orgue.objects.all()
         bdo = bdo.filter(Q(osm_id__isnull=True) or Q(osm_type__isnull=True)).distinct()
-        if options['lonlat'][0] == 'True':
+        if options['lonlat']:
             bdo = bdo.filter(Q(latitude__isnull=True) or Q(longitude__isnull=True)).distinct()
 
         with open('organ_without_lonlat.csv', 'w', newline='', encoding='utf-8') as file:
