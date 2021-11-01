@@ -457,7 +457,7 @@ class Orgue(models.Model):
             },
             "Nom de l'édifice défini": {
                 "points": 15,
-                "logique": len(self.edifice) > 6,
+                "logique": len(self.edifice) > 6 or self.edifice=='temple',
                 "lien": reverse('orgues:orgue-update', args=(self.uuid,)) + "#id_edifice"
             },
             "Etat de l'orgue défini": {
