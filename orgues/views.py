@@ -942,6 +942,9 @@ class FacteurCreateJS(FabCreateViewJS):
         nom = request.POST.get("nom")
         if " " in nom:
             facteur, created = Facteur.objects.get_or_create(nom=nom)
+            if created:
+                facteur.updated_by_user = self.request.user
+                facteur.save()
             return JsonResponse(
                 {'success': "true", 'facteur': {'id': facteur.id, 'nom': facteur.nom}})
         else:

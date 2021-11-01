@@ -12,9 +12,11 @@
           <div class="form-group">
             <label for="">Nom Prénom (ex : Cavaillé-Coll Aristide) : </label>
             <input type="text" name="nom" class="form-control" id="new_facteur" required>
-            <p id="error_facteur" class="alert-info">Le nom du facteur doit être sous le format Nom Prénom</p>
-            <a href="/nous_contacter/">En cas de doutes, n'hésitez pas à nous contacter</a>
-            <div><a href="https://docs.inventaire-des-orgues.fr/conventions/" target="_blank" rel="noopener noreferrer">Voir les conventions du site</a></div>
+            <small id="error_facteur" class="help-block text-danger">Le nom du facteur doit être sous le format Nom Prénom</small>
+            <small class="help-block">
+              En cas de doutes, n'hésitez pas à <a href="{% url 'contact' %}">nous contacter</a>.
+              Pour voir les conventions du site <a href="https://docs.inventaire-des-orgues.fr/conventions/" target="_blank" rel="noopener noreferrer"> cliquez ici</a>.
+            </small>
           </div>
         </div>
         <div class="modal-footer">
@@ -60,7 +62,7 @@
               // Append it to the select
               $('#id_facteurs,#id_facteur, #id_entretien').append(newOption).trigger('change');
             }
-            $('#nouveauFacteurModal').modal('hide'); 
+            $('#nouveauFacteurModal').modal('hide');
           }
           else{
             $("#error_facteur").show();
