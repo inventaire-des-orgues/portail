@@ -32,7 +32,6 @@ class FacteurAdmin(admin.ModelAdmin):
 @admin.register(TypeJeu)
 class TypeJeuAdmin(admin.ModelAdmin):
     list_display = ('nom_hauteur', 'nom', 'hauteur', 'created_date', 'updated_by_user')
-    list_filter = ('nom', 'hauteur', 'created_date', 'updated_by_user')
     search_fields = ('nom', 'updated_by_user__first_name', 'updated_by_user__last_name')
 
     def nom_hauteur(self, _typejeu):
