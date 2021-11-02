@@ -84,7 +84,7 @@ class OrgueAdmin(admin.ModelAdmin):
     fields = ['codification', 'code_insee', 'commune', 'edifice', 'region', 'departement', 'code_departement',
               'designation', 'emplacement', 'references_palissy', 'references_inventaire_regions']
     list_display = ('codification', 'designation', 'commune', 'edifice',
-                    'departement', 'commentaire_admin', 'updated_by_user', 'modified_date')
+                    'updated_by_user', 'modified_date', 'departement', 'commentaire_admin', )
     inlines = [ClavierInline]
-    list_filter = ('updated_by_user',)
-    search_fields = ('commune', 'edifice', 'designation', 'codification', 'emplacement', 'departement')
+    search_fields = ('commune', 'edifice', 'designation', 'codification', 'emplacement', 'departement',
+                     'updated_by_user', 'references_palissy')
