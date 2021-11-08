@@ -593,6 +593,10 @@ ul {
     padding-left: 15px;
 }
 
+.fichiers_sources {
+    padding-left: 50px;
+}
+
 .alert.alert-info {
     color: #0c5460;
     background-color: #dceef1;
