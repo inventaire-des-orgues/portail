@@ -181,7 +181,7 @@
                   {% endif %}
                   <h2 class="titre-fiche">Fichiers</h2>
                   {% if orgue.fichiers.count %}
-                    <ul>
+                    <ul class="fichiers_sources">
                       {% for fichier in orgue.fichiers.all %}
                         <li>
                           <a href="{{ fichier.file.url }}" target="_blank" rel="noopener noreferrer">
@@ -223,7 +223,7 @@
                   {% endif %}
                   <h2 class="titre-fiche">Sources</h2>
                   {% if orgue.sources.count %}
-                    <ul>
+                    <ul class="fichiers_sources">
                       {% for source in orgue.sources.all %}
                         <li>
                           {% if source.lien %}
