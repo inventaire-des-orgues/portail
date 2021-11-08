@@ -138,10 +138,11 @@ class Command(BaseCommand):
                             e.facteurs.add(fac)
 
                     for clavier in row.get("claviers", []):
+                        clavierType = clavier["type"] if clavier["type"] is not None else "Clavier"
                         if options.get("create"):
-                            type_clavier, created = TypeClavier.objects.get_or_create(nom=clavier["type"])
+                            type_clavier, created = TypeClavier.objects.get_or_create(nom=clavierType)
                         else:
-                            type_clavier = TypeClavier.objects.get(nom=clavier["type"])
+                            type_clavier = TypeClavier.objects.get(nom=clavierType)
                         c = Clavier.objects.create(
                             type=type_clavier,
                             is_expressif=clavier.get("is_expressif"),

@@ -2,41 +2,24 @@
 
 Installer python 3.4+
 Installer les librairies listées dans le fichier `requirements.txt`.
-Créer un fichier `project/settings/dev.py` inspiré de `project/settings/dev.example.py` avec les settings de dev.
 
 ```
 pip install -r requirements.txt
 ```
+
+Créer un fichier `project/settings/dev.py` inspiré de `project/settings/dev.example.py` avec les settings de dev.
+## Créer la base de donnée 
+
 Lancer les commandes suivantes :  
  
 ```shell script
 python manage.py makemigrations
 python manage.py migrate
 python manage.py init_groups
-python manage.py init_config
-python manage.py import_data
 python manage.py createsuperuser
-python manage.py runserver
 ```
 
-Certaines données sont mises en cache pour améliorer la perfomance des requêtes.
-Pour forcer le recalcul des "résumés clavier" il faut lancer la commande : 
-```shell script
-python manage.py calcul_resume_composition
-```  
-Normalement le résumé clavier est recalculé automatiquement à chaque modification de la composition d'un orgue.
-
-Pour récupérer les configs depuis le site inventaire des orgues (Facteurs, types de jeux, types de claviers et )
-Téléchargez le fichier config.json depuis l'url du site : https://inventaire-des-orgues.fr/api/v1/config.json
-et lancer la commande suivante :
-
-```shell script
-python manage.py init_config --delete path/ver/config.json
-```
-
-l'option --delete permet de vider la base préalablement si nécessaire
-
-# Installation du moteur de recherche 
+## Installation du moteur de recherche 
 
 Suivre la documentation pour installer meilisearch : 
 
@@ -70,6 +53,45 @@ Si l'installation de meilisearch ne fonctionne pas, on peut utiliser un moteur d
 MEILISEARCH_URL = False
 ```
 
+## Insérer la config 
+
+Pour récupérer les configs depuis le site inventaire des orgues (Facteurs, types de jeux, types de claviers et )
+Téléchargez le fichier config.json depuis l'url du site : https://inventaire-des-orgues.fr/api/v1/config.json (il faut être connecter au site inventaire)
+et lancer la commande suivante :
+
+```shell script
+python manage.py init_config --delete path/ver/config.json
+```
+
+## Importer des données
+
+Il est possiblde de récupérer un fichier d'import pour les [orgues des pays de la loire](https://github.com/inventaire-des-orgues/paillasse/raw/master/paysdelaloire/paysdelaloire.json) : 
+
+```shell script
+python manage.py import_data --create path/ver/import.json
+```
+
+## Calculer les résumé de composition
+
+Certaines données sont mises en cache pour améliorer la perfomance des requêtes.
+Pour forcer le recalcul des "résumés clavier" il faut lancer la commande : 
+```shell script
+python manage.py calcul_resume_composition
+```  
+Normalement le résumé clavier est recalculé automatiquement à chaque modification de la composition d'un orgue.
+
+
+
+l'option --delete permet de vider la base préalablement si nécessaire
+
+
+## Démarrer le serveur 
+
+Démarre un serveur qui sera automatiquement relancé lors de changement dans le code.
+
+```shell script
+python manage.py runserver
+````
 
 # Mettre à jour meilisearch sur le serveur
 
