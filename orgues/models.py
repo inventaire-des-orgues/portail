@@ -911,6 +911,9 @@ class Accessoire(models.Model):
     def __str__(self):
         return self.nom
 
+    class Meta:
+        ordering = ['nom']
+
 
 @receiver([post_save, post_delete], sender=Evenement)
 def save_evenement_calcul_facteurs(sender, instance, **kwargs):
