@@ -1350,6 +1350,7 @@ class Dashboard(FabView):
 
         return render(request, 'orgues/dashboard.html', context=context)
 
+
 class Stats(View):
 
     def get(self, request, *args, **kwargs):
