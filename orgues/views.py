@@ -1,7 +1,7 @@
 import csv
 import logging
 import os
-from collections import Counter, deque
+from collections import deque
 from datetime import datetime, timedelta, date
 import pandas as pd
 
@@ -11,7 +11,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.db import connection, transaction
-from django.db.models import Q, Count, Sum
+from django.db.models import Q
 from django.forms import modelformset_factory
 from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -24,12 +24,12 @@ from accounts.models import User
 from fabutils.fablog import load_fabaccess_logs
 from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdateView, FabView, FabCreateViewJS, \
     FabDetailView
-from orgues.api.serializers import OrgueSerializer, OrgueResumeSerializer, OrgueCarteSerializer
+from orgues.api.serializers import OrgueSerializer, OrgueResumeSerializer
+
 from project import settings
 
 from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source, Contribution
 import orgues.utilsorgues.correcteurorgues as co
-import orgues.utilsorgues.tools.generiques as gen
 import orgues.utilsorgues.codification as codif
 import orgues.utilsorgues.code_geographique as codegeo
 
@@ -130,7 +130,7 @@ class OrgueSearch(View):
                 filterResult[facet] = values
         if not filterResult and page == '1' and (query or departement):
             options['facetsDistribution'] = facets
-        if (departement):
+        if departement:
             filter.append('departement="{}"'.format(departement))
         if len(filter) > 0:
             options['filter'] = filter
@@ -206,6 +206,7 @@ class FacteurLonLatLeaflet(View):
         data = Facteur.objects.filter(pk=facteur_id).values("nom", "latitude_atelier", "longitude_atelier")
         return JsonResponse(list(data), safe=False)
 
+
 class FacteurListJSlonlat(ListView):
     """
     Liste dynamique utilisée pour filtrer les facteurs d'orgue dans les menus déroulants select2. Utilisée pour le filtre de la carte.
@@ -228,6 +229,7 @@ class FacteurListJSlonlat(ListView):
         if context["object_list"]:
             results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
         return JsonResponse({"results": results, "pagination": {"more": more}})
+
 
 class OrgueDetail(DetailView):
     """
@@ -297,6 +299,7 @@ class OrgueResume(DetailView):
         context["orgue_url"] = self.request.build_absolute_uri(self.object.get_absolute_url())
         return context
 
+
 class OrgueDetailExemple(View):
     """
     Redirige vers la fiche la mieux complétée du site
@@ -305,6 +308,7 @@ class OrgueDetailExemple(View):
     def get(self, request, *args, **kwargs):
         orgue = Orgue.objects.order_by('-completion').first()
         return redirect(orgue.get_absolute_url())
+
 
 class OrgueQrcode(DetailView):
     """
@@ -333,7 +337,7 @@ class ContributionOrgueMixin:
     """
     contribution_description = 'Mise à jour'
 
-    def save_contribution(self, orgue, description = None):
+    def save_contribution(self, orgue, description=None):
         detail = self.contribution_description if not description else description
         contribution = Contribution.objects.filter(orgue=orgue, date__date=date.today()).order_by('-date').first()
         if not contribution or contribution.user != self.request.user:
@@ -341,6 +345,7 @@ class ContributionOrgueMixin:
         if contribution.description.find(detail) < 0:
             contribution.description += ', ' + detail
         contribution.save()
+
 
 class OrgueCreate(FabCreateView, ContributionOrgueMixin):
     """
@@ -363,7 +368,7 @@ class OrgueCreate(FabCreateView, ContributionOrgueMixin):
         form.instance.region = region
         form.instance.code_insee = code_insee
         form.instance.codification = codification
-        if len(Orgue.objects.filter(codification=codification))==1:
+        if len(Orgue.objects.filter(codification=codification)) == 1:
             messages.error(self.request, 'Cette codification existe déjà !')
             return super().form_invalid(form)
         else:
@@ -373,6 +378,7 @@ class OrgueCreate(FabCreateView, ContributionOrgueMixin):
     def get_success_url(self):
         success_url = reverse('orgues:orgue-detail', args=(self.object.slug,))
         return self.request.POST.get("next", success_url)
+
 
 class OrgueUpdateMixin(FabUpdateView, ContributionOrgueMixin):
     """
@@ -399,6 +405,7 @@ class OrgueUpdateMixin(FabUpdateView, ContributionOrgueMixin):
         context["orgue"] = self.object
         return context
 
+
 class OrgueDetailAvancement(FabDetailView):
     """
     Vue de détail du score d'avancement d'un orgue.
@@ -416,6 +423,7 @@ class OrgueDetailAvancement(FabDetailView):
         context["orgue"] = self.object
         return context
 
+
 class OrgueDetailContributions(FabDetailView):
     """
     Vue de détail des contributeurs d'un orgue.
@@ -431,6 +439,7 @@ class OrgueDetailContributions(FabDetailView):
         context["orgue"] = self.object
         return context
 
+
 class OrgueUpdate(OrgueUpdateMixin, FabUpdateView):
     """
     Mise à jour des informations générales d'un orgue
@@ -438,7 +447,6 @@ class OrgueUpdate(OrgueUpdateMixin, FabUpdateView):
     form_class = orgue_forms.OrgueGeneralInfoForm
     success_message = 'Informations générales mises à jour !'
     contribution_description = 'Informations générales'
-
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -672,14 +680,14 @@ class FacteurListJS(ListView):
 
     def render_to_response(self, context, **response_kwargs):
         if self.request.GET.get("tous_facteurs") == "true":
-            results = [{"id": -1, "text":"Tous les facteurs"}]
+            results = [{"id": -1, "text": "Tous les facteurs"}]
         else:
             results = []
         more = context["page_obj"].number < context["paginator"].num_pages
         if context["object_list"]:
             for u in context["object_list"]:
-            #results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
-                results.append({"id":u.id, "text":u.nom})
+            # results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
+                results.append({"id": u.id, "text": u.nom})
         return JsonResponse({"results": results, "pagination": {"more": more}})
 
 
@@ -697,9 +705,9 @@ class CommuneListJS(FabListView):
         communes_francaises = codegeo.Communes()
         results = []
         for commune in communes_francaises:
-            if commune.typecom == "COM" or commune.typecom == "ARM" :
-                intitule = commune.nom +", " + commune.nomdepartement + ", " + commune.code_insee
-                dictionnaire = {"id": commune.code_insee, "nom": commune.nom +", " + commune.nomdepartement + ", " + commune.code_insee}
+            if commune.typecom == "COM" or commune.typecom == "ARM":
+                intitule = commune.nom + ", " + commune.nomdepartement + ", " + commune.code_insee
+                dictionnaire = {"id": commune.code_insee, "nom": commune.nom + ", " + commune.nomdepartement + ", " + commune.code_insee}
                 if query:
                     if query in commune.nom.lower() or query in commune.nom:
                         results.append(dictionnaire)
@@ -731,7 +739,7 @@ class DesignationListJS(FabListView):
         results = []
         results.append({"id": "", "nom": ""})
         for denomination in liste_designation:
-            if query :
+            if query:
                 if query in denomination.lower():
                     dictionnaire = {"id": denomination, "nom": denomination}
                     results.append(dictionnaire)
@@ -1357,7 +1365,7 @@ class Stats(View):
         # France
         completion = df.agg({'completion': ['count', 'mean'], 'references_palissy': ['count']}).round()
         etats = df.value_counts(subset='etat')
-        context["France"] = self.normalize({**etats.to_dict(), 'count': completion.loc['count', 'completion'], 'avancement': completion.loc['mean', 'completion'], 'mh': completion.loc['count','references_palissy']})
+        context["France"] = self.normalize({**etats.to_dict(), 'count': completion.loc['count', 'completion'], 'avancement': completion.loc['mean', 'completion'], 'mh': completion.loc['count', 'references_palissy']})
 
         return JsonResponse(context)
 
