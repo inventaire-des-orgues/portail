@@ -1,5 +1,4 @@
 from django import forms
-import csv
 
 from fabutils.forms import Select2Single, Select2Multiple
 from .models import Orgue, Evenement, Clavier, Facteur, Jeu, Fichier, Image, Source
@@ -27,7 +26,7 @@ class OrgueGeneralInfoForm(forms.ModelForm):
         widgets = {
             'resume': forms.Textarea(attrs={'rows': 5, 'cols': 15}),
             'commentaire_admin': forms.Textarea(attrs={'rows': 2, 'cols': 15}),
-            'entretien':Select2Multiple
+            'entretien': Select2Multiple
         }
 
     def __init__(self, *args, **kwargs):
@@ -126,6 +125,7 @@ class OrgueCreateForm(forms.ModelForm):
             'designation': forms.Select()
         }
 
+
 class ChoiceFieldNoValidation(forms.ChoiceField):
     def validate(self, value):
         pass
@@ -144,7 +144,7 @@ class EvenementForm(forms.ModelForm):
         ]
 
         widgets = {
-            "facteurs":Select2Multiple
+            "facteurs": Select2Multiple
         }
 
 
