@@ -424,7 +424,6 @@ class Orgue(models.Model):
 
         return cr[claviers_count - 1]
 
-
     def calcul_resume_composition(self):
         """
         On stocke dans la base de données l'information Clavier et Pédale de façon commune, sous le format :
