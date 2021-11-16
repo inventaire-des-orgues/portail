@@ -11,8 +11,7 @@ from django.urls import reverse
 
 from django.conf import settings
 from accounts.models import User
-from orgues.models import Jeu, validate_etendue, note_to_hauteur, count_notes, Orgue, Clavier, Image
-
+from orgues.models import Jeu, validate_etendue, note_to_hauteur, count_notes, Orgue, Clavier, Image, TypeClavier
 
 
 class OrgueTestCase(TestCase):
@@ -58,14 +57,14 @@ class OrgueTestCase(TestCase):
         self.assertRaises(ValidationError, validate_etendue, "C1-CD8")
         self.assertRaises(ValidationError, validate_etendue, "G#7-A1")
         self.assertRaises(ValidationError, validate_etendue, "D♭1-D1")
-        self.assertRaises(ValidationError, validate_etendue, "C0-B8") #Plus de 88 notes (etendu du piano)
+        self.assertRaises(ValidationError, validate_etendue, "C0-B8")  # Plus de 88 notes (etendu du piano)
         self.assertIsNone(validate_etendue("C1-F3"))
         self.assertIsNone(validate_etendue("CD1-F3"))
         self.assertIsNone(validate_etendue("C#1-F3"))
         self.assertIsNone(validate_etendue("G#1-F6"))
         self.assertIsNone(validate_etendue("G#1-A#4"))
-        self.assertIsNone(validate_etendue("CFDGEAA#BC1-C2")) #Ocatave courte à l'italienne
-        self.assertIsNone(validate_etendue("CFDGEAB♭BC1-C2")) #Ocatave courte à l'italienne
+        self.assertIsNone(validate_etendue("CFDGEAA#BC1-C2"))  # Ocatave courte à l'italienne
+        self.assertIsNone(validate_etendue("CFDGEAB♭BC1-C2"))  # Ocatave courte à l'italienne
 
     def test_nombre_notes(self):
         self.assertEqual(note_to_hauteur("F"), 5)
@@ -85,7 +84,7 @@ class OrgueTestCase(TestCase):
 
         self.assertNotes("C1-G5", 56)
 
-        #Validations nombres notes pédalier
+        # Validations nombres notes pédalier
         self.assertNotes("C1-F3", 30)
         self.assertNotes("C1-G3", 32)
 
@@ -105,13 +104,13 @@ class OrgueTestCase(TestCase):
         # Validation nombres notes claviers courts
         self.assertNotes("C3-C5", 25)
         self.assertNotes("C2-C5", 37)
-        self.assertNotes("A0-C8", 88) #Etendu du piano
+        self.assertNotes("A0-C8", 88)  # Etendu du piano
         # Validation ravalement
-        self.assertNotes("CD1-F1", 5) # Do Ré Ré# Mi Fa
-        self.assertNotes("CDD#E1-F1", 5) # Do Ré Ré# Mi Fa
-        self.assertNotes("F0-C1", 8) # Fa Fa# Sol Sol# La La# Si Do
-        self.assertNotes("CFDGEAA#BC1-C1", 9) # Octave courte italienne : Do Fa Ré Sol Mi La Sib Si Do
-        self.assertNotes("CFDGEAB♭BC1-C1", 9) # Octave courte italienne : Do Fa Ré Sol Mi La Sib Si Do
+        self.assertNotes("CD1-F1", 5)  # Do Ré Ré# Mi Fa
+        self.assertNotes("CDD#E1-F1", 5)  # Do Ré Ré# Mi Fa
+        self.assertNotes("F0-C1", 8)  # Fa Fa# Sol Sol# La La# Si Do
+        self.assertNotes("CFDGEAA#BC1-C1", 9)  # Octave courte italienne : Do Fa Ré Sol Mi La Sib Si Do
+        self.assertNotes("CFDGEAB♭BC1-C1", 9)  # Octave courte italienne : Do Fa Ré Sol Mi La Sib Si Do
 
     def assertNotes(self, etendue, notes):
         if notes is not None:
@@ -129,5 +128,5 @@ class OrgueTestCase(TestCase):
         clavierPed.delete()
         clavierPed = Clavier.objects.create(type=TypeClavier.objects.create(nom='Pedalwerk'), orgue=orgue)
         self.assertTrue(orgue.has_pedalier)
-
-
+        clavierGO.delete()
+        clavierPed.delete()

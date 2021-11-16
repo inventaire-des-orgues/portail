@@ -66,7 +66,6 @@ class JSMixin:
         return JsonResponse({'message': 'You are not allowed to perform this action', 'errors': []}, status=403)
 
 
-
 class FabCreateViewJS(JSMixin, FabPermissionRequiredMixin, CreateView):
     template_name = "no_templates_in_js.html"
     success_message = "Success"
