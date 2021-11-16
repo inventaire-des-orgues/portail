@@ -14,7 +14,7 @@ urlpatterns = [
     path('resume/<slug:slug>/', v.OrgueResume.as_view(), name='orgue-resume'),
     path('detail/<slug:slug>/qrcode', v.OrgueQrcode.as_view(), name='orgue-qrcode'),
     path('exemple/', v.OrgueDetailExemple.as_view(), name='orgue-detail-exemple'),
-    path('conseils/', v.ConseilsFicheView.as_view(),name='orgue-fiche-conseils'),
+    path('conseils/', v.ConseilsFicheView.as_view(), name='orgue-fiche-conseils'),
 
     # Administration
     path('creation/', v.OrgueCreate.as_view(), name='orgue-create'),
@@ -29,7 +29,7 @@ urlpatterns = [
     path('dashboard/', v.Dashboard.as_view(), name='dashboard'),
 
     # Tableau de bord
-    #path('orgues/dashboard', v.OrgueDashboard.as_view(), name='orgue-dashboard'),
+    # path('orgues/dashboard', v.OrgueDashboard.as_view(), name='orgue-dashboard'),
 
     # Evenements
     path('evenements/<uuid:orgue_uuid>/', v.EvenementList.as_view(), name='evenement-list'),
@@ -74,7 +74,7 @@ urlpatterns = [
 
     path('searchlog/', v.SearchLogView.as_view(), name='search-log'),
 
-    #Création d'orgue
+    # Création d'orgue
     path('js/communes/', v.CommuneListJS.as_view(), name='commune-list-js'),
     path('js/designation/', v.DesignationListJS.as_view(), name='designation-list-js')
 ]
