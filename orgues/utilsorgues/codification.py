@@ -199,6 +199,8 @@ def codifie_edifice(edifice, type_edif):
             'conservatoire national régional',
             'conservatoire',
             'conservatoire municipal',
+            'conservatoire à rayonnement régional',
+            'conservatoire à rayonnement départemental',
             'école de musique',
         ]:
             code_edifice = 'MUSIQU'

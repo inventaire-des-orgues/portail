@@ -241,6 +241,8 @@ def detecter_type_edifice(chaine):
                      'conservatoire national de musique',
                      'conservatoire national de région',
                      'conservatoire national régional',
+                     'conservatoire à rayonnement régional',
+                     'conservatoire à rayonnement départemental',
                      'conservatoire',
                      'clinique',
                      'maison de retraite',
