@@ -118,7 +118,9 @@ class OrgueCreateForm(forms.ModelForm):
         fields = [
             "commune",
             "edifice",
-            "designation"
+            "designation",
+            "osm_type",
+            "osm_id"
         ]
         widgets = {
             'commune': forms.Select(),
