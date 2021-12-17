@@ -38,14 +38,16 @@
             {{ orgue.edifice|capfirst }} <br>
           </h2>
 
-          <h4 class="text-muted">
-            <a href="/orgues/?query={{ orgue.commune|urlencode }}" class="link">{{ orgue.commune }}</a>
-            {% if orgue.ancienne_commune %} (<a href="/orgues/?query={{ orgue.ancienne_commune|urlencode }}" class="link">{{ orgue.ancienne_commune }}</a>){% endif %}, <a href="/orgues/?query={{ orgue.departement|urlencode }}" class="link">{{ orgue.departement }}</a>
+          {% spaceless %}
+            <h4 class="text-muted">
+
+            <a href="/orgues/?query={{ orgue.commune|urlencode }}" class="link">{{ orgue.commune }}</a>{% if orgue.ancienne_commune %} (<a href="/orgues/?query={{ orgue.ancienne_commune|urlencode }}" class="link">{{ orgue.ancienne_commune }}</a>){% endif %}, <a href="/orgues/?query={{ orgue.departement|urlencode }}" class="link">{{ orgue.departement }}</a>
             <small>
               | <a href="/orgues/?query={{ orgue.commune|add:' '|add:orgue.edifice|urlencode }}" class="link">{{ orgue.designation|default_if_none:"Orgue" }}</a>
               {% if orgue.emplacement %} | {% filter lower %}{{ orgue.emplacement }}{% endfilter %} {% endif %}
             </small>
           </h4>
+        {% endspaceless %}
         </div>
         <div class="col-lg-3 my-4 text-center text-md-left">
           <a href="{% url 'orgues:orgue-update' object.uuid %}" class="btn btn-primary rounded-pill mt-3 btn-block">
