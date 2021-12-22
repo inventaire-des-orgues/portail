@@ -246,7 +246,7 @@ class Orgue(models.Model):
                                séparée organiste tourné vers l'orgue ...).")
 
     commentaire_admin = models.TextField(verbose_name="Commentaire contributeurs", null=True, blank=True,
-                                         help_text="Commentaire uniquement visible par les contributeurs.")
+                                         help_text="Commentaire uniquement visible par les contributeurs, par exemple pour indiquer un doute ou point à creuser. Inutile de mentionner la date de contribution déjà enregistrée par ailleurs.")
 
     # Localisation
     code_dep_validator = RegexValidator(regex='^(97[12346]|0[1-9]|[1-8][0-9]|9[0-5]|2[AB])$',
