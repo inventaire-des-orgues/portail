@@ -594,7 +594,8 @@ class Clavier(models.Model):
     Un orgue peut avoir plusieurs claviers et un pédalier.
     """
 
-    type = models.ForeignKey(TypeClavier, verbose_name="Nom", null=True, on_delete=models.CASCADE, db_index=True)
+    type = models.ForeignKey(TypeClavier, verbose_name="Nom", null=True, on_delete=models.CASCADE, db_index=True,
+                             help_text="Pensez à utiliser le clavier... d'ordinateur pour compléter aisément les longs formulaires : [Tab], [Espace], [Flèche]."                             )
     is_expressif = models.BooleanField(verbose_name="Cocher si expressif", default=False)
     etendue = models.CharField(validators=[validate_etendue], max_length=10, null=True, blank=True,
                                help_text="De la forme F1-G5, CD1-G5 (pour absence premier Ut dièse), FGC1-G5 (pour un ravalement), ...")
