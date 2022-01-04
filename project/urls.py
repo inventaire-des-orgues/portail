@@ -19,8 +19,10 @@ from django.conf.urls import include
 from django.contrib import admin
 from django.urls import path
 from django.views.generic import TemplateView
+from django.contrib.sitemaps.views import sitemap
+from django.contrib.sitemaps import GenericSitemap # new
 
-
+from orgues.models import Orgue
 from project.views import accueil, ContactView
 
 urlpatterns = [
@@ -32,7 +34,7 @@ urlpatterns = [
     path('', include('orgues.urls')),
     path('api-auth/', include('rest_framework.urls')),
     path('api/v1/', include(('project.api_urls', 'project'), namespace='api')),
-
+    path('sitemap.xml', sitemap, {'sitemaps': {'orgues':GenericSitemap({'queryset': Orgue.objects.all(),'date_field':'modified_date'}, priority=0.6)}},name='django.contrib.sitemaps.views.sitemap'),
     path('lexique/', TemplateView.as_view(template_name='lexique.html'), name='lexique'),
     path('error/403/', TemplateView.as_view(template_name='403.html'), name='403'),
     path('error/404/', TemplateView.as_view(template_name='404.html'), name='404'),
