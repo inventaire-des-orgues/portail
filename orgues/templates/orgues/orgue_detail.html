@@ -8,7 +8,7 @@
   <meta name="description" content="{{ orgue.designation|default_if_none:"" }} {{ orgue.edifice }} - {{ orgue.commune }}, {{ orgue.departement }}">
   <meta property="og:description" content="{{ orgue.designation|default_if_none:"" }} {{ orgue.edifice }} - {{ orgue.commune }}, {{ orgue.departement }}">
   {% if object.image_principale %}
-    <meta property="og:image" content="{{ orgue.image_principale.image.url }}">
+    <meta property="og:image" content="https://inventaire-des-orgues.fr{{ orgue.image_principale.image.url }}">
   {% endif %}
 {% endblock %}
 

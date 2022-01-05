@@ -1,2 +1,4 @@
 User-agent: *
-Disallow: /
+Allow: /
+
+Sitemap: https://inventaire-des-orgues.fr/sitemap.xml
