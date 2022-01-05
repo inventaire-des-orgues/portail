@@ -49,6 +49,7 @@ class OrgueList(TemplateView):
         context = super().get_context_data()
         context["departements"] = Orgue.CHOIX_DEPARTEMENT
         context["departement"] = self.request.GET.get("departement")
+        context["region"] = self.request.GET.get("region")
         context["query"] = self.request.GET.get("query")
         context["limit"] = self.request.GET.get("limit")
         context["page"] = self.request.GET.get("page")
