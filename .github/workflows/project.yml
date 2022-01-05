@@ -1,0 +1,20 @@
+name: Ajouter automatiquement une issue au projet 1
+
+on:
+  issues:
+    types: [opened]
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  assign_one_project:
+    runs-on: ubuntu-latest
+    name: Assign to One Project
+    steps:
+    - name: Assign NEW issues to project 1
+      uses: actions/checkout@main
+      if: github.event.action == 'opened'
+      with:
+        project: 'https://github.com/inventaire-des-orgues/portail/projects/1'
+        
