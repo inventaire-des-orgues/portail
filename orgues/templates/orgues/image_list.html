@@ -3,11 +3,23 @@
 
 {% block image_active %}active{% endblock %}
 
+
+
 {% block help-link %}https://docs.inventaire-des-orgues.fr/fiche-orgue/#images{% endblock %}
 
 
 
 {% block card-body %}
+      <div class="row">
+        <div class="col">
+    <p>
+        <i class="fa fa-info-circle"></i>
+        Merci de bien vous conformer à la charte et de lire la documentation.
+        Notamment : pas de visage, mention de l'auteur, images impérativement libres de droits d'exploitation (données ouvertes).
+    </p>
+</div>
+</div>
+
   <div class="row">
   {% with image=orgue.image_principale %}
   {% if image %}
