@@ -176,7 +176,6 @@
         filter: {},
         facetOpen: {},
         departement: '{{ departement|default_if_none:'' }}',
-        region: '{{ region|default_if_none:'' }}',
         departements: departements,
         requete_page: {% if page %}{{ page}}{% else %}1{% endif %}
       },
@@ -250,9 +249,7 @@
           if (departement) {
             pageUrl += '&departement=' + departement
           }
-          if (region) {
-            pageUrl += '&region=' + region
-          }          if (query) {
+          if (query) {
             pageUrl += '&query=' + query
           }
           if (sort) {
@@ -275,7 +272,6 @@
               pageUrl: pageUrl,
               page: page,
               departement: departement,
-              region: region,
               sort: sort,
               ...filters,
             },
