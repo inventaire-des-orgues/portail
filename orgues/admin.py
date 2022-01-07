@@ -81,7 +81,7 @@ class AccessoireAdmin(admin.ModelAdmin):
 @admin.register(Orgue)
 class OrgueAdmin(admin.ModelAdmin):
     fields = ['codification', 'code_insee', 'commune', 'edifice', 'region', 'departement', 'code_departement',
-              'designation', 'emplacement', 'references_palissy', 'references_inventaire_regions']
+              'designation', 'emplacement', 'references_palissy', 'references_inventaire_regions', 'commentaire_admin']
     list_display = ('codification', 'designation', 'commune', 'edifice',
                     'updated_by_user', 'modified_date', 'departement', 'commentaire_admin',)
     ordering = ('-modified_date',)
