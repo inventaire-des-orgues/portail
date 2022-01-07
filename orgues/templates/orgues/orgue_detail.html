@@ -100,24 +100,22 @@
                   <hr>
                   <h2 class="titre-fiche">Description</h2>
                   <div id="resume">{{ orgue.resume|safe }}</div>
-                  <p class="soustitre-fiche">Buffet</p>
+
                   {% if orgue.buffet %}
+                      <p class="soustitre-fiche">Buffet</p>
                     <div id="buffet">{{ orgue.buffet|safe }}</div>
-                  {% else %}
-                    <p class="text-muted">Pas de resumé</p>
                   {% endif %}
-                  <p class="soustitre-fiche">Console</p>
+
                   {% if orgue.console %}
-                    <div id="console">{{ orgue.console|safe }}</div>
-                  {% else %}
-                    <p class="text-muted">Pas de description</p>
+                    <p class="soustitre-fiche">Console</p>
+                      <div id="console">{{ orgue.console|safe }}</div>
                   {% endif %}
+
                   <h2 class="titre-fiche">Partie instrumentale</h2>
-                  <p class="soustitre-fiche">Sommiers</p>
+
                   {% if orgue.sommiers %}
+                      <p class="soustitre-fiche">Sommiers</p>
                     <div id="sommiers">{{ orgue.sommiers|safe }}</div>
-                  {% else %}
-                    <p class="text-muted">Pas de description</p>
                   {% endif %}
                   <p class="soustitre-fiche">Transmission</p>
                   <div id="transmission">
