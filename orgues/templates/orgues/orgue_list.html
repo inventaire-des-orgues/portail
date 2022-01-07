@@ -104,7 +104,6 @@
                   <div class="line-clamp-3">
                   {% spaceless %}
                     <p class="my-0">
-                      <b>Localisation : </b>
                       <span v-html="orgue._formatted.commune"></span>
                       <span v-if="orgue.ancienne_commune">(</span>
                       <span v-html="orgue._formatted.ancienne_commune" v-if="orgue.ancienne_commune"></span>
@@ -177,6 +176,7 @@
         filter: {},
         facetOpen: {},
         departement: '{{ departement|default_if_none:'' }}',
+        region: '{{ region|default_if_none:'' }}',
         departements: departements,
         requete_page: {% if page %}{{ page}}{% else %}1{% endif %}
       },
@@ -250,7 +250,9 @@
           if (departement) {
             pageUrl += '&departement=' + departement
           }
-          if (query) {
+          if (region) {
+            pageUrl += '&region=' + region
+          }          if (query) {
             pageUrl += '&query=' + query
           }
           if (sort) {
@@ -273,6 +275,7 @@
               pageUrl: pageUrl,
               page: page,
               departement: departement,
+              region: region,
               sort: sort,
               ...filters,
             },
