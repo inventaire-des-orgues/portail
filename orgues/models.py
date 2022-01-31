@@ -440,7 +440,7 @@ class Orgue(models.Model):
         """
         return {
             "Commune définie": {
-                "points": 5,
+                "points": 0,
                 "logique": bool(self.commune),
                 "lien": reverse('orgues:orgue-update-localisation', args=(self.uuid,))
             },
@@ -450,12 +450,12 @@ class Orgue(models.Model):
                 "lien": reverse('orgues:orgue-update-localisation', args=(self.uuid,)),
             },
             "Département défini": {
-                "points": 5,
+                "points": 0,
                 "logique": bool(self.departement),
                 "lien": reverse('orgues:orgue-update-localisation', args=(self.uuid,))
             },
             "Nom de l'édifice défini": {
-                "points": 15,
+                "points": 20,
                 "logique": len(self.edifice) > 6 or self.edifice == 'temple',
                 "lien": reverse('orgues:orgue-update', args=(self.uuid,)) + "#id_edifice"
             },
@@ -463,6 +463,12 @@ class Orgue(models.Model):
                 "points": 20,
                 "logique": bool(self.etat),
                 "lien": reverse('orgues:orgue-update-localisation', args=(self.uuid,)) + "#id_etat"
+            },
+
+            "Au moins un évènement défini": {
+                "points": 20,
+                "logique": self.evenements.count() >= 1,
+                "lien": reverse('orgues:evenement-list', args=(self.uuid,))
             },
             "Image principale définie": {
                 "points": 30,
@@ -490,7 +496,7 @@ class Orgue(models.Model):
                 "lien": reverse('orgues:orgue-update-instrumentale', args=(self.uuid,)) + "#id_sommiers"
             },
             "Informations sur la soufflerie présentes": {
-                "points": 10,
+                "points": 0,
                 "logique": bool(self.soufflerie),
                 "lien": reverse('orgues:orgue-update-instrumentale', args=(self.uuid,)) + "#id_soufflerie "
             }
