@@ -69,15 +69,16 @@ class OrgueSearch(View):
         request.session['orgues_url'] = "{}{}".format(reverse('orgues:orgue-list'), request.POST.get('pageUrl'))
         page = request.POST.get('page', 1)
         departement = request.POST.get('departement', '')
+        region = request.POST.get('region', '')
         query = request.POST.get('query')
         if settings.MEILISEARCH_URL:
-            results = self.search_meilisearch(page, departement, query, request)
+            results = self.search_meilisearch(page, departement, region, query, request)
         else:
-            results = self.search_sql(page, departement, query)
+            results = self.search_sql(page, departement, region, query)
         return JsonResponse(results)
 
     @staticmethod
-    def search_sql(page, departement, query):
+    def search_sql(page, departement, region, query):
         """
         Moteur de recherche dégradé.
         Imite un résultat au format meilisearch pour être compatible avec la template de rendu
@@ -85,6 +86,8 @@ class OrgueSearch(View):
         queryset = Orgue.objects.all()
         if departement:
             queryset = queryset.filter(departement=departement)
+        if region:
+            queryset = queryset.filter(region=region)
         if query:
             terms = [term.lower() for term in query.split(" ") if term]
             query = Q()
@@ -105,7 +108,7 @@ class OrgueSearch(View):
         }
 
     @staticmethod
-    def search_meilisearch(page, departement, query, request):
+    def search_meilisearch(page, departement, region, query, request):
         """
         Moteur de recherche avancé
         """
@@ -129,10 +132,12 @@ class OrgueSearch(View):
                 values = arg.split(',')
                 filter.append(['{}="{}"'.format(facet, value) for value in values])
                 filterResult[facet] = values
-        if not filterResult and page == '1' and (query or departement):
+        if not filterResult and page == '1' and (query or departement or region):
             options['facetsDistribution'] = facets
         if departement:
             filter.append('departement="{}"'.format(departement))
+        if region:
+            filter.append('region="{}"'.format(region))
         if len(filter) > 0:
             options['filter'] = filter
         if not query:
