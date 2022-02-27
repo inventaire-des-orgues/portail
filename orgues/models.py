@@ -777,6 +777,7 @@ class Source(models.Model):
         ("web", "Web"),
         ("ouvrage", "Ouvrage"),
         ("video", "Video"),
+        ("visite", "Visite de l'orgue")
     )
 
     type = models.CharField(max_length=20, verbose_name="Type de source", choices=CHOIX_SOURCE)
