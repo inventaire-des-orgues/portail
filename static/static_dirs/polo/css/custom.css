@@ -54,11 +54,18 @@ button.btn.btn-primary:hover, button.btn.btn-primary:focus, button.btn.btn-prima
 
 }
 
-#logo_ministere {
-    position: absolute;
-    top: 0;
-    left: 50px;
-    width: 200px;
+@media (max-width: 320) {
+    ul.top-menu {
+        font-size: 0.4em;
+    }
+}
+
+.logo-footer {
+    width:160px;
+    display:block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: auto;
 }
 
 @media (max-width: 700px) {
@@ -332,6 +339,10 @@ div.leaflet-popup-content h6 {
 }
 
 .leaflet-popup-pane   { z-index: 1200; }
+
+.leaflet-geosearch-bar {
+    z-index: 400;
+}
 
 /* Utilitaire */
 
