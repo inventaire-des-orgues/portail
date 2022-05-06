@@ -227,7 +227,7 @@ class Orgue(models.Model):
     designation = models.CharField(max_length=300, null=True, verbose_name="Désignation de l'orgue", default="orgue",
                                    blank=True, help_text="Type d'orgue : grand orgue, orgue coffre, orgue portatif, etc.")
     qualification_palissy = models.CharField(max_length=24, null=True, choices=CHOIX_QUALIFICATION_PALISSY,
-                                             verbose_name="", blank=True, help_text="Si inscrit ou classé, qualification de l'orgue, dans Palissy")
+                                             verbose_name="Dénomination dans Palissy", blank=True, help_text="Si inscrit ou classé, qualification de l'orgue, dans Palissy")
     is_polyphone = models.BooleanField(default=False, verbose_name="Orgue polyphone de la manufacture Debierre ?")
     codification = models.CharField(max_length=24, unique=True, db_index=True)
     references_palissy = models.CharField(max_length=60, null=True, blank=True,
