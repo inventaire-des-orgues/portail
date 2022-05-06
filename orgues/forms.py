@@ -34,6 +34,8 @@ class OrgueGeneralInfoForm(forms.ModelForm):
         self.request = kwargs.pop('request', None)
         super().__init__(*args, **kwargs)
         if not self.request.user.has_perm('orgues.edition_avancee'):
+            self.fields['qualification_palissy'].disabled = True
+            self.fields['qualification_palissy'].help_text = 'Cette information est figée'
             self.fields['edifice'].disabled = True
             self.fields['edifice'].help_text = 'Cette information est figée'
             self.fields['references_palissy'].disabled = True
