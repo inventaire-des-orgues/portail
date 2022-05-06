@@ -64,6 +64,15 @@ class Orgue(models.Model):
         ('restauration', "En restauration (ou projet initié)")
     )
 
+    CHOIX_QUALIFICATION_PALISSY = (
+        ('orgue_de_tribune', 'orgue de tribune'),
+        ('orgue_de_choeur', 'orgue de choeur'),
+        ('orgue_a_cylindres', 'orgue à cylindres'),
+        ('orgue_a_manivelle', 'orgue à manivelle'),
+        ('orgue_de_triforium', 'orgue de triforium'),
+        ('orgue_portatif', 'orgue portatif'),
+        ('orgue_de_cabinet / salon', 'orgue de cabinet / salon'),
+    )
     CHOIX_TRANSMISSION = (
         ("mecanique", "Mécanique"),
         ("mecanique_suspendue", "Mécanique suspendue"),
@@ -217,6 +226,8 @@ class Orgue(models.Model):
     # Informations générales
     designation = models.CharField(max_length=300, null=True, verbose_name="Désignation de l'orgue", default="orgue",
                                    blank=True, help_text="Type d'orgue : grand orgue, orgue coffre, orgue portatif, etc.")
+    qualification_palissy = models.CharField(max_length=24, null=True, choices=CHOIX_QUALIFICATION_PALISSY,
+                                             verbose_name="", blank=True, help_text="Qualification de l'orgue dans Palissy")
     is_polyphone = models.BooleanField(default=False, verbose_name="Orgue polyphone de la manufacture Debierre ?")
     codification = models.CharField(max_length=24, unique=True, db_index=True)
     references_palissy = models.CharField(max_length=60, null=True, blank=True,
@@ -254,7 +265,7 @@ class Orgue(models.Model):
     latitude_validator = RegexValidator(regex='^([-]?([0-9]|[0-8][0-9])[.][0-9]*)$',
                                         message="Renseigner une latitude valide")
     longitude_validator = RegexValidator(regex='^([-]?([0-9]|[0-9][0-9]|1[0-7][0-9])[.][0-9]*)$',
-                                        message="Renseigner une longitude valide")
+                                         message="Renseigner une longitude valide")
 
     edifice = models.CharField(max_length=300)
     adresse = models.CharField(max_length=300, null=True, blank=True)

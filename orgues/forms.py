@@ -10,6 +10,7 @@ class OrgueGeneralInfoForm(forms.ModelForm):
         fields = [
             "edifice",
             "designation",
+            "qualification_palissy",
             "emplacement",
             "etat",
             "proprietaire",
