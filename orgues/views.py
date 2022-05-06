@@ -350,6 +350,8 @@ class ContributionOrgueMixin:
             contribution = Contribution(user=self.request.user, orgue=orgue, description=detail)
         if contribution.description.find(detail) < 0:
             contribution.description += ', ' + detail
+        orgue.updated_by_user = self.request.user
+        orgue.save()
         contribution.save()
 
 
@@ -399,7 +401,6 @@ class OrgueUpdateMixin(FabUpdateView, ContributionOrgueMixin):
     permission_required = 'orgues.change_orgue'
 
     def form_valid(self, form):
-        form.instance.updated_by_user = self.request.user
         self.save_contribution(form.instance)
         return super().form_valid(form)
 
@@ -796,7 +797,6 @@ class EvenementUpdate(FabUpdateView, ContributionOrgueMixin):
     success_message = "Evénement mis à jour, merci !"
 
     def form_valid(self, form):
-        form.instance.updated_by_user = self.request.user
         self.save_contribution(self.object.orgue, "Mise à jour d'un événement")
         return super().form_valid(form)
 

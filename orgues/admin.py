@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Orgue, Clavier, TypeClavier, TypeJeu, Fichier, Image, Evenement, Facteur, Accessoire, Jeu
+from .models import Orgue, Clavier, TypeClavier, TypeJeu, Fichier, Image, Evenement, Facteur, Accessoire, Jeu, Contribution
 from django.utils.html import format_html
 from django.urls import reverse
 
@@ -13,7 +13,7 @@ class ClavierInline(admin.StackedInline):
 @admin.register(Fichier)
 class FichierAdmin(admin.ModelAdmin):
     list_display = ('pk', 'file', 'description', 'orgue')
-    search_fields = ('orgue',)
+    search_fields = ('orgue__commune', 'orgue__edifice', 'orgue__designation', 'orgue__codification', 'orgue__emplacement', 'orgue__departement',)
 
 
 @admin.register(Image)
@@ -88,3 +88,15 @@ class OrgueAdmin(admin.ModelAdmin):
     inlines = [ClavierInline]
     search_fields = ('commune', 'edifice', 'designation', 'codification', 'emplacement', 'departement',
                      'updated_by_user__first_name', 'updated_by_user__last_name', 'updated_by_user__email')
+
+
+@admin.register(Contribution)
+class ContributionAdmin(admin.ModelAdmin):
+    list_display = ('date','user','orgue','description')
+    search_fields = ('orgue__commune', 'orgue__edifice', 'orgue__designation', 'orgue__codification', 'orgue__emplacement', 'orgue__departement',
+                     'user__first_name', 'user__last_name', 'user__email')
+    list_filter = ('date',)
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related('user','orgue')
