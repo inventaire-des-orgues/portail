@@ -307,6 +307,14 @@
                 {% endif %}
               </dl>
 
+
+              {% if orgue.lien_inventaire_regions %}
+                <dt>Inventaire régional</dt>
+                <dd>
+                    <a href="{{ orgue.lien_inventaire_regions }}" target="_blank" rel="noopener noreferrer">Lien</a> <br>
+                </dd>
+              {% endif %}
+
               {% if orgue.liens_pop %}
                 <dt>Inscription ou classement</dt>
                 <dd>

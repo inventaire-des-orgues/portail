@@ -234,6 +234,7 @@ class Orgue(models.Model):
                                           verbose_name="Référence(s) Palissy pour les monuments historiques.",
                                           help_text="Séparer les codes par des virgules.")
     references_inventaire_regions = models.CharField(verbose_name="Code inventaire régional", max_length=60, null=True, blank=True)
+    lien_inventaire_regions = models.CharField(verbose_name="Lien vers l'inventaire régional", max_length=60, null=True, blank=True)
     resume = models.TextField(max_length=500, null=True, verbose_name="Résumé", blank=True,
                               help_text="Présentation en quelques lignes de l'instrument \
                               en insistant sur son originalité (max 500 caractères).")
