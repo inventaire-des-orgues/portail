@@ -31,11 +31,17 @@ class Command(BaseCommand):
                 os.makedirs(rep_temp_pdf)
                 tar.extractall(rep_temp_pdf)
                 tar.close()
+
+                print("Parcours des PDF du dossier : {}".format(rep_temp_pdf))
                 for pdf in os.listdir(rep_temp_pdf):
+                    print("[DEBUG] Fichier PDF : {}".format(pdf))
                     chemin_pdf = os.path.join(rep_temp_pdf, pdf)
+                    print("[DEBUG] Chemin : {}".format(chemin_pdf))
                     dossier_dest = os.path.join(settings.MEDIA_ROOT, pdf[3:5], pdf.rstrip('.pdf'), 'fichiers')
+                    print("[DEBUG] Dossier destination : {}".format(dossier_dest))
                     if not os.path.exists(dossier_dest):
                         os.makedirs(dossier_dest)
+                        print("Création dossier : {}".format(dossier_dest))
                     dest = os.path.join(dossier_dest, pdf)
                     print("Copie fichier {} vers {}".format(chemin_pdf, dest))
                     shutil.copyfile(chemin_pdf, dest)
