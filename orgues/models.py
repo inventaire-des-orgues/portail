@@ -388,7 +388,28 @@ class Orgue(models.Model):
         return self.claviers.count() if self.has_pedalier else self.claviers.count() - 1
 
     @property
-    def liens_pop(self):
+    def liens_pop_im(self):
+        """
+        Liens vers le portail POP du ministère de la culture, qui lui-même renvoie vers les sites des régions.
+        """
+        liens = []
+
+        if not self.references_inventaire_regions:
+            return liens
+
+        for reference in self.references_inventaire_regions.split(","):
+            reference = reference.strip()
+            if reference:
+                liens.append(
+                    {
+                        "href": "https://www.pop.culture.gouv.fr/notice/palissy/" + reference,
+                        "title": reference
+                    }
+                )
+        return liens
+
+    @property
+    def liens_pop_pm(self):
         """
         Liens vers le site des classements du patrimoine mobilier (PM) du ministère de la culture
         """
