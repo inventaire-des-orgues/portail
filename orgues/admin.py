@@ -19,7 +19,7 @@ class FichierAdmin(admin.ModelAdmin):
 
 @admin.register(Image)
 class ImageAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'orgue', 'credit', 'is_principale')
+    list_display = ('pk', 'orgue', 'credit', 'is_principale','user')
     list_editable = ('credit',)
 
 
@@ -77,8 +77,6 @@ class EvenementAdmin(admin.ModelAdmin):
 @admin.register(Accessoire)
 class AccessoireAdmin(admin.ModelAdmin):
     list_display = ('nom',)
-
-
 
 
 @admin.register(Orgue)

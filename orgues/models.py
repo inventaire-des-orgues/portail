@@ -901,7 +901,7 @@ class Image(models.Model):
                                options={'quality': 100})
 
     orgue = models.ForeignKey(Orgue, null=True, on_delete=models.CASCADE, related_name="images")
-    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL,verbose_name="Chargée par")
     created_date = models.DateTimeField(
         auto_now_add=True,
         auto_now=False,
