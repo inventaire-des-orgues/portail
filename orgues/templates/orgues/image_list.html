@@ -10,51 +10,52 @@
 
 
 {% block card-body %}
-      <div class="row">
-        <div class="col">
-    <p>
+
+  <div class="row">
+    <div class="col">
+      <p>
         <i class="fa fa-info-circle"></i>
         Merci de bien vous conformer à la charte et de lire la documentation.
         Notamment : pas de visage, mention de l'auteur, images impérativement libres de droits d'exploitation (données ouvertes).
-    </p>
-</div>
-</div>
-
-  <div class="row">
-  {% with image=orgue.image_principale %}
-  {% if image %}
-  <div class="col-lg-4 image">
-    <div class="card">
-      <div class="portfolio-item img-zoom pb-0">
-        <div class="portfolio-item-wrap border-radius-top-5 ">
-          <div class="portfolio-image">
-            <a href="#"><img src="{{ orgue.vignette }}" alt=""></a>
-          </div>
-          <div class="portfolio-description p-0">
-            <a href="{% url 'orgues:image-update' image.pk %}">
-              <i class="icon icon-edit"></i>
-            </a>
-            <a href="{% url 'orgues:image-principale' image.pk %}">
-              <i class="icon icon-crop"></i>
-            </a>
-          </div>
-        </div>
-      </div>
-      <div class="card-body py-2 px-3">
-        <i class="fa fa-star fa-2x text-warning" style="position:absolute;z-index:100;top:10px;right:10px;"></i>
-        <small>
-          Vignette principale
-        </small>
-      </div>
-      <div class="card-footer text-muted">
-        <a href="{% url 'orgues:image-principale' image.pk %}" class="btn btn-primary btn-block">
-          <i class="fa fa-crop"></i> Recadrer l'image
-        </a>
-      </div>
+      </p>
     </div>
   </div>
-  {% endif %}
-  {% endwith %}
+
+  <div class="row">
+    {% with image=orgue.image_principale %}
+      {% if image %}
+        <div class="col-lg-4 image">
+          <div class="card">
+            <div class="portfolio-item img-zoom pb-0">
+              <div class="portfolio-item-wrap border-radius-top-5 ">
+                <div class="portfolio-image">
+                  <a href="#"><img src="{{ orgue.vignette }}" alt=""></a>
+                </div>
+                <div class="portfolio-description p-0">
+                  <a href="{% url 'orgues:image-update' image.pk %}">
+                    <i class="icon icon-edit"></i>
+                  </a>
+                  <a href="{% url 'orgues:image-principale' image.pk %}">
+                    <i class="icon icon-crop"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="card-body py-2 px-3">
+              <i class="fa fa-star fa-2x text-warning" style="position:absolute;z-index:100;top:10px;right:10px;"></i>
+              <small>
+                Vignette principale
+              </small>
+            </div>
+            <div class="card-footer text-muted">
+              <a href="{% url 'orgues:image-principale' image.pk %}" class="btn btn-primary btn-block">
+                <i class="fa fa-crop"></i> Recadrer l'image
+              </a>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% endwith %}
     <div class="col">
       <p>
         Cliquer sur <i class="icon icon-edit"></i> pour modifier le crédit ou la légende d'une image<br>
@@ -120,23 +121,26 @@
 
   <script src="{% static 'plugins/sortable/sortable.min.js' %}"></script>
   <script>
-    $(function(){
+    $(function () {
       Sortable.create(image_list, {
-      handle: '.card-body',
-      onSort: function () {
-        var image_pks = $('#image_list .image').map(function () {
-          return $(this).data('imagepk');
-        }).get();
-        $.ajax({
-          method: "post",
-          url: "",
-          data: {image_pks: image_pks, csrfmiddlewaretoken: '{{ csrf_token }}'},
-          success: function (res) {
-            toastr.success('Nouvel ordre des images enregistré')
-          }
-        })
-      },
-    });
+        handle: '.card-body',
+        ghostClass: "sortable-ghost",  // Class name for the drop placeholder
+        chosenClass: "sortable-chosen",  // Class name for the chosen item
+        dragClass: "sortable-drag",  // Class name for the dragging item
+        onSort: function () {
+          var image_pks = $('#image_list .image').map(function () {
+            return $(this).data('imagepk');
+          }).get();
+          $.ajax({
+            method: "post",
+            url: "",
+            data: {image_pks: image_pks, csrfmiddlewaretoken: '{{ csrf_token }}'},
+            success: function (res) {
+              toastr.success('Nouvel ordre des images enregistré')
+            }
+          })
+        },
+      });
     })
   </script>
 

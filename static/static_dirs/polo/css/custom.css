@@ -79,7 +79,7 @@ button.btn.btn-primary:hover, button.btn.btn-primary:focus, button.btn.btn-prima
 }
 
 .form-check {
-    padding-left:0;
+    padding-left: 0;
 }
 
 #map {
@@ -168,29 +168,35 @@ span.puce-etat {
 #search-form h3 {
     font-size: 1.1em;
     color: #5c1c54;
-} 
+}
 
 #orgue-list .facets {
     cursor: pointer;
 }
+
 #orgue-list .facets:hover {
     text-decoration: underline;
 }
+
 #orgue-list .facets.selected {
     font-weight: bold;
 }
+
 #orgue-list .facets.selected:hover {
     text-decoration: line-through;
 }
+
 #orgue-list .line-clamp-3 {
     display: -webkit-box;
     -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;  
+    -webkit-box-orient: vertical;
     overflow: hidden;
 }
+
 #orgue-list .facet-list {
     position: relative;
 }
+
 #orgue-list .facet-list ul {
     max-height: 200px;
     overflow: hidden;
@@ -198,6 +204,7 @@ span.puce-etat {
     margin-bottom: 20px;
     transition: all 0.3s ease-out;
 }
+
 #orgue-list .facet-open ul {
     max-height: 2000px;
     overflow: auto;
@@ -206,6 +213,7 @@ span.puce-etat {
 #orgue-list .facet-open ul {
     margin-bottom: 20px;
 }
+
 #orgue-list .facet-list a {
     position: absolute;
     bottom: 0;
@@ -220,11 +228,11 @@ span.puce-etat {
     background-image: linear-gradient(to bottom, transparent, white);
     cursor: pointer;
 }
+
 #orgue-list .facet-open a {
     height: 0px;
     padding-top: 5px;
 }
-
 
 
 /* CLAVIERS */
@@ -373,7 +381,9 @@ div.leaflet-popup-content h6 {
     text-transform: capitalize;
 }
 
-.leaflet-popup-pane   { z-index: 1200; }
+.leaflet-popup-pane {
+    z-index: 1200;
+}
 
 /* Utilitaire */
 
@@ -604,10 +614,12 @@ ul {
 }
 
 [v-cloak] > * {
-  display: none;
+    display: none;
 }
 
-[v-cloak]::before { content: "loading…" }
+[v-cloak]::before {
+    content: "loading…"
+}
 
 /* Liens pour nagiguer entre les fiches d'orgues */
 a.link, a.link:visited, a.link:active {
@@ -616,7 +628,7 @@ a.link, a.link:visited, a.link:active {
 }
 
 .border-radius-5 {
-    border-radius:5px;
+    border-radius: 5px;
 }
 
 .border-radius-top-5 {
@@ -624,19 +636,19 @@ a.link, a.link:visited, a.link:active {
 }
 
 .page-menu nav > ul > li > a {
-    transition:none;
+    transition: none;
 }
 
-#carte_generale{
+#carte_generale {
     display: grid;
     grid-template-columns: 75% 1fr;
 }
 
-#mapid{
+#mapid {
     grid-column: 1;
 }
 
-#div_filtre{
+#div_filtre {
     grid-column: 2;
     display: flex;
     flex-direction: column;
@@ -664,7 +676,7 @@ a.link, a.link:visited, a.link:active {
     line-height: 38px;
 }
 
-#valider_recherche_manufacture{
+#valider_recherche_manufacture {
     padding-top: 5px;
 }
 
@@ -673,7 +685,7 @@ a.link, a.link:visited, a.link:active {
     pointer-events: none;
 }
 
-.btn-filtre{
+.btn-filtre {
     border-radius: 50px;
 }
 
@@ -682,45 +694,65 @@ a.link, a.link:visited, a.link:active {
     justify-content: center;
 }
 
-#creation_orgue_box{
+#creation_orgue_box {
     display: grid;
     grid-template-columns: 30% 1fr 30%;
 }
 
-#creation_orgue{
+#creation_orgue {
     grid-column: 2;
 }
 
 
 #logo_mh {
-    width:100%;
-    max-width:250px;
-    margin-bottom:15px;
+    width: 100%;
+    max-width: 250px;
+    margin-bottom: 15px;
 }
 
-.list_checkbox{
+.list_checkbox {
     display: flex;
     flex-direction: column;
     margin-left: 10px;
 }
 
-.div_carte{
+.div_carte {
     margin-top: 7px;
     margin-bottom: 7px;
 }
 
-.carte_formulaire{
+.carte_formulaire {
     margin-left: 15px;
 }
 
-.titre_filtre{
+.titre_filtre {
     font-size: x-large;
 }
 
-.checkbox_claviers{
+.checkbox_claviers {
     margin: 5px;
 }
 
 .pre-ouverture {
     background-color: #F6D501;
+}
+
+.sortable-ghost {
+    visibility: hidden;
+    width: 100%;
+    height: 100%;
+}
+
+.sortable-ghost:after {
+    content: "";
+    right: 0;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    margin: 2px 15px 25px 15px;
+    position: absolute;
+    visibility: visible;
+    display: block;
+    border: 1px dashed rgba(58, 62, 68, 0.96);
+    border-radius: 5px;
 }
