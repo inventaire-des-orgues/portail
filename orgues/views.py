@@ -426,7 +426,8 @@ class OrgueDetailAvancement(FabDetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        self.object.save()  # on recalcule l'avancement pour être sûr
+        self.object.completion = self.object.calcul_completion()  # on recalcule l'avancement pour être sûr
+        self.object.save(update_fields=['completion'])
         context["orgue"] = self.object
         return context
 
@@ -488,12 +489,17 @@ class OrgueUpdateComposition(OrgueUpdateMixin):
     def get_object(self, queryset=None):
         object = super().get_object()
         object.resume_composition = object.calcul_resume_composition()
-        object.save()
+        object.save(update_fields=['resume_composition'])
         return object
 
     def get_success_url(self):
         success_url = reverse('orgues:orgue-update-composition', args=(self.object.uuid,))
         return self.request.POST.get("next", success_url)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["claviers"] = self.object.claviers.all().prefetch_related("jeux")
+        return context
 
 
 class OrgueUpdateBuffet(OrgueUpdateMixin):

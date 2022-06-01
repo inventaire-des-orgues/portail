@@ -11,4 +11,4 @@ class Command(BaseCommand):
 
         for orgue in tqdm(Orgue.objects.all()):
             orgue.completion = orgue.calcul_completion()
-            orgue.save()
+            orgue.save(update_fields=['completion'])

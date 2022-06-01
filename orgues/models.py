@@ -864,7 +864,7 @@ class Fichier(models.Model):
             print("Fichier présent")
             self.file.delete()
         return super().delete()
-    
+
     def extension(self):
         if self.file:
             return os.path.splitext(self.file.path)[1]
@@ -962,7 +962,8 @@ def save_evenement_calcul_facteurs(sender, instance, **kwargs):
     On passe par la meéthode orgue.save() pour relancer le calcul
     """
     orgue = instance.orgue
-    orgue.save()
+    orgue.completion = orgue.orgue.calcul_completion()
+    orgue.save(updated_fields=['completion'])
 
 
 @receiver(post_save, sender=Orgue)
