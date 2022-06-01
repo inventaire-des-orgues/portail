@@ -4,6 +4,8 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Permission
 from django.db.models import Max
+from django.utils import formats
+from django.utils.html import format_html
 
 User = get_user_model()
 
@@ -42,7 +44,11 @@ class FabUserAdmin(UserAdmin):
         return qs.annotate(derniere_contribution=Max('contributions__date'))
 
     def derniere_contribution(self, obj):
-        return obj.derniere_contribution
+        if not obj.derniere_contribution:
+            return
+
+        return format_html("<a href='/admin/orgues/contribution/?q={}'>{}</a>".format(obj.get_full_name(),
+                                                                                      formats.date_format(obj.derniere_contribution, "j F Y H:i")))
 
     derniere_contribution.admin_order_field = 'derniere_contribution'
 
