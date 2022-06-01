@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Permission
-
+from django.db.models import Max
 
 User = get_user_model()
 
@@ -21,7 +21,7 @@ class UserCreateForm(UserCreationForm):
 
 class FabUserAdmin(UserAdmin):
     add_form = UserCreateForm
-    list_display = ('first_name', 'last_name', 'email', 'last_login',)
+    list_display = ('first_name', 'last_name', 'email', 'last_login','derniere_contribution')
     prepopulated_fields = {'username': ('first_name', 'last_name',)}
 
     fieldsets = (
@@ -36,6 +36,15 @@ class FabUserAdmin(UserAdmin):
             'fields': ('first_name', 'last_name', 'email', 'username', 'password1', 'password2',),
         }),
     )
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.annotate(derniere_contribution=Max('contributions__date'))
+
+    def derniere_contribution(self, obj):
+        return obj.derniere_contribution
+
+    derniere_contribution.admin_order_field = 'derniere_contribution'
 
 
 admin.site.register(User, FabUserAdmin)
