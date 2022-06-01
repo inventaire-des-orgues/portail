@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db.models import Count
 
 from .models import Orgue, Clavier, TypeClavier, TypeJeu, Fichier, Image, Evenement, Facteur, Accessoire, Jeu, Contribution
 from django.utils.html import format_html
@@ -78,16 +79,26 @@ class AccessoireAdmin(admin.ModelAdmin):
     list_display = ('nom',)
 
 
+
+
 @admin.register(Orgue)
 class OrgueAdmin(admin.ModelAdmin):
     fields = ['codification', 'code_insee', 'commune', 'edifice', 'region', 'departement', 'code_departement',
               'designation', 'emplacement', 'references_palissy', 'references_inventaire_regions', 'commentaire_admin']
-    list_display = ('codification', 'designation', 'commune', 'edifice',
-                    'updated_by_user', 'modified_date', 'departement', 'commentaire_admin',)
+    list_display = ('codification', 'designation', 'commune', 'edifice','updated_by_user','modified_date','contributions', 'departement', 'commentaire_admin',)
     ordering = ('-modified_date',)
     inlines = [ClavierInline]
     search_fields = ('commune', 'edifice', 'designation', 'codification', 'emplacement', 'departement',
                      'updated_by_user__first_name', 'updated_by_user__last_name', 'updated_by_user__email')
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.annotate(contributions_count=Count('contributions')).select_related('updated_by_user')
+
+    def contributions(self, obj):
+        return format_html("<a href='/admin/orgues/contribution/?q={}'>{}</a>".format(obj.codification,obj.contributions_count))
+
+    contributions.admin_order_field = 'contributions_count'
 
 
 @admin.register(Contribution)
