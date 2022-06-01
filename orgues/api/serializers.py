@@ -109,12 +109,13 @@ class OrgueResumeSerializer(serializers.ModelSerializer):
             "facet_facteurs",
             "url",
             "latitude",
-            "longitude", 
+            "longitude",
             "jeux",
             "claviers_count",
             "jeux_count",
             "construction",
             "resume_composition_clavier",
+            "modified_date"
         ]
 
     def get_url(self, obj):
@@ -134,7 +135,7 @@ class OrgueResumeSerializer(serializers.ModelSerializer):
                 seen_facteurs.add(nouveau_facteur)
                 facteurs.append(nouveau_facteur)
         return ", ".join(facteurs)
-    
+
     def get_facet_facteurs(self, obj):
         facteurs = set()
         evenements = Evenement.objects.filter(orgue=obj, facteurs__isnull=False).prefetch_related('facteurs').order_by('annee')

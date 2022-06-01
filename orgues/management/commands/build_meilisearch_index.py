@@ -56,6 +56,7 @@ class Command(BaseCommand):
             'latitude',
             'longitude',
             'construction',
+            'modified_date',
         ])
 
         index.update_ranking_rules([
@@ -65,6 +66,7 @@ class Command(BaseCommand):
             'attribute',
             'sort',
             'completion:desc',
+            'modified_date:desc',
             'exactness',
         ])
         index.update_sortable_attributes([
