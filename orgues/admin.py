@@ -83,7 +83,7 @@ class AccessoireAdmin(admin.ModelAdmin):
 class OrgueAdmin(admin.ModelAdmin):
     fields = ['codification', 'code_insee', 'commune', 'edifice', 'region', 'departement', 'code_departement',
               'designation', 'emplacement', 'references_palissy', 'references_inventaire_regions', 'commentaire_admin']
-    list_display = ('codification', 'designation', 'commune', 'edifice','updated_by_user','modified_date','contributions', 'departement', 'commentaire_admin',)
+    list_display = ('codification', 'designation', 'commune', 'edifice','updated_by_user','modified_date','contributions_compte', 'departement', 'commentaire_admin',)
     ordering = ('-modified_date',)
     inlines = [ClavierInline]
     search_fields = ('commune', 'edifice', 'designation', 'codification', 'emplacement', 'departement',
@@ -91,12 +91,12 @@ class OrgueAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.annotate(contributions_count=Count('contributions')).select_related('updated_by_user')
+        return qs.annotate(contributions_compte=Count('contributions'))
 
-    def contributions(self, obj):
-        return format_html("<a href='/admin/orgues/contribution/?q={}'>{}</a>".format(obj.codification,obj.contributions_count))
+    def contributions_compte(self, obj):
+        return format_html("<a href='/admin/orgues/contribution/?q={}'>{}</a>".format(obj.codification,obj.contributions_compte))
 
-    contributions.admin_order_field = 'contributions_count'
+    contributions_compte.admin_order_field = 'contributions_compte'
 
 
 @admin.register(Contribution)
