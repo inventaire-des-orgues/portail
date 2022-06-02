@@ -962,7 +962,7 @@ def save_evenement_calcul_facteurs(sender, instance, **kwargs):
     On passe par la meéthode orgue.save() pour relancer le calcul
     """
     orgue = instance.orgue
-    orgue.completion = orgue.orgue.calcul_completion()
+    orgue.completion = orgue.calcul_completion()
     orgue.save(updated_fields=['completion'])
 
 
