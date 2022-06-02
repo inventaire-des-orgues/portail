@@ -963,7 +963,7 @@ def save_evenement_calcul_facteurs(sender, instance, **kwargs):
     """
     orgue = instance.orgue
     orgue.completion = orgue.calcul_completion()
-    orgue.save(updated_fields=['completion'])
+    orgue.save(update_fields=['completion'])
 
 
 @receiver(post_save, sender=Orgue)

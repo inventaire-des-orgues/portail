@@ -11,4 +11,4 @@ class Command(BaseCommand):
 
         for orgue in tqdm(Orgue.objects.all()):
             orgue.resume_composition = orgue.calcul_resume_composition()
-            orgue.save(updated_fields=['resume_composition'])
+            orgue.save(update_fields=['resume_composition'])
