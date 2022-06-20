@@ -9,6 +9,7 @@ class Command(BaseCommand):
     help = 'Build search index'
 
     def handle(self, *args, **options):
+
         if not settings.MEILISEARCH_URL:
             print("Moteur meilisearch non configuré")
             return
@@ -18,6 +19,9 @@ class Command(BaseCommand):
             index = client.get_index(uid='orgues')
         except:
             index = client.create_index(uid='orgues')
+
+        index.update_stop_words(['Le','le', 'La','la', 'Les','les', 'du', 'et', 'de','en'])
+
         index.update_searchable_attributes([
             'commune',
             'edifice',
