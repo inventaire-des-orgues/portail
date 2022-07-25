@@ -78,6 +78,13 @@ button.btn.btn-primary:hover, button.btn.btn-primary:focus, button.btn.btn-prima
     color: #5c1c54;
 }
 
+.footerlogo {
+    max-width: 120px;
+}
+
+.footerbiglogo {
+    max-width: 200px;
+}
 
 #map {
     min-height: 350px;
@@ -752,4 +759,17 @@ a.link, a.link:visited, a.link:active {
     display: block;
     border: 1px dashed rgba(58, 62, 68, 0.96);
     border-radius: 5px;
+}
+
+.widget {
+    border-left: 1px solid #424242;
+    border-right: 1px solid #424242;
+}
+
+@media (max-width: 767px) {
+    .widget {
+        border-bottom: 1px solid #424242;
+        border-left: none;
+        border-right: none;
+    }
 }

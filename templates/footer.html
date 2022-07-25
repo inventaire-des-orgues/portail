@@ -2,45 +2,45 @@
 <footer id="footer" class="inverted">
   <div class="footer-content">
     <div class="container">
-      <div class="row align-items-top">
-        <!--
-        <div class="col-lg-3 mt-4 testimg">
-          <img src="{% static 'img/logo-nb.png' %}" alt="" style="width:150px; display:block; margin-left: auto; margin-right: auto;">
+      <div class="row justify-content-center align-items-top">
+        <div class="col-lg-3 col-md-6 mt-4 text-center">
+          <h4 class="text-white border-bottom pr-3 font-weight-bold">Une initiative de</h4>
+          <img src="{% static 'img/orgue-en-france.png' %}" alt="Orgue en France" class="footerbiglogo">
         </div>
-        -->
-        <div class="col-lg-3 mt-4">
-          <img src="{% static 'img/orgue-en-france.png' %}" alt="" style="width:160px; display:block; margin-left: auto; margin-right: auto; margin-bottom: auto;">
+        <div class="col-lg-3 col-md-6 mt-4 text-center">
+          <h4 class="text-white border-bottom pr-3 font-weight-bold">Soutenu par</h4>
+          <img src="{% static 'img/ministere_culture.png' %}" alt="Ministère de la Culture" class="footerbiglogo">
         </div>
-        <div class="col-lg-3 mt-4">
-          <img src="{% static 'img/Soutenu_ministere_culture.png' %}" alt="" style="width:160px; display:block; margin-left: auto; margin-right: auto;">
+        <div class="col-lg-3 col-md-6 mt-4 text-center">
+          <h4 class="text-white border-bottom pr-3 font-weight-bold">Avec le concours de</h4>
+          <img src="{% static 'img/logo-facteurs-neg.png' %}" alt="L'ameublement français" class="footerbiglogo">
         </div>
-        <div class="col-lg-3 mt-4">
-          <img src="{% static 'img/logo-facteurs-neg.png' %}" alt="" style="width:160px; display:block; margin-left: auto; margin-right: auto;">
-        </div>
-        <div class="col-lg-3 mt-4">
-          <img src="{% static 'img/FFAO.png' %}" alt="" style="width:160px; display:block; margin-left: auto; margin-right: auto;">
-        </div>
-      </div>
-      <div class="row align-items-top">
-        <div class="col-lg-4 mt-4">
-          <img src="{% static 'img/logo_bretagne.png' %}" alt="" style="width:160px; display:block; margin-left: 55%">
-        </div>
-        <div class="col-lg-4 mt-4">
-          <img src="{% static 'img/logo_bourgogne.png' %}" alt="" style="width:160px; display:block; margin-left: auto; margin-right: auto;">
-        </div>
-        <div class="col-lg-4 mt-4">
-          <img src="{% static 'img/logo_CVL.png' %}" alt="" style="width:140px; display:block; margin-right: 100%;">
+        <div class="col-lg-3 col-md-6 mt-4 text-center">
+          <h4 class="text-white border-bottom pr-3 font-weight-bold">Avec le concours de</h4>
+          <img src="{% static 'img/FFAO.png' %}" alt="FFAO" class="footerbiglogo">
         </div>
       </div>
-      <div class="row align-items-top">
-        <div class="col-lg-4 mt-4">
-          <img src="{% static 'img/logo_OPL.png' %}" alt="" style="width:160px; display:block; margin-left: 45%">
+      <div class="row justify-content-center align-items-center mt-4">
+        <div class="col-lg-3 col-md-4 col-6 text-center mt-4">
+          <img src="{% static 'img/logo_bretagne.png' %}" alt="Région Bretagne" class="footerlogo">
         </div>
-        <div class="col-lg-4 mt-4">
-          <img src="{% static 'img/logo_adora.png' %}" alt="" style="width:160px; display:block; margin-left: auto; margin-right: auto;">
+        <div class="col-lg-3 col-md-4 col-6 text-center mt-4">
+          <img src="{% static 'img/logo_bourgogne.png' %}" alt="Région Bourgogne" class="footerlogo">
         </div>
-        <div class="col-lg-4 mt-4">
-          <img src="{% static 'img/logo_paris.png' %}" alt="" style="width:200px; display:block; margin-right: 50%;">
+        <div class="col-lg-3 col-md-4 col-6 text-center mt-4">
+          <img src="{% static 'img/logo_CVL.png' %}" alt="Centre Val de Loire" class="footerlogo">
+        </div>
+        <div class="col-lg-3 col-md-4 col-6 text-center mt-4">
+          <img src="{% static 'img/logo_OPL.png' %}" alt="Orgue en Pays de Loire" class="footerlogo">
+        </div>
+        <div class="col-lg-3 col-md-4 col-6 text-center mt-4">
+          <img src="{% static 'img/logo_adora.png' %}" alt="Adora" class="footerlogo">
+        </div>
+        <div class="col-lg-3 col-md-4 col-6 text-center mt-4">
+          <img src="{% static 'img/logo_paris.png' %}" alt="Ville de Paris" class="footerlogo">
+        </div>
+        <div class="col-lg-3 col-md-4 col-6 text-center mt-4">
+          <img src="{% static 'img/logo_toulouse.png' %}" alt="Toulouse les orgues" class="footerlogo">
         </div>
       </div>
     </div>
@@ -48,19 +48,18 @@
   </div>
   <div class="footer-content">
     <div class="container">
-      <div class="row align-items-top">
-        <div class="col-lg-2 mt-2"></div>
-        <div class="col-lg-3 mt-4">
-          <div class="widget">
+      <div class="row no-gutters align-items-top justify-content-center">
+        <div class="col-md-4 mt-4">
+          <div class="widget px-4 h-100 text-center">
             <div class="widget-title">Liens</div>
-            <ul class="list">
+            <ul class="list pl-0">
               <li>
                 <a href="{% url 'accueil' %}">Accueil</a>
               </li>
               {% if user.is_staff %}
-              <li>
-                <a href="{% url 'accounts:access-logs' %}">Logs</a>
-              </li>
+                <li>
+                  <a href="{% url 'accounts:access-logs' %}">Logs</a>
+                </li>
               {% endif %}
               <li>
                 <a href="{% url 'orgues:orgue-carte' %}">Carte</a>
@@ -77,13 +76,13 @@
             </ul>
           </div>
         </div>
-        <div class="col-lg-3 mt-4">
-          <div class="widget">
+        <div class="col-md-4 mt-4">
+          <div class="widget px-4 h-100 text-center">
             <div class="widget-title">Contribuer</div>
             {% if request.user.is_authenticated %}
               Vous êtes connecté(e) en temps que "{{ request.user }}"
             {% endif %}
-            <ul class="list">
+            <ul class="list pl-0">
               <li>
                 {% if request.user.is_authenticated %}
                   <a href="{% url 'logout' %}">Déconnexion</a>
@@ -100,10 +99,10 @@
             </ul>
           </div>
         </div>
-        <div class="col-lg-3 mt-4">
-          <div class="widget">
+        <div class="col-md-4 mt-4 ">
+          <div class="widget px-4 h-100 text-center" >
             <div class="widget-title">Développer</div>
-            <ul class="list">
+            <ul class="list pl-0">
               <li>
                 <a href="https://github.com/inventaire-des-orgues/portail/projects/1" target="_blank" rel="noopener noreferrer">Projet Github du portail</a>
               </li>
@@ -113,24 +112,25 @@
               <li>
                 <a href="https://github.com/orgs/inventaire-des-orgues/projects/1">Projet Inventaire sur Github</a>
               </li>
-                <li>
+              <li>
                 <a href="https://github.com/inventaire-des-orgues/docs/issues">Tickets Github de la doc</a>
               </li>
-                <li>
+              <li>
                 <a href="https://github.com/inventaire-des-orgues/indexes/issues">Tickets Github des données</a>
               </li>
             </ul>
           </div>
         </div>
-        <div class="col-lg-2 mt-2"></div>
       </div>
     </div>
   </div>
   </div>
   <div class="copyright-content">
     <div class="container">
-      <div class="copyright-text text-center text-light">Inventaire des orgues - <a href="https://docs.inventaire-des-orgues.fr/mentions-legales/" target="_blank" rel="noopener noreferrer">Mentions légales</a> - Développement :
-        <a href="https://fabdev.fr" target="_blank" rel="noopener noreferrer">FABDEV</a> et contributeurs - Design : Guillaume Lechevalier-Boissel & FABDEV - <a href="https://github.com/inventaire-des-orgues/portail" target="_blank" rel="noopener noreferrer">Code source</a>
+      <div class="copyright-text text-center text-light">Inventaire des orgues -
+        <a href="https://docs.inventaire-des-orgues.fr/mentions-legales/" target="_blank" rel="noopener noreferrer">Mentions légales</a> - Développement :
+        <a href="https://fabdev.fr" target="_blank" rel="noopener noreferrer">FABDEV</a> et contributeurs - Design : Guillaume Lechevalier-Boissel & FABDEV -
+        <a href="https://github.com/inventaire-des-orgues/portail" target="_blank" rel="noopener noreferrer">Code source</a>
       </div>
     </div>
   </div>
