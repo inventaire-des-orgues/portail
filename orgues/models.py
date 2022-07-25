@@ -765,7 +765,9 @@ class TypeJeu(models.Model):
     updated_by_user = models.ForeignKey(User, null=True, editable=False, on_delete=models.SET_NULL)
 
     def __str__(self):
-        return "{} {}".format(self.nom, self.hauteur)
+        if self.hauteur:
+            return "{} {}".format(self.nom, self.hauteur)
+        return self.nom
 
     class Meta:
         verbose_name_plural = "Types de jeux"
