@@ -27,6 +27,24 @@ class InscriptionForm(forms.ModelForm):
         model = User
         fields = ("first_name","last_name","email",)
 
+    def clean_first_name(self):
+        first_name = self.cleaned_data.get("first_name")
+        if not first_name:
+            raise forms.ValidationError("Merci de compléter votre prénom")
+        if first_name.isupper():
+            raise forms.ValidationError("Votre prénom ne doit pas être en majuscule")
+        if not first_name[0].isupper():
+            raise forms.ValidationError("Votre prénom doit commencer par une majuscule")
+
+    def clean_last_name(self):
+        last_name = self.cleaned_data   .get("last_name")
+        if not last_name:
+            raise forms.ValidationError("Merci de compléter votre prénom")
+        if last_name.isupper():
+            raise forms.ValidationError("Votre nom ne doit pas être en majuscule")
+        if not last_name[0].isupper():
+            raise forms.ValidationError("Votre nom doit commencer par une majuscule")
+
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")
         password2 = self.cleaned_data.get("password2")
