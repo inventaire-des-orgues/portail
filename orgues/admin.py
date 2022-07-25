@@ -21,6 +21,7 @@ class FichierAdmin(admin.ModelAdmin):
 class ImageAdmin(admin.ModelAdmin):
     list_display = ('pk', 'orgue', 'credit', 'is_principale','user')
     list_editable = ('credit',)
+    search_fields = ('user__first_name','user__last_name')
 
 
 @admin.register(Facteur)
