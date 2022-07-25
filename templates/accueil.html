@@ -383,7 +383,7 @@
             <span class="puce-etat " style="background-color:#cccccc;">((data.inconnu)) %</span>
             <span>Etat inconnu</span>
           </p>
-	        <a class='btn' id='voir-orgue' @click.stop="" href="/orgues/" :href="'/orgues/?' + (type == 'departement' ? 'departement='+departement : (type == 'region' ? 'filter_region='+region : ''))">Voir les orgues</a>
+	        <a class='btn' id='voir-orgue' @click.stop="" href="/orgues/" :href="'/orgues/?' + (type == 'departement' ? 'departement='+departement : (type == 'region' ? 'query='+region : ''))">Voir les orgues</a>
         </div>
         <div class="col-lg-5" v-else>
             <strong>Chargement...</strong>
