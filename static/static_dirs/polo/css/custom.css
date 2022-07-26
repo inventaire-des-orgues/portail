@@ -54,18 +54,6 @@ button.btn.btn-primary:hover, button.btn.btn-primary:focus, button.btn.btn-prima
 
 }
 
-#logo_ministere {
-    position: absolute;
-    top: 0;
-    left: 50px;
-    width: 200px;
-}
-
-@media (max-width: 700px) {
-    #logo_ministere {
-        width: 80px;
-    }
-}
 
 .page-menu.menu-outline nav > ul > li:hover > a, .page-menu.menu-outline nav > ul > li.active > a {
     border-color: #5c1c54;
@@ -79,7 +67,7 @@ button.btn.btn-primary:hover, button.btn.btn-primary:focus, button.btn.btn-prima
 }
 
 .footerlogo {
-    max-width: 120px;
+    max-width: 130px;
 }
 
 .footerbiglogo {
