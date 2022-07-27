@@ -21,7 +21,7 @@ class FichierAdmin(admin.ModelAdmin):
 class ImageAdmin(admin.ModelAdmin):
     list_display = ('pk', 'orgue', 'credit', 'is_principale','user')
     list_editable = ('credit',)
-    search_fields = ('user__first_name','user__last_name')
+    search_fields = ('user__first_name','user__last_name','user__email','orgue__codification')
 
 
 @admin.register(Facteur)
@@ -84,19 +84,24 @@ class AccessoireAdmin(admin.ModelAdmin):
 class OrgueAdmin(admin.ModelAdmin):
     fields = ['codification', 'code_insee', 'commune', 'edifice', 'region', 'departement', 'code_departement',
               'designation', 'emplacement', 'references_palissy', 'references_inventaire_regions', 'commentaire_admin']
-    list_display = ('codification', 'designation', 'commune', 'edifice','updated_by_user','modified_date','contributions_compte', 'departement', 'commentaire_admin',)
+    list_display = ('codification', 'designation', 'commune', 'edifice','updated_by_user','modified_date','contributions_compte','images_compte', 'departement', 'commentaire_admin',)
     ordering = ('-modified_date',)
     inlines = [ClavierInline]
+    list_per_page = 20
     search_fields = ('commune', 'edifice', 'designation', 'codification', 'emplacement', 'departement',
                      'updated_by_user__first_name', 'updated_by_user__last_name', 'updated_by_user__email')
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.annotate(contributions_compte=Count('contributions'))
+        return qs.annotate(contributions_compte=Count('contributions', distinct=True),images_compte=Count('images', distinct=True))
 
     def contributions_compte(self, obj):
         return format_html("<a href='/admin/orgues/contribution/?q={}'>{}</a>".format(obj.codification,obj.contributions_compte))
 
+    def images_compte(self, obj):
+        return format_html("<a href='/admin/orgues/image/?q={}'>{}</a>".format(obj.codification,obj.images_compte))
+
+    images_compte.admin_order_field = 'images_compte'
     contributions_compte.admin_order_field = 'contributions_compte'
 
 
