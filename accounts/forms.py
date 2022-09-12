@@ -35,15 +35,17 @@ class InscriptionForm(forms.ModelForm):
             raise forms.ValidationError("Votre prénom ne doit pas être en majuscule")
         if not first_name[0].isupper():
             raise forms.ValidationError("Votre prénom doit commencer par une majuscule")
+        return first_name
 
     def clean_last_name(self):
-        last_name = self.cleaned_data   .get("last_name")
+        last_name = self.cleaned_data.get("last_name")
         if not last_name:
             raise forms.ValidationError("Merci de compléter votre prénom")
         if last_name.isupper():
             raise forms.ValidationError("Votre nom ne doit pas être en majuscule")
         if not last_name[0].isupper():
             raise forms.ValidationError("Votre nom doit commencer par une majuscule")
+        return last_name
 
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")
