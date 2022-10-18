@@ -793,6 +793,8 @@ class Jeu(models.Model):
             return "{} (B)".format(self.type)
         elif self.configuration == "dessus":
             return "{} (D)".format(self.type)
+        elif self.configuration == "basse_et_dessus":
+            return "{} (B+D)".format(self.type)
         return str(self.type)
 
     class Meta:
