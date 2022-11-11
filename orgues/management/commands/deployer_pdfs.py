@@ -19,14 +19,15 @@ class Command(BaseCommand):
         http://inventaire-des-orgues.fr/media/<code_dep>/<code_orgue>/fichiers/<nomdufichier>
         """
         if not os.path.exists(options['path'][0]):
-            print("Dossier introuvable !")
+            print("[ERROR] Dossier introuvable !")
         else:
             # Boucle sur les archives
             for file in os.listdir(options['path'][0]):
                 chemin_tar = os.path.join(options['path'][0], file)
+                print("[INFO] Traitement du fichier {}".format(chemin_tar))
                 tar = tarfile.open(chemin_tar)
                 rep_temp_pdf = os.path.join(settings.BASE_DIR, 'temp_pdf')
-                print("Création d'un répertoire temporaire : {}".format(rep_temp_pdf))
+                print("[INFO] Création d'un répertoire temporaire : {}".format(rep_temp_pdf))
                 if os.path.exists(rep_temp_pdf):
                     shutil.rmtree(rep_temp_pdf)
                 os.makedirs(rep_temp_pdf)
@@ -34,11 +35,11 @@ class Command(BaseCommand):
                 tar.close()
 
                 # Boucle sur les fichiers du dossier
-                print("Parcours des PDF du dossier : {}".format(rep_temp_pdf))
+                print("[INFO] Parcours des PDF du dossier : {}".format(rep_temp_pdf))
                 for pdf in os.listdir(rep_temp_pdf):
                     print("[DEBUG] Fichier PDF : {}".format(pdf))
                     if pdf[:2] != 'FR':
-                        print("[ERROR] nommage fichier {} : le nom ne commence pas par FR)".format(pdf))
+                        print("[ERROR] nommage fichier {} : le nom ne commence pas par 'FR'".format(pdf))
                     else:
                         chemin_pdf = os.path.join(rep_temp_pdf, pdf)
                         print("[DEBUG] Chemin : {}".format(chemin_pdf))
