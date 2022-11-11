@@ -704,6 +704,7 @@ class Evenement(models.Model):
         ("reconstruction", "Reconstruction"),
         ("destruction", "Destruction"),
         ("restauration", "Restauration"),
+        ("reparation", "Réparation"),
         ("deplacement", "Déplacement"),
         ('demontage', "Démontage et stockage"),
         ("relevage", "Relevage"),
