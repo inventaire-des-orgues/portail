@@ -47,7 +47,7 @@ class Command(BaseCommand):
                             print("[DEBUG] Chemin : {}".format(chemin_pdf))
 
                             # Changer les permissions
-                            shutil.chown(pdf, user='fabdev', group='www-data')
+                            shutil.chown(chemin_pdf, user='fabdev', group='www-data')
                             os.chmod(chemin_pdf, 0o644)
 
                             # On dépose le fichier au bon endroit dans l'arborescence
