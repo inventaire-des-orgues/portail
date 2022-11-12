@@ -125,6 +125,39 @@ python manage.py import_data chemin/vers/exemple_orgue-v3.json
 
 Optionel : ajouter `--delete` pour supprimer les orgues existants avant l'importation
 
+
+# Importer les scans des livres d'inventaire
+Des liens ont été prédisposés, sur chaque fiche, vers les scans au format PDF des livres d'inventaires papier.
+
+En local sur son poste de travail :
+- Créer un dossier par département
+- Transformer chacun de ces dossiers en archive .tar avec 7-zip ou autre logiciel. Pour 7-zip, option "chemin relatif"
+
+Transférer ces .tar sur le serveur, à l'aide de MobaXterm ou autre, par exemple par SFTP, dans un répertoire temporaire.
+ex : /home/louisvierne/temp_tar
+
+Quelques commandes tar utiles :
+```shell script
+# Examiner le contenu d'une archive .tar
+tar -tf ./truc.tar
+
+# Dépaqueter une archive .tar
+tar -xvf ./truc.tar
+```
+
+Lancer les script de déploiement des fichiers PDF :
+```python
+python manage.py deployer_pdfs /home/louisvierne/temp_tar/29/
+```
+Le script gère le changement du propriétaire, du groupe et des permissions sur le serveur.
+Dans le cas d'un déplacement manuel de fichier, ne pas oublier de les mettre à jour :
+```shell script
+# Modifier le propriétaire et les permissions des fichiers.
+# Se placer dans le bon répertoire.
+chown -R fabdev:www-data ./*
+chmod -R 644 ./*
+```
+
 # Travailler directement sur la base de données
 
 ```python
