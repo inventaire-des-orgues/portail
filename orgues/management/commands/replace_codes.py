@@ -52,14 +52,13 @@ class Command(BaseCommand):
                             img.thumbnail_principale.name = img.thumbnail_principale.name.replace(chemin_avant, chemin_apres)
                             chemin_thumbnail_apres = img.thumbnail_principale.path
                             shutil.move(chemin_thumbnail_avant, chemin_thumbnail_apres)
-                            
+
                         img.image.name = img.image.name.replace(chemin_avant, chemin_apres)
                         img.image.name = img.image.name.replace(chemin_avant_propre, chemin_apres_propre)
                         img.save()
                     
                     # On met à jour les autres fichiers
                     for fic in orgue.fichiers.all():
-                        print(fic, orgue.fichiers.all())
                         pathfichier_avant = fic.file.path
                         pathfichier_apres = fic.file.path.replace(chemin_avant_propre, chemin_apres_propre)
 
@@ -82,11 +81,16 @@ class Command(BaseCommand):
                         fic.file.name = fic.file.name.replace(chemin_avant, chemin_apres)
 
                         fic.save()
+                    orgue.save()
                     
                     # On efface l'ancien répertoire
                     p = os.path.join(settings.MEDIA_ROOT, chemin_avant_propre)
                     if os.path.exists(p):
                         shutil.rmtree(p)
-                    orgue.save()
+                    p_thumbnail = os.path.join(img.thumbnail.path.split(chemin_apres_propre)[0], chemin_avant_propre)
+                    if os.path.exists(p_thumbnail):
+                        shutil.rmtree(p_thumbnail)
+                    
                     
                 print('Fin de la modification des codes.')
+                
