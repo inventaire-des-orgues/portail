@@ -1,0 +1,477 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head_extra %}
+    <link rel="stylesheet" href="{% static 'plugins/slider/jquery-ui.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div id="carte_generale">
+        <div class="container-fluid" id="carte">
+            <div id="mapid" style="height:700px"></div>
+        </div>
+        <div id="div_filtre">
+            <b class="titre_filtre">Filtrer les orgues</b>
+
+            <form id="searchform" action="" method="post">{% csrf_token %}
+                {% for field in form %}
+                    {% include 'stack_field.html' %}
+                {% endfor %}
+            </form>
+
+            <b class="titre_filtre">Les manufactures d'orgues</b>
+            <form id="chercher_facteur" class="carte_formulaire" action="">
+                <div class="div_carte">
+                    <b>Rechercher une manufacture d'orgues :</b>
+                    <select type="text" id="nom_facteur_recherche" placeholder="Choisir un facteur"></select>
+                </div>
+            </form>
+            <label><input type="checkbox" name="manufacture" id="manufacture" style="margin-left: 15px;">Afficher toutes les manufactures d'orgues.</label>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js_extra %}
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css' rel='stylesheet'/>
+    <script src="{% static 'assets/js/plugins/ionslider/ion.rangeSlider.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'assets/js/plugins/ionslider/ion.rangeSlider.min.css' %}">
+
+
+    <script>
+
+
+        var OrguesGeojson = {}
+        var RegionTotaux = []
+        var DepartementTotaux = []
+        var SearchData = function () {
+            $.ajax({
+                type: 'POST',
+                url: '{% url 'orgues:orgue-list-js2' %}',
+                data: $('#searchform').serialize(),
+                async: false,
+                success: function (data) {
+                    OrguesGeojson = data["orgues_geojson"]
+                    RegionTotaux = data["totaux_regions"]
+                    DepartementTotaux = data["totaux_departements"]
+                    for (let region in SourceCentreRegion["data"]["features"]) {
+                        SourceCentreRegion["data"]["features"][region]["properties"]["nb_orgues"] = RegionTotaux[SourceCentreRegion["data"]["features"][region]["properties"]["nom"]]
+                    }
+                    for (let region in SourceCentreDepartement["data"]["features"]) {
+                        SourceCentreDepartement["data"]["features"][region]["properties"]["nb_orgues"] = DepartementTotaux[SourceCentreDepartement["data"]["features"][region]["properties"]["nom"]]
+                    }
+                }
+            })
+        }
+
+        var GetBiggestPolygon = function (polygons) {
+            let coordinates = polygons[0]
+            if (polygons.length !== 1) {
+                for (let polygon of polygons) {
+                    if (polygon[0].length > coordinates.length) {
+                        coordinates = polygon[0]
+                    }
+                }
+            }
+            return coordinates
+        }
+        var SourceCentreRegion = {
+            'type': 'geojson',
+            'data': {
+                "type": "FeatureCollection",
+                "features": []
+            }
+        }
+        var SourceCentreDepartement = {
+            'type': 'geojson',
+            'data': {
+                "type": "FeatureCollection",
+                "features": []
+            }
+        }
+        var center = function (arr) {
+            var minX, maxX, minY, maxY;
+            for (var i = 0; i < arr.length; i++) {
+                minX = (arr[i][0] < minX || minX == null) ? arr[i][0] : minX;
+                maxX = (arr[i][0] > maxX || maxX == null) ? arr[i][0] : maxX;
+                minY = (arr[i][1] < minY || minY == null) ? arr[i][1] : minY;
+                maxY = (arr[i][1] > maxY || maxY == null) ? arr[i][1] : maxY;
+            }
+            return [(minX + maxX) / 2, (minY + maxY) / 2];
+        }
+
+        var CalculateCenterRegion = function (Geojson, SourceCentreGeojson) {
+            for (let region in Geojson) {
+                Geojson[region]["id"] = region
+                const polygon = GetBiggestPolygon(Geojson[region]["geometry"]["coordinates"])
+                const RegionCenter = center(polygon)
+                SourceCentreGeojson["data"]["features"].push(
+                    {
+                        "type": "Feature",
+                        "id": region,
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": RegionCenter
+                        },
+                        "properties": {
+                            "nom": Geojson[region]["properties"]["nom"]
+                        },
+                    }
+                )
+            }
+        }
+        window.onload = (event) => {
+            CalculateCenterRegion(RegionGeojson, SourceCentreRegion)
+            CalculateCenterRegion(DepartementGeojson, SourceCentreDepartement)
+            SearchData()
+        }
+
+        var UpdateMap = function () {
+            SearchData()
+            map.getSource("orgues").setData(OrguesGeojson["data"])
+            map.getSource("centreregion").setData(SourceCentreRegion["data"])
+            map.getSource("centredepartement").setData(SourceCentreDepartement["data"])
+            map.getSource("region").setData({
+                "type": "FeatureCollection",
+                "features": RegionGeojson
+            })
+            map.getSource("departement").setData({
+                "type": "FeatureCollection",
+                "features": DepartementGeojson
+            })
+        }
+        $("#searchform :input").change(function () {
+            SearchData()
+            map.getSource("orgues").setData(OrguesGeojson["data"])
+            map.getSource("centreregion").setData(SourceCentreRegion["data"])
+            map.getSource("centredepartement").setData(SourceCentreDepartement["data"])
+            map.getSource("region").setData({
+                "type": "FeatureCollection",
+                "features": RegionGeojson
+            })
+            map.getSource("departement").setData({
+                "type": "FeatureCollection",
+                "features": DepartementGeojson
+            })
+        });
+
+
+        mapboxgl.accessToken = 'pk.eyJ1IjoibHVjYXNiZXJiZXNzb24iLCJhIjoiY2lsODIzYXMxMDAxandsbHpvMm85bmkyYyJ9.pvI4JL-FNzQ3OZ3N8eaUlA';
+        var map = new mapboxgl.Map({
+            'container': 'mapid',
+            style: 'mapbox://styles/mapbox/' + "light-v10",
+            center: [2.2, 46.2],
+            zoom: 4.8
+        });
+        const zoomThresholdFirstLayer = 6.5;
+        const zoomThresholdSecondLayer = 7.5;
+        var RegionGeojson = []
+        $.ajax({
+            dataType: "json",
+            url: '{% static 'geojson/region.geojson' %}',
+            async: false,
+            success: function (data) {
+                RegionGeojson = data["features"]
+            }
+        });
+
+        var DepartementGeojson = []
+        $.ajax({
+            dataType: "json",
+            url: '{% static 'geojson/departement.geojson' %}',
+            async: false,
+            success: function (data) {
+                DepartementGeojson = data["features"]
+            }
+        });
+
+        map.on('load', () => {
+// Add a data source containing GeoJSON data.
+            map.addSource('region', {
+                'type': 'geojson',
+                'data': {
+                    "type": "FeatureCollection",
+                    "features": RegionGeojson
+                }
+            });
+            map.addSource('departement', {
+                'type': 'geojson',
+                'data': {
+                    "type": "FeatureCollection",
+                    "features": DepartementGeojson
+                }
+            });
+            map.addSource('orgues', OrguesGeojson);
+            map.addSource('centreregion', SourceCentreRegion);
+            map.addSource('centredepartement', SourceCentreDepartement);
+
+// Add a new layer to visualize the polygon.
+            map.addLayer({
+                'id': 'region',
+                'type': 'fill',
+                'source': 'region', // reference the data source
+                'layout': {
+                    "visibility": "visible"
+                },
+                'paint': {
+                    'fill-color': [
+                        "case",
+                        ["boolean", ["feature-state", "hover"], false],
+                        "rgb(119,154,171)",
+                        "rgb(37,114,131)",
+                    ],
+                    'fill-opacity': 0.2
+                }
+            });
+// Add a black outline around the polygon.
+            map.addLayer({
+                'id': 'outline',
+                'type': 'line',
+                'source': 'region',
+                'layout': {},
+                'paint': {
+                    'line-color': 'rgba(11,20,26,0.4)',
+                    'line-width': 1
+                }
+            });
+// Add a black outline around the polygon.
+            map.addLayer({
+                'id': 'departement',
+                'type': 'fill',
+                'minzoom': zoomThresholdFirstLayer,
+                'source': 'departement',
+                'layout': {},
+                'paint': {
+                    'fill-color': [
+                        "case",
+                        ["boolean", ["feature-state", "hover"], false],
+                        "rgb(255,255,255)",
+                        "rgba(0,0,0,0)",
+                    ],
+                    'fill-opacity': 0.2
+                }
+            });
+            map.addLayer({
+                'id': 'departement-outline',
+                'type': 'line',
+                'source': 'departement',
+                'minzoom': zoomThresholdFirstLayer,
+                'layout': {},
+                'paint': {
+                    'line-color': 'rgba(0,0,0,0.15)',
+                    'line-width': 1.5
+                }
+            });
+            map.addLayer({
+                'id': 'orgues',
+                'type': 'circle',
+                'source': 'orgues',
+                'minzoom': zoomThresholdSecondLayer,
+                'paint': {
+                    'circle-color': 'rgba(85,32,82,0.67)',
+                    'circle-radius': [
+                        "case",
+                        ["boolean", ["feature-state", "hover"], false],
+                        11,
+                        8,
+                    ],
+                }
+            });
+            map.addLayer({
+                'id': 'centerregion',
+                'maxzoom': zoomThresholdFirstLayer,
+                'type': 'circle',
+                'source': 'centreregion',
+                'paint': {
+                    'circle-color': 'rgba(85,32,82,0.67)',
+                    'circle-radius': ["interpolate", ['linear'],
+                        ["get", "nb_orgues"],
+                        100, 10,
+                        2500, 20,
+                    ]
+                }
+            })
+            ;
+            map.addLayer({
+                'id': 'points',
+                'type': 'symbol',
+                'maxzoom': zoomThresholdFirstLayer,
+                'source': 'centreregion',
+                paint: {
+                    "text-color": "#ffffff"
+                },
+                'layout': {
+// get the title name from the source's "title" property
+                    'text-field': ["get", "nb_orgues"],
+                    'text-font': [
+                        'Open Sans Semibold',
+                        'Arial Unicode MS Bold'
+                    ],
+                    'text-size': 10,
+                }
+            });
+            map.addLayer({
+                'id': 'centredepartement',
+                'minzoom': zoomThresholdFirstLayer,
+                'maxzoom': zoomThresholdSecondLayer,
+                'type': 'circle',
+                'source': 'centredepartement',
+                'paint': {
+                    'circle-color': 'rgba(85,32,82,0.67)',
+                    'circle-radius': ["interpolate", ['linear'],
+                        ["get", "nb_orgues"],
+                        0, 10,
+                        500, 20,
+                    ]
+                }
+            })
+            ;
+            map.addLayer({
+                'id': 'departement-points',
+                'type': 'symbol',
+                'minzoom': zoomThresholdFirstLayer,
+                'maxzoom': zoomThresholdSecondLayer,
+
+                'source': 'centredepartement',
+                paint: {
+                    "text-color": "#ffffff"
+                },
+                'layout': {
+// get the title name from the source's "title" property
+                    'text-field': ["get", "nb_orgues"],
+                    'text-font': [
+                        'Open Sans Semibold',
+                        'Arial Unicode MS Bold'
+                    ],
+                    'text-size': 10,
+                }
+            });
+
+
+        });
+        const popup = new mapboxgl.Popup({
+            closeButton: false,
+            closeOnClick: false
+        });
+        const popup_orgue = new mapboxgl.Popup({
+            closeButton: false,
+            closeOnClick: true
+        });
+        var mapbox_fabdev_mouseenter = function (e) {
+            map.getCanvas().style.cursor = 'pointer';
+        }
+        var mapbox_fabdev_mouseleave = function (e) {
+            map.getCanvas().style.cursor = '';
+            popup.remove()
+        }
+
+        var mapbox_fabdev_mouseclick = function (e) {
+            if (map.getZoom() < zoomThresholdSecondLayer) {
+                source_area = e.features[0].source
+                hoveredStateId = e.features[0].id;
+                map.setFeatureState(
+                    {source: source_area, id: hoveredStateId},
+                    {hover: false}
+                );
+                const polygons = e.features[0].geometry.coordinates
+                const coordinates = GetBiggestPolygon(polygons)
+                const bounds = new mapboxgl.LngLatBounds(
+                    coordinates[0],
+                    coordinates[0]
+                );
+// Extend the 'LngLatBounds' to include every coordinate in the bounds result.
+                for (const coord of coordinates) {
+                    bounds.extend(coord);
+                }
+                map.fitBounds(bounds, {
+                    padding: 20
+                });
+            }
+        }
+
+        var mapbox_fabdev_mouseclick_orgues = function (e) {
+            const coordinates = [e.lngLat.lng, e.lngLat.lat]
+            $.ajax({
+                type: 'GET',
+                url: '{% url 'orgues:orgue-informations' %}',
+                data: {"orgue_id": e.features[0]["id"]},
+                success: function (data) {
+                    popup.remove()
+                    popup_orgue.setLngLat(coordinates).setHTML(data["message"]).addTo(map);
+
+                }
+            })
+        }
+
+        map.on('mouseenter', 'region', mapbox_fabdev_mouseenter);
+        map.on('mouseleave', 'region', mapbox_fabdev_mouseleave);
+        map.on('click', 'region', mapbox_fabdev_mouseclick);
+
+        map.on('mouseenter', 'departement', mapbox_fabdev_mouseenter);
+        map.on('mouseleave', 'departement', mapbox_fabdev_mouseleave);
+        map.on('click', 'departement', mapbox_fabdev_mouseclick);
+
+        map.on('mouseenter', 'orgues', mapbox_fabdev_mouseenter);
+        map.on('mouseleave', 'orgues', mapbox_fabdev_mouseleave);
+        map.on('click', 'orgues', mapbox_fabdev_mouseclick_orgues);
+
+        map.on('mouseenter', (e) => {
+            const features = map.queryRenderedFeatures(e.point);
+            console.log("he")
+            if (features.length > 0) {
+                console.log(features[0].source)
+                map.getCanvas().style.cursor = 'pointer';
+
+                source_area = "departement"
+                hoveredStateId = features[0].id;
+                map.setFeatureState(
+                    {source: source_area, id: hoveredStateId},
+                    {hover: true}
+                );
+            }
+        })
+        previousHoveredId = null
+        previousHoveredSource = null
+        map.on('mousemove', (e) => {
+                const features = map.queryRenderedFeatures(e.point);
+                if (features.length > 0) {
+                    if (["region", "departement", "orgues", "centreregion", "centredepartement"].includes(features[0].source)) {
+                        coordinates = [e.lngLat.lng, e.lngLat.lat]
+                        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                            coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                        }
+                        let HtmlPopUp = `${features[0].properties.nom}`
+                        if ((map.getZoom() < zoomThresholdSecondLayer) | (features[0].source === "orgues")) {
+                            popup.setLngLat(coordinates).setHTML(HtmlPopUp).addTo(map);
+                        } else {
+                            popup.remove()
+                        }
+                        if ((map.getZoom() < zoomThresholdSecondLayer) | (features[0].source === "orgues")) {
+                            map.setFeatureState(
+                                {source: features[0].source, id: features[0].id},
+                                {hover: true}
+                            )
+                        }
+
+                    } else {
+                        popup.remove()
+                    }
+                    if ((previousHoveredId !== features[0].id) & (["region", "departement", "orgues"].includes(previousHoveredSource))) {
+                        map.setFeatureState(
+                            {source: previousHoveredSource, id: previousHoveredId},
+                            {hover: false}
+                        );
+                    }
+                    previousHoveredId = features[0].id
+                    previousHoveredSource = features[0].source
+                }
+            }
+        )
+
+        $("#id_etat").select2();
+        $("#id_facteurs").select2();
+        $("#id_plan_sonore").select2();
+
+    </script>
+{% endblock %}

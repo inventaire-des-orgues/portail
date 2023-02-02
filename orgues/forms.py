@@ -190,3 +190,21 @@ class SourceForm(forms.ModelForm):
             "type",
             "lien",
         ]
+
+
+class OrgueCarteForm(forms.Form):
+    CHOIX_PLAN_SONORE = (
+        ("1", "I"),
+        ("2", "II"),
+        ("3", "III"),
+        ("4", "IV"),
+        ("5", "V"),
+        ("6", "VI"),
+        ("pedalier", "Avec pedalier"),
+    )
+
+    plan_sonore = forms.MultipleChoiceField(choices=CHOIX_PLAN_SONORE, required=False, label="Par nombre de plans sonores :", )
+    jeux = forms.IntegerField(required=False, label="Par nombre de jeux :")
+    etat = forms.MultipleChoiceField(choices=Orgue.CHOIX_ETAT, required=False, label="Par état de fonctionnement :")
+    facteurs = forms.ModelMultipleChoiceField(queryset=Facteur.objects.all(), required=False, label="Par facteur d'orgue : ")
+    construction = forms.BooleanField(label="N'afficher que les orgues pour lesquels le facteur a partciper à la construction ou reconstruction", required=False)

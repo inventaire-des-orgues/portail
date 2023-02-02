@@ -9,12 +9,14 @@ import meilisearch
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core import serializers
 from django.core.paginator import Paginator
 from django.db import connection, transaction
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.forms import modelformset_factory
 from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy, reverse
 from django.views.generic import DetailView, TemplateView, ListView
 from django.views.generic.base import View
@@ -32,7 +34,6 @@ from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, I
 import orgues.utilsorgues.correcteurorgues as co
 import orgues.utilsorgues.codification as codif
 import orgues.utilsorgues.code_geographique as codegeo
-
 
 logger = logging.getLogger("fabaccess")
 
@@ -127,7 +128,7 @@ class OrgueSearch(View):
         filter = []
         filterResult = {}
         for facet in facets:
-            arg = request.POST.get('filter_'+facet)
+            arg = request.POST.get('filter_' + facet)
             if arg:
                 values = arg.split(',')
                 filter.append(['{}="{}"'.format(facet, value) for value in values])
@@ -156,7 +157,9 @@ class OrgueSearch(View):
     @staticmethod
     def convertFacets(facetsDistribution):
         labels = {'departement': 'Département', 'region': 'Régions', 'resume_composition_clavier': 'Nombres de claviers', 'facet_facteurs': 'Facteurs', 'jeux': 'Jeux'}
-        return [{'label': labels[name], 'field': name, 'items': sorted([{'name': item, 'count': count} for item, count in values.items()], key=lambda k: k['count'], reverse=True)} for name, values in facetsDistribution.items()]
+        return [{'label': labels[name], 'field': name,
+                 'items': sorted([{'name': item, 'count': count} for item, count in values.items()], key=lambda k: k['count'], reverse=True)} for name, values in
+                facetsDistribution.items()]
 
 
 class OrgueCarte(TemplateView):
@@ -167,16 +170,32 @@ class OrgueCarte(TemplateView):
     template_name = "orgues/carte.html"
 
 
+class OrgueCarte2(TemplateView):
+    """
+    Cartographie des orgues (gérée par Leaflet).
+    La page est vide initialement et les orgues sont récupérés après coup en javascript via la vue OrgueListJS
+    """
+    template_name = "orgues/carte2.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["form"] = orgue_forms.OrgueCarteForm()
+        return context
+
+
 class OrgueListJS(View):
     """
     Cette vue est requêtée par Leaflet lors de l'affichage de la carte de France dans "orgues/carte.html". Elle
     renvoie sous format json tous les orgues disposant d'une latitude et d'une longitude.
     """
+
     def get(self, request, *args, **kwargs):
         with connection.cursor() as cursor:
-            cursor.execute(sql="SELECT o.id, o.slug, o.commune, o.latitude, o.longitude, o.emplacement, o.edifice, o.resume_composition, o.references_palissy, o.etat, group_concat(DISTINCT f.facteur_id || ':' || e.type) as facteurs  FROM orgues_orgue o LEFT JOIN orgues_evenement e ON e.orgue_id = o.id LEFT JOIN orgues_evenement_facteurs f ON f.evenement_id = e.id WHERE o.latitude IS NOT NULL AND o.longitude IS NOT NULL GROUP BY o.id")
+            cursor.execute(
+                sql="SELECT o.id, o.slug, o.commune, o.latitude, o.longitude, o.emplacement, o.edifice, o.resume_composition, o.references_palissy, o.etat, o.region, group_concat(DISTINCT f.facteur_id || ':' || e.type) as facteurs  FROM orgues_orgue o LEFT JOIN orgues_evenement e ON e.orgue_id = o.id LEFT JOIN orgues_evenement_facteurs f ON f.evenement_id = e.id WHERE o.latitude IS NOT NULL AND o.longitude IS NOT NULL GROUP BY o.id")
             columns = [col[0] for col in cursor.description]
             rows = [self.convert(dict(zip(columns, row))) for row in cursor.fetchall()]
+            cursor.execute("SELECT sql FROM sqlite_master WHERE tbl_name = 'orgues_orgue' AND type = 'table'")
             return JsonResponse(rows, safe=False)
 
     def convert(self, item):
@@ -190,6 +209,83 @@ class OrgueListJS(View):
             item['facteurs'] = []
         item['mh'] = item.pop('references_palissy') is not None
         return item
+
+
+class OrgueListJS2(View):
+    """
+    Cette vue est requêtée par Leaflet lors de l'affichage de la carte de France dans "orgues/carte.html". Elle
+    renvoie sous format json tous les orgues disposant d'une latitude et d'une longitude.
+    """
+
+
+    def post(self, request, *args, **kwargs):
+        form = orgue_forms.OrgueCarteForm(request.POST)
+        if form.is_valid():
+            queryset = Orgue.objects.all()
+            print(form.cleaned_data)
+            if form.cleaned_data["plan_sonore"]:
+                pass
+            if form.cleaned_data["plan_sonore"]:
+                print(queryset.count())
+                if "pedalier" in form.cleaned_data["plan_sonore"]:
+                    form.cleaned_data["plan_sonore"].remove("pedalier")
+                    queryset = queryset.filter(claviers__type__nom__in=['Pédale', 'Pédalier', 'Pedalwerk', 'Pedal', 'Pedalero', 'Pedaliera'])
+                plan_sonore = [int(x) for x in form.cleaned_data["plan_sonore"]]
+                if plan_sonore:
+                    claviers = Clavier.objects.annotate(jeux_count=Count("jeux")).filter(jeux_count__in=plan_sonore).all()
+                    queryset = queryset.filter(claviers__in=claviers)
+                    print(queryset.count())
+                    #queryset = queryset.annotate(jeux_count=Count('clavier__jeux')).filter(jeux_count=int(form.cleaned_data["jeux"]))
+            if form.cleaned_data["etat"]:
+                queryset = queryset.filter(etat__in=form.cleaned_data["etat"])
+            if form.cleaned_data["facteurs"]:
+                queryset = queryset.filter(evenements__facteurs__in=form.cleaned_data["facteurs"])
+
+            FeaturesOrgues = []
+            for orgue in queryset:
+                FeaturesOrgues.append(
+                    {
+                        "type": "Feature",
+                        "id": orgue.id,
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [orgue.longitude, orgue.latitude]
+                        },
+                        "properties": {
+                            "nom": orgue.edifice
+                        },
+                    }
+                )
+            orgue_geojson = {
+                'type': 'geojson',
+                'data': {
+                    "type": "FeatureCollection",
+                    "features": FeaturesOrgues
+                }
+            }
+            totaux_region = list(queryset.values("region").annotate(total=Count("region")).order_by('total'))
+            totaux_region = {region["region"]: region["total"] for region in totaux_region}
+            totaux_departement = list(queryset.values("departement").annotate(total=Count("departement")).order_by('total'))
+            totaux_departement = {departement["departement"]: departement["total"] for departement in totaux_departement}
+
+            return JsonResponse({
+                "totaux_regions": totaux_region,
+                "totaux_departements": totaux_departement,
+                "orgues_geojson": orgue_geojson
+            })
+
+
+class OrgueInformations(View):
+    """
+    Cette vue est requêtée par Leaflet lors de l'affichage de la carte de France
+    """
+
+    def get(self, request, *args, **kwargs):
+        orgue_id = request.GET.get("orgue_id")
+        if orgue_id:
+            orgue = Orgue.objects.get(id=orgue_id)
+            message = render_to_string("orgues/orgue_description.html", context={"orgue": orgue})
+            return JsonResponse({"message": message}, safe=False)
 
 
 class FacteurListJSLeaflet(View):
@@ -292,7 +388,6 @@ class OrgueResume(DetailView):
     template_name_suffix = '_resume'
 
     def get_object(self, queryset=None):
-
         orgue = Orgue.objects.filter(Q(slug=self.kwargs['slug']) | Q(codification=self.kwargs['slug'])).first()
         if not orgue:
             raise Http404
@@ -699,7 +794,7 @@ class FacteurListJS(ListView):
         more = context["page_obj"].number < context["paginator"].num_pages
         if context["object_list"]:
             for u in context["object_list"]:
-            # results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
+                # results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
                 results.append({"id": u.id, "text": u.nom})
         return JsonResponse({"results": results, "pagination": {"more": more}})
 
@@ -1379,7 +1474,8 @@ class Stats(View):
         # France
         completion = df.agg({'completion': ['count', 'mean'], 'references_palissy': ['count']}).round()
         etats = df.value_counts(subset='etat')
-        context["France"] = self.normalize({**etats.to_dict(), 'count': completion.loc['count', 'completion'], 'avancement': completion.loc['mean', 'completion'], 'mh': completion.loc['count', 'references_palissy']})
+        context["France"] = self.normalize({**etats.to_dict(), 'count': completion.loc['count', 'completion'], 'avancement': completion.loc['mean', 'completion'],
+                                            'mh': completion.loc['count', 'references_palissy']})
 
         return JsonResponse(context)
 
@@ -1399,5 +1495,6 @@ class Stats(View):
             'bons': round(100 * ((data['bon'] or 0) + (data['tres_bon'] or 0)) / total, 0),
             'altere': round(100 * (data['altere'] or 0) / total, 0),
             'degrade': round(100 * ((data['degrade'] or 0) + (data['restauration'] or 0)) / total, 0),
-            'inconnu': round(100 * (total - (data['altere'] or 0) - (data['bon'] or 0) - (data['tres_bon'] or 0) - (data['degrade'] or 0) - (data['restauration'] or 0)) / total, 0),
+            'inconnu': round(
+                100 * (total - (data['altere'] or 0) - (data['bon'] or 0) - (data['tres_bon'] or 0) - (data['degrade'] or 0) - (data['restauration'] or 0)) / total, 0),
         }

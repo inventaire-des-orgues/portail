@@ -2,457 +2,456 @@
 {% load static %}
 
 {% block head_extra %}
-  <link rel="stylesheet" href="{% static 'plugins/leaflet/leaflet.css' %}">
-  <link rel="stylesheet" href="{% static 'plugins/leafletcluster/MarkerCluster.Default.css' %}">
-  <link rel="stylesheet" href="{% static 'plugins/slider/jquery-ui.css' %}">
-  <link rel="stylesheet" href="{% static 'plugins/leafletgeosearch/geosearch.css' %}">
-  <link rel="stylesheet" href="{% static 'plugins/leafletlocate/L.Control.Locate.min.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/leaflet/leaflet.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/leafletcluster/MarkerCluster.Default.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/slider/jquery-ui.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/leafletgeosearch/geosearch.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/leafletlocate/L.Control.Locate.min.css' %}">
 {% endblock %}
 
 {% block content %}
-<div id="carte_generale">
-  <div class="container-fluid" id="carte">
-      <div id="mapid" style="height:700px"></div>
-  </div>
-  <div id="div_filtre">
-    <b class="titre_filtre">Filtrer les orgues</b>
-
-    <form id="filtre_formulaire" class="carte_formulaire" action="" >
-      <div class="div_carte">
-        <label><b>Uniquement les orgues protégés au titre des monuments historiques : </b><input type="checkbox" name="mh" id="mh"></label>
-      </div>
-
-      <div class="div_carte">
-        <b>Par nombre de plans sonores : </b>
-        <div>
-          <label class="checkbox_claviers"><input type="checkbox" name="clavier" value="I"  checked>I</label>
-          <label class="checkbox_claviers"><input type="checkbox" name="clavier" value="II" checked>II</label>
-          <label class="checkbox_claviers"><input type="checkbox" name="clavier" value="III" checked>III</label>
-          <label class="checkbox_claviers"><input type="checkbox" name="clavier" value="IV" checked>IV</label>
-          <label class="checkbox_claviers"><input type="checkbox" name="clavier" value="V" checked>V</label>
-          <label class="checkbox_claviers"><input type="checkbox" name="clavier" value="VI" checked>VI</label>
-          <label class="checkbox_claviers"><input type="checkbox" name="Pedalier" value="P" checked>Avec pédalier</label>
-          <label class="checkbox_claviers"><input type="checkbox" name="clavier_NR" value="non renseigne" checked>Sans composition</label>
+    <div id="carte_generale">
+        <div class="container-fluid" id="carte">
+            <div id="mapid" style="height:700px"></div>
         </div>
-      </div>
+        <div id="div_filtre">
+            <b class="titre_filtre">Filtrer les orgues</b>
 
-      <div class="div_carte">
-        <b>Par nombre de jeux : </b>
-        <div id="slider-range"></div>
-        <p id="jeu-range"></p>
-      </div>
 
-      <div class="div_carte">
-        <b>Par état de fonctionnement : </b>
-        <div class="list_checkbox">
-          <label><input type="checkbox" name="etat" value="tres_bon" checked>Très bon, tout à fait jouable</label>
-          <label><input type="checkbox" name="etat" value="bon" checked>Bon : jouable, défauts mineurs</label>
-          <label><input type="checkbox" name="etat" value="altere" checked>Altéré : difficilement jouable</label>
-          <label><input type="checkbox" name="etat" value="degrade" checked>Dégradé ou en ruine : injouable</label>
-          <label><input type="checkbox" name="etat" value="restauration" checked>En restauration (ou projet initié)</label>
-          <label><input type="checkbox" name="etat_NR" value="non renseigne" checked>Non renseigné</label>
+
+
+            <form id="filtre_formulaire" class="carte_formulaire" action="">
+                <div class="div_carte">
+                    <label><b>Uniquement les orgues protégés au titre des monuments historiques : </b><input type="checkbox" name="mh" id="mh"></label>
+                </div>
+
+                <div class="div_carte">
+                    <b>Par nombre de plans sonores : </b>
+                    <div>
+                        <label class="checkbox_claviers"><input type="checkbox" name="clavier" value="I" checked>I</label>
+                        <label class="checkbox_claviers"><input type="checkbox" name="clavier" value="II" checked>II</label>
+                        <label class="checkbox_claviers"><input type="checkbox" name="clavier" value="III" checked>III</label>
+                        <label class="checkbox_claviers"><input type="checkbox" name="clavier" value="IV" checked>IV</label>
+                        <label class="checkbox_claviers"><input type="checkbox" name="clavier" value="V" checked>V</label>
+                        <label class="checkbox_claviers"><input type="checkbox" name="clavier" value="VI" checked>VI</label>
+                        <label class="checkbox_claviers"><input type="checkbox" name="Pedalier" value="P" checked>Avec pédalier</label>
+                        <label class="checkbox_claviers"><input type="checkbox" name="clavier_NR" value="non renseigne" checked>Sans composition</label>
+                    </div>
+                </div>
+
+                <div class="div_carte">
+                    <b>Par nombre de jeux : </b>
+                    <div id="slider-range"></div>
+                    <p id="jeu-range"></p>
+                </div>
+
+                <div class="div_carte">
+                    <b>Par état de fonctionnement : </b>
+                    <div class="list_checkbox">
+                        <label><input type="checkbox" name="etat" value="tres_bon" checked>Très bon, tout à fait jouable</label>
+                        <label><input type="checkbox" name="etat" value="bon" checked>Bon : jouable, défauts mineurs</label>
+                        <label><input type="checkbox" name="etat" value="altere" checked>Altéré : difficilement jouable</label>
+                        <label><input type="checkbox" name="etat" value="degrade" checked>Dégradé ou en ruine : injouable</label>
+                        <label><input type="checkbox" name="etat" value="restauration" checked>En restauration (ou projet initié)</label>
+                        <label><input type="checkbox" name="etat_NR" value="non renseigne" checked>Non renseigné</label>
+                    </div>
+                </div>
+
+                <div class="div_carte">
+                    <b>Par facteur d'orgue : </b>
+                    <select type="text" id="facteur_pk" placeholder="Choisir un facteur"></select>
+                    <label><input type="checkbox" name="construction" id="construction">N'afficher que les orgues pour lesquels le facteur a participé à la construction ou à la reconstruction.</label>
+                </div>
+                <input type="reset" id="reset" value="Réinitialiser" class="btn btn-primary rounded-pill mt-3 btn-block"/>
+            </form>
+
+            <b class="titre_filtre">Les manufactures d'orgues</b>
+            <form id="chercher_facteur" class="carte_formulaire" action="">
+                <div class="div_carte">
+                    <b>Rechercher une manufacture d'orgues :</b>
+                    <select type="text" id="nom_facteur_recherche" placeholder="Choisir un facteur"></select>
+                </div>
+            </form>
+            <label><input type="checkbox" name="manufacture" id="manufacture" style="margin-left: 15px;">Afficher toutes les manufactures d'orgues.</label>
         </div>
-      </div>
-
-      <div class="div_carte">
-        <b>Par facteur d'orgue : </b>
-        <select type="text" id="facteur_pk" placeholder="Choisir un facteur"></select>
-        <label><input type="checkbox" name="construction" id="construction">N'afficher que les orgues pour lesquels le facteur a participé à la construction ou à la reconstruction.</label>
-      </div>
-      <input type="reset" id="reset" value="Réinitialiser" class="btn btn-primary rounded-pill mt-3 btn-block" />
-      </form>
-
-    <b class="titre_filtre">Les manufactures d'orgues</b>
-    <form id="chercher_facteur" class="carte_formulaire" action="">
-      <div class="div_carte">
-        <b>Rechercher une manufacture d'orgues :</b>
-        <select type="text" id="nom_facteur_recherche" placeholder="Choisir un facteur"></select>
-      </div>
-    </form>
-    <label><input type="checkbox" name="manufacture" id="manufacture" style="margin-left: 15px;">Afficher toutes les manufactures d'orgues.</label>
-  </div>
-</div>
+    </div>
 
 {% endblock %}
 
 {% block js_extra %}
-  <script src="{% static 'plugins/leaflet/leaflet.js' %}"></script>
-  <script src="{% static 'plugins//leafletcluster/leaflet.markercluster.js' %}"></script>
-  <script src="{% static 'plugins/slider/jquery-ui.js' %}"></script>
-  <script src="{% static 'plugins/leafletcluster/leaflet.markercluster.js' %}"></script>
-  <script src="{% static 'plugins/leafletgeosearch/geosearch.js' %}"></script>
-  <script src="{% static 'plugins/leafletlocate/L.Control.Locate.min.js' %}"></script>
-  <script>
-    var carte_orgues = L.map('mapid',
-        {
-          scrollWheelZoom: true,
-        }).setView([46.2, 2.2], 5);
+    <script src="{% static 'plugins/leaflet/leaflet.js' %}"></script>
+    <script src="{% static 'plugins//leafletcluster/leaflet.markercluster.js' %}"></script>
+    <script src="{% static 'plugins/slider/jquery-ui.js' %}"></script>
+    <script src="{% static 'plugins/leafletcluster/leaflet.markercluster.js' %}"></script>
+    <script src="{% static 'plugins/leafletgeosearch/geosearch.js' %}"></script>
+    <script src="{% static 'plugins/leafletlocate/L.Control.Locate.min.js' %}"></script>
+    <script>
+        var carte_orgues = L.map('mapid',
+            {
+                scrollWheelZoom: true,
+            }).setView([46.2, 2.2], 5);
 
-    var mapboxAccessToken =
-        "pk.eyJ1IjoiaW52ZW50YWlyZWRlc29yZ3VlcyIsImEiOiJja243Y3huZWcwbXJjMndvNmU0dnhnM2ZpIn0.vUjgVVyXZFYNEl1xQ3pLww";
+        var mapboxAccessToken =
+            "pk.eyJ1IjoiaW52ZW50YWlyZWRlc29yZ3VlcyIsImEiOiJja243Y3huZWcwbXJjMndvNmU0dnhnM2ZpIn0.vUjgVVyXZFYNEl1xQ3pLww";
 
-    L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=" +
-    mapboxAccessToken,
-    {
-      id: "mapbox/light-v9",
-      attribution: "",
-      tileSize: 512,
-      zoomOffset: -1
-    }
-    ).addTo(carte_orgues);
-
-    const search = new GeoSearch.GeoSearchControl({
-      style: 'bar',
-      searchLabel: 'Rechercher par adresse',
-      autoComplete: true, // optional: true|false  - default true
-      autoCompleteDelay: 150,
-      zoomLevel: 12,
-      resultFormat: ({ result }) => '<b>' + result.label + '</b><br/><i>' + result.raw.properties.context + '</i>',
-      provider: new GeoSearch.GeoApiFrProvider({
-        params: {
-          type: 'municipality',
-          autocomplete: 1,
-        }
-      }),
-    });
-    console.log(search);
-    carte_orgues.addControl(search);
-    L.control.locate({
-      showPopup: false,
-      drawCircle: false,
-      initialZoomLevel: 10,
-    }).addTo(carte_orgues);
-
-    var mh_icon = L.icon({
-      iconUrl: '{% static 'img/mh_icon.png' %}',
-      shadowUrl: '{% static 'img/marker-shadow.png' %}',
-
-      iconSize: [25, 41], // size of the icon
-      shadowSize: [41, 41], // size of the shadow
-      iconAnchor: [12, 41], // point of the icon which will correspond to marker's location
-      shadowAnchor: [12, 41],  // the same for the shadow
-      popupAnchor:  [0, -30] // point from which the popup should open relative to the iconAnchor
-    });
-
-    var nonmh_icon = L.icon({
-      iconUrl: '{% static 'img/nonmh_icon.png' %}',
-      shadowUrl: '{% static 'img/marker-shadow.png' %}',
-
-      iconSize: [25, 41], // size of the icon
-      shadowSize: [41, 41], // size of the shadow
-      iconAnchor: [12, 41], // point of the icon which will correspond to marker's location
-      shadowAnchor: [12, 41],  // the same for the shadow
-      popupAnchor:  [0, -30] // point from which the popup should open relative to the iconAnchor
-    });
-
-    var facteur_icon = L.icon({
-      iconUrl: '{% static 'img/icone_facteur_carte.png' %}',
-
-      iconSize: [25, 25], // size of the icon
-      iconAnchor: [3, 35], // point of the icon which will correspond to marker's location
-      {#popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor#}
-    });
-
-    var markersCluster = new L.MarkerClusterGroup({
-      iconCreateFunction: function (cluster) {
-        return L.divIcon({
-          html: cluster.getChildCount(),
-          className: 'mycluster',
-          iconSize: null
-        });
-      }
-    });
-
-    var markersClusterFacteur = new L.MarkerClusterGroup({
-      iconCreateFunction: function (cluster) {
-        return L.divIcon({
-          html: cluster.getChildCount(),
-          className: 'myclusterfacteur',
-          iconSize: null
-        });
-      }
-    });
-
-    var liste_orgues = [];
-
-    $.getJSON("{% url 'orgues:orgue-list-js' %}", function (orgues) {
-      //Affiche les orgues à l'ouverture de la page.
-      liste_orgues = orgues;
-      afficher_orgue(orgues);
-    });
-
-    $('#filtre_formulaire').change(function(){
-      // Lorsqu'un élément du formulaire change, effectue la requête
-      update_filter();
-    })
-
-    function check_organ(filter){
-      //Renvoie un booléen indiquant si l'orgue satisfait les critères requis définis dans le filtre
-      return function(organ){
-        //Sélection des orgues classés
-        if (filter.mh && organ.mh === false) {
-          return false;
-        }
-
-        //Sélection des orgues par le nombre de jeux
-        if (organ.nombre_jeux < filter.min_jeux || organ.nombre_jeux > filter.max_jeux) {
-          return false;
-        }
-
-        //Sélection des orgues par leur composition
-        if (organ.composition !== undefined) {
-          if (! filter.composition_filter.includes(organ.composition)) {
-            return false;
-          }
-        }
-        else{
-          if (! filter.clavier_NR) {
-            return false;
-          }
-        }
-
-        //Sélection des orgues par leur état
-        if (organ.etat === null) {
-          if (! filter.etat_NR) {
-            return false;
-          }
-        }
-        else{
-          if (! filter.etat_filter.includes(organ.etat)) {
-            return false;
-          }
-        }
-
-        //Sélection des orgues par facteur
-        if (filter.facteur_pk != -1 && filter.facteur_pk !== null) {
-          if (! organ_builder_event_satisfied(filter.facteur_pk, filter.construction, organ.facteurs)) {
-            return false;
-          }
-        }
-        return true;
-      }
-    }
-
-    function organ_builder_event_satisfied(facteur_pk, construction, organ_facteurs) {
-      if (organ_facteurs == "") {
-        return false;
-      }
-      var result = false;
-      organ_facteurs.forEach(evenement => {
-        var evenement_facteur = evenement[0];
-        var evenement_type = evenement[1];
-        if (evenement_facteur == facteur_pk) {
-          if (construction) {
-            if (evenement_type == "construction" || evenement_type == "reconstruction") {
-              result = true;
+        L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=" +
+            mapboxAccessToken,
+            {
+                id: "mapbox/light-v9",
+                attribution: "",
+                tileSize: 512,
+                zoomOffset: -1
             }
-          }
-          else{
-            result = true;
-          }
+        ).addTo(carte_orgues);
+
+        const search = new GeoSearch.GeoSearchControl({
+            style: 'bar',
+            searchLabel: 'Rechercher par adresse',
+            autoComplete: true, // optional: true|false  - default true
+            autoCompleteDelay: 150,
+            zoomLevel: 12,
+            resultFormat: ({result}) => '<b>' + result.label + '</b><br/><i>' + result.raw.properties.context + '</i>',
+            provider: new GeoSearch.GeoApiFrProvider({
+                params: {
+                    type: 'municipality',
+                    autocomplete: 1,
+                }
+            }),
+        });
+        console.log(search);
+        carte_orgues.addControl(search);
+        L.control.locate({
+            showPopup: false,
+            drawCircle: false,
+            initialZoomLevel: 10,
+        }).addTo(carte_orgues);
+
+        var mh_icon = L.icon({
+            iconUrl: '{% static 'img/mh_icon.png' %}',
+            shadowUrl: '{% static 'img/marker-shadow.png' %}',
+
+            iconSize: [25, 41], // size of the icon
+            shadowSize: [41, 41], // size of the shadow
+            iconAnchor: [12, 41], // point of the icon which will correspond to marker's location
+            shadowAnchor: [12, 41],  // the same for the shadow
+            popupAnchor: [0, -30] // point from which the popup should open relative to the iconAnchor
+        });
+
+        var nonmh_icon = L.icon({
+            iconUrl: '{% static 'img/nonmh_icon.png' %}',
+            shadowUrl: '{% static 'img/marker-shadow.png' %}',
+
+            iconSize: [25, 41], // size of the icon
+            shadowSize: [41, 41], // size of the shadow
+            iconAnchor: [12, 41], // point of the icon which will correspond to marker's location
+            shadowAnchor: [12, 41],  // the same for the shadow
+            popupAnchor: [0, -30] // point from which the popup should open relative to the iconAnchor
+        });
+
+        var facteur_icon = L.icon({
+            iconUrl: '{% static 'img/icone_facteur_carte.png' %}',
+
+            iconSize: [25, 25], // size of the icon
+            iconAnchor: [3, 35], // point of the icon which will correspond to marker's location
+            {#popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor#}
+        });
+
+        var markersCluster = new L.MarkerClusterGroup({
+            iconCreateFunction: function (cluster) {
+                return L.divIcon({
+                    html: cluster.getChildCount(),
+                    className: 'mycluster',
+                    iconSize: null
+                });
+            }
+        });
+
+        var markersClusterFacteur = new L.MarkerClusterGroup({
+            iconCreateFunction: function (cluster) {
+                return L.divIcon({
+                    html: cluster.getChildCount(),
+                    className: 'myclusterfacteur',
+                    iconSize: null
+                });
+            }
+        });
+
+        var liste_orgues = [];
+
+        $.getJSON("{% url 'orgues:orgue-list-js' %}", function (orgues) {
+            //Affiche les orgues à l'ouverture de la page.
+            liste_orgues = orgues;
+            afficher_orgue(orgues);
+        });
+
+        $('#filtre_formulaire').change(function () {
+            // Lorsqu'un élément du formulaire change, effectue la requête
+            update_filter();
+        })
+
+        function check_organ(filter) {
+            //Renvoie un booléen indiquant si l'orgue satisfait les critères requis définis dans le filtre
+            return function (organ) {
+                //Sélection des orgues classés
+                if (filter.mh && organ.mh === false) {
+                    return false;
+                }
+
+                //Sélection des orgues par le nombre de jeux
+                if (organ.nombre_jeux < filter.min_jeux || organ.nombre_jeux > filter.max_jeux) {
+                    return false;
+                }
+
+                //Sélection des orgues par leur composition
+                if (organ.composition !== undefined) {
+                    if (!filter.composition_filter.includes(organ.composition)) {
+                        return false;
+                    }
+                } else {
+                    if (!filter.clavier_NR) {
+                        return false;
+                    }
+                }
+
+                //Sélection des orgues par leur état
+                if (organ.etat === null) {
+                    if (!filter.etat_NR) {
+                        return false;
+                    }
+                } else {
+                    if (!filter.etat_filter.includes(organ.etat)) {
+                        return false;
+                    }
+                }
+
+                //Sélection des orgues par facteur
+                if (filter.facteur_pk != -1 && filter.facteur_pk !== null) {
+                    if (!organ_builder_event_satisfied(filter.facteur_pk, filter.construction, organ.facteurs)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
         }
-      });
-      return result;
-    }
 
-    function get_composition(){
-      //Crée une liste contenant toutes les composiitons autorisées définies dans le filtre
-      const claviers = $('input[name="clavier"]:checked').map((_, item) => $(item).val()).get();
-      return $("input[name='Pedalier']").is(':checked') ? claviers.concat(claviers.map(item => item + "/P")) : claviers ;
-    }
+        function organ_builder_event_satisfied(facteur_pk, construction, organ_facteurs) {
+            if (organ_facteurs == "") {
+                return false;
+            }
+            var result = false;
+            organ_facteurs.forEach(evenement => {
+                var evenement_facteur = evenement[0];
+                var evenement_type = evenement[1];
+                if (evenement_facteur == facteur_pk) {
+                    if (construction) {
+                        if (evenement_type == "construction" || evenement_type == "reconstruction") {
+                            result = true;
+                        }
+                    } else {
+                        result = true;
+                    }
+                }
+            });
+            return result;
+        }
 
-    function update_filter() {
-      // Met à jour la liste des orgues à afficher
-      markersCluster.clearLayers();
-      composition_filter = get_composition();
-      const filter = {
-        mh: $('#mh').is(':checked'),
-        etat_filter: $('input[name="etat"]:checked').map((_, item) => $(item).val()).get(),
-        composition_filter: composition_filter,
-        clavier_NR: $("input[name='clavier_NR']").is(':checked'),
-        etat_NR: $("input[name='etat_NR']").is(':checked'),
-        facteur_pk: $("#facteur_pk").val(),
-        construction: $("input[name='construction']").is(':checked'),
-        min_jeux: $( "#slider-range" ).slider( "values", 0 ),
-        max_jeux: $( "#slider-range" ).slider( "values", 1 ),
-      }
-      orgues_affiches = liste_orgues.filter(check_organ(filter));
-      afficher_orgue(orgues_affiches);
-    }
+        function get_composition() {
+            //Crée une liste contenant toutes les composiitons autorisées définies dans le filtre
+            const claviers = $('input[name="clavier"]:checked').map((_, item) => $(item).val()).get();
+            return $("input[name='Pedalier']").is(':checked') ? claviers.concat(claviers.map(item => item + "/P")) : claviers;
+        }
 
-    $( "#slider-range" ).slider({
-      //Slider qui permet la sélection du nombre de jeux
-      range: true,
-      min: 0,
-      max: 130,
-      values: [ 0, 130 ],
-      change: function( event, ui ) {
+        function update_filter() {
+            // Met à jour la liste des orgues à afficher
+            markersCluster.clearLayers();
+            composition_filter = get_composition();
+            const filter = {
+                mh: $('#mh').is(':checked'),
+                etat_filter: $('input[name="etat"]:checked').map((_, item) => $(item).val()).get(),
+                composition_filter: composition_filter,
+                clavier_NR: $("input[name='clavier_NR']").is(':checked'),
+                etat_NR: $("input[name='etat_NR']").is(':checked'),
+                facteur_pk: $("#facteur_pk").val(),
+                construction: $("input[name='construction']").is(':checked'),
+                min_jeux: $("#slider-range").slider("values", 0),
+                max_jeux: $("#slider-range").slider("values", 1),
+            }
+            orgues_affiches = liste_orgues.filter(check_organ(filter));
+            afficher_orgue(orgues_affiches);
+        }
+
+        $("#slider-range").slider({
+            //Slider qui permet la sélection du nombre de jeux
+            range: true,
+            min: 0,
+            max: 130,
+            values: [0, 130],
+            change: function (event, ui) {
+                update_jeu_range();
+                update_filter();
+            }
+        });
+
+        function update_jeu_range() {
+            $("#jeu-range").html(
+                "Nombre de jeux : " + $("#slider-range").slider("values", 0) + " - " + $("#slider-range").slider("values", 1)
+            );
+        }
+
         update_jeu_range();
-        update_filter();
-      }
-    });
 
-    function update_jeu_range(){
-      $( "#jeu-range" ).html(
-        "Nombre de jeux : " + $( "#slider-range" ).slider( "values", 0 ) + " - " +  $( "#slider-range" ).slider( "values", 1 )
-      );
-    }
+        $('#manufacture').change(function () {
+            //Affiche ou cache les manufactures d'orgues en fonction de l'état du bouton.
+            if ($('#manufacture').is(':checked')) {
+                afficher_manufactures();
+            } else {
+                markersClusterFacteur.clearLayers();
+            }
+        })
 
-    update_jeu_range();
+        $("#reset").click(function () {
+            //Réinitialise le filtre
+            $("#mh").prop('checked', false);
+            $("input[name='clavier']").prop('checked', true);
+            $("input[name='etat']").prop('checked', true);
+            $("input[name='etat_NR']").prop('checked', true);
+            $("#construction").prop('checked', false);
+            $("#facteur_pk").empty();
+            $("#slider-range").slider("values", [0, 130]);
+        })
 
-    $('#manufacture').change(function(){
-      //Affiche ou cache les manufactures d'orgues en fonction de l'état du bouton.
-      if ($('#manufacture').is(':checked')){
-        afficher_manufactures();
-      }
-      else{
-        markersClusterFacteur.clearLayers();
-      }
-    })
-
-    $("#reset").click(function(){
-      //Réinitialise le filtre
-      $("#mh").prop('checked', false);
-      $("input[name='clavier']").prop('checked', true);
-      $("input[name='etat']").prop('checked', true);
-      $("input[name='etat_NR']").prop('checked', true);
-      $("#construction").prop('checked', false);
-      $("#facteur_pk").empty();
-      $( "#slider-range" ).slider( "values", [0, 130]);
-    })
-
-    $("#facteur_pk").select2({
-      //Liste des facteurs proposés dans le champ "Filtrer les orgues par facteur"
-      ajax: {
-        url: '{% url 'orgues:facteur-list-js' %}',
-        data: function (params) {
-          var query = {
-            search: params.term,
-            page: params.page || 1,
-            tous_facteurs: true
-          }
-          return query;
-        }
-      },
-      allowClear: true,
-      placeholder: {
-        id: '-1',
-        text: 'Tous les facteurs'
-      },
-      escapeMarkup: function (markup) {
-        return markup;
-      },
-      language: {
-          noResults: function () {
-            return "Aucun facteur trouvé ... contactez-nous si vous souhaitez ajouter un nouveau facteur.";
-          }
-      },
-      width: '100%'
-    });
-
-    $("#nom_facteur_recherche").select2({
-      //Liste des facteurs proposés dans le champ "Rechercher une manufacture d'orgues"
-      ajax: {
-        url: '{% url 'orgues:facteur-list-js-lonlat' %}',
-        data: function (params) {
-          var query = {
-            search: params.term,
-            page: params.page || 1
-          }
-          return query;
-        }
-      },
-      allowClear: true,
-      placeholder: {
-        id: '-1',
-        text: 'Sélectionner un facteur'
-      },
-      escapeMarkup: function (markup) {
-        return markup;
-      },
-      language: {
-          noResults: function () {
-            return "Aucun facteur trouvé ... contactez-nous si vous souhaitez ajouter un nouveau facteur.";
-          }
-      },
-      width: '100%'
-    });
-
-    $("#nom_facteur_recherche").change(function(e){
-      //Affiche les manufactures d'orgues et centre la carte sur celle choisie
-      e.preventDefault();
-      markersClusterFacteur.clearLayers();
-      document.getElementById("manufacture").checked = true;
-      afficher_manufactures();
-      data_filtre = {"facteur": $("#nom_facteur_recherche").val(), "type":"tout_type"}
-      $.ajax({
-        type: "GET",
-        url: "{% url 'orgues:facteur-js-lonlat' %}",
-        data: data_filtre,
-        success: function (data) {
-          carte_orgues.setView([data[0].latitude_atelier, data[0].longitude_atelier], 10);
-        },
-        error: function () {
-        }
-      })
-    })
-
-
-    function afficher_orgue(orgues){
-      //Affiche les orgues contenus dans la liste donnée en argument
-      markers = []
-      for (var i = 0; i < orgues.length; i++) {
-        var popup = '<p> <b>' + orgues[i].commune + '</b>' + '</br>' + orgues[i].edifice;
-        var ttip = '<p> <b>' + orgues[i].commune + '</b>' + '</br>' + orgues[i].edifice;
-        if (orgues[i].resume_composition) {
-          popup += ', ' + orgues[i].resume_composition;
-          ttip += ', ' + orgues[i].resume_composition + '</p>';
-        }
-        popup += '</br><a href="/detail/' + orgues[i].slug + '">Voir l\'orgue</a></p>';
-
-        var latLng = new L.LatLng(orgues[i].latitude, orgues[i].longitude);
-        var marker = new L.Marker(latLng, {icon:(orgues[i].mh) ? mh_icon : nonmh_icon});
-        marker.bindPopup(popup,{
-            maxWidth : 400,
-            autoPan: true,
+        $("#facteur_pk").select2({
+            //Liste des facteurs proposés dans le champ "Filtrer les orgues par facteur"
+            ajax: {
+                url: '{% url 'orgues:facteur-list-js' %}',
+                data: function (params) {
+                    var query = {
+                        search: params.term,
+                        page: params.page || 1,
+                        tous_facteurs: true
+                    }
+                    return query;
+                }
+            },
+            allowClear: true,
+            placeholder: {
+                id: '-1',
+                text: 'Tous les facteurs'
+            },
+            escapeMarkup: function (markup) {
+                return markup;
+            },
+            language: {
+                noResults: function () {
+                    return "Aucun facteur trouvé ... contactez-nous si vous souhaitez ajouter un nouveau facteur.";
+                }
+            },
+            width: '100%'
         });
-        marker.bindTooltip(ttip);
-        marker.on('popupopen', updatePopup(orgues[i].slug));
-        markers.push(marker);
-      }
-      markersCluster.addLayers(markers);
-      carte_orgues.addLayer(markersCluster);
-    }
 
-    function updatePopup(slug) {
-      return function(e) {
-          var popup = e.target.getPopup();
-          var url='/resume/' + slug;
-          $.get(url).done(function(data) {
-              popup.setContent(data);
-              popup.update();
-          })
-        };
-    }
-
-    function afficher_manufactures(){
-      //Affiche les manufactures d'orgues
-      $.getJSON("{% url 'orgues:facteur-list-js-leaflet' %}", function (facteurs) {
-          for (var i = 0; i < facteurs.length; i++) {
-            var popup = '<p> <b>' + facteurs[i].nom + '</p> </b>';
-            var latLng = new L.LatLng(facteurs[i].latitude_atelier, facteurs[i].longitude_atelier);
-            var marker = new L.Marker(latLng, {icon:facteur_icon}).bindPopup(popup);
-            markersClusterFacteur.addLayer(marker);
-          }
-          carte_orgues.addLayer(markersClusterFacteur);
+        $("#nom_facteur_recherche").select2({
+            //Liste des facteurs proposés dans le champ "Rechercher une manufacture d'orgues"
+            ajax: {
+                url: '{% url 'orgues:facteur-list-js-lonlat' %}',
+                data: function (params) {
+                    var query = {
+                        search: params.term,
+                        page: params.page || 1
+                    }
+                    return query;
+                }
+            },
+            allowClear: true,
+            placeholder: {
+                id: '-1',
+                text: 'Sélectionner un facteur'
+            },
+            escapeMarkup: function (markup) {
+                return markup;
+            },
+            language: {
+                noResults: function () {
+                    return "Aucun facteur trouvé ... contactez-nous si vous souhaitez ajouter un nouveau facteur.";
+                }
+            },
+            width: '100%'
         });
-    }
 
-    carte_orgues.on("zoom, move", function(event){
-      coord_url = '?lat='+carte_orgues.getCenter().lat+'&lon='+carte_orgues.getCenter().lng+'&z='+carte_orgues.getZoom();
-      window.history.pushState('', '', coord_url);
-    })
+        $("#nom_facteur_recherche").change(function (e) {
+            //Affiche les manufactures d'orgues et centre la carte sur celle choisie
+            e.preventDefault();
+            markersClusterFacteur.clearLayers();
+            document.getElementById("manufacture").checked = true;
+            afficher_manufactures();
+            data_filtre = {"facteur": $("#nom_facteur_recherche").val(), "type": "tout_type"}
+            $.ajax({
+                type: "GET",
+                url: "{% url 'orgues:facteur-js-lonlat' %}",
+                data: data_filtre,
+                success: function (data) {
+                    carte_orgues.setView([data[0].latitude_atelier, data[0].longitude_atelier], 10);
+                },
+                error: function () {
+                }
+            })
+        })
 
-  </script>
+
+        function afficher_orgue(orgues) {
+            //Affiche les orgues contenus dans la liste donnée en argument
+            markers = []
+            for (var i = 0; i < orgues.length; i++) {
+                var popup = '<p> <b>' + orgues[i].commune + '</b>' + '</br>' + orgues[i].edifice;
+                var ttip = '<p> <b>' + orgues[i].commune + '</b>' + '</br>' + orgues[i].edifice;
+                if (orgues[i].resume_composition) {
+                    popup += ', ' + orgues[i].resume_composition;
+                    ttip += ', ' + orgues[i].resume_composition + '</p>';
+                }
+                popup += '</br><a href="/detail/' + orgues[i].slug + '">Voir l\'orgue</a></p>';
+
+                var latLng = new L.LatLng(orgues[i].latitude, orgues[i].longitude);
+                var marker = new L.Marker(latLng, {icon: (orgues[i].mh) ? mh_icon : nonmh_icon});
+                marker.bindPopup(popup, {
+                    maxWidth: 400,
+                    autoPan: true,
+                });
+                marker.bindTooltip(ttip);
+                marker.on('popupopen', updatePopup(orgues[i].slug));
+                markers.push(marker);
+            }
+            markersCluster.addLayers(markers);
+            carte_orgues.addLayer(markersCluster);
+        }
+
+        function updatePopup(slug) {
+            return function (e) {
+                var popup = e.target.getPopup();
+                var url = '/resume/' + slug;
+                $.get(url).done(function (data) {
+                    popup.setContent(data);
+                    popup.update();
+                })
+            };
+        }
+
+        function afficher_manufactures() {
+            //Affiche les manufactures d'orgues
+            $.getJSON("{% url 'orgues:facteur-list-js-leaflet' %}", function (facteurs) {
+                for (var i = 0; i < facteurs.length; i++) {
+                    var popup = '<p> <b>' + facteurs[i].nom + '</p> </b>';
+                    var latLng = new L.LatLng(facteurs[i].latitude_atelier, facteurs[i].longitude_atelier);
+                    var marker = new L.Marker(latLng, {icon: facteur_icon}).bindPopup(popup);
+                    markersClusterFacteur.addLayer(marker);
+                }
+                carte_orgues.addLayer(markersClusterFacteur);
+            });
+        }
+
+        carte_orgues.on("zoom, move", function (event) {
+            coord_url = '?lat=' + carte_orgues.getCenter().lat + '&lon=' + carte_orgues.getCenter().lng + '&z=' + carte_orgues.getZoom();
+            window.history.pushState('', '', coord_url);
+        })
+
+    </script>
 
 {% endblock %}
