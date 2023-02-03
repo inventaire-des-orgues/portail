@@ -13,20 +13,13 @@
         <div id="div_filtre">
             <b class="titre_filtre">Filtrer les orgues</b>
 
-            <form id="searchform" action="" method="post">{% csrf_token %}
+            <form id="searchform" action="" class="m-b-10" method="post">{% csrf_token %}
                 {% for field in form %}
                     {% include 'stack_field.html' %}
                 {% endfor %}
+                <div id="slider-range" class="mb-10"></div>
             </form>
 
-            <b class="titre_filtre">Les manufactures d'orgues</b>
-            <form id="chercher_facteur" class="carte_formulaire" action="">
-                <div class="div_carte">
-                    <b>Rechercher une manufacture d'orgues :</b>
-                    <select type="text" id="nom_facteur_recherche" placeholder="Choisir un facteur"></select>
-                </div>
-            </form>
-            <label><input type="checkbox" name="manufacture" id="manufacture" style="margin-left: 15px;">Afficher toutes les manufactures d'orgues.</label>
         </div>
     </div>
 
@@ -35,13 +28,8 @@
 {% block js_extra %}
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js'></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css' rel='stylesheet'/>
-    <script src="{% static 'assets/js/plugins/ionslider/ion.rangeSlider.min.js' %}"></script>
-    <link rel="stylesheet" href="{% static 'assets/js/plugins/ionslider/ion.rangeSlider.min.css' %}">
-
 
     <script>
-
-
         var OrguesGeojson = {}
         var RegionTotaux = []
         var DepartementTotaux = []
@@ -164,7 +152,7 @@
             center: [2.2, 46.2],
             zoom: 4.8
         });
-        const zoomThresholdFirstLayer = 6.5;
+        const zoomThresholdFirstLayer = 5.7;
         const zoomThresholdSecondLayer = 7.5;
         var RegionGeojson = []
         $.ajax({
@@ -287,7 +275,7 @@
                     'circle-color': 'rgba(85,32,82,0.67)',
                     'circle-radius': ["interpolate", ['linear'],
                         ["get", "nb_orgues"],
-                        100, 10,
+                        100, 12,
                         2500, 20,
                     ]
                 }

@@ -217,30 +217,27 @@ class OrgueListJS2(View):
     renvoie sous format json tous les orgues disposant d'une latitude et d'une longitude.
     """
 
-
     def post(self, request, *args, **kwargs):
         form = orgue_forms.OrgueCarteForm(request.POST)
         if form.is_valid():
-            queryset = Orgue.objects.all()
-            print(form.cleaned_data)
+            queryset = Orgue.objects.all().prefetch_related("claviers")
+            if form.cleaned_data["monument"]:
+                queryset = queryset.filter(references_palissy__isnull=False)
             if form.cleaned_data["plan_sonore"]:
-                pass
-            if form.cleaned_data["plan_sonore"]:
-                print(queryset.count())
                 if "pedalier" in form.cleaned_data["plan_sonore"]:
                     form.cleaned_data["plan_sonore"].remove("pedalier")
                     queryset = queryset.filter(claviers__type__nom__in=['Pédale', 'Pédalier', 'Pedalwerk', 'Pedal', 'Pedalero', 'Pedaliera'])
                 plan_sonore = [int(x) for x in form.cleaned_data["plan_sonore"]]
                 if plan_sonore:
-                    claviers = Clavier.objects.annotate(jeux_count=Count("jeux")).filter(jeux_count__in=plan_sonore).all()
-                    queryset = queryset.filter(claviers__in=claviers)
-                    print(queryset.count())
-                    #queryset = queryset.annotate(jeux_count=Count('clavier__jeux')).filter(jeux_count=int(form.cleaned_data["jeux"]))
+                    queryset = queryset.annotate(clavier_count=Count("claviers")).filter(clavier_count__in=plan_sonore)
+            if form.cleaned_data["jeux_inf"] != 0 or form.cleaned_data["jeux_sup"] != 130:
+                claviers = Clavier.objects.annotate(jeux_count=Count("jeux")).filter(jeux_count__gte=form.cleaned_data["jeux_inf"],
+                                                                                     jeux_count__lte=form.cleaned_data["jeux_sup"]).all()
+                queryset = queryset.filter(claviers__in=claviers)
             if form.cleaned_data["etat"]:
                 queryset = queryset.filter(etat__in=form.cleaned_data["etat"])
             if form.cleaned_data["facteurs"]:
                 queryset = queryset.filter(evenements__facteurs__in=form.cleaned_data["facteurs"])
-
             FeaturesOrgues = []
             for orgue in queryset:
                 FeaturesOrgues.append(
@@ -263,11 +260,10 @@ class OrgueListJS2(View):
                     "features": FeaturesOrgues
                 }
             }
-            totaux_region = list(queryset.values("region").annotate(total=Count("region")).order_by('total'))
-            totaux_region = {region["region"]: region["total"] for region in totaux_region}
-            totaux_departement = list(queryset.values("departement").annotate(total=Count("departement")).order_by('total'))
-            totaux_departement = {departement["departement"]: departement["total"] for departement in totaux_departement}
-
+            totaux_region = list(queryset.values("region").annotate(total_region=Count("region")).order_by('total_region'))
+            totaux_region = {region["region"]: region["total_region"] for region in totaux_region}
+            totaux_departement = list(queryset.values("departement").annotate(total_departement=Count("departement")).order_by('total_departement'))
+            totaux_departement = {departement["departement"]: departement["total_departement"] for departement in totaux_departement}
             return JsonResponse({
                 "totaux_regions": totaux_region,
                 "totaux_departements": totaux_departement,
