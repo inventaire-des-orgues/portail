@@ -9,11 +9,11 @@
   <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type='image/x-icon'>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   {% block meta_tags %}
-  <title>Inventaire national des orgues</title>
-  <meta name="description" content="La France compte plus de 8500 orgues sur tout le territoire national, dont plus de 1600 sont classés ou inscrits au titre des monuments historiques. La beauté et la diversité de ses orgues sont reconnues dans le monde entier. En plus de mettre en avant la grande qualité de la facture d'orgue française, ce patrimoine offre un éventail complet de toutes les créations artistiques témoins des écoles européennes à travers le temps.L’inventaire des orgues a pour objectif de rassembler de manière collaborative sur un site internet dédié toutes les données actuellement disponibles sur les orgues en France.">
-  <meta property="og:title" content="Inventaire national des orgues">
-  <meta property="og:description" content="La France compte plus de 8500 orgues sur tout le territoire national, dont plus de 1600 sont classés ou inscrits au titre des monuments historiques. La beauté et la diversité de ses orgues sont reconnues dans le monde entier. En plus de mettre en avant la grande qualité de la facture d'orgue française, ce patrimoine offre un éventail complet de toutes les créations artistiques témoins des écoles européennes à travers le temps.L’inventaire des orgues a pour objectif de rassembler de manière collaborative sur un site internet dédié toutes les données actuellement disponibles sur les orgues en France.">
-  <meta property="og:image" content="{% static 'img/orgue_illustration_enfants.jpg' %}">
+    <title>Inventaire national des orgues</title>
+    <meta name="description" content="La France compte plus de 8500 orgues sur tout le territoire national, dont plus de 1600 sont classés ou inscrits au titre des monuments historiques. La beauté et la diversité de ses orgues sont reconnues dans le monde entier. En plus de mettre en avant la grande qualité de la facture d'orgue française, ce patrimoine offre un éventail complet de toutes les créations artistiques témoins des écoles européennes à travers le temps.L’inventaire des orgues a pour objectif de rassembler de manière collaborative sur un site internet dédié toutes les données actuellement disponibles sur les orgues en France.">
+    <meta property="og:title" content="Inventaire national des orgues">
+    <meta property="og:description" content="La France compte plus de 8500 orgues sur tout le territoire national, dont plus de 1600 sont classés ou inscrits au titre des monuments historiques. La beauté et la diversité de ses orgues sont reconnues dans le monde entier. En plus de mettre en avant la grande qualité de la facture d'orgue française, ce patrimoine offre un éventail complet de toutes les créations artistiques témoins des écoles européennes à travers le temps.L’inventaire des orgues a pour objectif de rassembler de manière collaborative sur un site internet dédié toutes les données actuellement disponibles sur les orgues en France.">
+    <meta property="og:image" content="{% static 'img/orgue_illustration_enfants.jpg' %}">
   {% endblock %}
   <link href="{% static 'polo/css/plugins.css' %}" rel="stylesheet">
   <link href="{% static 'polo/scss/style.css' %}" rel="stylesheet">
@@ -28,21 +28,22 @@
 </head>
 <body>
 {% block body %}
+
   <div id="topbar" class="dark topbar-fullwidth">
     <div class="container">
       <div class="row">
         <div class="col-md-6">
           <ul class="top-menu">
             {% if request.user.is_staff %}
-            <li>
-              <a href="/admin/">
-                <i class="fa fa-cog"></i>
-                Administration
-              </a>
-            </li>
-            <li>
-              <a href="{% url 'orgues:dashboard' %}"> <i class="fa fa-chart-line"></i> Dashboard</a>
-            </li>
+              <li>
+                <a href="/admin/">
+                  <i class="fa fa-cog"></i>
+                  Administration
+                </a>
+              </li>
+              <li>
+                <a href="{% url 'orgues:dashboard' %}"> <i class="fa fa-chart-line"></i> Dashboard</a>
+              </li>
             {% endif %}
             <li>
               <a href="https://github.com/inventaire-des-orgues/portail/projects/1">
@@ -137,14 +138,15 @@
   {% endblock %}
   {% block modal %}
   {% endblock %}
+  {% block footer %}
 
-  {% include 'footer.html' %}
+    {% include 'footer.html' %}
+  {% endblock %}
 {% endblock %}
 <script src="{% static 'polo/js/jquery.js' %}"></script>
 <script src="{% static 'plugins/popper/popper.min.js' %}"></script>
 <script src="{% static 'polo/js/plugins.js' %}"></script>
 <script src="{% static 'polo/js/functions.js' %}"></script>
-<!--<script src="{% static 'plugins/select2/select2.min.js' %}"></script>-->
 <script src="{% static 'plugins/select2/select2.full.min.js' %}"></script>
 <script src="{% static 'plugins/select2/i18n/fr.js' %}"></script>
 <script src="{% static 'plugins/toastr/toastr.min.js' %}"></script>
@@ -156,8 +158,12 @@
   })
   $(function () {
     $('[data-toggle="tooltip-children"]').hover(
-      function(e){$(this).find('.tooltip-children').tooltip('show');},
-      function(e){$(this).find('.tooltip-children').tooltip('hide');}
+        function (e) {
+          $(this).find('.tooltip-children').tooltip('show');
+        },
+        function (e) {
+          $(this).find('.tooltip-children').tooltip('hide');
+        }
     );
   })
 </script>

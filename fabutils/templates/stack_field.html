@@ -4,15 +4,15 @@
     {{ field }}
   {% elif field|is_checkbox %}
     <div class="form-check">
-    {{ field }}
-    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+      {{ field|addcssclass:'form-check-input' }}
+      <label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
     </div>
   {% else %}
     {% if field.label %}
       <label class="" for="{{ field.id_for_label }}">
         {{ field.label }}
         {% if label %}
-         <span class="label-plus">({{ label }})</span>
+          <span class="label-plus">({{ label }})</span>
         {% endif %}
         {% if field.field.required %}
           <span class="required">*</span>
@@ -34,6 +34,6 @@
   {% endfor %}
   <small class="help-block">
     {% if field.help_text %}
-     <i class="fa fa-info-circle"></i> {{ field.help_text | safe }}
+      <i class="fa fa-info-circle"></i> {{ field.help_text | safe }}
     {% endif %}</small>
 </div>

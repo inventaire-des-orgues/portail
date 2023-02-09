@@ -18,6 +18,8 @@ from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy, reverse
+from django.utils.decorators import method_decorator
+from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.generic import DetailView, TemplateView, ListView
 from django.views.generic.base import View
 
@@ -155,128 +157,113 @@ class OrgueSearch(View):
         labels = {'departement': 'Département', 'region': 'Régions', 'resume_composition_clavier': 'Nombres de claviers', 'facet_facteurs': 'Facteurs', 'jeux': 'Jeux'}
         return [{'label': labels[name], 'field': name,
                  'items': sorted([{'name': item, 'count': count} for item, count in values.items()], key=lambda k: k['count'], reverse=True)} for name, values in
-                facetsDistribution.items()]
+                facetDistribution.items()]
+
+
+class OrgueCarteOld(TemplateView):
+    """
+    Cartographie des orgues (gérée par Leaflet).
+    La page est vide initialement et les orgues sont récupérés après coup en javascript via la vue OrgueListJS
+    """
+    template_name = "orgues/carte_old.html"
 
 
 class OrgueCarte(TemplateView):
     """
-    Cartographie des orgues (gérée par Leaflet).
-    La page est vide initialement et les orgues sont récupérés après coup en javascript via la vue OrgueListJS
+    Cartographie des orgues (Mapbox).
+    La page est vide initialement et les orgues sont récupérés après coup en javascript via une requête POST.
+    Cette vue peut être appelée en iframe (avec le paramètre iframe=true) pour être intégrée dans un autre site.
     """
     template_name = "orgues/carte.html"
 
-
-class OrgueCarte2(TemplateView):
-    """
-    Cartographie des orgues (gérée par Leaflet).
-    La page est vide initialement et les orgues sont récupérés après coup en javascript via la vue OrgueListJS
-    """
-    template_name = "orgues/carte2.html"
+    @method_decorator(xframe_options_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context["form"] = orgue_forms.OrgueCarteForm()
+        context["MAPBOX_ACCESS_TOKEN"] = settings.MAPBOX_ACCESS_TOKEN
+        context["FULL_SITE_URL"] = settings.FULL_SITE_URL
+        if self.request.GET.get("iframe") == "true":
+            context["iframe"] = True
+            context["extends_template"] = "orgues/carte_iframe.html"
+        else:
+            context["extends_template"] = "base.html"
+
         return context
 
-
-class OrgueListJS(View):
-    """
-    Cette vue est requêtée par Leaflet lors de l'affichage de la carte de France dans "orgues/carte.html". Elle
-    renvoie sous format json tous les orgues disposant d'une latitude et d'une longitude.
-    """
-
-    def get(self, request, *args, **kwargs):
-        with connection.cursor() as cursor:
-            cursor.execute(
-                sql="SELECT o.id, o.slug, o.commune, o.latitude, o.longitude, o.emplacement, o.edifice, o.resume_composition, o.references_palissy, o.etat, o.region, group_concat(DISTINCT f.facteur_id || ':' || e.type) as facteurs  FROM orgues_orgue o LEFT JOIN orgues_evenement e ON e.orgue_id = o.id LEFT JOIN orgues_evenement_facteurs f ON f.evenement_id = e.id WHERE o.latitude IS NOT NULL AND o.longitude IS NOT NULL GROUP BY o.id")
-            columns = [col[0] for col in cursor.description]
-            rows = [self.convert(dict(zip(columns, row))) for row in cursor.fetchall()]
-            cursor.execute("SELECT sql FROM sqlite_master WHERE tbl_name = 'orgues_orgue' AND type = 'table'")
-            return JsonResponse(rows, safe=False)
-
-    def convert(self, item):
-        if item['resume_composition'] is not None:
-            split = item.pop('resume_composition').split(', ')
-            item['nombre_jeux'] = int(split[0])
-            item['composition'] = split[1]
-        if item['facteurs'] is not None:
-            item['facteurs'] = list(map(lambda item: item.split(':'), item['facteurs'].split(',')))
-        else:
-            item['facteurs'] = []
-        item['mh'] = item.pop('references_palissy') is not None
-        return item
-
-
-class OrgueListJS2(View):
-    """
-    Cette vue est requêtée par Leaflet lors de l'affichage de la carte de France dans "orgues/carte.html". Elle
-    renvoie sous format json tous les orgues disposant d'une latitude et d'une longitude.
-    """
-
     def post(self, request, *args, **kwargs):
+        """
+        On génère le geojson des orgues en fonction des filtres
+        """
         form = orgue_forms.OrgueCarteForm(request.POST)
         if form.is_valid():
-            queryset = Orgue.objects.all().prefetch_related("claviers")
-            if form.cleaned_data["monument"]:
-                queryset = queryset.filter(references_palissy__isnull=False)
-            if form.cleaned_data["plan_sonore"]:
-                if "pedalier" in form.cleaned_data["plan_sonore"]:
-                    form.cleaned_data["plan_sonore"].remove("pedalier")
-                    queryset = queryset.filter(claviers__type__nom__in=['Pédale', 'Pédalier', 'Pedalwerk', 'Pedal', 'Pedalero', 'Pedaliera'])
-                plan_sonore = [int(x) for x in form.cleaned_data["plan_sonore"]]
-                if plan_sonore:
-                    queryset = queryset.annotate(clavier_count=Count("claviers")).filter(clavier_count__in=plan_sonore)
-            if form.cleaned_data["jeux_inf"] != 0 or form.cleaned_data["jeux_sup"] != 130:
-                claviers = Clavier.objects.annotate(jeux_count=Count("jeux")).filter(jeux_count__gte=form.cleaned_data["jeux_inf"],
-                                                                                     jeux_count__lte=form.cleaned_data["jeux_sup"]).all()
-                queryset = queryset.filter(claviers__in=claviers)
-            if form.cleaned_data["etat"]:
-                queryset = queryset.filter(etat__in=form.cleaned_data["etat"])
-            if form.cleaned_data["facteurs"]:
-                queryset = queryset.filter(evenements__facteurs__in=form.cleaned_data["facteurs"])
-            FeaturesOrgues = []
-            for orgue in queryset:
-                FeaturesOrgues.append(
+            try:
+                client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
+                index = client.index(uid='orgues')
+            except:
+                return JsonResponse({'message': 'Le moteur de recherche est mal configuré'}, status=500)
+
+            options = {'facets': ['region', 'departement'], 'limit': 100000}
+            filters = []
+            if form.cleaned_data['etats']:
+                etat_filter = " OR ".join([f'etat = "{etat}"' for etat in form.cleaned_data['etats']])
+                filters.append(f'({etat_filter})')
+            if form.cleaned_data['facteurs']:
+                facteur_filter = " OR ".join([f'facet_facteurs = "{facteur.nom.strip()}"' for facteur in form.cleaned_data['facteurs']])
+                filters.append(f'({facteur_filter})')
+            if form.cleaned_data['jeux']:
+                jeux_filter = f"jeux_count {form.cleaned_data['jeux'][0]} TO {form.cleaned_data['jeux'][1]}"
+                filters.append(f'({jeux_filter})')
+            if form.cleaned_data['monument']:
+                filters.append(f'(monument_historique = "true")')
+            if filters:
+                options['filter'] = " AND ".join(filters)
+            results = index.search(None, options)
+            features = []
+            for orgue in results['hits']:
+                features.append(
                     {
                         "type": "Feature",
-                        "id": orgue.id,
+                        "id": orgue['id'],
                         "geometry": {
                             "type": "Point",
-                            "coordinates": [orgue.longitude, orgue.latitude]
+                            "coordinates": [orgue['longitude'], orgue['latitude']]
                         },
                         "properties": {
-                            "nom": orgue.edifice
+                            "nom": orgue['edifice'],
+                            "monument_historique": orgue['monument_historique'],
                         },
                     }
                 )
-            orgue_geojson = {
-                'type': 'geojson',
-                'data': {
-                    "type": "FeatureCollection",
-                    "features": FeaturesOrgues
-                }
+            orgues_geojson = {
+                "type": "FeatureCollection",
+                "features": features
             }
-            totaux_region = list(queryset.values("region").annotate(total_region=Count("region")).order_by('total_region'))
-            totaux_region = {region["region"]: region["total_region"] for region in totaux_region}
-            totaux_departement = list(queryset.values("departement").annotate(total_departement=Count("departement")).order_by('total_departement'))
-            totaux_departement = {departement["departement"]: departement["total_departement"] for departement in totaux_departement}
             return JsonResponse({
-                "totaux_regions": totaux_region,
-                "totaux_departements": totaux_departement,
-                "orgues_geojson": orgue_geojson
+                "totaux_regions": results['facetDistribution']['region'],
+                "totaux_departements": results['facetDistribution']['departement'],
+                "orgues_geojson": orgues_geojson
             })
+        else:
+            return JsonResponse({'message': 'Le formulaire est invalide'}, status=400)
 
 
-class OrgueInformations(View):
+class OrgueCartePopup(View):
     """
-    Cette vue est requêtée par Leaflet lors de l'affichage de la carte de France
+    Génère des popups à la demande pour la carte des orgues
     """
+
+    @method_decorator(xframe_options_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         orgue_id = request.GET.get("orgue_id")
         if orgue_id:
             orgue = Orgue.objects.get(id=orgue_id)
-            message = render_to_string("orgues/orgue_description.html", context={"orgue": orgue})
+            message = render_to_string("orgues/carte_popup.html", context={"orgue": orgue,"FULL_SITE_URL": settings.FULL_SITE_URL})
             return JsonResponse({"message": message}, safe=False)
 
 
@@ -759,7 +746,7 @@ class TypeJeuListJS(FabView):
 
         return {
             "results": [{'id': r['id'], 'text': r['nom']} for r in results['hits']],
-            "pagination": {"more": results['nbHits'] > TypeJeuListJS.paginate_by}
+            "pagination": {"more": results['estimatedTotalHits'] > TypeJeuListJS.paginate_by}
         }
 
 

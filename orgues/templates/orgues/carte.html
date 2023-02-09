@@ -1,457 +1,539 @@
-{% extends 'base.html' %}
+{% extends extends_template %}
 {% load static %}
 
 {% block head_extra %}
-    <link rel="stylesheet" href="{% static 'plugins/leaflet/leaflet.css' %}">
-    <link rel="stylesheet" href="{% static 'plugins/leafletcluster/MarkerCluster.Default.css' %}">
-    <link rel="stylesheet" href="{% static 'plugins/slider/jquery-ui.css' %}">
-    <link rel="stylesheet" href="{% static 'plugins/leafletgeosearch/geosearch.css' %}">
-    <link rel="stylesheet" href="{% static 'plugins/leafletlocate/L.Control.Locate.min.css' %}">
+  {% if not iframe %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/css/ion.rangeSlider.min.css"/>
+  {% endif %}
+  <style>
+      .irs--round .irs-bar {
+          background-color: #5c1c54;
+      }
+
+      .irs--round .irs-handle {
+          border-color: #5c1c54;
+      }
+
+      .irs--round .irs-from, .irs--round .irs-to, .irs--round .irs-single {
+          background-color: #5c1c54;
+      }
+
+      .irs--round .irs-from:before, .irs--round .irs-to:before, .irs--round .irs-single:before {
+          border-top-color: #5c1c54;
+      }
+      .mapboxgl-popup {
+          z-index: 10000;
+      }
+
+      #filtercard {
+          width: 300px;
+          border-radius: 25px;
+          margin: 30px;
+          background: rgba(255, 255, 255, 0.95);
+          position: absolute;
+          left: 30px;
+          top: 30px;
+      }
+
+      #filtercard .card-body {
+          border-radius: 25px;
+      }
+
+      {% if iframe %}
+          #filtercard {
+              display: none !important;
+          }
+
+          #carteorgues_container {
+              height: 100vh;
+              width: 100vw;
+          }
+      {% else %}
+          #carteorgues_container {
+              height: 80vh;
+              width: 100vw;
+          }
+      {% endif %}
+  </style>
 {% endblock %}
 
 {% block content %}
-    <div id="carte_generale">
-        <div class="container-fluid" id="carte">
-            <div id="mapid" style="height:700px"></div>
+  <div class="position-relative" id="carteorgues_container">
+    <div id="carteorgues" class="w-100 h-100"></div>
+    <div class="card d-none d-md-block" id="filtercard">
+      <div class="card-body">
+        <form id="searchform" action="" class="m-b-10" method="post">{% csrf_token %}
+          <div class="form-group">
+            <label for="">Commune</label>
+            <select name="" id="id_commune" class="form-control">
+            </select>
+          </div>
+          {% for field in form %}
+            {% include 'stack_field.html' %}
+          {% endfor %}
+        </form>
+        {% if request.user.is_authenticated %}
+          <hr>
+          <div class="text-center">
+            <a href="" class="mr-3 text-primary text-decoration-none"><i class="fa fa-times-circle"></i> Réinitialiser</a>
+            <a class="text-primary" data-toggle="modal" href="#sharemodal">
+              <i class="fa fa-share-alt"></i> Intégrer</a>
+          </div>
+        {% endif %}
+        <div class="modal fade" id="sharemodal" tabindex="-1" role="modal" aria-labelledby="modal-label" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title" id="modal-label">Intégrer</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-md-12">
+                    <p>
+                      Pour intégrer cette carte à votre site, copiez coller le code ci-dessous. <br>
+                      Le niveau de zoom et la position de la carte actuelle seront conservés.
+                    </p>
+                    <textarea class="form-control" id="iframe"></textarea>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-b" data-dismiss="modal">Fermer</button>
+              </div>
+            </div>
+          </div>
         </div>
-        <div id="div_filtre">
-            <b class="titre_filtre">Filtrer les orgues</b>
-
-
-
-
-            <form id="filtre_formulaire" class="carte_formulaire" action="">
-                <div class="div_carte">
-                    <label><b>Uniquement les orgues protégés au titre des monuments historiques : </b><input type="checkbox" name="mh" id="mh"></label>
-                </div>
-
-                <div class="div_carte">
-                    <b>Par nombre de plans sonores : </b>
-                    <div>
-                        <label class="checkbox_claviers"><input type="checkbox" name="clavier" value="I" checked>I</label>
-                        <label class="checkbox_claviers"><input type="checkbox" name="clavier" value="II" checked>II</label>
-                        <label class="checkbox_claviers"><input type="checkbox" name="clavier" value="III" checked>III</label>
-                        <label class="checkbox_claviers"><input type="checkbox" name="clavier" value="IV" checked>IV</label>
-                        <label class="checkbox_claviers"><input type="checkbox" name="clavier" value="V" checked>V</label>
-                        <label class="checkbox_claviers"><input type="checkbox" name="clavier" value="VI" checked>VI</label>
-                        <label class="checkbox_claviers"><input type="checkbox" name="Pedalier" value="P" checked>Avec pédalier</label>
-                        <label class="checkbox_claviers"><input type="checkbox" name="clavier_NR" value="non renseigne" checked>Sans composition</label>
-                    </div>
-                </div>
-
-                <div class="div_carte">
-                    <b>Par nombre de jeux : </b>
-                    <div id="slider-range"></div>
-                    <p id="jeu-range"></p>
-                </div>
-
-                <div class="div_carte">
-                    <b>Par état de fonctionnement : </b>
-                    <div class="list_checkbox">
-                        <label><input type="checkbox" name="etat" value="tres_bon" checked>Très bon, tout à fait jouable</label>
-                        <label><input type="checkbox" name="etat" value="bon" checked>Bon : jouable, défauts mineurs</label>
-                        <label><input type="checkbox" name="etat" value="altere" checked>Altéré : difficilement jouable</label>
-                        <label><input type="checkbox" name="etat" value="degrade" checked>Dégradé ou en ruine : injouable</label>
-                        <label><input type="checkbox" name="etat" value="restauration" checked>En restauration (ou projet initié)</label>
-                        <label><input type="checkbox" name="etat_NR" value="non renseigne" checked>Non renseigné</label>
-                    </div>
-                </div>
-
-                <div class="div_carte">
-                    <b>Par facteur d'orgue : </b>
-                    <select type="text" id="facteur_pk" placeholder="Choisir un facteur"></select>
-                    <label><input type="checkbox" name="construction" id="construction">N'afficher que les orgues pour lesquels le facteur a participé à la construction ou à la reconstruction.</label>
-                </div>
-                <input type="reset" id="reset" value="Réinitialiser" class="btn btn-primary rounded-pill mt-3 btn-block"/>
-            </form>
-
-            <b class="titre_filtre">Les manufactures d'orgues</b>
-            <form id="chercher_facteur" class="carte_formulaire" action="">
-                <div class="div_carte">
-                    <b>Rechercher une manufacture d'orgues :</b>
-                    <select type="text" id="nom_facteur_recherche" placeholder="Choisir un facteur"></select>
-                </div>
-            </form>
-            <label><input type="checkbox" name="manufacture" id="manufacture" style="margin-left: 15px;">Afficher toutes les manufactures d'orgues.</label>
-        </div>
+      </div>
     </div>
+  </div>
+
+{% endblock %}
+{% block footer %}
 
 {% endblock %}
 
 {% block js_extra %}
-    <script src="{% static 'plugins/leaflet/leaflet.js' %}"></script>
-    <script src="{% static 'plugins//leafletcluster/leaflet.markercluster.js' %}"></script>
-    <script src="{% static 'plugins/slider/jquery-ui.js' %}"></script>
-    <script src="{% static 'plugins/leafletcluster/leaflet.markercluster.js' %}"></script>
-    <script src="{% static 'plugins/leafletgeosearch/geosearch.js' %}"></script>
-    <script src="{% static 'plugins/leafletlocate/L.Control.Locate.min.js' %}"></script>
+
+  <script src='https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css' rel='stylesheet'/>
+
+  <script>
+    mapboxgl.accessToken = '{{ MAPBOX_ACCESS_TOKEN}}';
+    let initial_zoom = 4.8;
+    let initial_lat = 46.2;
+    let initial_lng = 2.2;
+    {% if request.GET.zoom %}
+      initial_zoom = {{ request.GET.zoom }};
+    {% endif %}
+    {% if request.GET.lat %}
+      initial_lat = {{ request.GET.lat }};
+    {% endif %}
+    {% if request.GET.lng %}
+      initial_lng = {{ request.GET.lng }};
+    {% endif %}
+
+    var map = new mapboxgl.Map({
+      'container': 'carteorgues',
+      style: 'mapbox://styles/mapbox/' + "light-v10",
+      center: [initial_lng, initial_lat],
+      zoom: initial_zoom
+    });
+
+    // disable map zoom when using scroll and add zoom control
+    map.addControl(new mapboxgl.NavigationControl());
+    let RegionsCentresGeoJson = {"type": "FeatureCollection", "features": []};
+    let RegionsGeoJson = {"type": "FeatureCollection", "features": []};
+    let DepartementsCentresGeoJson = {"type": "FeatureCollection", "features": []};
+    let DepartementsGeoJson = {"type": "FeatureCollection", "features": []};
+    let OrguesGeoJson = {"type": "FeatureCollection", "features": []};
+
+
+    var GetBiggestPolygon = function (polygons) {
+      let coordinates = polygons[0]
+      if (polygons.length !== 1) {
+        for (let polygon of polygons) {
+          if (polygon[0].length > coordinates.length) {
+            coordinates = polygon[0]
+          }
+        }
+      }
+      return coordinates
+    }
+
+    $.getJSON('{% static 'geojson/regions_centres.json' %}', function (data) {
+      RegionsCentresGeoJson = data;
+    })
+    $.getJSON('{% static 'geojson/regions.json' %}', function (data) {
+      RegionsGeoJson = data;
+    })
+    $.getJSON('{% static 'geojson/departements_centres.json' %}', function (data) {
+      DepartementsCentresGeoJson = data;
+    })
+
+    $.getJSON('{% static 'geojson/departements.json' %}', function (data) {
+      DepartementsGeoJson = data;
+    })
+
+
+    const zoomThresholdFirstLayer = 5.7;
+    const zoomThresholdSecondLayer = 8;
+
+
+    map.on('load', () => {
+      map.addSource('regionscentres', {type: 'geojson', data: RegionsCentresGeoJson});
+      map.addSource('regions', {type: 'geojson', data: RegionsGeoJson});
+      map.addSource('departementscentres', {type: 'geojson', data: DepartementsCentresGeoJson});
+      map.addSource('departements', {type: 'geojson', data: DepartementsGeoJson});
+      map.addSource('orgues', {type: 'geojson', data: OrguesGeoJson});
+
+      SearchData();
+
+      // Add a new layer to visualize the polygon.
+      map.addLayer({
+        'id': 'regions',
+        'type': 'fill',
+        'source': 'regions', // reference the data source
+        'paint': {
+          'fill-color': '#627BC1 ',
+          'fill-opacity': [
+            "case",
+            ["boolean", ["feature-state", "hover"], false],
+            1, 0
+          ],
+        }
+      });
+      map.addLayer({
+        'id': 'outline',
+        'type': 'line',
+        'source': 'regions',
+        'layout': {},
+        'paint': {
+          'line-color': 'rgba(85,32,82,0.67)',
+          'line-width': 1
+        }
+      });
+      map.addLayer({
+        'id': 'departements',
+        'type': 'fill',
+        'minzoom': zoomThresholdFirstLayer,
+        'source': 'departements',
+        'paint': {
+          'fill-color': '#627BC1 ',
+          'fill-opacity': [
+            "case",
+            ["boolean", ["feature-state", "hover"], false],
+            1, 0
+          ],
+        }
+      });
+      map.addLayer({
+        'id': 'departement-outline',
+        'type': 'line',
+        'source': 'departements',
+        'minzoom': zoomThresholdFirstLayer,
+        'layout': {},
+        'paint': {
+          'line-color': 'rgba(85,32,82,0.67)',
+          'line-width': 1.5
+        }
+      });
+      map.loadImage('{% static 'img/marker2.png' %}', function (error, image) {
+        if (error) throw error;
+        map.addImage('marker-orgue', image, {sdf: true});
+        map.addLayer({
+          'id': 'orgues',
+          'type': 'symbol',
+          'source': 'orgues',
+          'minzoom': zoomThresholdSecondLayer,
+          'layout': {
+            'icon-image': 'marker-orgue',
+            'icon-size': 0.35,
+            'icon-allow-overlap': true,
+            'text-anchor': "bottom",
+          },
+          'paint': {
+            'icon-opacity': 0.75,
+            'icon-color': [
+              "case",
+              ["boolean", ["get", "monument_historique"], true],
+              "rgba(254,135,63,0.9)", "#5c1c54"
+            ]
+          }
+        });
+      });
+
+
+      map.addLayer({
+        'id': 'centerregion',
+        'maxzoom': zoomThresholdFirstLayer,
+        'type': 'circle',
+        'source': 'regionscentres',
+        'paint': {
+          'circle-color': 'rgba(85,32,82,0.67)',
+          'circle-radius': ["interpolate", ['linear'],
+            ["get", "nb_orgues"],
+            100, 15,
+            2500, 25,
+          ]
+        }
+      })
+      ;
+      map.addLayer({
+        'id': 'points',
+        'type': 'symbol',
+        'maxzoom': zoomThresholdFirstLayer,
+        'source': 'regionscentres',
+        paint: {
+          "text-color": "#ffffff"
+        },
+        'layout': {
+          // get the title name from the source's "title" property
+          'text-field': ["get", "nb_orgues"],
+          'text-font': [
+            'Open Sans Semibold',
+            'Arial Unicode MS Bold'
+          ],
+          'text-size': 13,
+        }
+      });
+      map.addLayer({
+        'id': 'departementscentres',
+        'minzoom': zoomThresholdFirstLayer,
+        'maxzoom': zoomThresholdSecondLayer,
+        'type': 'circle',
+        'source': 'departementscentres',
+        'paint': {
+          'circle-color': 'rgba(85,32,82,0.67)',
+          'circle-radius': ["interpolate", ['linear'],
+            ["get", "nb_orgues"],
+            0, 15,
+            500, 25,
+          ]
+        }
+      })
+      ;
+      map.addLayer({
+        'id': 'departement-points',
+        'type': 'symbol',
+        'minzoom': zoomThresholdFirstLayer,
+        'maxzoom': zoomThresholdSecondLayer,
+
+        'source': 'departementscentres',
+        paint: {
+          "text-color": "#ffffff"
+        },
+        'layout': {
+          // get the title name from the source's "title" property
+          'text-field': ["get", "nb_orgues"],
+          'text-font': [
+            'Open Sans Semibold',
+            'Arial Unicode MS Bold'
+          ],
+          'text-size': 13,
+        }
+      });
+
+
+    });
+    const popup = new mapboxgl.Popup({
+      closeButton: false,
+      closeOnClick: false
+    });
+    const popup_orgue = new mapboxgl.Popup({
+      closeButton: false,
+      closeOnClick: true
+    });
+
+    var zoom_region = function (e) {
+      if (map.getZoom() < zoomThresholdSecondLayer) {
+        source_area = e.features[0].source
+        hoveredStateId = e.features[0].id;
+        map.setFeatureState(
+            {source: source_area, id: hoveredStateId},
+            {hover: false}
+        );
+        const polygons = e.features[0].geometry.coordinates
+        const coordinates = GetBiggestPolygon(polygons)
+        const bounds = new mapboxgl.LngLatBounds(
+            coordinates[0],
+            coordinates[0]
+        );
+        // Extend the 'LngLatBounds' to include every coordinate in the bounds result.
+        for (const coord of coordinates) {
+          bounds.extend(coord);
+        }
+        map.fitBounds(bounds, {
+          padding: 20
+        });
+      }
+    }
+    // On génère la popup pour un orgue uniquement après un clic
+    var generer_popup = function (e) {
+      const coordinates = e.features[0].geometry.coordinates.slice();
+      $.ajax({
+        type: 'GET',
+        url: '{% url 'orgues:orgue-carte-popup' %}',
+        data: {"orgue_id": e.features[0]["id"]},
+        success: function (data) {
+          popup.remove()
+          popup_orgue.setLngLat(coordinates).setHTML(data["message"]).addTo(map);
+        }
+      })
+    }
+    {% if user.is_authenticated %}
+      var update_iframe_code = function () {
+        let current_zoom = Math.round(map.getZoom() * 100) / 100;
+        let current_latitude = Math.round(map.getCenter().lat * 1000000) / 1000000;
+        let current_longitude = Math.round(map.getCenter().lng * 1000000) / 1000000;
+        $("#iframe").val(`<iframe width="500" height="500" src="{{ FULL_SITE_URL }}{% url 'orgues:orgue-carte' %}?iframe=true&zoom=${current_zoom}&lng=${current_longitude}&lat=${current_latitude}"></iframe>`);
+      }
+      map.on('zoomend', update_iframe_code);
+      map.on('move', update_iframe_code);
+      update_iframe_code();
+    {% endif %}
+
+
+    map.on('click', 'regions', zoom_region);
+    map.on('click', 'departements', zoom_region);
+    map.on('click', 'orgues', generer_popup);
+    map.on('mouseenter', (e) => {
+      const features = map.queryRenderedFeatures(e.point);
+      if (features.length > 0) {
+        map.getCanvas().style.cursor = 'pointer';
+        source_area = 'departements'
+        hoveredStateId = features[0].id;
+        map.setFeatureState(
+            {source: source_area, id: hoveredStateId},
+            {hover: true}
+        );
+      }
+    })
+    previousHoveredId = null
+    previousHoveredSource = null
+    map.on('mousemove', (e) => {
+      const features = map.queryRenderedFeatures(e.point);
+      popup.remove()
+      if (features.length > 0) {
+        if (['regions', 'departements', "orgues", "regionscentres", 'departementscentres'].includes(features[0].source)) {
+          coordinates = [e.lngLat.lng, e.lngLat.lat]
+          while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+            coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+          }
+          let HtmlPopUp = `${features[0].properties.nom}`
+          if ((map.getZoom() < zoomThresholdSecondLayer) | (features[0].source === "orgues")) {
+            popup.setLngLat(coordinates).setHTML(HtmlPopUp).addTo(map);
+          }
+        }
+      }
+    })
+
+
+    // FILTER FORM
+    var SearchData = function () {
+      $.ajax({
+        type: 'POST',
+        url: '',
+        data: $('#searchform').serialize(),
+        async: false,
+        success: function (data) {
+          OrguesGeojson = data["orgues_geojson"]
+          // mise à jour des totaux par région et département
+          for (let region in RegionsCentresGeoJson.features) {
+            RegionsCentresGeoJson.features[region].properties.nb_orgues = data["totaux_regions"][RegionsCentresGeoJson.features[region].properties.nom]
+          }
+          for (let region in DepartementsCentresGeoJson.features) {
+            DepartementsCentresGeoJson.features[region].properties.nb_orgues = data["totaux_departements"][DepartementsCentresGeoJson.features[region].properties.nom]
+          }
+          map.getSource("orgues").setData(OrguesGeojson)
+          map.getSource("regionscentres").setData(RegionsCentresGeoJson)
+          map.getSource('departementscentres').setData(DepartementsCentresGeoJson)
+          map.getSource('regions').setData(RegionsGeoJson)
+          map.getSource('departements').setData(DepartementsGeoJson)
+        }
+      })
+    }
+  </script>
+
+  {% if not iframe %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/js/ion.rangeSlider.min.js"></script>
+
     <script>
-        var carte_orgues = L.map('mapid',
-            {
-                scrollWheelZoom: true,
-            }).setView([46.2, 2.2], 5);
+      $("#id_etats").select2({
+        placeholder: 'Choisir',
+      });
 
-        var mapboxAccessToken =
-            "pk.eyJ1IjoiaW52ZW50YWlyZWRlc29yZ3VlcyIsImEiOiJja243Y3huZWcwbXJjMndvNmU0dnhnM2ZpIn0.vUjgVVyXZFYNEl1xQ3pLww";
+      $("#id_etats,#id_facteurs,#id_monument").change(function () {
+        SearchData()
+      })
 
-        L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=" +
-            mapboxAccessToken,
-            {
-                id: "mapbox/light-v9",
-                attribution: "",
-                tileSize: 512,
-                zoomOffset: -1
-            }
-        ).addTo(carte_orgues);
-
-        const search = new GeoSearch.GeoSearchControl({
-            style: 'bar',
-            searchLabel: 'Rechercher par adresse',
-            autoComplete: true, // optional: true|false  - default true
-            autoCompleteDelay: 150,
-            zoomLevel: 12,
-            resultFormat: ({result}) => '<b>' + result.label + '</b><br/><i>' + result.raw.properties.context + '</i>',
-            provider: new GeoSearch.GeoApiFrProvider({
-                params: {
-                    type: 'municipality',
-                    autocomplete: 1,
-                }
-            }),
-        });
-        console.log(search);
-        carte_orgues.addControl(search);
-        L.control.locate({
-            showPopup: false,
-            drawCircle: false,
-            initialZoomLevel: 10,
-        }).addTo(carte_orgues);
-
-        var mh_icon = L.icon({
-            iconUrl: '{% static 'img/mh_icon.png' %}',
-            shadowUrl: '{% static 'img/marker-shadow.png' %}',
-
-            iconSize: [25, 41], // size of the icon
-            shadowSize: [41, 41], // size of the shadow
-            iconAnchor: [12, 41], // point of the icon which will correspond to marker's location
-            shadowAnchor: [12, 41],  // the same for the shadow
-            popupAnchor: [0, -30] // point from which the popup should open relative to the iconAnchor
-        });
-
-        var nonmh_icon = L.icon({
-            iconUrl: '{% static 'img/nonmh_icon.png' %}',
-            shadowUrl: '{% static 'img/marker-shadow.png' %}',
-
-            iconSize: [25, 41], // size of the icon
-            shadowSize: [41, 41], // size of the shadow
-            iconAnchor: [12, 41], // point of the icon which will correspond to marker's location
-            shadowAnchor: [12, 41],  // the same for the shadow
-            popupAnchor: [0, -30] // point from which the popup should open relative to the iconAnchor
-        });
-
-        var facteur_icon = L.icon({
-            iconUrl: '{% static 'img/icone_facteur_carte.png' %}',
-
-            iconSize: [25, 25], // size of the icon
-            iconAnchor: [3, 35], // point of the icon which will correspond to marker's location
-            {#popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor#}
-        });
-
-        var markersCluster = new L.MarkerClusterGroup({
-            iconCreateFunction: function (cluster) {
-                return L.divIcon({
-                    html: cluster.getChildCount(),
-                    className: 'mycluster',
-                    iconSize: null
-                });
-            }
-        });
-
-        var markersClusterFacteur = new L.MarkerClusterGroup({
-            iconCreateFunction: function (cluster) {
-                return L.divIcon({
-                    html: cluster.getChildCount(),
-                    className: 'myclusterfacteur',
-                    iconSize: null
-                });
-            }
-        });
-
-        var liste_orgues = [];
-
-        $.getJSON("{% url 'orgues:orgue-list-js' %}", function (orgues) {
-            //Affiche les orgues à l'ouverture de la page.
-            liste_orgues = orgues;
-            afficher_orgue(orgues);
-        });
-
-        $('#filtre_formulaire').change(function () {
-            // Lorsqu'un élément du formulaire change, effectue la requête
-            update_filter();
-        })
-
-        function check_organ(filter) {
-            //Renvoie un booléen indiquant si l'orgue satisfait les critères requis définis dans le filtre
-            return function (organ) {
-                //Sélection des orgues classés
-                if (filter.mh && organ.mh === false) {
-                    return false;
-                }
-
-                //Sélection des orgues par le nombre de jeux
-                if (organ.nombre_jeux < filter.min_jeux || organ.nombre_jeux > filter.max_jeux) {
-                    return false;
-                }
-
-                //Sélection des orgues par leur composition
-                if (organ.composition !== undefined) {
-                    if (!filter.composition_filter.includes(organ.composition)) {
-                        return false;
-                    }
-                } else {
-                    if (!filter.clavier_NR) {
-                        return false;
-                    }
-                }
-
-                //Sélection des orgues par leur état
-                if (organ.etat === null) {
-                    if (!filter.etat_NR) {
-                        return false;
-                    }
-                } else {
-                    if (!filter.etat_filter.includes(organ.etat)) {
-                        return false;
-                    }
-                }
-
-                //Sélection des orgues par facteur
-                if (filter.facteur_pk != -1 && filter.facteur_pk !== null) {
-                    if (!organ_builder_event_satisfied(filter.facteur_pk, filter.construction, organ.facteurs)) {
-                        return false;
-                    }
-                }
-                return true;
-            }
+      $("#id_jeux").ionRangeSlider({
+        type: "double",
+        min: 0,
+        max: 130,
+        grid: true,
+        skin: "round",
+        onFinish: function (data) {
+          SearchData()
         }
+      });
 
-        function organ_builder_event_satisfied(facteur_pk, construction, organ_facteurs) {
-            if (organ_facteurs == "") {
-                return false;
+      $("#id_commune").select2({
+        language: "fr",
+        allowClear: true,
+        minimumInputLength: 3,
+        placeholder: 'Chercher une commune',
+        ajax: {
+          delay: 250,
+          url: 'https://api-adresse.data.gouv.fr/search/',
+          data: function (params) {
+            return {
+              q: params.term,
+              type: 'municipality'
             }
-            var result = false;
-            organ_facteurs.forEach(evenement => {
-                var evenement_facteur = evenement[0];
-                var evenement_type = evenement[1];
-                if (evenement_facteur == facteur_pk) {
-                    if (construction) {
-                        if (evenement_type == "construction" || evenement_type == "reconstruction") {
-                            result = true;
-                        }
-                    } else {
-                        result = true;
-                    }
-                }
-            });
-            return result;
-        }
-
-        function get_composition() {
-            //Crée une liste contenant toutes les composiitons autorisées définies dans le filtre
-            const claviers = $('input[name="clavier"]:checked').map((_, item) => $(item).val()).get();
-            return $("input[name='Pedalier']").is(':checked') ? claviers.concat(claviers.map(item => item + "/P")) : claviers;
-        }
-
-        function update_filter() {
-            // Met à jour la liste des orgues à afficher
-            markersCluster.clearLayers();
-            composition_filter = get_composition();
-            const filter = {
-                mh: $('#mh').is(':checked'),
-                etat_filter: $('input[name="etat"]:checked').map((_, item) => $(item).val()).get(),
-                composition_filter: composition_filter,
-                clavier_NR: $("input[name='clavier_NR']").is(':checked'),
-                etat_NR: $("input[name='etat_NR']").is(':checked'),
-                facteur_pk: $("#facteur_pk").val(),
-                construction: $("input[name='construction']").is(':checked'),
-                min_jeux: $("#slider-range").slider("values", 0),
-                max_jeux: $("#slider-range").slider("values", 1),
-            }
-            orgues_affiches = liste_orgues.filter(check_organ(filter));
-            afficher_orgue(orgues_affiches);
-        }
-
-        $("#slider-range").slider({
-            //Slider qui permet la sélection du nombre de jeux
-            range: true,
-            min: 0,
-            max: 130,
-            values: [0, 130],
-            change: function (event, ui) {
-                update_jeu_range();
-                update_filter();
-            }
-        });
-
-        function update_jeu_range() {
-            $("#jeu-range").html(
-                "Nombre de jeux : " + $("#slider-range").slider("values", 0) + " - " + $("#slider-range").slider("values", 1)
-            );
-        }
-
-        update_jeu_range();
-
-        $('#manufacture').change(function () {
-            //Affiche ou cache les manufactures d'orgues en fonction de l'état du bouton.
-            if ($('#manufacture').is(':checked')) {
-                afficher_manufactures();
-            } else {
-                markersClusterFacteur.clearLayers();
-            }
-        })
-
-        $("#reset").click(function () {
-            //Réinitialise le filtre
-            $("#mh").prop('checked', false);
-            $("input[name='clavier']").prop('checked', true);
-            $("input[name='etat']").prop('checked', true);
-            $("input[name='etat_NR']").prop('checked', true);
-            $("#construction").prop('checked', false);
-            $("#facteur_pk").empty();
-            $("#slider-range").slider("values", [0, 130]);
-        })
-
-        $("#facteur_pk").select2({
-            //Liste des facteurs proposés dans le champ "Filtrer les orgues par facteur"
-            ajax: {
-                url: '{% url 'orgues:facteur-list-js' %}',
-                data: function (params) {
-                    var query = {
-                        search: params.term,
-                        page: params.page || 1,
-                        tous_facteurs: true
-                    }
-                    return query;
-                }
-            },
-            allowClear: true,
-            placeholder: {
-                id: '-1',
-                text: 'Tous les facteurs'
-            },
-            escapeMarkup: function (markup) {
-                return markup;
-            },
-            language: {
-                noResults: function () {
-                    return "Aucun facteur trouvé ... contactez-nous si vous souhaitez ajouter un nouveau facteur.";
-                }
-            },
-            width: '100%'
-        });
-
-        $("#nom_facteur_recherche").select2({
-            //Liste des facteurs proposés dans le champ "Rechercher une manufacture d'orgues"
-            ajax: {
-                url: '{% url 'orgues:facteur-list-js-lonlat' %}',
-                data: function (params) {
-                    var query = {
-                        search: params.term,
-                        page: params.page || 1
-                    }
-                    return query;
-                }
-            },
-            allowClear: true,
-            placeholder: {
-                id: '-1',
-                text: 'Sélectionner un facteur'
-            },
-            escapeMarkup: function (markup) {
-                return markup;
-            },
-            language: {
-                noResults: function () {
-                    return "Aucun facteur trouvé ... contactez-nous si vous souhaitez ajouter un nouveau facteur.";
-                }
-            },
-            width: '100%'
-        });
-
-        $("#nom_facteur_recherche").change(function (e) {
-            //Affiche les manufactures d'orgues et centre la carte sur celle choisie
-            e.preventDefault();
-            markersClusterFacteur.clearLayers();
-            document.getElementById("manufacture").checked = true;
-            afficher_manufactures();
-            data_filtre = {"facteur": $("#nom_facteur_recherche").val(), "type": "tout_type"}
-            $.ajax({
-                type: "GET",
-                url: "{% url 'orgues:facteur-js-lonlat' %}",
-                data: data_filtre,
-                success: function (data) {
-                    carte_orgues.setView([data[0].latitude_atelier, data[0].longitude_atelier], 10);
-                },
-                error: function () {
-                }
+          },
+          processResults: function (data) {
+            var items = data.features.map(function (result) {
+              return {
+                "id": result.geometry.coordinates.join(","),
+                "text": result.properties.city + " (" + result.properties.context + ")"
+              }
             })
-        })
+            return {results: items}
+          },
+        },
+      }).on("select2:select", function (e) {
+        var coordinates = e.params.data.id.split(",");
+        map.flyTo({
+          center: coordinates,
+          zoom: 12
+        });
+      });
 
-
-        function afficher_orgue(orgues) {
-            //Affiche les orgues contenus dans la liste donnée en argument
-            markers = []
-            for (var i = 0; i < orgues.length; i++) {
-                var popup = '<p> <b>' + orgues[i].commune + '</b>' + '</br>' + orgues[i].edifice;
-                var ttip = '<p> <b>' + orgues[i].commune + '</b>' + '</br>' + orgues[i].edifice;
-                if (orgues[i].resume_composition) {
-                    popup += ', ' + orgues[i].resume_composition;
-                    ttip += ', ' + orgues[i].resume_composition + '</p>';
-                }
-                popup += '</br><a href="/detail/' + orgues[i].slug + '">Voir l\'orgue</a></p>';
-
-                var latLng = new L.LatLng(orgues[i].latitude, orgues[i].longitude);
-                var marker = new L.Marker(latLng, {icon: (orgues[i].mh) ? mh_icon : nonmh_icon});
-                marker.bindPopup(popup, {
-                    maxWidth: 400,
-                    autoPan: true,
-                });
-                marker.bindTooltip(ttip);
-                marker.on('popupopen', updatePopup(orgues[i].slug));
-                markers.push(marker);
+      $("#id_facteurs").select2({
+        placeholder: 'Choisir',
+        ajax: {
+          url: '{% url 'orgues:facteur-list-js' %}',
+          data: function (params) {
+            var query = {
+              search: params.term,
+              page: params.page || 1,
+              tous_facteurs: false
             }
-            markersCluster.addLayers(markers);
-            carte_orgues.addLayer(markersCluster);
-        }
-
-        function updatePopup(slug) {
-            return function (e) {
-                var popup = e.target.getPopup();
-                var url = '/resume/' + slug;
-                $.get(url).done(function (data) {
-                    popup.setContent(data);
-                    popup.update();
-                })
-            };
-        }
-
-        function afficher_manufactures() {
-            //Affiche les manufactures d'orgues
-            $.getJSON("{% url 'orgues:facteur-list-js-leaflet' %}", function (facteurs) {
-                for (var i = 0; i < facteurs.length; i++) {
-                    var popup = '<p> <b>' + facteurs[i].nom + '</p> </b>';
-                    var latLng = new L.LatLng(facteurs[i].latitude_atelier, facteurs[i].longitude_atelier);
-                    var marker = new L.Marker(latLng, {icon: facteur_icon}).bindPopup(popup);
-                    markersClusterFacteur.addLayer(marker);
-                }
-                carte_orgues.addLayer(markersClusterFacteur);
-            });
-        }
-
-        carte_orgues.on("zoom, move", function (event) {
-            coord_url = '?lat=' + carte_orgues.getCenter().lat + '&lon=' + carte_orgues.getCenter().lng + '&z=' + carte_orgues.getZoom();
-            window.history.pushState('', '', coord_url);
-        })
-
+            return query;
+          }
+        },
+        escapeMarkup: function (markup) {
+          return markup;
+        },
+        language: {
+          noResults: function () {
+            return "Aucun facteur trouvé ... contactez-nous en cas de doute.";
+          }
+        },
+        width: '100%'
+      });
     </script>
+  {% endif %}
 
 {% endblock %}

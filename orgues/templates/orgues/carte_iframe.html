@@ -1,0 +1,24 @@
+{% load static %}
+{% load fabtags %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <meta name="author" content="Fabdev"/>
+  <link href="{% static 'polo/css/plugins.css' %}" rel="stylesheet">
+  <link href="{% static 'polo/scss/style.css' %}" rel="stylesheet">
+  <link href="{% static 'polo/css/custom.css' %}?date={% now 'Ymd' %}" rel="stylesheet">
+  {% block head_extra %}
+  {% endblock %}
+</head>
+<body>
+{% block content %}
+
+{% endblock %}
+<script src="{% static 'polo/js/jquery.js' %}"></script>
+
+{% block js_extra %}
+{% endblock %}
+</body>
+</html>

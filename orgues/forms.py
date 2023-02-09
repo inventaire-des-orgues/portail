@@ -193,21 +193,13 @@ class SourceForm(forms.ModelForm):
 
 
 class OrgueCarteForm(forms.Form):
+    jeux = forms.CharField(required=False)
+    etats = forms.MultipleChoiceField(choices=[(etat[1], etat[1]) for etat in Orgue.CHOIX_ETAT], required=False, label="Par état de fonctionnement :")
+    facteurs = forms.ModelMultipleChoiceField(queryset=Facteur.objects.all(), required=False, label="Par facteur d'orgue : ",widget=Select2Multiple)
+    monument = forms.BooleanField(label="Uniquement monuments historiques (orange)", required=False)
 
-    CHOIX_PLAN_SONORE = (
-        ("1", "I"),
-        ("2", "II"),
-        ("3", "III"),
-        ("4", "IV"),
-        ("5", "V"),
-        ("6", "VI"),
-        ("pedalier", "Avec pedalier"),
-    )
-
-    monument = forms.BooleanField(label="Uniquement les orgues protégés au titre des monuments historiques", required=False)
-    plan_sonore = forms.MultipleChoiceField(choices=CHOIX_PLAN_SONORE, required=False, label="Par nombre de plans sonores :", )
-    jeux_inf = forms.IntegerField(required=False, label="Par nombre de jeux entre", initial=0)
-    jeux_sup = forms.IntegerField(required=False, initial=130, label=False)
-    etat = forms.MultipleChoiceField(choices=Orgue.CHOIX_ETAT, required=False, label="Par état de fonctionnement :")
-    facteurs = forms.ModelMultipleChoiceField(queryset=Facteur.objects.all(), required=False, label="Par facteur d'orgue : ")
-    construction = forms.BooleanField(label="N'afficher que les orgues pour lesquels le facteur a participer à la construction ou reconstruction", required=False)
+    def clean_jeux(self):
+        jeux = self.cleaned_data['jeux']
+        if jeux:
+            return [int(jeu) for jeu in jeux.split(';')]
+        return

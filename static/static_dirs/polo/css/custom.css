@@ -448,11 +448,16 @@ table#lexique td:first-child {
 }
 
 /* Make Select2 boxes match Bootstrap3 heights: */
-#search-form .select2-selection__rendered {
-    line-height: 32px !important;
+.select2-selection__rendered {
+    line-height: 31px !important;
 }
-
-#search-form .select2-selection {
+.select2-selection--multiple .select2-selection__rendered {
+    line-height: 25px !important;
+}
+.select2-container .select2-selection--single {
+    height: 35px !important;
+}
+.select2-selection__arrow {
     height: 34px !important;
 }
 
@@ -760,4 +765,43 @@ a.link, a.link:visited, a.link:active {
         border-left: none;
         border-right: none;
     }
+}
+
+.form-check {
+    display: block;
+    min-height: 1.25rem;
+    padding-left: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+.form-check-input {
+    background-size: 1rem;
+    margin-top: 0.125rem;
+    appearance: none;
+    width: 1.1rem;
+    height: 1.1rem;
+    vertical-align: top;
+    float: left;
+    margin-left: -1.5rem;
+    border-radius:4px;
+    border: 1px solid #5c1c54;
+
+}
+
+.form-check-input:checked[type=checkbox] {
+    background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' width='16' height='16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 8.5l2.5 2.5l5.5 -5.5'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.form-check-input:checked {
+    border: none;
+    background-color: #5c1c54;
+}
+
+.form-check-label {
+    display: block;
+}
+
+.text-primary{
+    color: #5c1c54 !important;
 }
