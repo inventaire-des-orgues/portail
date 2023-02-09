@@ -90,6 +90,8 @@ class OrgueResumeSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField()
     jeux = serializers.SerializerMethodField()
     construction = serializers.SerializerMethodField()
+    etat = serializers.SerializerMethodField()
+    monument_historique = serializers.SerializerMethodField()
 
     class Meta:
         model = Orgue
@@ -100,11 +102,13 @@ class OrgueResumeSerializer(serializers.ModelSerializer):
             "commune",
             "ancienne_commune",
             "departement",
+            "etat",
             "region",
             "completion",
             "vignette",
             "emplacement",
             "resume_composition",
+            "monument_historique",
             "facteurs",
             "facet_facteurs",
             "url",
@@ -118,12 +122,18 @@ class OrgueResumeSerializer(serializers.ModelSerializer):
             "modified_date"
         ]
 
+    def get_etat(self, obj):
+        return obj.get_etat_display()
+
     def get_url(self, obj):
         return obj.get_absolute_url()
 
     def get_jeux(self, obj):
         jeux = obj.jeux_count // 10
         return "{0}-{1}".format(jeux * 10, (jeux+1) * 10)
+
+    def get_monument_historique(self, obj):
+        return obj.references_palissy is not None
 
     def get_facteurs(self, obj):
         facteurs = []

@@ -104,8 +104,8 @@ class OrgueSearch(View):
             hits.append(hit)
         return {
             'hits': hits,
-            'pages': paginator.num_pages,
-            'nbHits': paginator.count
+            'totalPages': paginator.num_pages,
+            'totalHits': paginator.count
         }
 
     @staticmethod
@@ -115,16 +115,13 @@ class OrgueSearch(View):
         """
         try:
             client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
-            index = client.get_index(uid='orgues')
+            index = client.index(uid='orgues')
         except:
             return JsonResponse({'message': 'Le moteur de recherche est mal configuré'}, status=500)
 
-        try:
-            offset = (int(page) - 1) * OrgueSearch.paginate_by
-        except:
-            offset = 0
         facets = ['departement', 'region', 'resume_composition_clavier', 'facet_facteurs', 'jeux']
-        options = {'attributesToHighlight': ['*'], 'offset': offset, 'limit': OrgueSearch.paginate_by}
+        options = {'attributesToHighlight': ['*'], 'hitsPerPage': OrgueSearch.paginate_by, 'page': int(page)}
+
         filter = []
         filterResult = {}
         for facet in facets:
@@ -134,7 +131,7 @@ class OrgueSearch(View):
                 filter.append(['{}="{}"'.format(facet, value) for value in values])
                 filterResult[facet] = values
         if not filterResult and page == '1' and (query or departement or region):
-            options['facetsDistribution'] = facets
+            options['facets'] = facets
         if departement:
             filter.append('departement="{}"'.format(departement))
         if region:
@@ -147,15 +144,14 @@ class OrgueSearch(View):
         if sort and sort != 'pertinence':
             options['sort'] = [sort]
         results = index.search(query, options)
-        results['pages'] = 1 + results['nbHits'] // OrgueSearch.paginate_by
-        if 'facetsDistribution' in results:
-            results['facets'] = OrgueSearch.convertFacets(results['facetsDistribution'])
-            del results['facetsDistribution']
+        if 'facetDistribution' in results:
+            results['facets'] = OrgueSearch.convertFacets(results['facetDistribution'])
+            del results['facetDistribution']
         results['filter'] = filterResult
         return results
 
     @staticmethod
-    def convertFacets(facetsDistribution):
+    def convertFacets(facetDistribution):
         labels = {'departement': 'Département', 'region': 'Régions', 'resume_composition_clavier': 'Nombres de claviers', 'facet_facteurs': 'Facteurs', 'jeux': 'Jeux'}
         return [{'label': labels[name], 'field': name,
                  'items': sorted([{'name': item, 'count': count} for item, count in values.items()], key=lambda k: k['count'], reverse=True)} for name, values in

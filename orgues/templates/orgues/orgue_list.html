@@ -278,8 +278,8 @@
             success: function (results) {
               self.loading = false
               self.orgues = results.hits
-              self.hits = results.nbHits
-              self.pages = results.pages
+              self.hits = results.totalHits
+              self.pages = results.totalPages
               if (results.facets) {
                 self.facets = results.facets
                 self.facetOpen = {}

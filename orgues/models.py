@@ -383,7 +383,7 @@ class Orgue(models.Model):
     @property
     def claviers_count(self):
         """
-        Nombre de calvier de l'instrument
+        Nombre de claviers de l'instrument
         """
         return self.claviers.count() if self.has_pedalier else self.claviers.count() - 1
 

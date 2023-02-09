@@ -9,18 +9,20 @@ class Command(BaseCommand):
     help = 'Build search index'
 
     def handle(self, *args, **options):
-
         if not settings.MEILISEARCH_URL:
             print("Moteur meilisearch non configuré")
             return
         client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
         # orgues
-        try:
-            index = client.get_index(uid='orgues')
-        except:
-            index = client.create_index(uid='orgues')
+        index = client.index('orgues')
 
-        index.update_stop_words(['Le','le', 'La','la', 'Les','les', 'du', 'et', 'de','en'])
+        client.index('orgues').update_settings({
+            'pagination': {
+                'maxTotalHits': 100000
+            }
+        })
+
+        index.update_stop_words(['Le', 'le', 'La', 'la', 'Les', 'les', 'du', 'et', 'de', 'en'])
 
         index.update_searchable_attributes([
             'commune',
@@ -36,10 +38,13 @@ class Command(BaseCommand):
 
         index.update_filterable_attributes([
             'departement',
+            'etat',
             'region',
             'resume_composition_clavier',
             'facet_facteurs',
             'jeux',
+            'jeux_count',
+            'monument_historique'
         ])
 
         index.update_displayed_attributes([
@@ -49,6 +54,7 @@ class Command(BaseCommand):
             'commune',
             'ancienne_commune',
             'departement',
+            'monument_historique',
             'region',
             'completion',
             'vignette',
@@ -85,13 +91,9 @@ class Command(BaseCommand):
             index.add_documents(orgues)
 
         # types de jeux
-        try:
-            index = client.get_index(uid='types_jeux')
-        except:
-            index = client.create_index(uid='types_jeux')
-
+        index = client.index('types_jeux')
         index.update_searchable_attributes(['nom'])
         index.delete_all_documents()
         typesJeu = TypeJeu.objects.all()
         if typesJeu:
-            index.add_documents([{'id':t.id,'nom':str(t)} for t in typesJeu])
+            index.add_documents([{'id': t.id, 'nom': str(t)} for t in typesJeu])
