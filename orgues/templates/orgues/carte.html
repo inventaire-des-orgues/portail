@@ -386,6 +386,7 @@
         let current_zoom = Math.round(map.getZoom() * 100) / 100;
         let current_latitude = Math.round(map.getCenter().lat * 1000000) / 1000000;
         let current_longitude = Math.round(map.getCenter().lng * 1000000) / 1000000;
+        window.history.pushState('', '', `?zoom=${current_zoom}&lng=${current_longitude}&lat=${current_latitude}`);
         $("#iframe").val(`<iframe width="500" height="500" src="{{ FULL_SITE_URL }}{% url 'orgues:orgue-carte' %}?iframe=true&zoom=${current_zoom}&lng=${current_longitude}&lat=${current_latitude}"></iframe>`);
       }
       map.on('zoomend', update_iframe_code);

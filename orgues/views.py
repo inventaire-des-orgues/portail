@@ -20,6 +20,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.clickjacking import xframe_options_exempt
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView, TemplateView, ListView
 from django.views.generic.base import View
 
@@ -176,6 +177,7 @@ class OrgueCarte(TemplateView):
     """
     template_name = "orgues/carte.html"
 
+    @method_decorator(csrf_exempt)
     @method_decorator(xframe_options_exempt)
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
@@ -190,7 +192,6 @@ class OrgueCarte(TemplateView):
             context["extends_template"] = "orgues/carte_iframe.html"
         else:
             context["extends_template"] = "base.html"
-
         return context
 
     def post(self, request, *args, **kwargs):
@@ -355,29 +356,6 @@ class OrgueDetail(DetailView):
             "updated_by_user": last.user if last else "",
             "modified_date": last.date if last else "",
         }
-
-
-class OrgueResume(DetailView):
-    """
-    Vue de détail (lecture seule) d'un orgue
-    """
-    model = Orgue
-    slug_field = 'slug'
-    slug_url_kwarg = 'slug'
-    template_name_suffix = '_resume'
-
-    def get_object(self, queryset=None):
-        orgue = Orgue.objects.filter(Q(slug=self.kwargs['slug']) | Q(codification=self.kwargs['slug'])).first()
-        if not orgue:
-            raise Http404
-        return orgue
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data()
-        context["facteurs_evenements"] = self.object.evenements.filter(facteurs__isnull=False).prefetch_related(
-            'facteurs').distinct()
-        context["orgue_url"] = self.request.build_absolute_uri(self.object.get_absolute_url())
-        return context
 
 
 class OrgueDetailExemple(View):

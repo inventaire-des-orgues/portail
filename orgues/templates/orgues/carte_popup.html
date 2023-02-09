@@ -1,6 +1,9 @@
 <div>
-    <h4>{{ orgue.edifice }} | {{ orgue.commune }}, {{ orgue.departement }}</h4>
-    <div><b>Localisation: </b>{{ orgue.commune }}, {{ orgue.departement }} ({{ orgue.region }})</div>
-    <div><b>Facteurs:</b> {% for evenement in orgue.evenements.all %}{% for facteur in evenement.facteurs.all %}{{ facteur.nom }}, {% endfor %}{% endfor %}</div>
-    <a href="{{ FULL_SITE_URL }}{% url 'orgues:orgue-detail' orgue.slug %}" class="btn btn-primary rounded-pill mt-3 btn-block" target="_blank">Voir l'orgue</a>
+  <h4>{{ orgue.edifice }} | {{ orgue.commune }}, {{ orgue.departement }}</h4>
+  {% if orgue.vignette %}
+    <div class="mb-2"><img src="{{ orgue.vignette }}" alt="" class="img-responsive"></div>
+  {% endif %}
+  <div><b>Localisation: </b>{{ orgue.commune }}, {{ orgue.departement }} ({{ orgue.region }})</div>
+  <div><b>Facteurs:</b> {% for evenement in orgue.evenements.all %}{% for facteur in evenement.facteurs.all %}{{ facteur.nom }}, {% endfor %}{% endfor %}</div>
+  <a href="{{ FULL_SITE_URL }}{% url 'orgues:orgue-detail' orgue.slug %}" class="btn btn-primary rounded-pill mt-3 btn-block" target="_blank">Voir l'orgue</a>
 </div>
