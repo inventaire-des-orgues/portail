@@ -21,12 +21,14 @@
       .irs--round .irs-from:before, .irs--round .irs-to:before, .irs--round .irs-single:before {
           border-top-color: #5c1c54;
       }
+
       .mapboxgl-popup {
           z-index: 10000;
       }
 
       #filtercard {
           width: 300px;
+          z-index: 1000;
           border-radius: 25px;
           margin: 30px;
           background: rgba(255, 255, 255, 0.95);
@@ -54,12 +56,27 @@
               width: 100vw;
           }
       {% endif %}
+
+      #carteorgues.loading::before {
+          content: "Chargement des données...";
+          position: absolute;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.5em;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(255, 255, 255, 0.7);
+          z-index: 1000;
+      }
   </style>
 {% endblock %}
 
 {% block content %}
-  <div class="position-relative" id="carteorgues_container">
-    <div id="carteorgues" class="w-100 h-100"></div>
+  <div class="position-relative " id="carteorgues_container">
+    <div id="carteorgues" class="w-100 h-100 loading"></div>
     <div class="card d-none d-md-block" id="filtercard">
       <div class="card-body">
         <form id="searchform" action="" class="m-b-10" method="post">{% csrf_token %}
@@ -432,6 +449,7 @@
 
     // FILTER FORM
     var SearchData = function () {
+      $("#carteorgues").addClass("loading");
       $.ajax({
         type: 'POST',
         url: '',
@@ -451,6 +469,7 @@
           map.getSource('departementscentres').setData(DepartementsCentresGeoJson)
           map.getSource('regions').setData(RegionsGeoJson)
           map.getSource('departements').setData(DepartementsGeoJson)
+          $("#carteorgues").removeClass("loading");
         }
       })
     }
