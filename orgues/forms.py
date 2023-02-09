@@ -171,6 +171,10 @@ class JeuForm(forms.ModelForm):
         fields = ["type", "configuration", "commentaire"]
         labels = {"type": "", "configuration": "", "commentaire": ""}
 
+        widgets = {
+            "type": Select2Single
+        }
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['commentaire'].widget.attrs['placeholder'] = "Commentaire"
@@ -195,7 +199,7 @@ class SourceForm(forms.ModelForm):
 class OrgueCarteForm(forms.Form):
     jeux = forms.CharField(required=False)
     etats = forms.MultipleChoiceField(choices=[(etat[1], etat[1]) for etat in Orgue.CHOIX_ETAT], required=False, label="Par état de fonctionnement :")
-    facteurs = forms.ModelMultipleChoiceField(queryset=Facteur.objects.all(), required=False, label="Par facteur d'orgue : ",widget=Select2Multiple)
+    facteurs = forms.ModelMultipleChoiceField(queryset=Facteur.objects.all(), required=False, label="Par facteur d'orgue : ", widget=Select2Multiple)
     monument = forms.BooleanField(label="Uniquement monuments historiques (orange)", required=False)
 
     def clean_jeux(self):
