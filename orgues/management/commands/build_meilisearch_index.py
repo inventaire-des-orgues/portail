@@ -19,7 +19,11 @@ class Command(BaseCommand):
         client.index('orgues').update_settings({
             'pagination': {
                 'maxTotalHits': 100000
+            },
+            "faceting": {
+                "maxValuesPerFacet": 150
             }
+
         })
 
         index.update_stop_words(['Le', 'le', 'La', 'la', 'Les', 'les', 'du', 'et', 'de', 'en'])
