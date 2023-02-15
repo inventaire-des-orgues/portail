@@ -1,9 +1,44 @@
-<div>
-  <h4>{{ orgue.edifice }} | {{ orgue.commune }}, {{ orgue.departement }}</h4>
-  {% if orgue.vignette %}
-    <div class="mb-2"><img src="{{ orgue.vignette }}" alt="" class="img-responsive"></div>
-  {% endif %}
-  <div><b>Localisation: </b>{{ orgue.commune }}, {{ orgue.departement }} ({{ orgue.region }})</div>
-  <div><b>Facteurs:</b> {% for evenement in orgue.evenements.all %}{% for facteur in evenement.facteurs.all %}{{ facteur.nom }}, {% endfor %}{% endfor %}</div>
-  <a href="{{ FULL_SITE_URL }}{% url 'orgues:orgue-detail' orgue.slug %}" class="btn btn-primary rounded-pill mt-3 btn-block" target="_blank">Voir l'orgue</a>
+<div class="modal-body">
+  <div class="tabs">
+    {% if orgues.count > 1 %}
+      <ul class="nav nav-tabs" id="myTab2" role="tablist">
+        {% for orgue in orgues %}
+          <li class="nav-item">
+            <a class="nav-link {% if forloop.first %}active{% endif %} text-capitalize" id="home-tab" data-toggle="tab" href="#orgue-{{ orgue.id }}" role="tab" aria-controls="home" aria-selected="true">
+              {{ orgue.designation }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    <div class="tab-content" id="myTabContent2">
+      {% for orgue in orgues %}
+        <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="orgue-{{ orgue.id }}" role="tabpanel" aria-labelledby="{{ orgue.id }}-tab">
+          {% if orgue.vignette %}
+            <div class="mb-2"><img src="{{ orgue.vignette }}" alt="" class="img-responsive"></div>
+          {% endif %}
+          <div>
+            {% if orgue.designation %}{{ orgue.designation }} {% else %} Orgue {% endif %}
+            {% if orgue.emplacement %}, {{ orgue.emplacement }} {% endif %}
+            {% if orgue.resume_composition %}, {{ orgue.resume_composition }} {% endif %}
+          </div>
+          <div><b>Localisation: </b>{{ orgue.edifice }}, {{ orgue.commune }}, {{ orgue.departement }} ({{ orgue.region }})</div>
+          <div><b>Facteurs:</b> {% for evenement in orgue.evenements.all %}{% for facteur in evenement.facteurs.all %}{{ facteur.nom }}, {% endfor %}{% endfor %}</div>
+          <div class="pt-3 text-right ">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+            <a href="{{ FULL_SITE_URL }}{% url 'orgues:orgue-detail' orgue.slug %}" class="btn btn-primary  " target="_blank">Voir l'orgue</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
 </div>
+
+
+
+
+
+
+
+
+

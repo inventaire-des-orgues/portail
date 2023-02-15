@@ -125,6 +125,14 @@
     </div>
   </div>
 
+  <div class="modal fade" id="popupmodal" tabindex="-1" role="modal" aria-labelledby="modal-label" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-content"  id="popupmodal_content">
+
+      </div>
+    </div>
+  </div>
+
 {% endblock %}
 {% block footer %}
 
@@ -270,7 +278,7 @@
             'text-anchor': "bottom",
           },
           'paint': {
-            'icon-opacity': 0.75,
+            'icon-opacity': 0.7,
             'icon-color': [
               "case",
               ["boolean", ["get", "monument_historique"], true],
@@ -394,7 +402,8 @@
         data: {"orgue_id": e.features[0]["id"]},
         success: function (data) {
           popup.remove()
-          popup_orgue.setLngLat(coordinates).setHTML(data["message"]).addTo(map);
+          $("#popupmodal_content").html(data["message"])
+          $("#popupmodal").modal("show")
         }
       })
     }

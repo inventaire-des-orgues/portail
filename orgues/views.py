@@ -233,7 +233,7 @@ class OrgueCarte(TemplateView):
                             "coordinates": [orgue['longitude'], orgue['latitude']]
                         },
                         "properties": {
-                            "nom": orgue['edifice'],
+                            "nom": f"{orgue['edifice']} - {orgue['commune']}",
                             "monument_historique": orgue['monument_historique'],
                         },
                     }
@@ -256,16 +256,12 @@ class OrgueCartePopup(View):
     Génère des popups à la demande pour la carte des orgues
     """
 
-    @method_decorator(xframe_options_exempt)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
-
     def get(self, request, *args, **kwargs):
-        orgue_id = request.GET.get("orgue_id")
-        if orgue_id:
-            orgue = Orgue.objects.get(id=orgue_id)
-            message = render_to_string("orgues/carte_popup.html", context={"orgue": orgue,"FULL_SITE_URL": settings.FULL_SITE_URL})
-            return JsonResponse({"message": message}, safe=False)
+        id = request.GET.get("orgue_id")
+        orgue = Orgue.objects.get(id=id)
+        orgues = Orgue.objects.filter(latitude=orgue.latitude, longitude=orgue.longitude)
+        message = render_to_string("orgues/carte_popup.html", context={"orgues": orgues,"edifice":orgue.edifice,"FULL_SITE_URL": settings.FULL_SITE_URL})
+        return JsonResponse({"message": message}, safe=False)
 
 
 class FacteurListJSLeaflet(View):
