@@ -259,7 +259,7 @@ class OrgueCartePopup(View):
     def get(self, request, *args, **kwargs):
         id = request.GET.get("orgue_id")
         orgue = Orgue.objects.get(id=id)
-        orgues = Orgue.objects.filter(latitude=orgue.latitude, longitude=orgue.longitude)
+        orgues = Orgue.objects.filter(latitude=orgue.latitude, longitude=orgue.longitude).prefetch_related("evenements")
         message = render_to_string("orgues/carte_popup.html", context={"orgues": orgues,"edifice":orgue.edifice,"FULL_SITE_URL": settings.FULL_SITE_URL})
         return JsonResponse({"message": message}, safe=False)
 
