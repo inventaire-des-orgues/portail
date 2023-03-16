@@ -189,14 +189,14 @@
     $.getJSON('{% static 'geojson/regions_centres.json' %}', function (data) {
       RegionsCentresGeoJson = data;
     })
-    $.getJSON('{% static 'geojson/regions.json' %}', function (data) {
+    $.getJSON('{% static 'geojson/regions_light.json' %}', function (data) {
       RegionsGeoJson = data;
     })
     $.getJSON('{% static 'geojson/departements_centres.json' %}', function (data) {
       DepartementsCentresGeoJson = data;
     })
 
-    $.getJSON('{% static 'geojson/departements.json' %}', function (data) {
+    $.getJSON('{% static 'geojson/departements_light.json' %}', function (data) {
       DepartementsGeoJson = data;
     })
 
@@ -231,6 +231,7 @@
       map.addLayer({
         'id': 'outline',
         'type': 'line',
+        'maxzoom': zoomThresholdFirstLayer,
         'source': 'regions',
         'layout': {},
         'paint': {
