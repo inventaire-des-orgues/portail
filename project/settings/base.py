@@ -70,3 +70,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static", "static_root")
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "static", "media")
+
+CACHE_CARTE = os.path.join(BASE_DIR, "static", "media", "cache_carte.json")

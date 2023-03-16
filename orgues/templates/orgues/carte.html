@@ -498,8 +498,8 @@
 
       $("#id_jeux").ionRangeSlider({
         type: "double",
-        min: 0,
-        max: 140,
+        min: {{ form.MIN_JEUX }},
+        max: {{ form.MAX_JEUX }},
         grid: true,
         skin: "round",
         onFinish: function (data) {

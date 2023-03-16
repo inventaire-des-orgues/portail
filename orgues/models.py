@@ -344,6 +344,7 @@ class Orgue(models.Model):
         """
         Récupère la vignette l'instrument, ou une vignette par défaut si elle n'existe pas
         """
+        return ""
         image_principale = self.image_principale
         if not image_principale:
             return "/static/img/default.png"

@@ -197,6 +197,8 @@ class SourceForm(forms.ModelForm):
 
 
 class OrgueCarteForm(forms.Form):
+    MIN_JEUX = 0
+    MAX_JEUX = 140
     jeux = forms.CharField(required=False)
     etats = forms.MultipleChoiceField(choices=[(etat[1], etat[1]) for etat in Orgue.CHOIX_ETAT], required=False, label="Par état de fonctionnement :")
     facteurs = forms.ModelMultipleChoiceField(queryset=Facteur.objects.all(), required=False, label="Par facteur d'orgue : ", widget=Select2Multiple)
@@ -205,5 +207,7 @@ class OrgueCarteForm(forms.Form):
     def clean_jeux(self):
         jeux = self.cleaned_data['jeux']
         if jeux:
-            return [int(jeu) for jeu in jeux.split(';')]
+            result = [int(jeu) for jeu in jeux.split(';')]
+            if result != [self.MIN_JEUX, self.MAX_JEUX]:
+                return result
         return

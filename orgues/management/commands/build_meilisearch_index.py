@@ -1,8 +1,11 @@
+import json
+
 from django.core.management.base import BaseCommand
 import meilisearch
 from django.conf import settings
 from orgues.api.serializers import OrgueResumeSerializer
 from orgues.models import Orgue, TypeJeu
+from orgues.views import OrgueCarte
 
 
 class Command(BaseCommand):
@@ -93,7 +96,6 @@ class Command(BaseCommand):
         index.delete_all_documents()
         if orgues:
             index.add_documents(orgues)
-
         # types de jeux
         index = client.index('types_jeux')
         index.update_searchable_attributes(['nom'])

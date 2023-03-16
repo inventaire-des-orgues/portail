@@ -1,4 +1,5 @@
 import csv
+import json
 import logging
 import os
 from collections import deque
@@ -194,6 +195,35 @@ class OrgueCarte(TemplateView):
             context["extends_template"] = "base.html"
         return context
 
+    @staticmethod
+    def meilisearch_results_to_map_json(results):
+        features = []
+        for orgue in results['hits']:
+            features.append(
+                {
+                    "type": "Feature",
+                    "id": orgue['id'],
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [orgue['longitude'], orgue['latitude']]
+                    },
+                    "properties": {
+                        "nom": f"{orgue['edifice']} - {orgue['commune']}",
+                        "monument_historique": orgue['monument_historique'],
+                    },
+                }
+            )
+        orgues_geojson = {
+            "type": "FeatureCollection",
+            "features": features
+        }
+
+        return {
+            "totaux_regions": results['facetDistribution']['region'],
+            "totaux_departements": results['facetDistribution']['departement'],
+            "orgues_geojson": orgues_geojson
+        }
+
     def post(self, request, *args, **kwargs):
         """
         On génère le geojson des orgues en fonction des filtres
@@ -221,32 +251,12 @@ class OrgueCarte(TemplateView):
                 filters.append(f'(monument_historique = "true")')
             if filters:
                 options['filter'] = " AND ".join(filters)
-            results = index.search(None, options)
-            features = []
-            for orgue in results['hits']:
-                features.append(
-                    {
-                        "type": "Feature",
-                        "id": orgue['id'],
-                        "geometry": {
-                            "type": "Point",
-                            "coordinates": [orgue['longitude'], orgue['latitude']]
-                        },
-                        "properties": {
-                            "nom": f"{orgue['edifice']} - {orgue['commune']}",
-                            "monument_historique": orgue['monument_historique'],
-                        },
-                    }
-                )
-            orgues_geojson = {
-                "type": "FeatureCollection",
-                "features": features
-            }
-            return JsonResponse({
-                "totaux_regions": results['facetDistribution']['region'],
-                "totaux_departements": results['facetDistribution']['departement'],
-                "orgues_geojson": orgues_geojson
-            })
+                results = index.search(None, options)
+                results = self.meilisearch_results_to_map_json(results)
+            else:
+                with open(settings.CACHE_CARTE, "r") as f:
+                    results = json.load(f)
+            return JsonResponse(results)
         else:
             return JsonResponse({'message': 'Le formulaire est invalide'}, status=400)
 
