@@ -66,30 +66,36 @@
                 <div class="col-md-12 order-md-1 py-20">
                   <h2 class="titre-fiche">Composition</h2>
 
-                  {% if claviers.count %}
+                  {% if buffet_vide %}
                     <h4>
-                      {% if claviers.count <= 1 %}
-                        {{ claviers.count }} plan sonore
-                      {% else %}
-                        {{ claviers.count }} plans sonores
-                      {% endif %}
-                      <small>(glisser vers la droite)</small>
+                      Buffet vide
                     </h4>
-                    <div id="claviers" class="row flew-row flex-nowrap">
-                      {% for clavier in claviers %}
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-                          {% include 'orgues/clavier_detail.html' %}
-                        </div>
-                      {% endfor %}
-                    </div>
-                  {% else %}
-                    <p class="text-muted">A compléter !</p>
-                  {% endif %}
-                  {% if orgue.accessoires.count %}
-                    <p class="soustitre-fiche">Accessoires</p>
-                    <div id="accessoires">
-                      {{ orgue.accessoires.all|join:', ' }}
-                    </div>
+                  {% else %}            
+                    {% if claviers.count %}
+                      <h4>
+                        {% if claviers.count <= 1 %}
+                          {{ claviers.count }} plan sonore
+                        {% else %}
+                          {{ claviers.count }} plans sonores
+                        {% endif %}
+                        <small>(glisser vers la droite)</small>
+                      </h4>
+                      <div id="claviers" class="row flew-row flex-nowrap">
+                        {% for clavier in claviers %}
+                          <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
+                            {% include 'orgues/clavier_detail.html' %}
+                          </div>
+                        {% endfor %}
+                      </div>
+                    {% else %}
+                      <p class="text-muted">A compléter !</p>
+                    {% endif %}
+                    {% if orgue.accessoires.count %}
+                      <p class="soustitre-fiche">Accessoires</p>
+                      <div id="accessoires">
+                        {{ orgue.accessoires.all|join:', ' }}
+                      </div>
+                    {% endif %}
                   {% endif %}
                   <h2 class="titre-fiche">Frise chronologique</h2>
                   {% if evenements.count %}

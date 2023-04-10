@@ -304,6 +304,7 @@ class Orgue(models.Model):
     tirage_commentaire = models.CharField(max_length=100, null=True, blank=True, help_text="Max 100 caractères.")
     commentaire_tuyauterie = models.TextField(verbose_name="Description de la tuyauterie", blank=True, null=True)
     accessoires = models.ManyToManyField('Accessoire', blank=True, help_text="Nous contacter si un accessoire manque.")
+    buffet_vide = models.BooleanField(default=False, verbose_name="Buffet vide")
 
     # Auto générés
     created_date = models.DateTimeField(auto_now_add=True, auto_now=False, verbose_name='Creation date')
@@ -463,6 +464,8 @@ class Orgue(models.Model):
         [nombre de claviers en chiffres romains]["/P" si Pédale]
         """
         jeux_count = self.jeux_count
+        if self.buffet_vide:
+            return "0, 0"
         if jeux_count == 0:
             return
         return "{}, {}".format(self.jeux_count, self.resume_composition_clavier())
@@ -510,7 +513,7 @@ class Orgue(models.Model):
             },
             "Au moins un clavier": {
                 "points": 20,
-                "logique": self.claviers.count() >= 1,
+                "logique": self.claviers.count() >= 1 or self.buffet_vide,
                 "lien": reverse('orgues:orgue-update-composition', args=(self.uuid,))
             },
             "Résumé de l'orgue complété": {

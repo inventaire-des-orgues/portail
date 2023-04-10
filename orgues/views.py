@@ -352,6 +352,7 @@ class OrgueDetail(DetailView):
             'facteurs').distinct()
         context["contributions"] = self.get_contributions()
         context["orgue_url"] = self.request.build_absolute_uri(self.object.get_absolute_url())
+        context["buffet_vide"] = self.object.buffet_vide
         return context
 
     def get_contributions(self):
