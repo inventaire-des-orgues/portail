@@ -19,16 +19,18 @@
     {% endfor %}
   {% endif %}
   <form action="" method="post" id="mainform" enctype="multipart/form-data">{% csrf_token %}
-    <div id="claviers">
-      {% for clavier in claviers %}
-        {% include 'orgues/clavier_detail.html' with editable='true' %}
-      {% endfor %}
-    </div>
-    <p class="text-right">
-      <button type="submit" name="next" value="{% url 'orgues:clavier-create' orgue.uuid %}" class="btn btn-primary">
-        <i class="fa fa-plus"></i> Ajouter un plan sonore
-      </button>
-    </p>
+    {% if not buffet_vide %}
+      <div id="claviers">
+        {% for clavier in claviers %}
+          {% include 'orgues/clavier_detail.html' with editable='true' %}
+        {% endfor %}
+      </div>
+      <p class="text-right">
+        <button type="submit" name="next" value="{% url 'orgues:clavier-create' orgue.uuid %}" class="btn btn-primary">
+          <i class="fa fa-plus"></i> Ajouter un plan sonore
+        </button>
+      </p>
+    {% endif %}
     <hr>
     {% for field in form %}
       {% include 'stack_field.html' with with_helptext='true' %}

@@ -558,6 +558,7 @@ class OrgueUpdateComposition(OrgueUpdateMixin):
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context["claviers"] = self.object.claviers.all().prefetch_related("jeux")
+        context["buffet_vide"] = self.object.buffet_vide
         return context
 
 
