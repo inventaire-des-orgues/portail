@@ -332,6 +332,9 @@ class OrgueDetail(DetailView):
         logger.info("{user};{method};{get_full_path};200".format(user=self.request.user,
                                                                  method=self.request.method,
                                                                  get_full_path=self.request.META.get('HTTP_REFERER')))
+        logger.info("{user};{method};detail;{get_full_path};200".format(user=self.request.user,
+                                                                 method=self.request.method,
+                                                                 get_full_path=self.kwargs['slug']))
         orgue = Orgue.objects.filter(Q(slug=self.kwargs['slug']) | Q(codification=self.kwargs['slug'])).first()
         if not orgue:
             raise Http404
