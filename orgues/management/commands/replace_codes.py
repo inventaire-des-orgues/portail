@@ -98,9 +98,14 @@ class Command(BaseCommand):
                     p = Path(settings.MEDIA_ROOT, chemin_avant_propre)
                     if p.exists():
                         shutil.rmtree(p)
-                    p_thumbnail = Path(Path(img.thumbnail.path).parents[4], chemin_avant_propre)
-                    if p_thumbnail.exists():
-                        shutil.rmtree(p_thumbnail)
+                    if len(orgue.images.all())>=1:
+                        p_thumbnail = Path(Path(img.thumbnail.path).parents[4], chemin_avant_propre)
+                        print(img.thumbnail.path)
+                        print(Path(img.thumbnail.path))
+                        print(Path(img.thumbnail.path).parents[4])
+                        print(p_thumbnail)
+                        if p_thumbnail.exists():
+                            shutil.rmtree(p_thumbnail)
                     
                     
                 print('Fin de la modification des codes.')
