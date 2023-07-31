@@ -5,7 +5,7 @@
       <ul class="nav nav-tabs" id="myTab2" role="tablist">
         {% for orgue in orgues %}
           <li class="nav-item">
-            <a class="nav-link {% if forloop.first %}active{% endif %} text-capitalize" id="home-tab" data-toggle="tab" href="#orgue-{{ orgue.id }}" role="tab" aria-controls="home" aria-selected="true">
+            <a class="nav-link {% if forloop.first %}active{% endif %}" style="text-transform: capitalize;" id="home-tab" data-toggle="tab" href="#orgue-{{ orgue.id }}" role="tab" aria-controls="home" aria-selected="true">
             {% if orgue.designation %}  {{ orgue.designation }} {% else %} Orgue {{ forloop.counter }} {% endif %}
             </a>
           </li>
