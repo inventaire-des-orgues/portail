@@ -6,7 +6,7 @@
         {% for orgue in orgues %}
           <li class="nav-item">
             <a class="nav-link {% if forloop.first %}active{% endif %}" id="home-tab" data-toggle="tab" href="#orgue-{{ orgue.id }}" role="tab" aria-controls="home" aria-selected="true">
-            {% if orgue.designation %}  {{ orgue.designation|capfirst }} {% else %} Orgue {{ forloop.counter }} {% endif %}
+            {% if orgue.designation %}  {{ orgue.designation|lower|capfirst }} {% else %} Orgue {{ forloop.counter }} {% endif %}
             </a>
           </li>
         {% endfor %}
