@@ -805,3 +805,6 @@ a.link, a.link:visited, a.link:active {
 .text-primary{
     color: #5c1c54 !important;
 }
+
+.firstcap {display:inline-block}
+.firstcap:first-letter {text-transform: uppercase}
