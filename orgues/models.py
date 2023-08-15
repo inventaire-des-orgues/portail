@@ -933,7 +933,7 @@ class Image(models.Model):
         for x in range(0, width, width // 10):
             for y in range(0, height, height // 10):
                 r, g, b = img.getpixel((x, y))
-                if abs(r-g) > 30 or abs(g-b) > 30:
+                if abs(r-g) > 15 or abs(g-b) > 15:
                     return False
         return True
 
