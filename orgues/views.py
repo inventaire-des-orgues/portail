@@ -1364,6 +1364,7 @@ class OrgueExport(FabView):
             "completion",
             "resume_composition",
             "diapason",
+            "proprietaire",
         ]
         writer = csv.DictWriter(response, delimiter=';', fieldnames=columns)
 
