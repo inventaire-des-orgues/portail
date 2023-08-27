@@ -1465,3 +1465,4 @@ class Stats(View):
             'inconnu': round(
                 100 * (total - (data['altere'] or 0) - (data['bon'] or 0) - (data['tres_bon'] or 0) - (data['degrade'] or 0) - (data['restauration'] or 0)) / total, 0),
         }
+
