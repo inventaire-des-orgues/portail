@@ -1,4 +1,4 @@
-name: Ajouter automatiquement une issue au projet 1
+name: Ajouter automatiquement une issue au projet 3
 
 on:
   issues:
@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Assign to One Project
     steps:
-    - name: Assign NEW issues to project 1
+    - name: Assign NEW issues to project 3
       uses: actions/checkout@main
       if: github.event.action == 'opened'
       with:
