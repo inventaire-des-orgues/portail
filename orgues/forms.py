@@ -107,7 +107,7 @@ class OrgueCompositionForm(forms.ModelForm):
     class Meta:
         model = Orgue
 
-        fields = ['accessoires']
+        fields = ['accessoires', 'buffet_vide']
 
 
 class OrgueBuffetForm(forms.ModelForm):
