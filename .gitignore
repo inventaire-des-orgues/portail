@@ -122,3 +122,10 @@ data.ms
 *.scssc
 
 orgues/temp/
+
+deplacements.csv
+no_delete.csv
+replace_facteurs.csv
+appariements_osm.json
+appariements_topo.json
+facteurs_localisaiton.json
