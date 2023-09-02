@@ -66,7 +66,7 @@ class Command(BaseCommand):
 
                         print("pathimage_apres : ", pathimage_apres)
                         shutil.chown(pathimage_apres, user='fabdev', group='www-data')
-                        os.chmod(chemin_apres_propre, 0o644) 
+                        os.chmod(pathimage_apres, 0o644) 
                     
                     # On met à jour les autres fichiers
                     for fic in orgue.fichiers.all():
@@ -98,7 +98,7 @@ class Command(BaseCommand):
 
                         print("pathfichier_apres : ", pathfichier_apres)
                         shutil.chown(pathfichier_apres, user='fabdev', group='www-data')
-                        os.chmod(chemin_apres_propre, 0o644) 
+                        os.chmod(pathfichier_apres, 0o644) 
                     
                     orgue.save()
                     
