@@ -63,10 +63,7 @@ class Command(BaseCommand):
                         pathimage_avant = Path(img.image.name)
                         img.image.name = str(Path(chemin_apres_propre, "images", pathimage_avant.name))
                         img.save()
-
-                        print("pathimage_apres : ", pathimage_apres)
-                        shutil.chown(pathimage_apres, user='fabdev', group='www-data')
-                        os.chmod(pathimage_apres, 0o644) 
+ 
                     
                     # On met à jour les autres fichiers
                     for fic in orgue.fichiers.all():
@@ -96,10 +93,6 @@ class Command(BaseCommand):
                         fic.file.name = str(Path(chemin_apres_propre, "fichiers", pathfile_avant.name))
                         fic.save()
 
-                        print("pathfichier_apres : ", pathfichier_apres)
-                        shutil.chown(pathfichier_apres, user='fabdev', group='www-data')
-                        os.chmod(pathfichier_apres, 0o644) 
-                    
                     orgue.save()
                     
                     # On efface l'ancien répertoire
@@ -110,6 +103,13 @@ class Command(BaseCommand):
                         p_thumbnail = Path(Path(img.thumbnail.path).parents[4], chemin_avant_propre)
                         if p_thumbnail.exists():
                             shutil.rmtree(p_thumbnail)
+
+                    for dirpath, dirnames, filenames in os.walk(Path(path_media, chemin_apres_propre)):
+                        shutil.chown(dirpath, user='fabdev', group='www-data')
+                        os.chmod(dirpath, 0o644) 
+                        for filename in filenames:
+                            shutil.chown(os.path.join(dirpath, filename), user='fabdev', group='www-data')
+                            os.chmod(os.path.join(dirpath, filename), 0o644)
                     
                     
                 print('Fin de la modification des codes.')
