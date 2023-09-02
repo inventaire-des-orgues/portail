@@ -5,6 +5,7 @@ from project import settings
 from django.core.management.base import BaseCommand
 from orgues.models import Orgue
 from pathlib import Path
+from django.utils.text import slugify
 
 
 class Command(BaseCommand):
@@ -93,6 +94,7 @@ class Command(BaseCommand):
                         fic.file.name = str(Path(chemin_apres_propre, "fichiers", pathfile_avant.name))
                         fic.save()
 
+                    orgue.slug = slugify("orgue-{}-{}-{}".format(orgue.commune, orgue.edifice, orgue.codification))
                     orgue.save()
                     
                     # On efface l'ancien répertoire
@@ -105,8 +107,8 @@ class Command(BaseCommand):
                             shutil.rmtree(p_thumbnail)
 
                     for dirpath, dirnames, filenames in os.walk(Path(path_media, chemin_apres_propre)):
-                        shutil.chown(dirpath, user='fabdev', group='www-data')
-                        os.chmod(dirpath, 0o644) 
+                        shutil.chown(dirpath, user='fabdev', group='fabdev')
+                        os.chmod(dirpath, 0o755) 
                         for filename in filenames:
                             shutil.chown(os.path.join(dirpath, filename), user='fabdev', group='www-data')
                             os.chmod(os.path.join(dirpath, filename), 0o644)
