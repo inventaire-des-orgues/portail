@@ -63,6 +63,10 @@ class Command(BaseCommand):
                         pathimage_avant = Path(img.image.name)
                         img.image.name = str(Path(chemin_apres_propre, "images", pathimage_avant.name))
                         img.save()
+
+                        print("pathimage_apres : ", pathimage_apres)
+                        shutil.chown(pathimage_apres, user='fabdev', group='www-data')
+                        os.chmod(chemin_apres_propre, 0o644) 
                     
                     # On met à jour les autres fichiers
                     for fic in orgue.fichiers.all():
@@ -89,9 +93,13 @@ class Command(BaseCommand):
 
                         # Renommage de tous les liens
                         pathfile_avant = Path(fic.file.name)
-                        fic.file.name = str(Path(chemin_apres_propre, "fichiers", pathfile_avant.name))                        
-
+                        fic.file.name = str(Path(chemin_apres_propre, "fichiers", pathfile_avant.name))
                         fic.save()
+
+                        print("pathfichier_apres : ", pathfichier_apres)
+                        shutil.chown(pathfichier_apres, user='fabdev', group='www-data')
+                        os.chmod(chemin_apres_propre, 0o644) 
+                    
                     orgue.save()
                     
                     # On efface l'ancien répertoire
@@ -100,10 +108,6 @@ class Command(BaseCommand):
                         shutil.rmtree(p)
                     if len(orgue.images.all())>=1:
                         p_thumbnail = Path(Path(img.thumbnail.path).parents[4], chemin_avant_propre)
-                        print(img.thumbnail.path)
-                        print(Path(img.thumbnail.path))
-                        print(Path(img.thumbnail.path).parents[4])
-                        print(p_thumbnail)
                         if p_thumbnail.exists():
                             shutil.rmtree(p_thumbnail)
                     
