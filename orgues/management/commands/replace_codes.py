@@ -43,6 +43,8 @@ class Command(BaseCommand):
                         if dep[0] == str(orgue.code_departement):
                             orgue.departement = dep[1]
 
+                    path_cache = None
+                    
                     # On met à jour les fichiers images
                     for img in orgue.images.all():
                         pathimage_avant = Path(img.image.path)
@@ -68,14 +70,14 @@ class Command(BaseCommand):
                         thumbnail_url = Path(*Path(img.thumbnail.url).parts[2:])
                         path_cache = Path(settings.MEDIA_ROOT, thumbnail_url)
                         
-                    
-                    path_cache = path_cache.parents[2]
-                    for dirpath, dirnames, filenames in os.walk(path_cache):
-                        shutil.chown(dirpath, user='fabdev', group='fabdev')
-                        os.chmod(dirpath, 0o755) 
-                        for filename in filenames:
-                            shutil.chown(os.path.join(dirpath, filename), user='fabdev', group='www-data')
-                            os.chmod(os.path.join(dirpath, filename), 0o644)
+                    if path_cache is not None:
+                        path_cache = path_cache.parents[2]
+                        for dirpath, dirnames, filenames in os.walk(path_cache):
+                            shutil.chown(dirpath, user='fabdev', group='fabdev')
+                            os.chmod(dirpath, 0o755) 
+                            for filename in filenames:
+                                shutil.chown(os.path.join(dirpath, filename), user='fabdev', group='www-data')
+                                os.chmod(os.path.join(dirpath, filename), 0o644)
  
                     
                     # On met à jour les autres fichiers
