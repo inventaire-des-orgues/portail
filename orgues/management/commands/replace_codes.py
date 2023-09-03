@@ -48,7 +48,7 @@ class Command(BaseCommand):
                         pathimage_avant = Path(img.image.path)
                         path_media = pathimage_avant.parents[3]
                         name = pathimage_avant.name
-                        pathimage_apres = Path(path_media, chemin_apres_propre, "images", name)
+                        pathimage_apres = Path(path_media, chemin_apres_propre, "images", name)                        
 
                         if not pathimage_apres.parent.exists():
                             os.makedirs(pathimage_apres.parent)
@@ -64,6 +64,18 @@ class Command(BaseCommand):
                         pathimage_avant = Path(img.image.name)
                         img.image.name = str(Path(chemin_apres_propre, "images", pathimage_avant.name))
                         img.save()
+                        
+                        thumbnail_url = Path(*Path(img.thumbnail.url).parts[2:])
+                        path_cache = Path(settings.MEDIA_ROOT, thumbnail_url)
+                        
+                    
+                    path_cache = path_cache.parents[2]
+                    for dirpath, dirnames, filenames in os.walk(path_cache):
+                        shutil.chown(dirpath, user='fabdev', group='fabdev')
+                        os.chmod(dirpath, 0o755) 
+                        for filename in filenames:
+                            shutil.chown(os.path.join(dirpath, filename), user='fabdev', group='www-data')
+                            os.chmod(os.path.join(dirpath, filename), 0o644)
  
                     
                     # On met à jour les autres fichiers
