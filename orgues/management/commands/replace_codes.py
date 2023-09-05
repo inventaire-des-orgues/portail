@@ -44,6 +44,7 @@ class Command(BaseCommand):
                             orgue.departement = dep[1]
 
                     path_cache = None
+                    path_media = None
                     
                     # On met à jour les fichiers images
                     for img in orgue.images.all():
@@ -120,12 +121,13 @@ class Command(BaseCommand):
                         if p_thumbnail.exists():
                             shutil.rmtree(p_thumbnail)
 
-                    for dirpath, dirnames, filenames in os.walk(Path(path_media, chemin_apres_propre)):
-                        shutil.chown(dirpath, user='fabdev', group='fabdev')
-                        os.chmod(dirpath, 0o755) 
-                        for filename in filenames:
-                            shutil.chown(os.path.join(dirpath, filename), user='fabdev', group='www-data')
-                            os.chmod(os.path.join(dirpath, filename), 0o644)
+                    if path_media is not None:
+                        for dirpath, dirnames, filenames in os.walk(Path(path_media, chemin_apres_propre)):
+                            shutil.chown(dirpath, user='fabdev', group='fabdev')
+                            os.chmod(dirpath, 0o755) 
+                            for filename in filenames:
+                                shutil.chown(os.path.join(dirpath, filename), user='fabdev', group='www-data')
+                                os.chmod(os.path.join(dirpath, filename), 0o644)
                     
                     
                 print('Fin de la modification des codes.')
