@@ -99,6 +99,7 @@
                       <span v-if="!orgue.designation">Orgue</span>
                       <span v-if="orgue.emplacement">, ((orgue.emplacement))</span>
                       <span v-if="orgue.resume_composition">, ((orgue.resume_composition))</span>
+                      <span v-if="orgue.etat === 'Disparu'">, Orgue disparu</span>
                     </p>
                   {% endspaceless %}
                   <div class="line-clamp-3">
