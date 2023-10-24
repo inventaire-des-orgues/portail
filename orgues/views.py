@@ -1456,7 +1456,7 @@ class Stats(View):
         return dict((k, self.normalize(v)) for k, v in res.items())
 
     def normalize(self, data):
-        total = data['count'] or 0
+        total = data['count'] - data['disparu'] or 0
         return {
             'total': total,
             'mh': data['mh'] or 0,
@@ -1466,4 +1466,5 @@ class Stats(View):
             'degrade': round(100 * ((data['degrade'] or 0) + (data['restauration'] or 0)) / total, 0),
             'inconnu': round(
                 100 * (total - (data['altere'] or 0) - (data['bon'] or 0) - (data['tres_bon'] or 0) - (data['degrade'] or 0) - (data['restauration'] or 0)) / total, 0),
+            'disparu' : data['disparu'],
         }
