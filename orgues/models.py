@@ -702,6 +702,9 @@ class Localisation(models.Model):
     osm_id = models.CharField(verbose_name="Id OpenStreetMap", max_length=20, null=True, blank=True,
                               help_text="Identifiant OSM de l'objet décrivant l'édifice.")
 
+    def __str__(self):
+        return "{}, {}, {}".format(self.edifice, self.commune, self.departement)
+
 
 class Evenement(models.Model):
     """

@@ -9,6 +9,7 @@
 
 {% block js_extra_2 %}
     {% include 'orgues/facteur_create_modal.html' %}
+    {% include 'orgues/localisation_create_modal.html' %}
   <script>
   $('#id_resume').trumbowyg('destroy');
 
@@ -29,6 +30,11 @@
           $("#id_localisation").parent().hide();
       }
   }
+
+  $("#select2-id_localisation-container").on("click", function(e) {
+    $('#id_localisation').select2('close');
+    $("#nouvelleLocalisationModal").modal('show');
+  })
 
   </script>
 {% endblock %}

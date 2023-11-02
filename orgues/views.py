@@ -34,7 +34,7 @@ from orgues.api.serializers import OrgueSerializer, OrgueResumeSerializer
 
 from project import settings
 
-from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source, Contribution
+from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source, Contribution, Localisation
 import orgues.utilsorgues.correcteurorgues as co
 import orgues.utilsorgues.codification as codif
 import orgues.utilsorgues.code_geographique as codegeo
@@ -1032,6 +1032,26 @@ class FacteurCreateJS(FabCreateViewJS):
                 {'success': "true", 'facteur': {'id': facteur.id, 'nom': facteur.nom}})
         else:
             return JsonResponse({'success': "false"})
+
+
+class LocalisationCreateJS(FabCreateViewJS):
+    """
+    Création d'une nouvelle localisation.
+    Vue appelée par du code javascript
+    """
+    model = Localisation
+    permission_required = "orgues.add_evenement"
+    fields = "__all__"
+
+    def post(self, request, *args, **kwargs):
+        edifice = request.POST.get("edifice")
+        commune = request.POST.get("commune")
+        osm_id = request.POST.get("osm")
+        commune, departement, code_departement, region, code_insee = co.geographie_administrative(commune)
+        localisation, created = Localisation.objects.get_or_create(edifice=edifice, commune=commune, departement=departement, region=region, osm_id=osm_id)
+
+        return JsonResponse(
+            {'success': "true", 'localisation': {'id': localisation.id, 'nom': localisation.__str__()}})
 
 
 class FichierList(FabListView):
