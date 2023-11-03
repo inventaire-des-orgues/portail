@@ -1,13 +1,13 @@
-<div class="modal fade" id="nouvelleLocalisationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="nouvelleProvenanceModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-sm" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Nouvelle localisation</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Nouvelle provenance</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form action="{% url 'orgues:localisation-create-js' %}" id="nouvelleLocalisationForm">{% csrf_token %}
+      <form action="{% url 'orgues:provenance-create-js' %}" id="nouvelleProvenanceForm">{% csrf_token %}
         <div class="modal-body">
           <div class="form-group">
             <label for="">Edifice : </label>
@@ -56,7 +56,7 @@
 
 
 
-      $("#nouvelleLocalisationForm").submit(function (e) {
+      $("#nouvelleProvenanceForm").submit(function (e) {
       e.preventDefault(); // avoid to execute the actual submit of the form.
       var form = $(this);
       var url = form.attr('action');
@@ -73,16 +73,16 @@
         data: form.serialize(), // serializes the form's elements.
         success: function (data) {
           if (data.success=="true") {
-            var localisation = data.localisation;
-            if ($('#id_localisation').find("option[value='" + localisation.id + "']").length) {
-              $('#id_localisation').val(localisation.id).trigger('change');
+            var provenance = data.provenance;
+            if ($('#id_provenance').find("option[value='" + provenance.id + "']").length) {
+              $('#id_provenance').val(provenance.id).trigger('change');
             } else {
               // Create a DOM Option and pre-select by default
-              var newOption = new Option(localisation.nom, localisation.id, true, true);
+              var newOption = new Option(provenance.nom, provenance.id, true, true);
               // Append it to the select
-              $('#id_localisation').append(newOption).trigger('change');
+              $('#id_provenance').append(newOption).trigger('change');
             }
-            $('#nouvelleLocalisationModal').modal('hide');
+            $('#nouvelleProvenanceModal').modal('hide');
           }
         },
         complete: function() {

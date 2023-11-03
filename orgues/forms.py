@@ -145,7 +145,7 @@ class EvenementForm(forms.ModelForm):
             "annee_fin",
             "circa",
             "type",
-            "localisation",
+            "provenance",
             "facteurs",
             "resume",
         ]

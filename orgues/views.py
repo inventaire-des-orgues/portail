@@ -34,7 +34,7 @@ from orgues.api.serializers import OrgueSerializer, OrgueResumeSerializer
 
 from project import settings
 
-from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source, Contribution, Localisation
+from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source, Contribution, Provenance
 import orgues.utilsorgues.correcteurorgues as co
 import orgues.utilsorgues.codification as codif
 import orgues.utilsorgues.code_geographique as codegeo
@@ -1034,12 +1034,12 @@ class FacteurCreateJS(FabCreateViewJS):
             return JsonResponse({'success': "false"})
 
 
-class LocalisationCreateJS(FabCreateViewJS):
+class ProvenanceCreateJS(FabCreateViewJS):
     """
-    Création d'une nouvelle localisation.
+    Création d'une nouvelle Provenance.
     Vue appelée par du code javascript
     """
-    model = Localisation
+    model = Provenance
     permission_required = "orgues.add_evenement"
     fields = "__all__"
 
@@ -1048,10 +1048,10 @@ class LocalisationCreateJS(FabCreateViewJS):
         commune = request.POST.get("commune")
         osm_id = request.POST.get("osm")
         commune, departement, code_departement, region, code_insee = co.geographie_administrative(commune)
-        localisation, created = Localisation.objects.get_or_create(edifice=edifice, commune=commune, departement=departement, region=region, osm_id=osm_id)
+        provenance, created = Provenance.objects.get_or_create(edifice=edifice, commune=commune, departement=departement, region=region, osm_id=osm_id)
 
         return JsonResponse(
-            {'success': "true", 'localisation': {'id': localisation.id, 'nom': localisation.__str__()}})
+            {'success': "true", 'provenance': {'id': provenance.id, 'nom': provenance.__str__()}})
 
 
 class FichierList(FabListView):

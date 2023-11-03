@@ -9,31 +9,31 @@
 
 {% block js_extra_2 %}
     {% include 'orgues/facteur_create_modal.html' %}
-    {% include 'orgues/localisation_create_modal.html' %}
+    {% include 'orgues/provenance_create_modal.html' %}
   <script>
   $('#id_resume').trumbowyg('destroy');
 
 
   $(document).ready(function(){
-      changeLocalisationState();
+      changeProvenanceState();
   });
 
   $("#id_type").change(function () {
-      changeLocalisationState();
+      changeProvenanceState();
   });
 
-  var changeLocalisationState = function () {
+  var changeProvenanceState = function () {
       if ($("#id_type").find(":selected").text() == "Déplacement") {
-          $("#id_localisation").parent().show();
+          $("#id_provenance").parent().show();
       }
       else{      
-          $("#id_localisation").parent().hide();
+          $("#id_provenance").parent().hide();
       }
   }
 
-  $("#select2-id_localisation-container").on("click", function(e) {
-    $('#id_localisation').select2('close');
-    $("#nouvelleLocalisationModal").modal('show');
+  $("#select2-id_provenance-container").on("click", function(e) {
+    $('#id_provenance').select2('close');
+    $("#nouvelleProvenanceModal").modal('show');
   })
 
   </script>

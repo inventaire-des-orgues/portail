@@ -690,7 +690,7 @@ class Clavier(models.Model):
         verbose_name = "Plan sonore"
 
 
-class Localisation(models.Model):
+class Provenance(models.Model):
     edifice = models.CharField(max_length=300)
     commune = models.CharField(max_length=100)
     departement = models.CharField(verbose_name="Département", choices=[(c[1], c[1]) for c in Orgue.CHOIX_DEPARTEMENT],
@@ -741,7 +741,7 @@ class Evenement(models.Model):
     annee = models.IntegerField(verbose_name="Année de début de l'évènement")
     annee_fin = models.IntegerField(verbose_name="Année de fin de l'évènement", null=True, blank=True,
                                     help_text="Optionnelle")
-    localisation = models.ForeignKey(Localisation, on_delete=models.CASCADE, blank=True, null=True, verbose_name="Ancienne localisation")
+    provenance = models.ForeignKey(Provenance, on_delete=models.CASCADE, blank=True, null=True, verbose_name="Provenance")
     circa = models.BooleanField(default=False, verbose_name="Cocher si dates approximatives")
     type = models.CharField(max_length=20, choices=CHOIX_TYPE)
     facteurs = models.ManyToManyField(Facteur, blank=True, related_name="evenements")
