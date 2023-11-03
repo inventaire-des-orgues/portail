@@ -74,6 +74,7 @@ class Command(BaseCommand):
             'longitude',
             'construction',
             'modified_date',
+            'etat',
         ])
 
         index.update_ranking_rules([

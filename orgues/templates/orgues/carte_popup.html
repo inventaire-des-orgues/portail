@@ -22,6 +22,7 @@
             {% if orgue.designation %}{{ orgue.designation }} {% else %} Orgue {% endif %}
             {% if orgue.emplacement %}, {{ orgue.emplacement }} {% endif %}
             {% if orgue.resume_composition %}, {{ orgue.resume_composition }} {% endif %}
+            {% if orgue.etat == "disparu" %}, Orgue disparu {% endif %}
           </div>
           <div><b>Localisation: </b>{{ orgue.edifice }}, {{ orgue.commune }}, {{ orgue.departement }} ({{ orgue.region }})</div>
           <div><b>Facteurs:</b> {% for evenement in orgue.evenements.all %}{% for facteur in evenement.facteurs.all %}{{ facteur.nom }}, {% endfor %}{% endfor %}</div>
