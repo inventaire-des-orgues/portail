@@ -1046,9 +1046,10 @@ class ProvenanceCreateJS(FabCreateViewJS):
     def post(self, request, *args, **kwargs):
         edifice = request.POST.get("edifice")
         commune = request.POST.get("commune")
-        osm_id = request.POST.get("osm")
+        osm_type = request.POST.get("type_osm")
+        osm_id = request.POST.get("id_osm")
         commune, departement, code_departement, region, code_insee = co.geographie_administrative(commune)
-        provenance, created = Provenance.objects.get_or_create(edifice=edifice, commune=commune, departement=departement, region=region, osm_id=osm_id)
+        provenance, created = Provenance.objects.get_or_create(edifice=edifice, commune=commune, departement=departement, region=region, osm_type=osm_type, osm_id=osm_id)
 
         return JsonResponse(
             {'success': "true", 'provenance': {'id': provenance.id, 'nom': provenance.__str__()}})

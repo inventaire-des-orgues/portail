@@ -14,8 +14,14 @@
             <input type="text" name="edifice" class="form-control" id="new_edifice" required>
             <label for="">Commune : </label>
             <select type="text" name="commune" class="form-control" id="new_commune" required></select>
+            <label for="">Type OSM : </label>
+            <select type="text" name="type_osm" class="form-control" id="new_type_osm">
+              <option value="node">Nœud (Node)</option>
+              <option value="way" selected>Chemin (Way)</option>
+              <option value="relation">Relation (Relation)</option>
+            </select>
             <label for="">Id OSM : </label>
-            <input type="text" name="osm" class="form-control" id="new_osm">
+            <input type="text" name="id_osm" class="form-control" id="new_id_osm">
           </div>
         </div>
         <div class="modal-footer">
