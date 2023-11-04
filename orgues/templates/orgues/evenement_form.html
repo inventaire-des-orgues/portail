@@ -9,7 +9,32 @@
 
 {% block js_extra_2 %}
     {% include 'orgues/facteur_create_modal.html' %}
+    {% include 'orgues/provenance_create_modal.html' %}
   <script>
   $('#id_resume').trumbowyg('destroy');
+
+
+  $(document).ready(function(){
+      changeProvenanceState();
+  });
+
+  $("#id_type").change(function () {
+      changeProvenanceState();
+  });
+
+  var changeProvenanceState = function () {
+      if ($("#id_type").find(":selected").text() == "Déplacement") {
+          $("#id_provenance").parent().show();
+      }
+      else{      
+          $("#id_provenance").parent().hide();
+      }
+  }
+
+  $("#select2-id_provenance-container").on("click", function(e) {
+    $('#id_provenance').select2('close');
+    $("#nouvelleProvenanceModal").modal('show');
+  })
+
   </script>
 {% endblock %}

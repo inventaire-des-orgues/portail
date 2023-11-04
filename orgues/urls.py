@@ -32,6 +32,7 @@ urlpatterns = [
     path('evenement/edition/<int:pk>/', v.EvenementUpdate.as_view(), name='evenement-update'),
     path('evenement/creation/<uuid:orgue_uuid>/', v.EvenementCreate.as_view(), name='evenement-create'),
     path('evenement/suppression/<int:pk>/', v.EvenementDelete.as_view(), name='evenement-delete'),
+    path('provenance/creation/', v.ProvenanceCreateJS.as_view(), name='provenance-create-js'),
 
     # claviers
     path('clavier/creation/<uuid:orgue_uuid>/', v.ClavierCreate.as_view(), name='clavier-create'),

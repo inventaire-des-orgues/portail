@@ -1,0 +1,100 @@
+<div class="modal fade" id="nouvelleProvenanceModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Nouvelle provenance</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="{% url 'orgues:provenance-create-js' %}" id="nouvelleProvenanceForm">{% csrf_token %}
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="">Edifice : </label>
+            <input type="text" name="edifice" class="form-control" id="new_edifice" required>
+            <label for="">Commune : </label>
+            <select type="text" name="commune" class="form-control" id="new_commune" required></select>
+            <label for="">Type OSM : </label>
+            <select type="text" name="type_osm" class="form-control" id="new_type_osm">
+              <option value="node">Nœud (Node)</option>
+              <option value="way" selected>Chemin (Way)</option>
+              <option value="relation">Relation (Relation)</option>
+            </select>
+            <label for="">Id OSM : </label>
+            <input type="text" name="id_osm" class="form-control" id="new_id_osm">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-dismiss="modal">Annuler</button>
+          <button type="submit" class="btn btn-primary">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% block js_extra_2 %}
+<script>
+
+  $("#new_commune").select2({
+        placeholder: 'Choisir une commune',
+        ajax: {
+          url: '{% url 'orgues:commune-list-js' %}',
+          data: function (params) {
+            var query = {
+              search: params.term,
+              page: params.page || 1
+            }
+            return query;
+          },
+        },
+        escapeMarkup: function (markup) {
+          return markup;
+        },
+        language: {
+          noResults: function () {
+            return "Aucune commune trouvée ...";
+          }
+        },
+
+        width: '100%'
+      });
+
+
+
+      $("#nouvelleProvenanceForm").submit(function (e) {
+      e.preventDefault(); // avoid to execute the actual submit of the form.
+      var form = $(this);
+      var url = form.attr('action');
+
+      if (form.data('requestRunning')) {
+        return;
+      }
+
+      form.data('requestRunning', true);
+
+      $.ajax({
+        type: "POST",
+        url: url,
+        data: form.serialize(), // serializes the form's elements.
+        success: function (data) {
+          if (data.success=="true") {
+            var provenance = data.provenance;
+            if ($('#id_provenance').find("option[value='" + provenance.id + "']").length) {
+              $('#id_provenance').val(provenance.id).trigger('change');
+            } else {
+              // Create a DOM Option and pre-select by default
+              var newOption = new Option(provenance.nom, provenance.id, true, true);
+              // Append it to the select
+              $('#id_provenance').append(newOption).trigger('change');
+            }
+            $('#nouvelleProvenanceModal').modal('hide');
+          }
+        },
+        complete: function() {
+            form.data('requestRunning', false);
+        }
+      });
+    })
+</script>
+{% endblock %}

@@ -19,6 +19,8 @@ from django import forms
 from accounts.models import User
 
 
+
+
 class Facteur(models.Model):
     """
     Pas celui qui distribue le courrier
@@ -36,65 +38,7 @@ class Facteur(models.Model):
 
 
 class Orgue(models.Model):
-    CHOIX_TYPE_OSM = (
-        ("node", "Nœud (Node)"),
-        ("way", "Chemin (Way)"),
-        ("relation", "Relation (Relation)"),
-    )
-
-    CHOIX_PROPRIETAIRE = (
-        ("commune", "Commune"),
-        ("interco", "Intercommunalité"),
-        ("etat", "Etat"),
-        ("association_culturelle", "Association culturelle"),
-        ("diocese", "Diocèse"),
-        ("paroisse", "Paroisse"),
-        ("congregation", "Congrégation"),
-        ("etablissement_scolaire", "Etablissement scolaire"),
-        ("conservatoire", "Conservatoire ou Ecole de musique"),
-        ("hopital", "Hôpital"),
-        ("particulier", "Particulier (propriété privée)"),
-    )
-
-    CHOIX_ETAT = (
-        ('tres_bon', "Très bon, tout à fait jouable"),
-        ('bon', "Bon : jouable, défauts mineurs"),
-        ('altere', "Altéré : difficilement jouable"),
-        ('degrade', "Dégradé ou en ruine : injouable"),
-        ('restauration', "En restauration (ou projet initié)"),
-        ('disparu', 'Disparu')
-    )
-
-    CHOIX_QUALIFICATION_PALISSY = (
-        ('orgue_de_tribune', 'orgue de tribune'),
-        ('orgue_de_choeur', 'orgue de choeur'),
-        ('orgue_a_cylindres', 'orgue à cylindres'),
-        ('orgue_a_manivelle', 'orgue à manivelle'),
-        ('orgue_de_triforium', 'orgue de triforium'),
-        ('orgue_portatif', 'orgue portatif'),
-        ('orgue_de_cabinet / salon', 'orgue de cabinet / salon'),
-    )
-    CHOIX_TRANSMISSION = (
-        ("mecanique", "Mécanique"),
-        ("mecanique_suspendue", "Mécanique suspendue"),
-        ("mecanique_balanciers", "Mécanique à balanciers"),
-        ("mecanique_barker", "Mécanique Barker"),
-        ("numerique", "Numérique"),
-        ("electrique", "Electrique"),
-        ("electrique_proportionnelle", "Electrique proportionnelle"),
-        ("electro_pneumatique", "Electro-pneumatique"),
-        ("pneumatique", "Pneumatique"),
-    )
-
-    CHOIX_TIRAGE = (
-        ("mecanique", "Mécanique"),
-        ("pneumatique_haute_pression", "Pneumatique haute pression"),
-        ("pneumatique_basse_pression", "Pneumatique basse pression"),
-        ("numerique", "Numérique"),
-        ("electrique", "Electrique"),
-        ("electro_pneumatique", "Electro-pneumatique"),
-    )
-
+    
     CHOIX_REGION = (
         ('Auvergne-Rhône-Alpes', 'Auvergne-Rhône-Alpes'),
         ('Bourgogne-Franche-Comté', 'Bourgogne-Franche-Comté'),
@@ -221,8 +165,67 @@ class Orgue(models.Model):
         ('974', 'La Réunion'),
         ('975', 'Saint-Pierre-et-Miquelon'),
         ('988', 'Nouvelle-Calédonie'),
-
     )
+
+    CHOIX_TYPE_OSM = (
+        ("node", "Nœud (Node)"),
+        ("way", "Chemin (Way)"),
+        ("relation", "Relation (Relation)"),
+    )
+
+    CHOIX_PROPRIETAIRE = (
+        ("commune", "Commune"),
+        ("interco", "Intercommunalité"),
+        ("etat", "Etat"),
+        ("association_culturelle", "Association culturelle"),
+        ("diocese", "Diocèse"),
+        ("paroisse", "Paroisse"),
+        ("congregation", "Congrégation"),
+        ("etablissement_scolaire", "Etablissement scolaire"),
+        ("conservatoire", "Conservatoire ou Ecole de musique"),
+        ("hopital", "Hôpital"),
+        ("particulier", "Particulier (propriété privée)"),
+    )
+
+    CHOIX_ETAT = (
+        ('tres_bon', "Très bon, tout à fait jouable"),
+        ('bon', "Bon : jouable, défauts mineurs"),
+        ('altere', "Altéré : difficilement jouable"),
+        ('degrade', "Dégradé ou en ruine : injouable"),
+        ('restauration', "En restauration (ou projet initié)")
+    )
+
+    CHOIX_QUALIFICATION_PALISSY = (
+        ('orgue_de_tribune', 'orgue de tribune'),
+        ('orgue_de_choeur', 'orgue de choeur'),
+        ('orgue_a_cylindres', 'orgue à cylindres'),
+        ('orgue_a_manivelle', 'orgue à manivelle'),
+        ('orgue_de_triforium', 'orgue de triforium'),
+        ('orgue_portatif', 'orgue portatif'),
+        ('orgue_de_cabinet / salon', 'orgue de cabinet / salon'),
+    )
+    CHOIX_TRANSMISSION = (
+        ("mecanique", "Mécanique"),
+        ("mecanique_suspendue", "Mécanique suspendue"),
+        ("mecanique_balanciers", "Mécanique à balanciers"),
+        ("mecanique_barker", "Mécanique Barker"),
+        ("numerique", "Numérique"),
+        ("electrique", "Electrique"),
+        ("electrique_proportionnelle", "Electrique proportionnelle"),
+        ("electro_pneumatique", "Electro-pneumatique"),
+        ("pneumatique", "Pneumatique"),
+    )
+
+    CHOIX_TIRAGE = (
+        ("mecanique", "Mécanique"),
+        ("pneumatique_haute_pression", "Pneumatique haute pression"),
+        ("pneumatique_basse_pression", "Pneumatique basse pression"),
+        ("numerique", "Numérique"),
+        ("electrique", "Electrique"),
+        ("electro_pneumatique", "Electro-pneumatique"),
+    )
+
+    
 
     # Informations générales
     designation = models.CharField(max_length=300, null=True, verbose_name="Désignation de l'orgue", default="orgue",
@@ -688,6 +691,23 @@ class Clavier(models.Model):
         verbose_name = "Plan sonore"
 
 
+class Provenance(models.Model):
+    edifice = models.CharField(max_length=300)
+    commune = models.CharField(max_length=100)
+    departement = models.CharField(verbose_name="Département", choices=[(c[1], c[1]) for c in Orgue.CHOIX_DEPARTEMENT],
+                                   max_length=50)
+    code_departement = models.CharField(choices=[(c[0], c[0]) for c in Orgue.CHOIX_DEPARTEMENT],
+                                        verbose_name="Code département", max_length=3)
+    region = models.CharField(verbose_name="Région", choices=Orgue.CHOIX_REGION, max_length=50)
+    osm_type = models.CharField(choices=Orgue.CHOIX_TYPE_OSM, verbose_name="Type OpenStreetMap", max_length=20, null=True,
+                                blank=True, help_text="Type OSM de l'objet représenant l'édifice.", default="way")
+    osm_id = models.CharField(verbose_name="Id OpenStreetMap", max_length=20, null=True, blank=True,
+                              help_text="Identifiant OSM de l'objet décrivant l'édifice.")
+
+    def __str__(self):
+        return "{}, {}, {}".format(self.edifice, self.commune, self.departement)
+
+
 class Evenement(models.Model):
     """
     Décrit les différents événements relatifs à un orgue
@@ -722,6 +742,7 @@ class Evenement(models.Model):
     annee = models.IntegerField(verbose_name="Année de début de l'évènement")
     annee_fin = models.IntegerField(verbose_name="Année de fin de l'évènement", null=True, blank=True,
                                     help_text="Optionnelle")
+    provenance = models.ForeignKey(Provenance, on_delete=models.CASCADE, blank=True, null=True, verbose_name="Provenance")
     circa = models.BooleanField(default=False, verbose_name="Cocher si dates approximatives")
     type = models.CharField(max_length=20, choices=CHOIX_TYPE)
     facteurs = models.ManyToManyField(Facteur, blank=True, related_name="evenements")

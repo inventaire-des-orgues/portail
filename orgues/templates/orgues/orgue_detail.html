@@ -403,7 +403,7 @@
               "display_date": "{{evenement.dates}}",
               "text": {
                 "headline": "<b>{{ evenement.get_type_display }}</b>",
-                "text": "{% if evenement.resume %}{{ evenement.resume|linebreaksbr|safe|escapejs}}{% endif %}{% if evenement.facteurs.count %}<p>Facteur(s) : {{ evenement.facteurs.all|join:', ' }}</p>{% endif %}"
+                "text": "{% if evenement.resume %}{{ evenement.resume|linebreaksbr|safe|escapejs}}{% endif %}{% if evenement.facteurs.count %}<p>Facteur(s) : {{ evenement.facteurs.all|join:', ' }}</p>{% endif %} {% if evenement.type == 'deplacement' and evenement.provenance.osm_id and evenement.provenance.osm_type %} {% with 'https://www.openstreetmap.org/'|add:evenement.provenance.osm_type|add:'/'|add:evenement.provenance.osm_id as lien_osm %} <p> Provenance : <a href={{ lien_osm }} target='_blank' rel='noopener noreferrer'> {{ evenement.provenance }} </a> </p> {% endwith %} {% endif %}"
               }
             },
           {% endfor %}
