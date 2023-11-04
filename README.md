@@ -8,7 +8,7 @@ pip install -r requirements.txt
 ```
 
 Créer un fichier `project/settings/dev.py` inspiré de `project/settings/dev.example.py` avec les settings de dev.
-## Créer la base de donnée 
+## Créer la base de données 
 
 Lancer les commandes suivantes :  
  
