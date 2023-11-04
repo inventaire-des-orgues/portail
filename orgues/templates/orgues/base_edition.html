@@ -23,7 +23,10 @@
 
 
           <h2 class="mb-0">
-            {{ orgue.edifice|capfirst }} <br>
+            {{ orgue.edifice|capfirst }} 
+            {% if orgue.etat == "disparu" %}
+              (Orgue disparu) 
+            {% endif %} <br>
           </h2>
           <h4 class="text-muted">
             {{ orgue.commune }}{% if orgue.ancienne_commune %} ({{ orgue.ancienne_commune }}){% endif %}, {{ orgue.departement }}

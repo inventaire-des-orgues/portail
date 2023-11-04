@@ -38,6 +38,7 @@ class Facteur(models.Model):
 
 
 class Orgue(models.Model):
+    
     CHOIX_REGION = (
         ('Auvergne-Rhône-Alpes', 'Auvergne-Rhône-Alpes'),
         ('Bourgogne-Franche-Comté', 'Bourgogne-Franche-Comté'),

@@ -35,7 +35,10 @@
       <div class="row justify-content-center text-md-left">
         <div class="col-lg-9 my-4 text-center text-md-left">
           <h2 class="mb-0">
-            {{ orgue.edifice|capfirst }} <br>
+            {{ orgue.edifice|capfirst }}  
+              {% if orgue.etat == "disparu" %}
+                  (Orgue disparu)
+              {% endif %} <br>
           </h2>
 
           {% spaceless %}
