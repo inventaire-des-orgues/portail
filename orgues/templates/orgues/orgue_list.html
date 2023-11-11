@@ -85,7 +85,12 @@
           <div v-for="orgue in orgues" class="card shadow-sm vignette mb-lg-4 mb-sm-5 orgue-card" @click="select(orgue)">
             <div class="row no-gutters">
               <div class="col-lg-4 la_vignette" style="background: #868e96;">
-                <img class="card-img-top" :src="orgue.vignette" alt="Photo orgue" style="">
+                <span v-if="orgue.etat === 'Disparu'">
+                  <img class="card-img-top" :src="orgue.vignette" alt="Photo orgue" style="filter: grayscale(1);">
+                </span>
+                <span v-else>
+                  <img class="card-img-top" :src="orgue.vignette" alt="Photo orgue" style="">
+                </span>
               </div>
               <div class="col-lg-8">
                 <div class="card-body py-md-3">
