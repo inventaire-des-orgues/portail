@@ -5,6 +5,7 @@ from django.conf import settings
 from django.core.mail import get_connection, EmailMessage
 import re
 import datetime
+import os
 
 class Command(BaseCommand):
     """
@@ -71,6 +72,13 @@ class Command(BaseCommand):
 
         today = datetime.datetime.now()
 
+        titres = []
+        if os.path.exists("save_news.txt"):
+            with open("save_news.txt", "r") as f:
+                for line in f:
+                    titres.append(line.strip())
+        
+
         date_expression_reguliere = "((19\d\d|20\d\d)[-/](0[1-9]|1[0-2])[-/](0[1-9]|[12]\d|3[01]))"
 
         for journal in list_journaux.keys():
@@ -87,21 +95,24 @@ class Command(BaseCommand):
 
             if "items" in resultats.keys():
                 for resultat in resultats["items"]:
-                    if not "concert" in resultat["title"].lower() and not "bort-les-orgues" in resultat["title"].lower() and not "bort-les-orgues" in resultat["link"].lower():
+                    if not "bort-les-orgues" in resultat["title"].lower() and not "bort-les-orgues" in resultat["link"].lower():
                         if "orgue" in resultat["title"].lower() or "orgue" in resultat["link"].lower():
-                            date_article = re.findall(date_expression_reguliere, resultat["link"])
+                            if resultat["title"] not in titres:
+                                date_article = re.findall(date_expression_reguliere, resultat["link"])
 
-                            if len(date_article) >= 1:
-                                if "/" in date_article[0][0]:
-                                    date_splitted = date_article[0][0].split("/")
+                                if len(date_article) >= 1:
+                                    if "/" in date_article[0][0]:
+                                        date_splitted = date_article[0][0].split("/")
+                                    else:
+                                        date_splitted = date_article[0][0].split("-")
+                                    date_article = datetime.datetime(int(date_splitted[0]), int(date_splitted[1]), int(date_splitted[2]))
+                                    difference = today - date_article
+                                    if difference.days < 8:
+                                        string += "{}, {}\n".format(resultat["title"], resultat["link"])
+                                        self.add_title(resultat["title"])
                                 else:
-                                    date_splitted = date_article[0][0].split("-")
-                                date_article = datetime.datetime(int(date_splitted[0]), int(date_splitted[1]), int(date_splitted[2]))
-                                difference = today - date_article
-                                if difference.days < 8:
                                     string += "{}, {}\n".format(resultat["title"], resultat["link"])
-                            else:
-                                string += "{}, {}\n".format(resultat["title"], resultat["link"])
+                                    self.add_title(resultat["title"])
 
 
         with get_connection(  
@@ -116,5 +127,10 @@ class Command(BaseCommand):
            recipient_list = settings.NEWS_EMAILS  
            message = string  
            EmailMessage(subject, message, email_from, recipient_list, connection=connection).send()
+
+
+    def add_title(self, title):
+        with open("save_news.txt", "a") as f:
+            f.write(title + "\n")
             
            
