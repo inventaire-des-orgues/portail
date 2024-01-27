@@ -110,9 +110,11 @@ class Command(BaseCommand):
                                     if difference.days < 8:
                                         string += "{}, {}\n".format(resultat["title"], resultat["link"])
                                         self.add_title(resultat["title"])
+                                        titres.append(resultat["title"])
                                 else:
                                     string += "{}, {}\n".format(resultat["title"], resultat["link"])
                                     self.add_title(resultat["title"])
+                                    titres.append(resultat["title"])
 
 
         with get_connection(  
