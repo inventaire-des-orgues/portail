@@ -317,6 +317,24 @@ class FacteurListJSlonlat(ListView):
         if context["object_list"]:
             results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
         return JsonResponse({"results": results, "pagination": {"more": more}})
+    
+
+class FacteursList(TemplateView):
+    """
+    Liste des orgues par facteurs.
+    Cette page est vide au démarrage, la récupération des orgues se fait après coup en javascript via
+    la vue EvenementfacteurJS.
+    """
+    template_name = "orgues/facteurs_list.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        queryset = Facteur.objects.all().order_by("nom")
+        facteurs = []
+        for facteur in queryset:
+            facteurs.append({"nom":facteur.nom, "pk":facteur.pk})
+        context["facteurs"] = facteurs
+        return context
 
 
 class OrgueDetail(DetailView):
@@ -897,6 +915,26 @@ class EvenementDelete(FabDeleteView, ContributionOrgueMixin):
 
     def get_success_url(self):
         return reverse('orgues:evenement-list', args=(self.object.orgue.uuid,))
+    
+
+class EvenementfacteurJS(View):
+    """
+    Récupère tous les événements relatifs à un facteur d'orgue
+    """
+
+    def get(self, request, *args, **kwargs):
+        facteur_id = int(self.request.GET.get("facteur"))
+        facteur = get_object_or_404(Facteur, pk=facteur_id)
+        evenements = Evenement.objects.filter(facteurs=facteur)
+        results = {}
+        for evenement in evenements:
+            data = {"type":evenement.type, "date":evenement.dates, "orgue":OrgueResumeSerializer(evenement.orgue).data}
+            date = evenement.annee 
+            if date in results.keys():
+                results[date].append(data)
+            else:
+                results[date] = [data]
+        return JsonResponse(results, safe=False)
 
 
 class ClavierCreate(FabView, ContributionOrgueMixin):

@@ -32,6 +32,7 @@ urlpatterns = [
     path('evenement/edition/<int:pk>/', v.EvenementUpdate.as_view(), name='evenement-update'),
     path('evenement/creation/<uuid:orgue_uuid>/', v.EvenementCreate.as_view(), name='evenement-create'),
     path('evenement/suppression/<int:pk>/', v.EvenementDelete.as_view(), name='evenement-delete'),
+    path('js/evenement/', v.EvenementfacteurJS.as_view(), name='evenement-facteur-js'),
     path('provenance/creation/', v.ProvenanceCreateJS.as_view(), name='provenance-create-js'),
 
     # claviers
@@ -45,6 +46,7 @@ urlpatterns = [
     path('js/facteurs/creation/', v.FacteurCreateJS.as_view(), name='facteur-create-js'),
     path('js/facteurs/lonlat/', v.FacteurListJSlonlat.as_view(), name='facteur-list-js-lonlat'),
     path('js/facteurs/lonlatLeaflet/', v.FacteurLonLatLeaflet.as_view(), name='facteur-js-lonlat'),
+    path('facteurs/', v.FacteursList.as_view(), name='facteurs-list'),
 
     # types jeux
     path('types_jeux/creation/', v.TypeJeuCreateJS.as_view(), name='typejeu-create-js'),
