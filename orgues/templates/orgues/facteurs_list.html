@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.0"></script>
+<script src="https://unpkg.com/vue-select@latest"></script>
+<link rel="stylesheet" href="https://unpkg.com/vue-select@latest/dist/vue-select.css">
+
+
+<div class="container" id="app">
+  <section id="orgue-list">
+    <div class="row">
+      <div class="col-xl-4">
+        <div class="card">
+          <div class="card-body" id="search-form">
+            <div class="form-group">
+              <label for="">Facteur</label>
+                <v-select v-model="facteur" :options="facteurs" :reduce="facteur => facteur.pk" label="nom" v-model="facteur"/>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-8" v-cloak>
+        <div class="clearfix"></div>
+        <div class="card" v-if="loading">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <strong>Chargement...</strong>
+              <div class="spinner-border ml-auto" role="status" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
+        <div v-for="(value, key) in evenements">
+          <h4 class="card-title mb-0">
+            (( key ))
+          </h4>
+        
+          <div v-for="evenement in value" class="card shadow-sm vignette mb-lg-4 mb-sm-5 orgue-card" @click="select(evenement.orgue)">
+            <div class="row no-gutters">
+              <div class="col-lg-4 la_vignette" style="background: #868e96;">
+                <span v-if="evenement.orgue.etat === 'Disparu'">
+                  <img class="card-img-top" :src="evenement.orgue.vignette" alt="Photo orgue" style="filter: grayscale(1);">
+                </span>
+                <span v-else>
+                  <img class="card-img-top" :src="evenement.orgue.vignette" alt="Photo orgue" style="">
+                </span>
+              </div>
+              <div class="col-lg-8">
+                <div class="card-body py-md-3">
+                  <h4 class="card-title mb-0">
+                    <span v-html="evenement.type"></span> : 
+                    <span v-html="evenement.orgue.edifice"></span>
+                    | <span v-html="evenement.orgue.commune"></span>, <span v-html="evenement.orgue.departement"></span>
+                  </h4>
+                  {% spaceless %}
+                    <p class=" my-0">
+                      <span v-html="evenement.orgue.designation"></span>
+                      <span v-if="!evenement.orgue.designation">Orgue</span>
+                      <span v-if="evenement.orgue.emplacement">, ((evenement.orgue.emplacement))</span>
+                      <span v-if="evenement.orgue.resume_composition">, ((evenement.orgue.resume_composition))</span>
+                      <span v-if="evenement.orgue.etat === 'Disparu'">, Orgue disparu</span>
+                    </p>
+                  {% endspaceless %}
+                  <div class="line-clamp-3">
+                  {% spaceless %}
+                    <p class="my-0">
+                      <span v-html="evenement.orgue.ancienne_commune" v-if="evenement.orgue.ancienne_commune"></span>
+                      <span v-if="evenement.orgue.ancienne_commune"></span>
+                    </p>
+                  {% endspaceless %}
+                </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+  
+{% endblock %}
+{% block js_extra %}
+
+{{ facteurs|json_script:"facteurs" }}
+
+<script>
+
+Vue.component('v-select', VueSelect.VueSelect);
+var facteurs = JSON.parse(document.getElementById('facteurs').textContent);
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    facteurs:facteurs,
+    facteur:'{{ facteur|default_if_none:'' }}',
+    evenements:[],
+    loading:false,
+  },
+  watch: {
+        facteur: function () {
+          this.evenements = [];
+          if (this.facteur ) {
+            this.fetchData();
+          }       
+        },
+      },
+
+  methods: {
+    fetchData: function(){
+      facteur_pk = this.facteur;
+      this.loading=true;
+      var self = this;
+      
+       $.ajax({
+          type: "GET",
+          url: "{% url 'orgues:evenement-facteur-js' %}",
+          data: {
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            facteur: facteur_pk,
+          },
+          error: function (resp) {
+            self.loading = false;
+            toastr.error(resp.responseJSON.message);
+          },
+          success: function (results) {
+            self.loading = false;
+            self.evenements = results;            
+          },
+      });
+    },
+
+    select: function (orgue) {
+          window.location.href = orgue.url;
+    },
+  
+  },
+  delimiters: ["((", "))"]
+
+})
+</script>
+  
+{% endblock %}
