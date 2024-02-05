@@ -28,10 +28,27 @@ class Facteur(models.Model):
     nom = models.CharField(max_length=100)
     latitude_atelier = models.FloatField(null=True, blank=True, verbose_name="Latitude de l'atelier")
     longitude_atelier = models.FloatField(null=True, blank=True, verbose_name="Longitude de l'atelier")
+    annee_naissance = models.IntegerField(verbose_name="Année de naissance", null=True, blank=True)
+    annee_deces = models.IntegerField(verbose_name="Année de décès", null=True, blank=True)
     updated_by_user = models.ForeignKey(User, null=True, editable=False, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.nom
+    
+    def nom_dates(self):
+        if self.annee_deces is None and self.annee_naissance is None:
+            return self.nom
+        else:
+            if self.annee_naissance is None:
+                annee_naissance = "?"
+            else:
+                annee_naissance = self.annee_naissance
+            if self.annee_deces is None:
+                annee_deces = "?"
+            else:
+                annee_deces = self.annee_deces
+
+            return "{} ({} - {}) ".format(self.nom, annee_naissance, annee_deces)
 
     class Meta:
         ordering = ['latitude_atelier']
