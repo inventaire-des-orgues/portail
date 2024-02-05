@@ -332,7 +332,7 @@ class FacteursList(TemplateView):
         queryset = Facteur.objects.all().order_by("nom")
         facteurs = []
         for facteur in queryset:
-            facteurs.append({"nom":facteur.nom, "pk":facteur.pk})
+            facteurs.append({"nom":facteur.nom_dates(), "pk":facteur.pk})
         context["facteurs"] = facteurs
         return context
 
@@ -780,8 +780,7 @@ class FacteurListJS(ListView):
         more = context["page_obj"].number < context["paginator"].num_pages
         if context["object_list"]:
             for u in context["object_list"]:
-                # results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
-                results.append({"id": u.id, "text": u.nom})
+                results.append({"id": u.id, "text": u.nom_dates()})
         return JsonResponse({"results": results, "pagination": {"more": more}})
 
 
