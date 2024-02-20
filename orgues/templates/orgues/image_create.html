@@ -54,7 +54,7 @@
     FilePond.registerPlugin(FilePondPluginFileValidateSize);
 
     const pond = FilePond.create(inputElement, {
-      acceptedFileTypes: ['image/*'],
+      acceptedFileTypes: ['image/png', 'image/jpeg', 'image/gif'],
       labelFileTypeNotAllowed: 'Type de fichier invalide',
       allowMultiple: true,
       allowRevert: false,
