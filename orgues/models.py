@@ -49,6 +49,15 @@ class Facteur(models.Model):
                 annee_deces = self.annee_deces
 
             return "{} ({} - {}) ".format(self.nom, annee_naissance, annee_deces)
+        
+    def getManufactures(self):
+        ManufacturesList = []
+        for facteurManufacture in self.facteurManufacture.all():
+            manufactures = facteurManufacture.manufacture.all()
+            for manufacture in manufactures:
+                if manufacture not in ManufacturesList:
+                    ManufacturesList.append(manufacture)
+        return ManufacturesList
 
     class Meta:
         ordering = ['latitude_atelier']
@@ -81,8 +90,10 @@ class Manufacture(models.Model):
     nom = models.CharField(max_length=100)
     facteur = models.ManyToManyField(FacteurManufacture, blank=True, related_name="manufacture", verbose_name="Facteur ayant travaillé dans la manufacture")
 
-
     def __str__(self):
+        return self.nom
+
+    def nom_dates(self):
         annee_debut = self.creation_manufacture()
         annee_fin = self.fin_manufacture()
         if annee_debut is None and annee_fin is None:
@@ -111,6 +122,18 @@ class Manufacture(models.Model):
         if annee_fin > 0:
             return annee_fin
         return None
+    
+    def getFacteurs(self):
+        facteursList = []
+        for facteurManufacture in self.facteur.all():
+            facteur = facteurManufacture.facteur
+            if facteur not in facteursList:
+                facteursList.append(facteur)
+        return facteursList
+    
+
+    class Meta:
+        ordering = ['nom']
 
 
 
@@ -849,6 +872,23 @@ class Evenement(models.Model):
 
     def __str__(self):
         return "{} ({})".format(self.type, self.dates)
+    
+    def getAllFacteurs(self):
+        facteurs = list(self.facteurs.all())
+        for manufacture in self.manufactures.all():
+            for facteur in manufacture.getFacteurs():
+                if facteur not in facteurs:
+                    facteurs.append(facteur)
+        return facteurs
+    
+
+    def getAllManufactures(self):
+        manufactures = list(self.manufactures.all())
+        for facteur in self.facteurs.all():
+            for manufacture in facteur.getManufactures():
+                if manufacture not in manufactures:
+                    manufactures.append(manufacture)
+        return manufactures
 
     class Meta:
         ordering = ["annee"]

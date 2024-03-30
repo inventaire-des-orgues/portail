@@ -786,7 +786,7 @@ class FacteurListJS(ListView):
 
 class ManufactureListJS(ListView):
     """
-    Liste dynamique utilisée pour filtrer les facteurs d'orgue dans les menus déroulants select2.
+    Liste dynamique utilisée pour filtrer les manufactures d'orgue dans les menus déroulants select2.
     documentation : https://select2.org/data-sources/ajax
     """
     model = Manufacture
@@ -804,7 +804,7 @@ class ManufactureListJS(ListView):
         more = context["page_obj"].number < context["paginator"].num_pages
         if context["object_list"]:
             for u in context["object_list"]:
-                results.append({"id": u.id, "text": u})
+                results.append({"id": u.id, "text": u.nom_dates()})
         return JsonResponse({"results": results, "pagination": {"more": more}})
 
 
