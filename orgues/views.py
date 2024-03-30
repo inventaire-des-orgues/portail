@@ -369,7 +369,7 @@ class OrgueDetail(DetailView):
         context = super().get_context_data()
         context["claviers"] = self.object.claviers.all().prefetch_related('type', 'jeux', 'jeux__type')
         context["evenements"] = self.object.evenements.all().prefetch_related('facteurs')
-        context["facteurs_evenements"] = self.object.evenements.filter(facteurs__isnull=False).prefetch_related(
+        context["facteurs_evenements"] = self.object.evenements.filter(Q(facteurs__isnull=False) | Q(manufactures__isnull=False)).prefetch_related(
             'facteurs').distinct()
         context["contributions"] = self.get_contributions()
         context["orgue_url"] = self.request.build_absolute_uri(self.object.get_absolute_url())
