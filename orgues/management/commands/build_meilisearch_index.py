@@ -35,6 +35,7 @@ class Command(BaseCommand):
             'commune',
             'edifice',
             'facteurs',
+            'manufactures',
             'departement',
             'region',
             'ancienne_commune',
@@ -49,6 +50,7 @@ class Command(BaseCommand):
             'region',
             'resume_composition_clavier',
             'facet_facteurs',
+            'manufactures',
             'jeux',
             'jeux_count',
             'monument_historique'
@@ -69,6 +71,7 @@ class Command(BaseCommand):
             'resume_composition',
             'facteurs',
             'facet_facteurs',
+            'manufactures',
             'url',
             'latitude',
             'longitude',
