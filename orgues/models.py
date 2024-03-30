@@ -54,6 +54,66 @@ class Facteur(models.Model):
         ordering = ['latitude_atelier']
 
 
+class FacteurManufacture(models.Model):
+    """
+    Permet de définir la période pendant laquelle un facteur a travaillé dans une manufacture
+    """
+    facteur = models.ForeignKey(Facteur, null=True, on_delete=models.CASCADE, related_name="facteurManufacture", db_index=True)
+    annee_debut = models.IntegerField(verbose_name="Année d'entrée dans la manufacture'", null=True, blank=True)
+    annee_fin = models.IntegerField(verbose_name="Année de sortie de la manufacture", null=True, blank=True)
+
+    def __str__(self):
+        if self.annee_debut is None and self.annee_fin is None:
+            return self.nom
+        else:
+            if self.annee_fin is None:
+                annee_fin = "?"
+            else:
+                annee_fin = self.annee_fin
+            if self.annee_debut is None:
+                annee_debut = "?"
+            else:
+                annee_debut = self.annee_debut
+
+            return "{} ({} - {}) ".format(self.facteur.nom, annee_debut, annee_fin)
+
+class Manufacture(models.Model):
+    nom = models.CharField(max_length=100)
+    facteur = models.ManyToManyField(FacteurManufacture, blank=True, related_name="manufacture", verbose_name="Facteur ayant travaillé dans la manufacture")
+
+
+    def __str__(self):
+        annee_debut = self.creation_manufacture()
+        annee_fin = self.fin_manufacture()
+        if annee_debut is None and annee_fin is None:
+            return self.nom
+        else:
+            if annee_fin is None:
+                annee_fin = "?"
+            if annee_debut is None:
+                annee_debut = "?"
+            return "{} ({} - {}) ".format(self.nom, annee_debut, annee_fin)
+    
+    def creation_manufacture(self):
+        annee_creation = 1e10
+        for facteur in self.facteur.all():
+            if facteur.annee_debut is not None and facteur.annee_debut < annee_creation:
+                annee_creation = facteur.annee_debut
+        if annee_creation < 1e10:
+            return annee_creation
+        return None
+    
+    def fin_manufacture(self):
+        annee_fin = 0
+        for facteur in self.facteur.all():
+            if facteur.annee_fin is not None and facteur.annee_fin > annee_fin:
+                annee_fin = facteur.annee_fin
+        if annee_fin > 0:
+            return annee_fin
+        return None
+
+
+
 class Orgue(models.Model):
     
     CHOIX_REGION = (
@@ -764,6 +824,7 @@ class Evenement(models.Model):
     circa = models.BooleanField(default=False, verbose_name="Cocher si dates approximatives")
     type = models.CharField(max_length=20, choices=CHOIX_TYPE)
     facteurs = models.ManyToManyField(Facteur, blank=True, related_name="evenements")
+    manufactures = models.ManyToManyField(Manufacture, blank=True, related_name="evenements")
     resume = models.TextField(verbose_name="Résumé", max_length=700, blank=True, null=True,
                               help_text="700 caractères max")
 

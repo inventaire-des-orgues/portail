@@ -34,7 +34,7 @@ from orgues.api.serializers import OrgueSerializer, OrgueResumeSerializer
 
 from project import settings
 
-from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source, Contribution, Provenance
+from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source, Contribution, Provenance, Manufacture
 import orgues.utilsorgues.correcteurorgues as co
 import orgues.utilsorgues.codification as codif
 import orgues.utilsorgues.code_geographique as codegeo
@@ -781,6 +781,30 @@ class FacteurListJS(ListView):
         if context["object_list"]:
             for u in context["object_list"]:
                 results.append({"id": u.id, "text": u.nom_dates()})
+        return JsonResponse({"results": results, "pagination": {"more": more}})
+
+
+class ManufactureListJS(ListView):
+    """
+    Liste dynamique utilisée pour filtrer les facteurs d'orgue dans les menus déroulants select2.
+    documentation : https://select2.org/data-sources/ajax
+    """
+    model = Manufacture
+    paginate_by = 30
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        query = self.request.GET.get("search")
+        if query:
+            queryset = queryset.filter(nom__icontains=query)
+        return queryset
+
+    def render_to_response(self, context, **response_kwargs):
+        results = []
+        more = context["page_obj"].number < context["paginator"].num_pages
+        if context["object_list"]:
+            for u in context["object_list"]:
+                results.append({"id": u.id, "text": u})
         return JsonResponse({"results": results, "pagination": {"more": more}})
 
 

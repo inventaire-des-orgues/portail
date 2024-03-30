@@ -48,6 +48,9 @@ urlpatterns = [
     path('js/facteurs/lonlatLeaflet/', v.FacteurLonLatLeaflet.as_view(), name='facteur-js-lonlat'),
     path('facteurs/', v.FacteursList.as_view(), name='facteurs-list'),
 
+    # Manufactures
+    path('js/manufactures/', v.ManufactureListJS.as_view(), name='manufacture-list-js'),
+
     # types jeux
     path('types_jeux/creation/', v.TypeJeuCreateJS.as_view(), name='typejeu-create-js'),
     path('types_jeux/edition/<int:pk>/', v.TypeJeuUpdate.as_view(), name='typejeu-update'),

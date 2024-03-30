@@ -147,6 +147,7 @@ class EvenementForm(forms.ModelForm):
             "type",
             "provenance",
             "facteurs",
+            "manufactures",
             "resume",
         ]
 
