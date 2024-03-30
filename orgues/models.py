@@ -50,13 +50,14 @@ class Facteur(models.Model):
 
             return "{} ({} - {}) ".format(self.nom, annee_naissance, annee_deces)
         
-    def getManufactures(self):
+    def getManufactures(self, annee):
         ManufacturesList = []
         for facteurManufacture in self.facteurManufacture.all():
             manufactures = facteurManufacture.manufacture.all()
-            for manufacture in manufactures:
-                if manufacture not in ManufacturesList:
-                    ManufacturesList.append(manufacture)
+            if facteurManufacture.annee_correspond(annee):
+                for manufacture in manufactures:
+                    if manufacture not in ManufacturesList:
+                        ManufacturesList.append(manufacture)
         return ManufacturesList
 
     class Meta:
@@ -85,6 +86,13 @@ class FacteurManufacture(models.Model):
                 annee_debut = self.annee_debut
 
             return "{} ({} - {}) ".format(self.facteur.nom, annee_debut, annee_fin)
+        
+    def annee_correspond(self, annee):
+        if self.annee_debut is None or self.annee_fin is None:
+            return True
+        if annee >= self.annee_debut and annee <= self.annee_fin:
+            return True
+        return False
 
 class Manufacture(models.Model):
     nom = models.CharField(max_length=100)
@@ -123,11 +131,11 @@ class Manufacture(models.Model):
             return annee_fin
         return None
     
-    def getFacteurs(self):
+    def getFacteurs(self, annee):
         facteursList = []
         for facteurManufacture in self.facteur.all():
             facteur = facteurManufacture.facteur
-            if facteur not in facteursList:
+            if facteur not in facteursList and facteurManufacture.annee_correspond(annee):
                 facteursList.append(facteur)
         return facteursList
     
@@ -876,7 +884,7 @@ class Evenement(models.Model):
     def getAllFacteurs(self):
         facteurs = list(self.facteurs.all())
         for manufacture in self.manufactures.all():
-            for facteur in manufacture.getFacteurs():
+            for facteur in manufacture.getFacteurs(self.annee):
                 if facteur not in facteurs:
                     facteurs.append(facteur)
         return facteurs
@@ -885,7 +893,7 @@ class Evenement(models.Model):
     def getAllManufactures(self):
         manufactures = list(self.manufactures.all())
         for facteur in self.facteurs.all():
-            for manufacture in facteur.getManufactures():
+            for manufacture in facteur.getManufactures(self.annee):
                 if manufacture not in manufactures:
                     manufactures.append(manufacture)
         return manufactures
