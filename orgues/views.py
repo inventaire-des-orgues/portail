@@ -333,7 +333,14 @@ class FacteursList(TemplateView):
         facteurs = []
         for facteur in queryset:
             facteurs.append({"nom":facteur.nom_dates(), "pk":facteur.pk})
+        
+        queryset = Manufacture.objects.all().order_by("nom")
+        manufactures = []
+        for manufacture in queryset:
+            manufactures.append({"nom":manufacture.nom_dates(), "pk":manufacture.pk})
+
         context["facteurs"] = facteurs
+        context["manufactures"] = manufactures
         return context
 
 
@@ -946,9 +953,11 @@ class EvenementfacteurJS(View):
     """
 
     def get(self, request, *args, **kwargs):
-        facteur_id = int(self.request.GET.get("facteur"))
-        facteur = get_object_or_404(Facteur, pk=facteur_id)
-        evenements = Evenement.objects.filter(facteurs=facteur)
+        if "facteur" in self.request.GET:
+            evenements = self.getFacteurEvenements(int(self.request.GET.get("facteur")))
+        else:
+            evenements = self.getManufactureEvenements(int(self.request.GET.get("manufacture")))
+
         results = {}
         for evenement in evenements:
             data = {"type":evenement.type, "date":evenement.dates, "orgue":OrgueResumeSerializer(evenement.orgue).data}
@@ -958,6 +967,44 @@ class EvenementfacteurJS(View):
             else:
                 results[date] = [data]
         return JsonResponse(results, safe=False)
+    
+    def getFacteurEvenements(self, facteur_id):
+        # On récupère le facteur
+        facteur = get_object_or_404(Facteur, pk=facteur_id)
+        # On récupère les événements qui contiennent directement ce facteur
+        evenements = list(Evenement.objects.filter(facteurs=facteur))
+
+        # Maintenant, il faut récupérer les événements qui contiennent indirectement ce facteur
+        facteursManufactures = facteur.facteurManufacture.all()
+        for facteurManufacture in facteursManufactures:
+            debut = facteurManufacture.annee_debut
+            if debut is None:
+                debut = -1e15
+            fin = facteurManufacture.annee_fin
+            if fin is None:
+                fin = 1e15
+            evenements +=  list(Evenement.objects.filter(Q(manufactures__in=list(facteurManufacture.manufacture.all())) & Q(annee__gte=debut) & Q(annee__lte=fin)))
+        return set(evenements)
+    
+    def getManufactureEvenements(self, manufacture_id):
+        # On récupère la manufacture
+        manufacture = get_object_or_404(Manufacture, pk=manufacture_id)
+        # On récupère les événements qui contiennent directement cette manufacture
+        evenements = list(Evenement.objects.filter(manufactures=manufacture))
+
+        # Maintenant, il faut récupérer les événements qui contiennent indirectement la manufacture
+        # C'est-à-dire qui contiennent un facteur qui a travaillé dans la manufacture 
+        # et dont l'événement correspond à la période où le facteur travaille dans la manufacture
+        facteursManufactures = manufacture.facteur.all()
+        for facteurManufacture in facteursManufactures:
+            debut = facteurManufacture.annee_debut
+            if debut is None:
+                debut = -1e15
+            fin = facteurManufacture.annee_fin
+            if fin is None:
+                fin = 1e15
+            evenements +=  list(Evenement.objects.filter(Q(facteurs=facteurManufacture.facteur) & Q(annee__gte=debut) & Q(annee__lte=fin)))
+        return set(evenements)
 
 
 class ClavierCreate(FabView, ContributionOrgueMixin):
