@@ -244,6 +244,9 @@ class OrgueCarte(TemplateView):
             if form.cleaned_data['facteurs']:
                 facteur_filter = " OR ".join([f'facet_facteurs = "{facteur.nom.strip()}"' for facteur in form.cleaned_data['facteurs']])
                 filters.append(f'({facteur_filter})')
+            if form.cleaned_data['manufactures']:
+                manufacture_filter = " OR ".join([f'facet_manufactures = "{manufacture.nom.strip()}"' for manufacture in form.cleaned_data['manufactures']])
+                filters.append(f'({manufacture_filter})')
             if form.cleaned_data['jeux']:
                 jeux_filter = f"jeux_count {form.cleaned_data['jeux'][0]} TO {form.cleaned_data['jeux'][1]}"
                 filters.append(f'({jeux_filter})')

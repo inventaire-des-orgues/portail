@@ -1,7 +1,7 @@
 from django import forms
 
 from fabutils.forms import Select2Single, Select2Multiple
-from .models import Orgue, Evenement, Clavier, Facteur, Jeu, Fichier, Image, Source
+from .models import Orgue, Evenement, Clavier, Facteur, Jeu, Fichier, Image, Source, Manufacture
 
 
 class OrgueGeneralInfoForm(forms.ModelForm):
@@ -204,6 +204,7 @@ class OrgueCarteForm(forms.Form):
     jeux = forms.CharField(required=False)
     etats = forms.MultipleChoiceField(choices=[(etat[1], etat[1]) for etat in Orgue.CHOIX_ETAT], required=False, label="Par état de fonctionnement :")
     facteurs = forms.ModelMultipleChoiceField(queryset=Facteur.objects.all(), required=False, label="Par facteur d'orgue : ", widget=Select2Multiple)
+    manufactures = forms.ModelMultipleChoiceField(queryset=Manufacture.objects.all(), required=False, label="Par manufacture : ", widget=Select2Multiple)
     monument = forms.BooleanField(label="Uniquement monuments historiques (orange)", required=False)
 
     def clean_jeux(self):
