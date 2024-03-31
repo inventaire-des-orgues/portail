@@ -95,6 +95,7 @@ class OrgueResumeSerializer(serializers.ModelSerializer):
     facteurs = serializers.SerializerMethodField()
     manufactures = serializers.SerializerMethodField()
     facet_facteurs = serializers.SerializerMethodField()
+    facet_manufactures = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField()
     jeux = serializers.SerializerMethodField()
     construction = serializers.SerializerMethodField()
@@ -120,6 +121,7 @@ class OrgueResumeSerializer(serializers.ModelSerializer):
             "facteurs",
             "manufactures",
             "facet_facteurs",
+            "facet_manufactures",
             "url",
             "latitude",
             "longitude",
@@ -165,6 +167,17 @@ class OrgueResumeSerializer(serializers.ModelSerializer):
                     seen_manufactures.add(nouvelle_manufacture)
                     manufactures.append(nouvelle_manufacture.nom)
         return ", ".join(manufactures)
+    
+    def get_facet_manufactures(self, obj):
+        manufactures = []
+        seen_manufactures = set()
+        evenements = Evenement.objects.filter(Q(orgue=obj) & (Q(facteurs__isnull=False) | Q(manufactures__isnull=False))).prefetch_related('manufactures').order_by('annee')
+        for evenement in evenements:
+            for nouvelle_manufacture in evenement.getAllManufactures():
+                if nouvelle_manufacture not in seen_manufactures:
+                    seen_manufactures.add(nouvelle_manufacture)
+                    manufactures.append(nouvelle_manufacture.nom)
+        return list(manufactures)
 
     def get_facet_facteurs(self, obj):
         facteurs = set()
