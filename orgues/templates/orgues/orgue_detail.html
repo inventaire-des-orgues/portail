@@ -269,18 +269,13 @@
                     <ul>
                       {% for evenement in facteurs_evenements %}
                         <li>
-                          {% if evenement.getAllManufactures|length > 0 %}
-                            {% for manufacture in evenement.getAllManufactures %}
+                          {% if evenement.getManufacturesElseFacteurs|length > 0 %}
+                            {% for manufacture in evenement.getManufacturesElseFacteurs %}
                                 <a href="/orgues/?query={{ manufacture|urlencode }}" class="link">{{ manufacture }}</a>
                                 {% if not forloop.last %} & {% endif %}
                             {% endfor %}
-                          {% else %}
-                            {% for facteur in evenement.getAllFacteurs %}
-                                <a href="/orgues/?query={{ facteur|urlencode }}" class="link">{{ facteur }}</a>
-                                {% if not forloop.last %} & {% endif %}
-                            {% endfor %}
-                          {% endif %}
                           ({{ evenement.type }} {{ evenement.dates }})
+                          {% endif %}
                         </li>
                       {% endfor %}
                     </ul>

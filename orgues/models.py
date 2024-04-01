@@ -898,6 +898,17 @@ class Evenement(models.Model):
                     manufactures.append(manufacture)
         return manufactures
 
+    def getManufacturesElseFacteurs(self):
+        """
+        Renvoie les manufactures associées à l'événement.
+        S'il n'y en a pas, renvoie les facteurs 
+        """
+        manufactures = self.getAllManufactures()
+        if len(manufactures)==0:
+            return self.getAllFacteurs()
+        else:
+            return manufactures
+
     class Meta:
         ordering = ["annee"]
 
