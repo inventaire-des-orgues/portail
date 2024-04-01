@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+
+        <form method="post"> {% csrf_token %}
+          <h2 class="titre-fiche">
+            Manufacture
+          </h2>
+          {% for field in manufacture_form %}
+            {% include 'stack_field.html' with with_helptext='true' %}
+          {% endfor %}
+          <h2 class="titre-fiche">
+            Facteurs
+          </h2>
+          {{ facteurManufacture_formset.management_form }}
+          {% for form in facteurManufacture_formset %}
+            <div class="row">
+              {{ form.id }}
+              <div class="{% if form.DELETE %}col-3{% else %}col-4{% endif %}">
+                {% include 'stack_field.html' with field=form.facteur %}
+              </div>
+              <div class="{% if form.DELETE %}col-2{% else %}col-4{% endif %}">
+                {% include 'stack_field.html' with field=form.annee_debut %}
+              </div>
+              <div class="{% if form.DELETE %}col-4{% else %}col-4{% endif %}">
+                {% include 'stack_field.html' with field=form.annee_fin %}
+              </div>
+              {% if form.DELETE %}
+                <div class="col-3">
+                  {% include 'stack_field.html' with field=form.DELETE %}
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+          <div>
+          </div>
+          <hr>
+          <div class="form-group text-right">
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+          </div>
+        </form>
+  </div>
+</div>
+  
+{% endblock %}
+
+{% block js_extra %}
+<script>
+  $("select[id$=facteur]").select2({
+    placeholder: 'Choisir un facteur',
+      ajax: {
+        url: '{% url 'orgues:facteur-list-js' %}',
+        data: function (params) {
+          var query = {
+            search: params.term,
+            page: params.page || 1,
+            tous_facteurs: false
+          }
+          return query;
+        }
+      },
+      escapeMarkup: function (markup) {
+        return markup;
+      },
+      language: {
+        {% if perms.orgues.add_facteur %}
+          noResults: function () {
+            return "Aucun facteur trouvé ...  <a href='javascript:openfacteurmodal()'>cliquez ici</a> pour en créer un nouveau";
+          }
+        {% else %}
+          noResults: function () {
+            return "Aucun facteur trouvé ... contactez-nous en cas de doute.";
+          }
+
+        {% endif %}
+      },
+      width: '100%'
+  });
+</script>
+
+{% endblock %}

@@ -50,6 +50,7 @@ urlpatterns = [
 
     # Manufactures
     path('js/manufactures/', v.ManufactureListJS.as_view(), name='manufacture-list-js'),
+    path('manufacture/creation/', v.ManufactureCreate.as_view(), name='manufacture-create'),
 
     # types jeux
     path('types_jeux/creation/', v.TypeJeuCreateJS.as_view(), name='typejeu-create-js'),

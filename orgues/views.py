@@ -34,7 +34,7 @@ from orgues.api.serializers import OrgueSerializer, OrgueResumeSerializer
 
 from project import settings
 
-from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source, Contribution, Provenance, Manufacture
+from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source, Contribution, Provenance, Manufacture, FacteurManufacture
 import orgues.utilsorgues.correcteurorgues as co
 import orgues.utilsorgues.codification as codif
 import orgues.utilsorgues.code_geographique as codegeo
@@ -1121,6 +1121,42 @@ class ClavierDelete(FabDeleteView, ContributionOrgueMixin):
 
     def get_success_url(self):
         return reverse('orgues:orgue-update-composition', args=(self.object.orgue.uuid,))
+    
+
+class ManufactureCreate(FabView, ContributionOrgueMixin):
+    """
+    Ajout d'une manufacture
+    """
+    model = Manufacture
+    permission_required = "orgues.add_manufacture"
+    form_class = orgue_forms.ManufactureForm
+
+    def get(self, request, *args, **kwargs):
+        FacteurManufactureFormset = modelformset_factory(FacteurManufacture, orgue_forms.FacteurManufactureForm, extra=10)
+        context = {
+            "facteurManufacture_formset": FacteurManufactureFormset(queryset=FacteurManufacture.objects.none()),
+            "manufacture_form": orgue_forms.ManufactureForm(),
+        }
+        return render(request, "orgues/manufacture_form.html", context)
+
+    def post(self, request, *args, **kwargs):
+        FacteurManufactureFormset = modelformset_factory(FacteurManufacture, orgue_forms.FacteurManufactureForm, extra=10)
+        facteurManufacture_formset = FacteurManufactureFormset(self.request.POST)
+        manufacture_form = orgue_forms.ManufactureForm(self.request.POST)
+        if facteurManufacture_formset.is_valid() and manufacture_form.is_valid():
+            manufacture, created = Manufacture.objects.get_or_create(**manufacture_form.cleaned_data)
+            facteursManufactures = facteurManufacture_formset.save()
+            for facteurManufacture in facteursManufactures:
+                manufacture.facteur.add(facteurManufacture)
+            manufacture.save()
+            messages.success(self.request, "Nouvelle manufacture ajoutée, merci !")
+            return redirect('orgues:manufacture-create')
+        else:
+            context = {
+                "facteurManufacture_formset": FacteurManufactureFormset(queryset=FacteurManufacture.objects.none()),
+                "manufacture_form": orgue_forms.ManufactureForm(),
+            }
+            return render(request, "orgues/manufacture_form.html", context)
 
 
 class FacteurCreateJS(FabCreateViewJS):

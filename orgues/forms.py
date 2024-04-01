@@ -1,7 +1,7 @@
 from django import forms
 
 from fabutils.forms import Select2Single, Select2Multiple
-from .models import Orgue, Evenement, Clavier, Facteur, Jeu, Fichier, Image, Source, Manufacture
+from .models import Orgue, Evenement, Clavier, Facteur, Jeu, Fichier, Image, Source, Manufacture, FacteurManufacture
 
 
 class OrgueGeneralInfoForm(forms.ModelForm):
@@ -214,3 +214,20 @@ class OrgueCarteForm(forms.Form):
             if result != [self.MIN_JEUX, self.MAX_JEUX]:
                 return result
         return
+
+
+class ManufactureForm(forms.ModelForm):
+    class Meta:
+        model = Manufacture
+        fields = ["nom"]
+
+
+class FacteurManufactureForm(forms.ModelForm):
+    class Meta:
+        model = FacteurManufacture
+        fields = ["facteur", "annee_debut", "annee_fin"]
+        labels = {"facteur": "", "annee_debut": "", "annee_fin": ""}
+
+        widgets = {
+            "facteur": Select2Single
+        }

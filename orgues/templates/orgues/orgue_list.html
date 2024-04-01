@@ -51,6 +51,11 @@
                 <a href="{% url 'orgues:orgue-create' %}" class="btn btn-info rounded-pill mt-3 btn-block">
                     Créer un nouvel orgue</a>
                 {% endif %}
+
+                {% if perms.orgues.add_manufacture %}
+                <a href="{% url 'orgues:manufacture-create' %}" class="btn btn-info rounded-pill mt-3 btn-block">
+                    Créer une nouvelle manufacture</a>
+                {% endif %}
               </div>
             </div>
           </div>

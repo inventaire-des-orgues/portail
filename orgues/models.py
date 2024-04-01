@@ -74,7 +74,7 @@ class FacteurManufacture(models.Model):
 
     def __str__(self):
         if self.annee_debut is None and self.annee_fin is None:
-            return self.nom
+            return self.facteur.nom
         else:
             if self.annee_fin is None:
                 annee_fin = "?"
