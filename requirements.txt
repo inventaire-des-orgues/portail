@@ -7,7 +7,7 @@ pytz==2019.3
 six==1.13.0
 sqlparse==0.5.0
 djangorestframework==3.12.2
-tqdm==4.48.0
+tqdm==4.66.3
 gunicorn==22.0.0
 django-dbbackup==3.3.0
 django-debug-toolbar==2.2.1
