@@ -11,7 +11,7 @@ tqdm==4.48.0
 gunicorn==20.0.4
 django-dbbackup==3.3.0
 django-debug-toolbar==2.2.1
-requests==2.31.0
+requests==2.32.2
 meilisearch==0.24.0
 django-extensions==3.1.1
 pydotplus==2.0.1
