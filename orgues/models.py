@@ -358,7 +358,12 @@ class Orgue(models.Model):
     lien_reference = models.URLField(verbose_name="Lien de référence", max_length=300, null=True, blank=True,
                                      help_text="Lien internet de l'organisme auquel s'adresser.")
 
+    # L'idéal serait de ne faire qu'un seul champ au lieu de entretien et entretienManufacture. 
+    # Pour cela, faire en sorte que Facteur et Manufacture héritent d'une seule et même classe abstraite
+    # Sauf que ManyToManyFields n'accepte pas un lien vers une classe abstraite.
+    # Donc pour l'instant deux champs en attendant mieux
     entretien = models.ManyToManyField(Facteur, blank=True, verbose_name="Facteur en charge de l'entretien")
+    entretienManufacture = models.ManyToManyField(Manufacture, blank=True, verbose_name="Manufacture en charge de l'entretien")
 
     etat = models.CharField(max_length=20, choices=CHOIX_ETAT, null=True, blank=True,
                             help_text="Se rapporte au fait que l'orgue est jouable ou non.")

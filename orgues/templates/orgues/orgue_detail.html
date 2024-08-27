@@ -283,6 +283,9 @@
                       {% for facteur in orgue.entretien.all %}
                         <li>{{facteur}} (entretien)</li>
                       {% endfor %}
+                      {% for manufacture in orgue.entretienManufacture.all %}
+                        <li>{{manufacture}} (entretien)</li>
+                      {% endfor %}
                     </ul>
                   {% else %}
                     Pas d'information

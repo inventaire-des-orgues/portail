@@ -18,6 +18,7 @@ class OrgueGeneralInfoForm(forms.ModelForm):
             "references_inventaire_regions",
             "lien_inventaire_regions",
             "entretien",
+            "entretienManufacture",
             "organisme",
             "lien_reference",
             "resume",
@@ -28,7 +29,8 @@ class OrgueGeneralInfoForm(forms.ModelForm):
         widgets = {
             'resume': forms.Textarea(attrs={'rows': 5, 'cols': 15}),
             'commentaire_admin': forms.Textarea(attrs={'rows': 2, 'cols': 15}),
-            'entretien': Select2Multiple
+            'entretien': Select2Multiple,
+            'entretienManufacture': Select2Multiple
         }
 
     def __init__(self, *args, **kwargs):
