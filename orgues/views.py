@@ -949,6 +949,28 @@ class EvenementDelete(FabDeleteView, ContributionOrgueMixin):
     def get_success_url(self):
         return reverse('orgues:evenement-list', args=(self.object.orgue.uuid,))
     
+class ManufactureFacteurJS(View):
+    """
+    Récupère tous les facteurs relatifs à une manufacture d'orgue
+    """
+
+    def get(self, request, *args, **kwargs):
+        manufacture = Manufacture.objects.get(pk=int(self.request.GET.get("manufacture")))
+        results = []
+        for facteur in manufacture.facteur.all():
+            annee_debut = facteur.annee_debut
+            if annee_debut is None:
+                annee_debut = "?"
+            annee_fin = facteur.annee_fin
+            if annee_fin is None:
+                annee_fin = "?"
+            results.append({
+                "facteur":facteur.facteur.nom,
+                "debut":annee_debut,
+                "fin":annee_fin
+            })
+        return JsonResponse(results, safe=False)
+    
 
 class EvenementfacteurJS(View):
     """

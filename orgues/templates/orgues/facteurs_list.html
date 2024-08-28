@@ -6,6 +6,11 @@
 <script src="https://unpkg.com/vue-select@latest"></script>
 <link rel="stylesheet" href="https://unpkg.com/vue-select@latest/dist/vue-select.css">
 
+<div class="container ">
+    <div class="alert alert-info">
+      Les liens entre manufactures et facteurs d'orgue sont en cours de constitution. Si vous voyez une erreur ou une omission, merci d'en avertir les administrateurs
+  </div>
+</div>
 
 <div class="container" id="app">
   <section id="orgue-list">
@@ -33,6 +38,16 @@
               <div class="spinner-border ml-auto" role="status" aria-hidden="true"></div>
             </div>
           </div>
+        </div>
+        <div v-if="facteursManufactures.length">
+          <h4 class="card-title mb-0">
+            Facteurs de la manufacture :
+          </h4>
+        </div>
+        <div v-for="facteurManufacture in facteursManufactures">
+          <li>
+            <span v-html="facteurManufacture.facteur"> </span> : ((facteurManufacture.debut)) - ((facteurManufacture.fin))
+          </li>  
         </div>
         <div v-for="(value, key) in evenements">
           <h4 class="card-title mb-0">
@@ -105,6 +120,7 @@ var app = new Vue({
     facteur:'{{ facteur|default_if_none:'' }}',
     manufacture:'{{ manufacture|default_if_none:'' }}',
     evenements:[],
+    facteursManufactures:[],
     loading:false,
   },
   watch: {
@@ -116,8 +132,10 @@ var app = new Vue({
         },
         manufacture: function () {
           this.evenements = [];
+          this.facteursManufactures=[];
           if (this.manufacture ) {
             this.fetchManufactureData();
+            this.fetchFacteursManufactureData();
           }       
         },
       },
@@ -128,6 +146,7 @@ var app = new Vue({
       this.manufacture = '';
       this.loading=true;
       var self = this;
+      self.facteursManufactures=[];
       
        $.ajax({
           type: "GET",
@@ -167,6 +186,30 @@ var app = new Vue({
           success: function (results) {
             self.loading = false;
             self.evenements = results;            
+          },
+      });
+    },
+
+    fetchFacteursManufactureData: function(){
+      manufacture_pk = this.manufacture;
+      this.loading=true;
+      var self = this;
+      
+      $.ajax({
+          type: "GET",
+          url: "{% url 'orgues:manufactures-facteur-js' %}",
+          data: {
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            manufacture: manufacture_pk,
+          },
+          error: function (resp) {  
+            self.loading = false;
+            toastr.error(resp.responseJSON.message);
+          },
+          success: function (results) {
+            self.loading = false;
+            self.facteursManufactures = results; 
+                       
           },
       });
     },
