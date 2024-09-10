@@ -41,7 +41,6 @@ class FacteurManufactureAdmin(admin.ModelAdmin):
 @admin.register(Manufacture)
 class ManufactureAdmin(admin.ModelAdmin):
     list_display = ('nom',)
-    #list_editable = ('facteur',)
     search_fields = ('nom',)
 
 
