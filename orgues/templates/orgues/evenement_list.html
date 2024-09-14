@@ -26,7 +26,7 @@
           <td class="d-lg-table-cell">
             <b>{{ evenement.get_type_display }}</b>
           </td>
-          <td>{% for facteur in evenement.facteurs.all %}{{ facteur }}
+          <td>{% for facteur in evenement.getManufacturesElseFacteurs %}{{ facteur }}
 
           {% if not forloop.last %},{% endif %}
           {% endfor %}</td>

@@ -106,5 +106,29 @@
       },
       width: '100%'
     });
+
+    $("#id_entretienManufacture").select2({
+      placeholder: 'Choisir une manufacture',
+      ajax: {
+        url: '{% url 'orgues:manufacture-list-js' %}',
+        data: function (params) {
+          var query = {
+            search: params.term,
+            page: params.page || 1,
+            tous_facteurs: false
+          }
+          return query;
+        }
+      },
+      escapeMarkup: function (markup) {
+        return markup;
+      },
+      language: {
+        noResults: function () {
+          return "Aucune manufacture trouvée...";
+        }
+      },
+      width: '100%'
+    });
   })
 </script>

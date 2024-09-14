@@ -36,5 +36,29 @@
     $("#nouvelleProvenanceModal").modal('show');
   })
 
+  $("#id_manufactures").select2({
+    placeholder: 'Choisir une manufacture',
+    ajax: {
+      url: '{% url 'orgues:manufacture-list-js' %}',
+      data: function (params) {
+        var query = {
+          search: params.term,
+          page: params.page || 1,
+        }
+        return query;
+      }
+    },
+    escapeMarkup: function (markup) {
+      return markup;
+    },
+    language: {
+      
+        noResults: function () {
+          return "Aucune manufacture trouvée ... contactez-nous en cas de doute.";
+        }
+    },
+    width: '100%'
+  });
+
   </script>
 {% endblock %}
