@@ -317,7 +317,7 @@ class FacteurListJSlonlat(ListView):
         if context["object_list"]:
             results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
         return JsonResponse({"results": results, "pagination": {"more": more}})
-    
+
 
 class FacteursList(TemplateView):
     """
@@ -347,12 +347,9 @@ class OrgueDetail(DetailView):
 
     def get_object(self, queryset=None):
 
-        logger.info("{user};{method};{get_full_path};200".format(user=self.request.user,
+        logger.info("{user};{method};detail/{get_full_path};200".format(user=self.request.user,
                                                                  method=self.request.method,
                                                                  get_full_path=self.request.META.get('HTTP_REFERER')))
-        logger.info("{user};{method};detail;{get_full_path};200".format(user=self.request.user,
-                                                                 method=self.request.method,
-                                                                 get_full_path=self.kwargs['slug']))
         orgue = Orgue.objects.filter(Q(slug=self.kwargs['slug']) | Q(codification=self.kwargs['slug'])).first()
         if not orgue:
             raise Http404
@@ -914,7 +911,7 @@ class EvenementDelete(FabDeleteView, ContributionOrgueMixin):
 
     def get_success_url(self):
         return reverse('orgues:evenement-list', args=(self.object.orgue.uuid,))
-    
+
 
 class EvenementfacteurJS(View):
     """
@@ -928,7 +925,7 @@ class EvenementfacteurJS(View):
         results = {}
         for evenement in evenements:
             data = {"type":evenement.type, "date":evenement.dates, "orgue":OrgueResumeSerializer(evenement.orgue).data}
-            date = evenement.annee 
+            date = evenement.annee
             if date in results.keys():
                 results[date].append(data)
             else:
