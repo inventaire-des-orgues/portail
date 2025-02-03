@@ -123,7 +123,7 @@ class OrgueSearch(View):
         except:
             return JsonResponse({'message': 'Le moteur de recherche est mal configuré'}, status=500)
 
-        facets = ['departement', 'region', 'resume_composition_clavier', 'facet_facteurs', 'jeux']
+        facets = ['departement', 'region', 'resume_composition_clavier', 'facet_facteurs', 'jeux', 'proprietaire']
         options = {'attributesToHighlight': ['*'], 'hitsPerPage': OrgueSearch.paginate_by, 'page': int(page)}
 
         filter = []
@@ -156,7 +156,7 @@ class OrgueSearch(View):
 
     @staticmethod
     def convertFacets(facetDistribution):
-        labels = {'departement': 'Département', 'region': 'Régions', 'resume_composition_clavier': 'Nombres de claviers', 'facet_facteurs': 'Facteurs', 'jeux': 'Jeux'}
+        labels = {'departement': 'Département', 'region': 'Régions', 'resume_composition_clavier': 'Nombres de claviers', 'facet_facteurs': 'Facteurs', 'jeux': 'Jeux', 'proprietaire': 'Propriétaire'}
         return [{'label': labels[name], 'field': name,
                  'items': sorted([{'name': item, 'count': count} for item, count in values.items()], key=lambda k: k['count'], reverse=True)} for name, values in
                 facetDistribution.items()]

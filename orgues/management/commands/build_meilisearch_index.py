@@ -51,7 +51,8 @@ class Command(BaseCommand):
             'facet_facteurs',
             'jeux',
             'jeux_count',
-            'monument_historique'
+            'monument_historique',
+            'proprietaire'
         ])
 
         index.update_displayed_attributes([

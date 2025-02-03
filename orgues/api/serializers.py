@@ -119,7 +119,8 @@ class OrgueResumeSerializer(serializers.ModelSerializer):
             "jeux_count",
             "construction",
             "resume_composition_clavier",
-            "modified_date"
+            "modified_date",
+            "proprietaire"
         ]
 
     def get_etat(self, obj):
