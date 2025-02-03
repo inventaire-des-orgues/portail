@@ -215,12 +215,12 @@
         },
         selectFacet: function(facet, value) {
           if (this.filter[facet]) {
-            if (!this.filter[facet].includes(value))
+            if (!this.filter[facet].includes(value))  
               this.filter[facet].push(value)
           }
           else
             this.filter[facet] = [value]
-          this.page = 1
+            this.page = 1
           this.fetchData()
         },
         changeSort: function(sort) {
@@ -261,7 +261,7 @@
           if (self.filter) {
             for (const [key, values] of Object.entries(self.filter)) {
                 pageUrl += '&filter_' + key + '=' + values.join(',');
-                filters['filter_' + key] = values.join(',');
+                filters['filter_' + key] = values.join(';;');
             }
           }
 

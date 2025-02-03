@@ -123,7 +123,7 @@ class OrgueSearch(View):
         except:
             return JsonResponse({'message': 'Le moteur de recherche est mal configuré'}, status=500)
 
-        facets = ['departement', 'region', 'resume_composition_clavier', 'facet_facteurs', 'jeux', 'proprietaire']
+        facets = ['departement', 'region', 'resume_composition_clavier', 'facet_facteurs', 'jeux', 'proprietaire', 'etat']
         options = {'attributesToHighlight': ['*'], 'hitsPerPage': OrgueSearch.paginate_by, 'page': int(page)}
 
         filter = []
@@ -131,7 +131,7 @@ class OrgueSearch(View):
         for facet in facets:
             arg = request.POST.get('filter_' + facet)
             if arg:
-                values = arg.split(',')
+                values = arg.split(';;')
                 filter.append(['{}="{}"'.format(facet, value) for value in values])
                 filterResult[facet] = values
         if not filterResult and page == '1' and (query or departement or region):
@@ -156,7 +156,7 @@ class OrgueSearch(View):
 
     @staticmethod
     def convertFacets(facetDistribution):
-        labels = {'departement': 'Département', 'region': 'Régions', 'resume_composition_clavier': 'Nombres de claviers', 'facet_facteurs': 'Facteurs', 'jeux': 'Jeux', 'proprietaire': 'Propriétaire'}
+        labels = {'departement': 'Département', 'region': 'Régions', 'resume_composition_clavier': 'Nombres de claviers', 'facet_facteurs': 'Facteurs', 'jeux': 'Jeux', 'proprietaire': 'Propriétaire', 'etat':'Etat'}
         return [{'label': labels[name], 'field': name,
                  'items': sorted([{'name': item, 'count': count} for item, count in values.items()], key=lambda k: k['count'], reverse=True)} for name, values in
                 facetDistribution.items()]
