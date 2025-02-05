@@ -126,6 +126,18 @@ class OrgueSearch(View):
         facets = ['departement', 'region', 'resume_composition_clavier', 'facet_facteurs', 'jeux', 'proprietaire', 'etat']
         options = {'attributesToHighlight': ['*'], 'hitsPerPage': OrgueSearch.paginate_by, 'page': int(page)}
 
+        # Première requête qui permet de récupérer toutes les possibilités dans chaque facet
+        options["facets"] = facets
+        filter_init = []
+        if departement:
+            filter_init.append('departement="{}"'.format(departement))
+        if region:
+            filter_init.append('region="{}"'.format(region))
+        if len(filter_init) > 0:
+            options['filter'] = filter_init
+        results_init = index.search(query, options)
+
+        # Deuxième requête pour récupérer les orgues correspondant aux filtres
         filter = []
         filterResult = {}
         for facet in facets:
@@ -134,8 +146,11 @@ class OrgueSearch(View):
                 values = arg.split(';;')
                 filter.append(['{}="{}"'.format(facet, value) for value in values])
                 filterResult[facet] = values
-        if not filterResult and page == '1' and (query or departement or region):
-            options['facets'] = facets
+        init = request.POST.get('init')
+        
+        # Si c'est l'initialisation de la page ou d'un département, alors par défaut, on n'affiche pas les orgues disparus
+        if init=="true":
+            filter.append(['etat="{}"'.format(value[1]) for value in Orgue.CHOIX_ETAT if value[1] != "Disparu"])
         if departement:
             filter.append('departement="{}"'.format(departement))
         if region:
@@ -149,8 +164,13 @@ class OrgueSearch(View):
             options['sort'] = [sort]
         results = index.search(query, options)
         if 'facetDistribution' in results:
-            results['facets'] = OrgueSearch.convertFacets(results['facetDistribution'])
+            results['facets'] = OrgueSearch.convertFacets(results_init['facetDistribution'])
             del results['facetDistribution']
+        
+        # Si c'est l'initialisation de la page ou d'un département, 
+        # alors par défaut, on ne surligne pas "Disparu" dans la colonne des filtres 
+        if init=="true":
+            filterResult['etat'] = ['Très bon, tout à fait jouable', 'Bon : jouable, défauts mineurs', 'Altéré : difficilement jouable', 'Dégradé ou en ruine : injouable', 'En restauration (ou projet initié)']
         results['filter'] = filterResult
         return results
 
@@ -158,7 +178,7 @@ class OrgueSearch(View):
     def convertFacets(facetDistribution):
         labels = {'departement': 'Département', 'region': 'Régions', 'resume_composition_clavier': 'Nombres de claviers', 'facet_facteurs': 'Facteurs', 'jeux': 'Jeux', 'proprietaire': 'Propriétaire', 'etat':'Etat'}
         return [{'label': labels[name], 'field': name,
-                 'items': sorted([{'name': item, 'count': count} for item, count in values.items()], key=lambda k: k['count'], reverse=True)} for name, values in
+                 'items': sorted([{'name': item, 'count': count} for item, count in values.items()], key=lambda k: k['name'])} for name, values in
                 facetDistribution.items()]
 
 
