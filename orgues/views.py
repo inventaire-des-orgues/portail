@@ -123,7 +123,7 @@ class OrgueSearch(View):
         except:
             return JsonResponse({'message': 'Le moteur de recherche est mal configuré'}, status=500)
 
-        facets = ['departement', 'region', 'resume_composition_clavier', 'facet_facteurs', 'jeux', 'proprietaire', 'etat']
+        facets = ['region', 'resume_composition_clavier', 'facet_facteurs', 'jeux', 'proprietaire', 'etat']
         options = {'attributesToHighlight': ['*'], 'hitsPerPage': OrgueSearch.paginate_by, 'page': int(page)}
 
         # Première requête qui permet de récupérer toutes les possibilités dans chaque facet
@@ -144,13 +144,19 @@ class OrgueSearch(View):
             arg = request.POST.get('filter_' + facet)
             if arg:
                 values = arg.split(';;')
-                filter.append(['{}="{}"'.format(facet, value) for value in values])
+                liste_filters = []
+                for value in values:
+                    if value != "Non renseigné":
+                        liste_filters.append('{}="{}"'.format(facet, value))
+                    else:
+                        liste_filters.append('{} IS NULL'.format(facet))
+                filter.append(liste_filters)
                 filterResult[facet] = values
         init = request.POST.get('init')
         
         # Si c'est l'initialisation de la page ou d'un département, alors par défaut, on n'affiche pas les orgues disparus
         if init=="true":
-            filter.append(['etat="{}"'.format(value[1]) for value in Orgue.CHOIX_ETAT if value[1] != "Disparu"])
+            filter.append(['etat!="Disparu"'])
         if departement:
             filter.append('departement="{}"'.format(departement))
         if region:
@@ -170,16 +176,19 @@ class OrgueSearch(View):
         # Si c'est l'initialisation de la page ou d'un département, 
         # alors par défaut, on ne surligne pas "Disparu" dans la colonne des filtres 
         if init=="true":
-            filterResult['etat'] = ['Très bon, tout à fait jouable', 'Bon : jouable, défauts mineurs', 'Altéré : difficilement jouable', 'Dégradé ou en ruine : injouable', 'En restauration (ou projet initié)']
+            filterResult['etat'] = ['Très bon, tout à fait jouable', 'Bon : jouable, défauts mineurs', 'Altéré : difficilement jouable', 'Dégradé ou en ruine : injouable', 'En restauration (ou projet initié)', 'Non renseigné']
         results['filter'] = filterResult
         return results
 
     @staticmethod
     def convertFacets(facetDistribution):
         labels = {'departement': 'Département', 'region': 'Régions', 'resume_composition_clavier': 'Nombres de claviers', 'facet_facteurs': 'Facteurs', 'jeux': 'Jeux', 'proprietaire': 'Propriétaire', 'etat':'Etat'}
-        return [{'label': labels[name], 'field': name,
+        facets = [{'label': labels[name], 'field': name,
                  'items': sorted([{'name': item, 'count': count} for item, count in values.items()], key=lambda k: k['name'])} for name, values in
                 facetDistribution.items()]
+        for facet in facets:
+            facet["items"].append({"name": "Non renseigné", "count":1})
+        return facets
 
 
 class OrgueCarteOld(TemplateView):
