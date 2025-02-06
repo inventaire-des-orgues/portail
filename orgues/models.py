@@ -7,6 +7,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db import models
+from django.db.models import Q
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.urls import reverse
@@ -401,7 +402,7 @@ class Orgue(models.Model):
         """
         Nombre de jeux de l'instrument
         """
-        return Jeu.objects.filter(clavier__orgue=self).count()
+        return Jeu.objects.filter(Q(clavier__orgue=self)&~Q(type__nom="Tirasse permanente")).count()
 
     @property
     def claviers_count(self):
