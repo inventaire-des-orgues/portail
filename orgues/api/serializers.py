@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from orgues.models import Orgue, Jeu, Clavier, TypeJeu, Image, Fichier, Evenement, Source, Facteur, Contribution
+from orgues.models import Orgue, Jeu, Clavier, TypeJeu, Image, Fichier, Evenement, Source, Facteur, Contribution, Manufacture
+from django.db.models import Q
 
 
 class ImageSerializer(serializers.ModelSerializer):
@@ -57,6 +58,12 @@ class FacteurSerializer(serializers.ModelSerializer):
         exclude = ["id"]
 
 
+class ManufactureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Manufacture
+        exclude = ["facteur"]
+
+
 class ContributionSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()
 
@@ -86,7 +93,9 @@ class OrgueResumeSerializer(serializers.ModelSerializer):
     Serializers utilisé pour construire l'index de recherche
     """
     facteurs = serializers.SerializerMethodField()
+    manufactures = serializers.SerializerMethodField()
     facet_facteurs = serializers.SerializerMethodField()
+    facet_manufactures = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField()
     jeux = serializers.SerializerMethodField()
     construction = serializers.SerializerMethodField()
@@ -110,7 +119,9 @@ class OrgueResumeSerializer(serializers.ModelSerializer):
             "resume_composition",
             "monument_historique",
             "facteurs",
+            "manufactures",
             "facet_facteurs",
+            "facet_manufactures",
             "url",
             "latitude",
             "longitude",
@@ -139,13 +150,35 @@ class OrgueResumeSerializer(serializers.ModelSerializer):
     def get_facteurs(self, obj):
         facteurs = []
         seen_facteurs = set()
-        evenements = Evenement.objects.filter(orgue=obj, facteurs__isnull=False).prefetch_related('facteurs').order_by('annee')
+        evenements = Evenement.objects.filter(Q(orgue=obj) & (Q(facteurs__isnull=False) | Q(manufactures__isnull=False))).prefetch_related('facteurs').order_by('annee')
         for evenement in evenements:
-            nouveau_facteur = " & ".join(evenement.facteurs.values_list('nom', flat=True))
+            nouveau_facteur = " & ".join([facteur.nom for facteur in evenement.getAllFacteurs()])
             if nouveau_facteur not in seen_facteurs:
                 seen_facteurs.add(nouveau_facteur)
                 facteurs.append(nouveau_facteur)
         return ", ".join(facteurs)
+
+    def get_manufactures(self, obj):
+        manufactures = []
+        seen_manufactures = set()
+        evenements = Evenement.objects.filter(Q(orgue=obj) & (Q(facteurs__isnull=False) | Q(manufactures__isnull=False))).prefetch_related('manufactures').order_by('annee')
+        for evenement in evenements:
+            for nouvelle_manufacture in evenement.getAllManufactures():
+                if nouvelle_manufacture not in seen_manufactures:
+                    seen_manufactures.add(nouvelle_manufacture)
+                    manufactures.append(nouvelle_manufacture.nom)
+        return ", ".join(manufactures)
+    
+    def get_facet_manufactures(self, obj):
+        manufactures = []
+        seen_manufactures = set()
+        evenements = Evenement.objects.filter(Q(orgue=obj) & (Q(facteurs__isnull=False) | Q(manufactures__isnull=False))).prefetch_related('manufactures').order_by('annee')
+        for evenement in evenements:
+            for nouvelle_manufacture in evenement.getAllManufactures():
+                if nouvelle_manufacture not in seen_manufactures:
+                    seen_manufactures.add(nouvelle_manufacture)
+                    manufactures.append(nouvelle_manufacture.nom)
+        return list(manufactures)
 
     def get_facet_facteurs(self, obj):
         facteurs = set()

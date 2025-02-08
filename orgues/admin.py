@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db.models import Count
 
-from .models import Orgue, Clavier, TypeClavier, TypeJeu, Fichier, Image, Evenement, Facteur, Accessoire, Jeu, Contribution
+from .models import Orgue, Clavier, TypeClavier, TypeJeu, Fichier, Image, Evenement, Facteur, Accessoire, Jeu, Contribution, Manufacture, FacteurManufacture, Provenance
 from django.utils.html import format_html
 from django.urls import reverse
 
@@ -28,6 +28,19 @@ class ImageAdmin(admin.ModelAdmin):
 class FacteurAdmin(admin.ModelAdmin):
     list_display = ('nom', 'latitude_atelier', 'longitude_atelier', 'updated_by_user')
     list_editable = ('latitude_atelier', 'longitude_atelier',)
+    search_fields = ('nom',)
+
+
+@admin.register(FacteurManufacture)
+class FacteurManufactureAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'annee_debut', 'annee_fin')
+    list_editable = ('annee_debut', 'annee_fin')
+    search_fields = ('facteur',)
+
+
+@admin.register(Manufacture)
+class ManufactureAdmin(admin.ModelAdmin):
+    list_display = ('nom',)
     search_fields = ('nom',)
 
 

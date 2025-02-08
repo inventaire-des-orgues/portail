@@ -34,7 +34,7 @@ from orgues.api.serializers import OrgueSerializer, OrgueResumeSerializer
 
 from project import settings
 
-from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source, Contribution, Provenance
+from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source, Contribution, Provenance, Manufacture, FacteurManufacture
 import orgues.utilsorgues.correcteurorgues as co
 import orgues.utilsorgues.codification as codif
 import orgues.utilsorgues.code_geographique as codegeo
@@ -123,7 +123,8 @@ class OrgueSearch(View):
         except:
             return JsonResponse({'message': 'Le moteur de recherche est mal configuré'}, status=500)
 
-        facets = ['region', 'resume_composition_clavier', 'facet_facteurs', 'jeux', 'proprietaire', 'etat']
+
+        facets = ['region', 'resume_composition_clavier', 'facet_facteurs', 'jeux', 'proprietaire', 'etat', 'facet_manufactures']
         options = {'attributesToHighlight': ['*'], 'hitsPerPage': OrgueSearch.paginate_by, 'page': int(page)}
 
         # Première requête qui permet de récupérer toutes les possibilités dans chaque facet
@@ -182,10 +183,9 @@ class OrgueSearch(View):
 
     @staticmethod
     def convertFacets(facetDistribution):
-        labels = {'departement': 'Département', 'region': 'Régions', 'resume_composition_clavier': 'Nombres de claviers', 'facet_facteurs': 'Facteurs', 'jeux': 'Jeux', 'proprietaire': 'Propriétaire', 'etat':'Etat'}
+        labels = {'departement': 'Département', 'region': 'Régions', 'resume_composition_clavier': 'Nombres de claviers', 'facet_facteurs': 'Facteurs', 'jeux': 'Jeux', 'proprietaire': 'Propriétaire', 'etat':'Etat', 'facet_manufactures': 'Manufactures'}
         facets = [{'label': labels[name], 'field': name,
-                 'items': sorted([{'name': item, 'count': count} for item, count in values.items()], key=lambda k: k['name'])} for name, values in
-                facetDistribution.items()]
+                 'items': sorted([{'name': item, 'count': count} for item, count in values.items()], key=lambda k: k['name'])} for name, values in facetDistribution.items()]
         for facet in facets:
             facet["items"].append({"name": "Non renseigné", "count":1})
         return facets
@@ -273,6 +273,9 @@ class OrgueCarte(TemplateView):
             if form.cleaned_data['facteurs']:
                 facteur_filter = " OR ".join([f'facet_facteurs = "{facteur.nom.strip()}"' for facteur in form.cleaned_data['facteurs']])
                 filters.append(f'({facteur_filter})')
+            if form.cleaned_data['manufactures']:
+                manufacture_filter = " OR ".join([f'facet_manufactures = "{manufacture.nom.strip()}"' for manufacture in form.cleaned_data['manufactures']])
+                filters.append(f'({manufacture_filter})')
             if form.cleaned_data['jeux']:
                 jeux_filter = f"jeux_count {form.cleaned_data['jeux'][0]} TO {form.cleaned_data['jeux'][1]}"
                 filters.append(f'({jeux_filter})')
@@ -362,7 +365,14 @@ class FacteursList(TemplateView):
         facteurs = []
         for facteur in queryset:
             facteurs.append({"nom":facteur.nom_dates(), "pk":facteur.pk})
+        
+        queryset = Manufacture.objects.all().order_by("nom")
+        manufactures = []
+        for manufacture in queryset:
+            manufactures.append({"nom":manufacture.nom_dates(), "pk":manufacture.pk})
+
         context["facteurs"] = facteurs
+        context["manufactures"] = manufactures
         return context
 
 
@@ -395,7 +405,7 @@ class OrgueDetail(DetailView):
         context = super().get_context_data()
         context["claviers"] = self.object.claviers.all().prefetch_related('type', 'jeux', 'jeux__type')
         context["evenements"] = self.object.evenements.all().prefetch_related('facteurs')
-        context["facteurs_evenements"] = self.object.evenements.filter(facteurs__isnull=False).prefetch_related(
+        context["facteurs_evenements"] = self.object.evenements.filter(Q(facteurs__isnull=False) | Q(manufactures__isnull=False)).prefetch_related(
             'facteurs').distinct()
         context["contributions"] = self.get_contributions()
         context["orgue_url"] = self.request.build_absolute_uri(self.object.get_absolute_url())
@@ -810,6 +820,30 @@ class FacteurListJS(ListView):
         return JsonResponse({"results": results, "pagination": {"more": more}})
 
 
+class ManufactureListJS(ListView):
+    """
+    Liste dynamique utilisée pour filtrer les manufactures d'orgue dans les menus déroulants select2.
+    documentation : https://select2.org/data-sources/ajax
+    """
+    model = Manufacture
+    paginate_by = 30
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        query = self.request.GET.get("search")
+        if query:
+            queryset = queryset.filter(nom__icontains=query)
+        return queryset
+
+    def render_to_response(self, context, **response_kwargs):
+        results = []
+        more = context["page_obj"].number < context["paginator"].num_pages
+        if context["object_list"]:
+            for u in context["object_list"]:
+                results.append({"id": u.id, "text": u.nom_dates()})
+        return JsonResponse({"results": results, "pagination": {"more": more}})
+
+
 class CommuneListJS(FabListView):
     """
     Liste dynamique utilisée pour filtrer les communes dans le menu déroulant select2 pour créer un nouvel orgue.
@@ -940,7 +974,29 @@ class EvenementDelete(FabDeleteView, ContributionOrgueMixin):
 
     def get_success_url(self):
         return reverse('orgues:evenement-list', args=(self.object.orgue.uuid,))
+    
+class ManufactureFacteurJS(View):
+    """
+    Récupère tous les facteurs relatifs à une manufacture d'orgue
+    """
 
+    def get(self, request, *args, **kwargs):
+        manufacture = Manufacture.objects.get(pk=int(self.request.GET.get("manufacture")))
+        results = []
+        for facteur in manufacture.facteur.all():
+            annee_debut = facteur.annee_debut
+            if annee_debut is None:
+                annee_debut = "?"
+            annee_fin = facteur.annee_fin
+            if annee_fin is None:
+                annee_fin = "?"
+            results.append({
+                "facteur":facteur.facteur.nom,
+                "debut":annee_debut,
+                "fin":annee_fin
+            })
+        return JsonResponse(results, safe=False)
+    
 
 class EvenementfacteurJS(View):
     """
@@ -948,9 +1004,11 @@ class EvenementfacteurJS(View):
     """
 
     def get(self, request, *args, **kwargs):
-        facteur_id = int(self.request.GET.get("facteur"))
-        facteur = get_object_or_404(Facteur, pk=facteur_id)
-        evenements = Evenement.objects.filter(facteurs=facteur)
+        if "facteur" in self.request.GET:
+            evenements = self.getFacteurEvenements(int(self.request.GET.get("facteur")))
+        else:
+            evenements = self.getManufactureEvenements(int(self.request.GET.get("manufacture")))
+
         results = {}
         for evenement in evenements:
             data = {"type":evenement.type, "date":evenement.dates, "orgue":OrgueResumeSerializer(evenement.orgue).data}
@@ -960,6 +1018,44 @@ class EvenementfacteurJS(View):
             else:
                 results[date] = [data]
         return JsonResponse(results, safe=False)
+    
+    def getFacteurEvenements(self, facteur_id):
+        # On récupère le facteur
+        facteur = get_object_or_404(Facteur, pk=facteur_id)
+        # On récupère les événements qui contiennent directement ce facteur
+        evenements = list(Evenement.objects.filter(facteurs=facteur))
+
+        # Maintenant, il faut récupérer les événements qui contiennent indirectement ce facteur
+        facteursManufactures = facteur.facteurManufacture.all()
+        for facteurManufacture in facteursManufactures:
+            debut = facteurManufacture.annee_debut
+            if debut is None:
+                debut = -1e15
+            fin = facteurManufacture.annee_fin
+            if fin is None:
+                fin = 1e15
+            evenements +=  list(Evenement.objects.filter(Q(manufactures__in=list(facteurManufacture.manufacture.all())) & Q(annee__gte=debut) & Q(annee__lte=fin)))
+        return set(evenements)
+    
+    def getManufactureEvenements(self, manufacture_id):
+        # On récupère la manufacture
+        manufacture = get_object_or_404(Manufacture, pk=manufacture_id)
+        # On récupère les événements qui contiennent directement cette manufacture
+        evenements = list(Evenement.objects.filter(manufactures=manufacture))
+
+        # Maintenant, il faut récupérer les événements qui contiennent indirectement la manufacture
+        # C'est-à-dire qui contiennent un facteur qui a travaillé dans la manufacture 
+        # et dont l'événement correspond à la période où le facteur travaille dans la manufacture
+        facteursManufactures = manufacture.facteur.all()
+        for facteurManufacture in facteursManufactures:
+            debut = facteurManufacture.annee_debut
+            if debut is None:
+                debut = -1e15
+            fin = facteurManufacture.annee_fin
+            if fin is None:
+                fin = 1e15
+            evenements +=  list(Evenement.objects.filter(Q(facteurs=facteurManufacture.facteur) & Q(annee__gte=debut) & Q(annee__lte=fin)))
+        return set(evenements)
 
 
 class ClavierCreate(FabView, ContributionOrgueMixin):
@@ -1073,6 +1169,42 @@ class ClavierDelete(FabDeleteView, ContributionOrgueMixin):
 
     def get_success_url(self):
         return reverse('orgues:orgue-update-composition', args=(self.object.orgue.uuid,))
+    
+
+class ManufactureCreate(FabView, ContributionOrgueMixin):
+    """
+    Ajout d'une manufacture
+    """
+    model = Manufacture
+    permission_required = "orgues.add_manufacture"
+    form_class = orgue_forms.ManufactureForm
+
+    def get(self, request, *args, **kwargs):
+        FacteurManufactureFormset = modelformset_factory(FacteurManufacture, orgue_forms.FacteurManufactureForm, extra=10)
+        context = {
+            "facteurManufacture_formset": FacteurManufactureFormset(queryset=FacteurManufacture.objects.none()),
+            "manufacture_form": orgue_forms.ManufactureForm(),
+        }
+        return render(request, "orgues/manufacture_form.html", context)
+
+    def post(self, request, *args, **kwargs):
+        FacteurManufactureFormset = modelformset_factory(FacteurManufacture, orgue_forms.FacteurManufactureForm, extra=10)
+        facteurManufacture_formset = FacteurManufactureFormset(self.request.POST)
+        manufacture_form = orgue_forms.ManufactureForm(self.request.POST)
+        if facteurManufacture_formset.is_valid() and manufacture_form.is_valid():
+            manufacture, created = Manufacture.objects.get_or_create(**manufacture_form.cleaned_data)
+            facteursManufactures = facteurManufacture_formset.save()
+            for facteurManufacture in facteursManufactures:
+                manufacture.facteur.add(facteurManufacture)
+            manufacture.save()
+            messages.success(self.request, "Nouvelle manufacture ajoutée, merci !")
+            return redirect('orgues:manufacture-create')
+        else:
+            context = {
+                "facteurManufacture_formset": FacteurManufactureFormset(queryset=FacteurManufacture.objects.none()),
+                "manufacture_form": orgue_forms.ManufactureForm(),
+            }
+            return render(request, "orgues/manufacture_form.html", context)
 
 
 class FacteurCreateJS(FabCreateViewJS):

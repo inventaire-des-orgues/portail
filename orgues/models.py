@@ -50,9 +50,100 @@ class Facteur(models.Model):
                 annee_deces = self.annee_deces
 
             return "{} ({} - {}) ".format(self.nom, annee_naissance, annee_deces)
+        
+    def getManufactures(self, annee):
+        ManufacturesList = []
+        for facteurManufacture in self.facteurManufacture.all():
+            manufactures = facteurManufacture.manufacture.all()
+            if facteurManufacture.annee_correspond(annee):
+                for manufacture in manufactures:
+                    if manufacture not in ManufacturesList:
+                        ManufacturesList.append(manufacture)
+        return ManufacturesList
 
     class Meta:
         ordering = ['latitude_atelier']
+
+
+class FacteurManufacture(models.Model):
+    """
+    Permet de définir la période pendant laquelle un facteur a travaillé dans une manufacture
+    """
+    facteur = models.ForeignKey(Facteur, null=True, on_delete=models.CASCADE, related_name="facteurManufacture", db_index=True)
+    annee_debut = models.IntegerField(verbose_name="Année d'entrée dans la manufacture'", null=True, blank=True)
+    annee_fin = models.IntegerField(verbose_name="Année de sortie de la manufacture", null=True, blank=True)
+
+    def __str__(self):
+        if self.annee_debut is None and self.annee_fin is None:
+            return self.facteur.nom
+        else:
+            if self.annee_fin is None:
+                annee_fin = "?"
+            else:
+                annee_fin = self.annee_fin
+            if self.annee_debut is None:
+                annee_debut = "?"
+            else:
+                annee_debut = self.annee_debut
+
+            return "{} ({} - {}) ".format(self.facteur.nom, annee_debut, annee_fin)
+        
+    def annee_correspond(self, annee):
+        if self.annee_debut is None or self.annee_fin is None:
+            return True
+        if annee >= self.annee_debut and annee <= self.annee_fin:
+            return True
+        return False
+
+class Manufacture(models.Model):
+    nom = models.CharField(max_length=100)
+    facteur = models.ManyToManyField(FacteurManufacture, blank=True, related_name="manufacture", verbose_name="Facteur ayant travaillé dans la manufacture")
+
+    def __str__(self):
+        return self.nom
+
+    def nom_dates(self):
+        annee_debut = self.creation_manufacture()
+        annee_fin = self.fin_manufacture()
+        if annee_debut is None and annee_fin is None:
+            return self.nom
+        else:
+            if annee_fin is None:
+                annee_fin = "?"
+            if annee_debut is None:
+                annee_debut = "?"
+            return "{} ({} - {}) ".format(self.nom, annee_debut, annee_fin)
+    
+    def creation_manufacture(self):
+        annee_creation = 1e10
+        for facteur in self.facteur.all():
+            if facteur.annee_debut is not None and facteur.annee_debut < annee_creation:
+                annee_creation = facteur.annee_debut
+        if annee_creation < 1e10:
+            return annee_creation
+        return None
+    
+    def fin_manufacture(self):
+        annee_fin = 0
+        for facteur in self.facteur.all():
+            if facteur.annee_fin is not None and facteur.annee_fin > annee_fin:
+                annee_fin = facteur.annee_fin
+        if annee_fin > 0:
+            return annee_fin
+        return None
+    
+    def getFacteurs(self, annee):
+        facteursList = []
+        for facteurManufacture in self.facteur.all():
+            facteur = facteurManufacture.facteur
+            if facteur not in facteursList and facteurManufacture.annee_correspond(annee):
+                facteursList.append(facteur)
+        return facteursList
+    
+
+    class Meta:
+        ordering = ['nom']
+
 
 
 class Orgue(models.Model):
@@ -268,7 +359,12 @@ class Orgue(models.Model):
     lien_reference = models.URLField(verbose_name="Lien de référence", max_length=300, null=True, blank=True,
                                      help_text="Lien internet de l'organisme auquel s'adresser.")
 
+    # L'idéal serait de ne faire qu'un seul champ au lieu de entretien et entretienManufacture. 
+    # Pour cela, faire en sorte que Facteur et Manufacture héritent d'une seule et même classe abstraite
+    # Sauf que ManyToManyFields n'accepte pas un lien vers une classe abstraite.
+    # Donc pour l'instant deux champs en attendant mieux
     entretien = models.ManyToManyField(Facteur, blank=True, verbose_name="Facteur en charge de l'entretien")
+    entretienManufacture = models.ManyToManyField(Manufacture, blank=True, verbose_name="Manufacture en charge de l'entretien")
 
     etat = models.CharField(max_length=20, choices=CHOIX_ETAT, null=True, blank=True,
                             help_text="Se rapporte au fait que l'orgue est jouable ou non.")
@@ -765,6 +861,7 @@ class Evenement(models.Model):
     circa = models.BooleanField(default=False, verbose_name="Cocher si dates approximatives")
     type = models.CharField(max_length=20, choices=CHOIX_TYPE)
     facteurs = models.ManyToManyField(Facteur, blank=True, related_name="evenements")
+    manufactures = models.ManyToManyField(Manufacture, blank=True, related_name="evenements")
     resume = models.TextField(verbose_name="Résumé", max_length=700, blank=True, null=True,
                               help_text="700 caractères max")
 
@@ -789,6 +886,34 @@ class Evenement(models.Model):
 
     def __str__(self):
         return "{} ({})".format(self.type, self.dates)
+    
+    def getAllFacteurs(self):
+        facteurs = list(self.facteurs.all())
+        for manufacture in self.manufactures.all():
+            for facteur in manufacture.getFacteurs(self.annee):
+                if facteur not in facteurs:
+                    facteurs.append(facteur)
+        return facteurs
+    
+
+    def getAllManufactures(self):
+        manufactures = list(self.manufactures.all())
+        for facteur in self.facteurs.all():
+            for manufacture in facteur.getManufactures(self.annee):
+                if manufacture not in manufactures:
+                    manufactures.append(manufacture)
+        return manufactures
+
+    def getManufacturesElseFacteurs(self):
+        """
+        Renvoie les manufactures associées à l'événement.
+        S'il n'y en a pas, renvoie les facteurs 
+        """
+        manufactures = self.getAllManufactures()
+        if len(manufactures)==0:
+            return self.getAllFacteurs()
+        else:
+            return manufactures
 
     class Meta:
         ordering = ["annee"]

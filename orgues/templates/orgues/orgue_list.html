@@ -51,6 +51,11 @@
                 <a href="{% url 'orgues:orgue-create' %}" class="btn btn-info rounded-pill mt-3 btn-block">
                     Créer un nouvel orgue</a>
                 {% endif %}
+
+                {% if perms.orgues.add_manufacture %}
+                <a href="{% url 'orgues:manufacture-create' %}" class="btn btn-info rounded-pill mt-3 btn-block">
+                    Créer une nouvelle manufacture</a>
+                {% endif %}
               </div>
             </div>
           </div>
@@ -116,6 +121,9 @@
                   {% endspaceless %}
                   <p class="my-0" v-if="orgue.facteurs.length > 0">
                     <b>Facteurs :</b> <span v-html="orgue._formatted.facteurs"></span>
+                  </p>
+                  <p class="my-0" v-if="orgue.manufactures.length > 0">
+                    <b>Manufactures :</b> <span v-html="orgue._formatted.manufactures"></span>
                   </p>
                   {% if user.is_authenticated %}
                     <p class="my-1 d-none d-md-block" style="position:absolute;bottom:5px;right:20px; color:#5C1C54">

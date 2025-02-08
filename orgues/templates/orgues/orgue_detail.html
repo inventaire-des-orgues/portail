@@ -269,16 +269,22 @@
                     <ul>
                       {% for evenement in facteurs_evenements %}
                         <li>
-                          {% for facteur in evenement.facteurs.all %}
-                              <a href="/orgues/?query={{ facteur|urlencode }}" class="link">{{ facteur }}</a>
-                              {% if not forloop.last %} & {% endif %}
-                          {% endfor %}
-                          ({{ evenement.type }} {{ evenement.dates }})</li>
+                          {% if evenement.getManufacturesElseFacteurs|length > 0 %}
+                            {% for manufacture in evenement.getManufacturesElseFacteurs %}
+                                <a href="/orgues/?query={{ manufacture|urlencode }}" class="link">{{ manufacture }}</a>
+                                {% if not forloop.last %} & {% endif %}
+                            {% endfor %}
+                          ({{ evenement.type }} {{ evenement.dates }})
+                          {% endif %}
+                        </li>
                       {% endfor %}
                     </ul>
                     <ul>
                       {% for facteur in orgue.entretien.all %}
                         <li>{{facteur}} (entretien)</li>
+                      {% endfor %}
+                      {% for manufacture in orgue.entretienManufacture.all %}
+                        <li>{{manufacture}} (entretien)</li>
                       {% endfor %}
                     </ul>
                   {% else %}
@@ -403,7 +409,7 @@
               "display_date": "{{evenement.dates}}",
               "text": {
                 "headline": "<b>{{ evenement.get_type_display }}</b>",
-                "text": "{% if evenement.resume %}{{ evenement.resume|linebreaksbr|safe|escapejs}}{% endif %}{% if evenement.facteurs.count %}<p>Facteur(s) : {{ evenement.facteurs.all|join:', ' }}</p>{% endif %} {% if evenement.type == 'deplacement' and evenement.provenance.osm_id and evenement.provenance.osm_type %} {% with 'https://www.openstreetmap.org/'|add:evenement.provenance.osm_type|add:'/'|add:evenement.provenance.osm_id as lien_osm %} <p> Provenance : <a href={{ lien_osm }} target='_blank' rel='noopener noreferrer'> {{ evenement.provenance }} </a> </p> {% endwith %} {% endif %}"
+                "text": "{% if evenement.resume %}{{ evenement.resume|linebreaksbr|safe|escapejs}}{% endif %}{% if evenement.getAllFacteurs|length > 0 %}<p>Facteur(s) : {{ evenement.getAllFacteurs|join:', ' }}</p>{% endif %}{% if evenement.getAllManufactures|length > 0 %}<p>Manufacture(s) : {{ evenement.getAllManufactures|join:', ' }}</p>{% endif %} {% if evenement.type == 'deplacement' and evenement.provenance.osm_id and evenement.provenance.osm_type %} {% with 'https://www.openstreetmap.org/'|add:evenement.provenance.osm_type|add:'/'|add:evenement.provenance.osm_id as lien_osm %} <p> Provenance : <a href={{ lien_osm }} target='_blank' rel='noopener noreferrer'> {{ evenement.provenance }} </a> </p> {% endwith %} {% endif %}"
               }
             },
           {% endfor %}

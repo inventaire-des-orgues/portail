@@ -115,6 +115,10 @@ LOGGING = {
         'appariementnul': {
             'handlers': ['appariementlogfile', 'console'],
             'level': 'INFO',
+        },
+        'facteur_to_manufacture': {
+            'handlers': ['console'],
+            'level': 'INFO',
         }
     },
 }
