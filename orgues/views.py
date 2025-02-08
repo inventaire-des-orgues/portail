@@ -123,19 +123,41 @@ class OrgueSearch(View):
         except:
             return JsonResponse({'message': 'Le moteur de recherche est mal configuré'}, status=500)
 
-        facets = ['departement', 'region', 'resume_composition_clavier', 'facet_facteurs', 'jeux', 'facet_manufactures']
+
+        facets = ['region', 'resume_composition_clavier', 'facet_facteurs', 'jeux', 'proprietaire', 'etat', 'facet_manufactures']
         options = {'attributesToHighlight': ['*'], 'hitsPerPage': OrgueSearch.paginate_by, 'page': int(page)}
 
+        # Première requête qui permet de récupérer toutes les possibilités dans chaque facet
+        options["facets"] = facets
+        filter_init = []
+        if departement:
+            filter_init.append('departement="{}"'.format(departement))
+        if region:
+            filter_init.append('region="{}"'.format(region))
+        if len(filter_init) > 0:
+            options['filter'] = filter_init
+        results_init = index.search(query, options)
+
+        # Deuxième requête pour récupérer les orgues correspondant aux filtres
         filter = []
         filterResult = {}
         for facet in facets:
             arg = request.POST.get('filter_' + facet)
             if arg:
-                values = arg.split(',')
-                filter.append(['{}="{}"'.format(facet, value) for value in values])
+                values = arg.split(';;')
+                liste_filters = []
+                for value in values:
+                    if value != "Non renseigné":
+                        liste_filters.append('{}="{}"'.format(facet, value))
+                    else:
+                        liste_filters.append('{} IS NULL'.format(facet))
+                filter.append(liste_filters)
                 filterResult[facet] = values
-        if not filterResult and page == '1' and (query or departement or region):
-            options['facets'] = facets
+        init = request.POST.get('init')
+        
+        # Si c'est l'initialisation de la page ou d'un département, alors par défaut, on n'affiche pas les orgues disparus
+        if init=="true":
+            filter.append(['etat!="Disparu"'])
         if departement:
             filter.append('departement="{}"'.format(departement))
         if region:
@@ -149,17 +171,24 @@ class OrgueSearch(View):
             options['sort'] = [sort]
         results = index.search(query, options)
         if 'facetDistribution' in results:
-            results['facets'] = OrgueSearch.convertFacets(results['facetDistribution'])
+            results['facets'] = OrgueSearch.convertFacets(results_init['facetDistribution'])
             del results['facetDistribution']
+        
+        # Si c'est l'initialisation de la page ou d'un département, 
+        # alors par défaut, on ne surligne pas "Disparu" dans la colonne des filtres 
+        if init=="true":
+            filterResult['etat'] = ['Très bon, tout à fait jouable', 'Bon : jouable, défauts mineurs', 'Altéré : difficilement jouable', 'Dégradé ou en ruine : injouable', 'En restauration (ou projet initié)', 'Non renseigné']
         results['filter'] = filterResult
         return results
 
     @staticmethod
     def convertFacets(facetDistribution):
-        labels = {'departement': 'Département', 'region': 'Régions', 'resume_composition_clavier': 'Nombres de claviers', 'facet_facteurs': 'Facteurs', 'jeux': 'Jeux', 'facet_manufactures': 'Manufactures'}
-        return [{'label': labels[name], 'field': name,
-                 'items': sorted([{'name': item, 'count': count} for item, count in values.items()], key=lambda k: k['count'], reverse=True)} for name, values in
-                facetDistribution.items()]
+        labels = {'departement': 'Département', 'region': 'Régions', 'resume_composition_clavier': 'Nombres de claviers', 'facet_facteurs': 'Facteurs', 'jeux': 'Jeux', 'proprietaire': 'Propriétaire', 'etat':'Etat', 'facet_manufactures': 'Manufactures'}
+        facets = [{'label': labels[name], 'field': name,
+                 'items': sorted([{'name': item, 'count': count} for item, count in values.items()], key=lambda k: k['name'])} for name, values in facetDistribution.items()]
+        for facet in facets:
+            facet["items"].append({"name": "Non renseigné", "count":1})
+        return facets
 
 
 class OrgueCarteOld(TemplateView):
@@ -320,7 +349,7 @@ class FacteurListJSlonlat(ListView):
         if context["object_list"]:
             results = [{"id": u.id, "text": u.nom} for u in context["object_list"]]
         return JsonResponse({"results": results, "pagination": {"more": more}})
-    
+
 
 class FacteursList(TemplateView):
     """
@@ -357,12 +386,9 @@ class OrgueDetail(DetailView):
 
     def get_object(self, queryset=None):
 
-        logger.info("{user};{method};{get_full_path};200".format(user=self.request.user,
+        logger.info("{user};{method};detail/{get_full_path};200".format(user=self.request.user,
                                                                  method=self.request.method,
                                                                  get_full_path=self.request.META.get('HTTP_REFERER')))
-        logger.info("{user};{method};detail;{get_full_path};200".format(user=self.request.user,
-                                                                 method=self.request.method,
-                                                                 get_full_path=self.kwargs['slug']))
         orgue = Orgue.objects.filter(Q(slug=self.kwargs['slug']) | Q(codification=self.kwargs['slug'])).first()
         if not orgue:
             raise Http404
@@ -986,7 +1012,7 @@ class EvenementfacteurJS(View):
         results = {}
         for evenement in evenements:
             data = {"type":evenement.type, "date":evenement.dates, "orgue":OrgueResumeSerializer(evenement.orgue).data}
-            date = evenement.annee 
+            date = evenement.annee
             if date in results.keys():
                 results[date].append(data)
             else:

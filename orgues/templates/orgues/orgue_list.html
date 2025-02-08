@@ -24,7 +24,7 @@
                   <div :class="{'facet-open': facetOpen[facet.field], 'facet-list': facet.items.length > 6 }" class="facet-list">
                     <ul>
                       <li v-for="selected in filter[facet.field]" @click="unselectFacet(facet.field, selected)" class="facets selected">((selected))</li>
-                      <li v-for="item in facet.items" v-if="!filter[facet.field] || !filter[facet.field].includes(item.name)" @click="selectFacet(facet.field, item.name)" class="facets">((item.name)) [((item.count))]</li>
+                      <li v-for="item in facet.items" v-if="!filter[facet.field] || !filter[facet.field].includes(item.name)" @click="selectFacet(facet.field, item.name)" class="facets">((item.name))</li>
                     </ul>
                     <a @click="openFacet(facet.field)" v-if="facet.items.length > 6">Voir ((facetOpen[facet.field] ? "moins" : "plus"))</a>
                   </div>
@@ -180,6 +180,7 @@
         sort: 'completion:desc',
         pages: 0,
         loading: false,
+        init: true,
         open: false,
         orgues: [],
         facets: {},
@@ -194,14 +195,15 @@
       },
       watch: {
         debouncedInput: function () {
-          this.page = 1
+          this.page = 1          
           this.filter = {}
           this.fetchData()
         },
         departement: function () {
           this.page = 1
-          this.filter = {}
-          this.fetchData()
+          this.filter = {};
+          this.init = true;        
+          this.fetchData();
         },
       },
       computed: {
@@ -221,14 +223,14 @@
         openFacet: function(field) {
           this.$set(this.facetOpen, field, !this.facetOpen[field])
         },
-        selectFacet: function(facet, value) {
+        selectFacet: function(facet, value) {          
           if (this.filter[facet]) {
-            if (!this.filter[facet].includes(value))
+            if (!this.filter[facet].includes(value))  
               this.filter[facet].push(value)
           }
           else
             this.filter[facet] = [value]
-          this.page = 1
+            this.page = 1
           this.fetchData()
         },
         changeSort: function(sort) {
@@ -264,12 +266,12 @@
           }
           if (sort) {
             pageUrl += '&sort=' + sort
-          }
+          }          
           let filters = {}
           if (self.filter) {
             for (const [key, values] of Object.entries(self.filter)) {
                 pageUrl += '&filter_' + key + '=' + values.join(',');
-                filters['filter_' + key] = values.join(',');
+                filters['filter_' + key] = values.join(';;');
             }
           }
 
@@ -283,6 +285,7 @@
               page: page,
               departement: departement,
               sort: sort,
+              init: self.init,
               ...filters,
             },
             error: function (resp) {
@@ -299,6 +302,7 @@
                 self.facetOpen = {}
               }
               self.filter = results.filter
+              self.init = false; 
               if (scrolltop) window.scrollTo(0, 0);
               window.history.pushState('', '', pageUrl);
             },
