@@ -51,6 +51,9 @@
         <div class="{% if form.DELETE %}col-4{% else %}col-4{% endif %}">
           {% include 'stack_field.html' with field=form.commentaire %}
         </div>
+        <div class="{% if form.DELETE %}col-3{% else %}col-4{% endif %}">
+          {% include 'stack_field.html' with field=form.emprunt %}
+        </div>
         {% if form.DELETE %}
           <div class="col-3">
             {% include 'stack_field.html' with field=form.DELETE %}
@@ -82,3 +85,34 @@
 
 {% endblock %}
 
+
+{% block js_extra %}
+<script>
+var orgue_pk = "{{ orgue_pk }}";
+
+$("select[id$=-emprunt]").select2({
+      placeholder: 'Choisir un emprunt',
+      ajax: {
+        url: '{% url 'orgues:emprunt-list-js' %}',
+        data: function (params) {
+          var query = {
+            search: params.term,
+            orgue: orgue_pk
+          }
+          return query;
+        }
+      },
+      escapeMarkup: function (markup) {
+        return markup;
+      },
+      language: {
+        
+        noResults: function () {
+          return "Aucun jeu trouvé ...";
+        }
+      },
+      width: '100%'
+    });
+
+</script>
+{% endblock %}

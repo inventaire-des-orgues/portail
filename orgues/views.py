@@ -793,6 +793,31 @@ class TypeJeuListJS(FabView):
         }
 
 
+class EmpruntListJS(ListView):
+    """
+    Liste dynamique utilisée pour filtrer les jeux dans les menus déroulants select2 pour sélectionner les emprunts.
+    documentation : https://select2.org/data-sources/ajax
+    """
+    model = Jeu
+    paginate_by = 30
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        query = self.request.GET.get("search")
+        orgue = self.request.GET.get("orgue")
+        queryset = queryset.filter(clavier__orgue=orgue)
+        if query:
+            queryset = queryset.filter(type__nom__icontains=query)
+        return queryset
+
+    def render_to_response(self, context, **response_kwargs):
+        results = []
+        if context["object_list"]:
+            for u in context["object_list"]:
+                results.append({"id": u.id, "text": u.str_emprunt()})
+        return JsonResponse({"results": results})
+
+
 class FacteurListJS(ListView):
     """
     Liste dynamique utilisée pour filtrer les facteurs d'orgue dans les menus déroulants select2.
@@ -1073,6 +1098,7 @@ class ClavierCreate(FabView, ContributionOrgueMixin):
             "jeux_formset": JeuFormset(queryset=Jeu.objects.none()),
             "clavier_form": orgue_forms.ClavierForm(),
             "orgue": orgue,
+            "orgue_pk": orgue.pk,
             "notes": None,
         }
         return render(request, "orgues/clavier_form.html", context)
@@ -1120,6 +1146,7 @@ class ClavierUpdate(FabUpdateView, ContributionOrgueMixin):
             "jeux_formset": JeuFormset(queryset=clavier.jeux.all()),
             "clavier_form": orgue_forms.ClavierForm(instance=clavier),
             "orgue": clavier.orgue,
+            "orgue_pk": clavier.orgue.pk,
             "clavier": clavier,
             "notes": clavier.notes,
         }

@@ -57,6 +57,7 @@ urlpatterns = [
     path('types_jeux/creation/', v.TypeJeuCreateJS.as_view(), name='typejeu-create-js'),
     path('types_jeux/edition/<int:pk>/', v.TypeJeuUpdate.as_view(), name='typejeu-update'),
     path('js/liste/jeux/', v.TypeJeuListJS.as_view(), name='typejeu-list-js'),
+    path('js/liste/emprunt/', v.EmpruntListJS.as_view(), name='emprunt-list-js'),
 
     # fichiers
     path('fichiers/<uuid:orgue_uuid>/', v.FichierList.as_view(), name='fichier-list'),

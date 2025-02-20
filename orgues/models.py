@@ -957,6 +957,7 @@ class Jeu(models.Model):
     commentaire = models.CharField(max_length=200, null=True, blank=True)
     clavier = models.ForeignKey(Clavier, null=True, on_delete=models.CASCADE, related_name="jeux", db_index=True)
     configuration = models.CharField(max_length=20, choices=CHOIX_CONFIGURATION, null=True, blank=True)
+    emprunt = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         if self.configuration == "basse":
@@ -966,6 +967,13 @@ class Jeu(models.Model):
         elif self.configuration == "basse_et_dessus":
             return "{} (B+D)".format(self.type)
         return str(self.type)
+
+    def str_emprunt(self):
+        """
+        Affichage de (nom du clavier, nom du jeu)
+        Utile pour les emprunts
+        """
+        return f"{self.clavier.type.nom} : {self.type}"
 
     class Meta:
         verbose_name_plural = "Jeux"
