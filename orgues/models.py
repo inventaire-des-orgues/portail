@@ -974,6 +974,16 @@ class Jeu(models.Model):
         Utile pour les emprunts
         """
         return f"{self.clavier.type.nom} : {self.type}"
+    
+    def commentaire_emprunt(self):
+        if self.commentaire and self.emprunt:
+            return f"{self.commentaire}. Emprunt à {self.emprunt.str_emprunt()}"
+        if self.commentaire:
+            return self.commentaire
+        if self.emprunt:
+            return f"Emprunt à {self.emprunt.str_emprunt()}"
+        return None
+
 
     class Meta:
         verbose_name_plural = "Jeux"
