@@ -82,37 +82,33 @@
 {% block js_extra_2 %}
   {% include 'orgues/facteur_create_modal.html' %}
   {% include 'orgues/typejeu_create_modal.html' %}
+  <script>
+    var orgue_pk = "{{ orgue_pk }}";
+    
+    $("select[id$=-emprunt]").select2({
+          placeholder: 'Choisir un emprunt',
+          ajax: {
+            url: '{% url 'orgues:emprunt-list-js' %}',
+            data: function (params) {
+              var query = {
+                search: params.term,
+                orgue: orgue_pk
+              }
+              return query;
+            }
+          },
+          escapeMarkup: function (markup) {
+            return markup;
+          },
+          language: {
+            
+            noResults: function () {
+              return "Aucun jeu trouvé ...";
+            }
+          },
+          width: '100%'
+        });
+    
+    </script>
 
-{% endblock %}
-
-
-{% block js_extra %}
-<script>
-var orgue_pk = "{{ orgue_pk }}";
-
-$("select[id$=-emprunt]").select2({
-      placeholder: 'Choisir un emprunt',
-      ajax: {
-        url: '{% url 'orgues:emprunt-list-js' %}',
-        data: function (params) {
-          var query = {
-            search: params.term,
-            orgue: orgue_pk
-          }
-          return query;
-        }
-      },
-      escapeMarkup: function (markup) {
-        return markup;
-      },
-      language: {
-        
-        noResults: function () {
-          return "Aucun jeu trouvé ...";
-        }
-      },
-      width: '100%'
-    });
-
-</script>
 {% endblock %}
