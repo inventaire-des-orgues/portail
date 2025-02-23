@@ -499,6 +499,13 @@ class Orgue(models.Model):
         Nombre de jeux de l'instrument
         """
         return Jeu.objects.filter(Q(clavier__orgue=self)&~Q(type__nom="Tirasse permanente")).count()
+    
+    @property
+    def jeux_reels_count(self):
+        """
+        Nombre de jeux réels de l'instrument (en retirant les jeux qui sont des emprunts)
+        """
+        return Jeu.objects.filter(Q(clavier__orgue=self)&~Q(type__nom="Tirasse permanente")&Q(emprunt__isnull=True)).count()
 
     @property
     def claviers_count(self):
@@ -584,10 +591,10 @@ class Orgue(models.Model):
         """
         jeux_count = self.jeux_count
         if self.buffet_vide:
-            return "0, 0"
+            return "0 (0), 0"
         if jeux_count == 0:
             return
-        return "{}, {}".format(self.jeux_count, self.resume_composition_clavier())
+        return "{} ({}), {}".format(self.jeux_reels_count, self.jeux_count, self.resume_composition_clavier())
 
     def infos_completions(self):
         """
