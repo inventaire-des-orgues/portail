@@ -172,16 +172,18 @@ class ClavierForm(forms.ModelForm):
 class JeuForm(forms.ModelForm):
     class Meta:
         model = Jeu
-        fields = ["type", "configuration", "commentaire"]
-        labels = {"type": "", "configuration": "", "commentaire": ""}
+        fields = ["type", "configuration", "commentaire", "emprunt"]
+        labels = {"type": "", "configuration": "", "commentaire": "", "emprunt": ""}
 
         widgets = {
-            "type": Select2Single
+            "type": Select2Single,
+            "emprunt": Select2Single
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['commentaire'].widget.attrs['placeholder'] = "Commentaire"
+        self.fields['emprunt'].widget.attrs['placeholder'] = "Emprunt"
 
 
 class FichierForm(forms.ModelForm):

@@ -16,8 +16,8 @@
     <ul class="list-group list-group-flush">
       {% for jeu in clavier.jeux.all %}
         <li class="list-group-item"
-        {% if jeu.commentaire %}data-toggle="tooltip-children"{% endif %}
-        >{{ jeu }}  {% if jeu.commentaire %}<i class="fa fa-info-circle text-muted tooltip-children" title="{{ jeu.commentaire }}" data-placement="right"></i> {% endif %}</li>
+        {% if jeu.commentaire_emprunt %}data-toggle="tooltip-children"{% endif %}
+        >{{ jeu }}  {% if jeu.commentaire_emprunt %}<i class="fa fa-info-circle text-muted tooltip-children" title="{{ jeu.commentaire_emprunt }}" data-placement="right"></i> {% endif %}</li>
       {% endfor %}
     </ul>
     {% if editable %}

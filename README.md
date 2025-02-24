@@ -76,7 +76,7 @@ python manage.py import_data --create path/ver/import.json
 Certaines données sont mises en cache pour améliorer la perfomance des requêtes.
 Pour forcer le recalcul des "résumés clavier" il faut lancer la commande : 
 ```shell script
-python manage.py calcul_resume_composition
+python manage.py calcul_resume_clavier
 ```  
 Normalement le résumé clavier est recalculé automatiquement à chaque modification de la composition d'un orgue.
 

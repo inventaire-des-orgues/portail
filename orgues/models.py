@@ -499,6 +499,13 @@ class Orgue(models.Model):
         Nombre de jeux de l'instrument
         """
         return Jeu.objects.filter(Q(clavier__orgue=self)&~Q(type__nom="Tirasse permanente")).count()
+    
+    @property
+    def jeux_reels_count(self):
+        """
+        Nombre de jeux réels de l'instrument (en retirant les jeux qui sont des emprunts)
+        """
+        return Jeu.objects.filter(Q(clavier__orgue=self)&~Q(type__nom="Tirasse permanente")&Q(emprunt__isnull=True)).count()
 
     @property
     def claviers_count(self):
@@ -584,10 +591,10 @@ class Orgue(models.Model):
         """
         jeux_count = self.jeux_count
         if self.buffet_vide:
-            return "0, 0"
+            return "0 (0), 0"
         if jeux_count == 0:
             return
-        return "{}, {}".format(self.jeux_count, self.resume_composition_clavier())
+        return "{} ({}), {}".format(self.jeux_reels_count, self.jeux_count, self.resume_composition_clavier())
 
     def infos_completions(self):
         """
@@ -957,6 +964,7 @@ class Jeu(models.Model):
     commentaire = models.CharField(max_length=200, null=True, blank=True)
     clavier = models.ForeignKey(Clavier, null=True, on_delete=models.CASCADE, related_name="jeux", db_index=True)
     configuration = models.CharField(max_length=20, choices=CHOIX_CONFIGURATION, null=True, blank=True)
+    emprunt = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         if self.configuration == "basse":
@@ -966,6 +974,23 @@ class Jeu(models.Model):
         elif self.configuration == "basse_et_dessus":
             return "{} (B+D)".format(self.type)
         return str(self.type)
+
+    def str_emprunt(self):
+        """
+        Affichage de (nom du clavier, nom du jeu)
+        Utile pour les emprunts
+        """
+        return f"{self.clavier.type.nom} : {self.type}"
+    
+    def commentaire_emprunt(self):
+        if self.commentaire and self.emprunt:
+            return f"{self.commentaire}. Emprunt à {self.emprunt.str_emprunt()}"
+        if self.commentaire:
+            return self.commentaire
+        if self.emprunt:
+            return f"Emprunt à {self.emprunt.str_emprunt()}"
+        return None
+
 
     class Meta:
         verbose_name_plural = "Jeux"
