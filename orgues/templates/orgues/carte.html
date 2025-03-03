@@ -400,7 +400,10 @@
       $.ajax({
         type: 'GET',
         url: '{% url 'orgues:orgue-carte-popup' %}',
-        data: {"orgue_id": e.features[0]["id"]},
+        data: {
+          "orgue_id": e.features[0]["id"],
+          "mh": $("#id_monument").is(':checked')
+        },
         success: function (data) {
           popup.remove()
           $("#popupmodal_content").html(data["message"])
