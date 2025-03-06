@@ -1,4 +1,4 @@
-Django==5.1.6
+Django==5.1.7
 django-appconf==1.0.4
 django-imagekit==5.0.0
 pilkit==3.0
