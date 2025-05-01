@@ -13,7 +13,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core import serializers
 from django.core.paginator import Paginator
 from django.db import connection, transaction
-from django.db.models import Q, Count
+from django.db.models import Q, Count, Case, When, IntegerField, Value
 from django.forms import modelformset_factory
 from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -1615,13 +1615,32 @@ class OrgueExport(FabView):
             "resume_composition",
             "diapason",
             "proprietaire",
+            "nb_images",
+            "possede_vignette"
         ]
         writer = csv.DictWriter(response, delimiter=';', fieldnames=columns)
 
         # header from verbose_names
-        writer.writerow({column: Orgue._meta.get_field(column).verbose_name for column in columns})
+        row = {}
+        for column in columns:
+            try:
+                field = Orgue._meta.get_field(column)
+                row[column] = field.verbose_name
+            except:
+                # Pour les colonnes "virtuelles", on met un nom lisible par défaut
+                row[column] = column.replace('_', ' ').capitalize()
+        writer.writerow(row)
         # data
-        writer.writerows(Orgue.objects.values(*columns))
+        writer.writerows(
+            Orgue.objects.annotate(
+                nb_images=Count('images'),
+                possede_vignette=Case(
+                    When(nb_images__gt=0, then=Value(1)),
+                    default=Value(0),
+                    output_field=IntegerField()
+                )
+            ).values(*columns)
+        )
 
         return response
 
