@@ -24,8 +24,15 @@
             </div>
             <div class="form-group">
               <label for="">Manufacture</label>
-                <v-select v-model="manufacture" :options="manufactures" :reduce="manufacture => manufacture.pk" label="nom"/>
+                <v-select v-model="manufacture" :options="manufactures" :reduce="manufacture => manufacture" label="nom"/>
             </div>
+            {% if perms.orgues.add_manufacture %}
+              <div v-if="manufacture !== ''">
+                <div @click="selectManufacture(manufacture)" class="btn btn-info rounded-pill mt-3 btn-block">
+                  Modifier la manufacture
+                </div>
+              </div>
+            {% endif %}
           </div>
         </div>
       </div>
@@ -136,7 +143,10 @@ var app = new Vue({
           if (this.manufacture ) {
             this.fetchManufactureData();
             this.fetchFacteursManufactureData();
-          }       
+          }
+          else{
+            this.manufacture = '';
+          }    
         },
       },
 
@@ -166,8 +176,8 @@ var app = new Vue({
       });
     },
 
-    fetchManufactureData: function(){
-      manufacture_pk = this.manufacture;
+    fetchManufactureData: function(){      
+      manufacture_pk = this.manufacture.pk;
       this.facteur = '';
       this.loading=true;
       var self = this;
@@ -191,7 +201,7 @@ var app = new Vue({
     },
 
     fetchFacteursManufactureData: function(){
-      manufacture_pk = this.manufacture;
+      manufacture_pk = this.manufacture.pk;
       this.loading=true;
       var self = this;
       
@@ -217,6 +227,9 @@ var app = new Vue({
     select: function (orgue) {
           window.location.href = orgue.url;
     },
+    selectManufacture: function (manufacture) {      
+          window.location.href = manufacture.url;
+    }
   
   },
   delimiters: ["((", "))"]

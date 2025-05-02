@@ -51,6 +51,7 @@ urlpatterns = [
     # Manufactures
     path('js/manufactures/', v.ManufactureListJS.as_view(), name='manufacture-list-js'),
     path('manufacture/creation/', v.ManufactureCreate.as_view(), name='manufacture-create'),
+    path('manufacture/update/<int:pk>/', v.ManufactureUpdate.as_view(), name='manufacture-update'),
     path('js/manufacturesFacteurs/', v.ManufactureFacteurJS.as_view(), name='manufactures-facteur-js'),
 
     # types jeux
