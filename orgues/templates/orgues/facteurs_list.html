@@ -37,15 +37,6 @@
         </div>
       </div>
       <div class="col-xl-8" v-cloak>
-        <div class="clearfix"></div>
-        <div class="card" v-if="loading">
-          <div class="card-body">
-            <div class="d-flex align-items-center">
-              <strong>Chargement...</strong>
-              <div class="spinner-border ml-auto" role="status" aria-hidden="true"></div>
-            </div>
-          </div>
-        </div>
         <div v-if="facteursManufactures.length">
           <h4 class="card-title mb-0">
             Facteurs de la manufacture :
@@ -55,6 +46,16 @@
           <li>
             <span v-html="facteurManufacture.facteur"> </span> : ((facteurManufacture.debut)) - ((facteurManufacture.fin))
           </li>  
+        </div>
+
+        <div class="clearfix"></div>
+        <div class="card" v-if="loading">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <strong>Chargement...</strong>
+              <div class="spinner-border ml-auto" role="status" aria-hidden="true"></div>
+            </div>
+          </div>
         </div>
         <div v-for="(value, key) in evenements">
           <h4 class="card-title mb-0">
@@ -202,7 +203,6 @@ var app = new Vue({
 
     fetchFacteursManufactureData: function(){
       manufacture_pk = this.manufacture.pk;
-      this.loading=true;
       var self = this;
       
       $.ajax({
@@ -213,11 +213,9 @@ var app = new Vue({
             manufacture: manufacture_pk,
           },
           error: function (resp) {  
-            self.loading = false;
             toastr.error(resp.responseJSON.message);
           },
           success: function (results) {
-            self.loading = false;
             self.facteursManufactures = results; 
                        
           },
