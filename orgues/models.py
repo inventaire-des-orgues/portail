@@ -140,7 +140,9 @@ class Manufacture(models.Model):
                 facteursList.append(facteur)
         return facteursList
     
-
+    def get_update_url(self):
+        return reverse('orgues:manufacture-update', args=(self.pk,))
+    
     class Meta:
         ordering = ['nom']
 

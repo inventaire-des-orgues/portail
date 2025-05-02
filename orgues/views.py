@@ -374,7 +374,7 @@ class FacteursList(TemplateView):
         queryset = Manufacture.objects.all().order_by("nom")
         manufactures = []
         for manufacture in queryset:
-            manufactures.append({"nom":manufacture.nom_dates(), "pk":manufacture.pk})
+            manufactures.append({"nom":manufacture.nom_dates(), "pk":manufacture.pk, "url":manufacture.get_update_url()})
 
         context["facteurs"] = facteurs
         context["manufactures"] = manufactures
@@ -1235,6 +1235,44 @@ class ManufactureCreate(FabView, ContributionOrgueMixin):
             context = {
                 "facteurManufacture_formset": FacteurManufactureFormset(queryset=FacteurManufacture.objects.none()),
                 "manufacture_form": orgue_forms.ManufactureForm(),
+            }
+            return render(request, "orgues/manufacture_form.html", context)
+
+
+class ManufactureUpdate(FabView, ContributionOrgueMixin):
+    """
+    Ajout d'une manufacture
+    """
+    model = Manufacture
+    permission_required = "orgues.add_manufacture"
+    form_class = orgue_forms.ManufactureForm
+
+    def get(self, request, *args, **kwargs):
+        manufacture =  get_object_or_404(Manufacture, pk=kwargs["pk"])
+        FacteurManufactureFormset = modelformset_factory(FacteurManufacture, orgue_forms.FacteurManufactureForm, extra=10, can_delete=True)
+        context = {
+            "facteurManufacture_formset": FacteurManufactureFormset(queryset=manufacture.facteur.all()),
+            "manufacture_form": orgue_forms.ManufactureForm(instance=manufacture),
+        }
+        return render(request, "orgues/manufacture_form.html", context)
+
+    def post(self, request, *args, **kwargs):
+        FacteurManufactureFormset = modelformset_factory(FacteurManufacture, orgue_forms.FacteurManufactureForm, extra=10, can_delete=True)
+        facteurManufacture_formset = FacteurManufactureFormset(self.request.POST)
+        manufacture_form = orgue_forms.ManufactureForm(self.request.POST)
+        if facteurManufacture_formset.is_valid() and manufacture_form.is_valid():
+            manufacture, created = Manufacture.objects.get_or_create(**manufacture_form.cleaned_data)
+            facteursManufactures = facteurManufacture_formset.save()
+            for facteurManufacture in facteursManufactures:
+                manufacture.facteur.add(facteurManufacture)
+            manufacture.save()
+            messages.success(self.request, "Manufacture mise à jour, merci !")
+            return redirect('orgues:facteurs-list')
+        else:
+            manufacture =  get_object_or_404(Manufacture, pk=kwargs["pk"])
+            context = {
+                "facteurManufacture_formset": FacteurManufactureFormset(queryset=manufacture.facteur.all()),
+                "manufacture_form": orgue_forms.ManufactureForm(instance=manufacture),
             }
             return render(request, "orgues/manufacture_form.html", context)
 
