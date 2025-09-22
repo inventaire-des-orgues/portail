@@ -89,10 +89,22 @@ class FacteurManufacture(models.Model):
             return "{} ({} - {}) ".format(self.facteur.nom, annee_debut, annee_fin)
         
     def annee_correspond(self, annee):
-        if self.annee_debut is None or self.annee_fin is None:
+        if self.annee_debut is None and self.annee_fin is None:
             return True
-        if annee >= self.annee_debut and annee <= self.annee_fin:
-            return True
+        if self.annee_debut is not None and self.annee_fin is not None:
+            if annee >= self.annee_debut and annee <= self.annee_fin:
+                return True
+            return False
+        if self.annee_debut is not None and self.annee_fin is None:
+            if annee >= self.annee_debut:
+                return True
+            else:
+                return False
+        if self.annee_fin is not None and self.annee_debut is None:
+            if annee <= self.annee_fin:
+                return True
+            return False
+        
         return False
 
 class Manufacture(models.Model):
