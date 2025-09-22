@@ -13,6 +13,8 @@ from django.views.generic import CreateView, UpdateView
 from accounts.forms import InscriptionForm, MonCompteForm
 from fabutils.mixins import FabUpdateView, FabView
 from project.views import verify_captcha
+from django.core.mail import send_mail
+from project.settings import ADMIN_EMAILS
 
 User = get_user_model()
 
@@ -24,7 +26,8 @@ class Inscription(CreateView):
     Ils sont ajoutés par défaut dans le groupe des utilisateurs standards.
     """
     model = User
-    success_message = "Votre compte a bien été créé, vous êtes connecté(e) !"
+    #success_message = "Votre compte a bien été créé, vous êtes connecté(e) !"
+    success_message = "Votre compte a bien été créé. Vous serez prévenus dès qu'il sera validé par les administrateurs !"
     success_url = reverse_lazy("orgues:orgue-list")
     form_class = InscriptionForm
     template_name = "accounts/inscription.html"
@@ -34,7 +37,12 @@ class Inscription(CreateView):
             messages.error(self.request,"La vérification de sécurité anti-robot a échoué")
             return redirect('accounts:inscription')
         user = form.save()
+        user.is_active = False
         user.save()
+        send_mail(subject="Inventaire des orgues : nouvelle inscription en attente de validation",
+                      message=f"L'utilisateur {user.first_name} {user.last_name} ({user.username}) attend une validation.",
+                      from_email=form.cleaned_data['email'],
+                      recipient_list=ADMIN_EMAILS)
         user.groups.add(Group.objects.get(name=settings.GROUP_STANDARD_USER))
         messages.success(self.request, self.success_message)
         next = self.request.GET.get("next", self.success_url)
