@@ -1155,7 +1155,7 @@ class Image(models.Model):
         try:
             return self.thumbnail.url
         except:
-            return "/static/img/default.png"
+            return "/static/img/image_corrompue.jpg"
 
     class Meta:
         ordering = ['order', 'created_date']
