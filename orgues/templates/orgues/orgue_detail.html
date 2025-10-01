@@ -174,7 +174,7 @@
                         <div class="portfolio-item img-zoom">
                           <div class="portfolio-item-wrap border-radius-5">
                             <div class="portfolio-image">
-                              <a href="#"><img src="{{ image.thumbnail.url }}" alt=""></a>
+                              <a href="#"><img src="{{ image.get_thumbnail_url }}" alt=""></a>
                             </div>
                             <div class="portfolio-description">
                               <a title="{% if image.legende %}{{ image.legende }}{% endif %} {% if image.credit %}Crédit : {{ image.credit }}{% endif %}"

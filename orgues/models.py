@@ -1151,6 +1151,12 @@ class Image(models.Model):
             self.thumbnail_principale.delete()
         return super().delete()
 
+    def get_thumbnail_url(self):
+        try:
+            return self.thumbnail.url
+        except:
+            return "/static/img/default.png"
+
     class Meta:
         ordering = ['order', 'created_date']
 
