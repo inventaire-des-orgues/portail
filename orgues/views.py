@@ -816,11 +816,12 @@ class EmpruntListJS(ListView):
         return queryset
 
     def render_to_response(self, context, **response_kwargs):
+        more = context["page_obj"].number < context["paginator"].num_pages
         results = []
         if context["object_list"]:
             for u in context["object_list"]:
                 results.append({"id": u.id, "text": u.str_emprunt()})
-        return JsonResponse({"results": results})
+        return JsonResponse({"results": results, "pagination": {"more": more}})
 
 
 class FacteurListJS(ListView):
