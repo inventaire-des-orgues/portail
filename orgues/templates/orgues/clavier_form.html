@@ -93,6 +93,7 @@
             data: function (params) {
               var query = {
                 search: params.term,
+                page: params.page || 1,
                 orgue: orgue_pk
               }
               return query;
