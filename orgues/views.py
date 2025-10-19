@@ -13,7 +13,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core import serializers
 from django.core.paginator import Paginator
 from django.db import connection, transaction
-from django.db.models import Q, Count, Case, When, IntegerField, Value
+from django.db.models import Q, Count, Case, When, IntegerField, Value, F, Aggregate, CharField
+from django.db.models.functions import Concat
 from django.forms import modelformset_factory
 from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -1681,6 +1682,63 @@ class OrgueExport(FabView):
             ).values(*columns)
         )
 
+        return response
+
+
+class GroupConcat(Aggregate):
+    function = 'GROUP_CONCAT'
+    template = "%(function)s(%(expressions)s, '%(separator)s')"
+
+    def __init__(self, expression, separator=', ', **extra):
+        super().__init__(
+            expression,
+            separator=separator,
+            output_field=CharField(),
+            **extra
+        )
+
+class EvenementExport(FabView):
+    permission_required = 'orgues.view_user'
+
+    def get(self, request, *args, **kwargs):
+        response = HttpResponse(content_type='text/csv')
+        response.write(u'\ufeff'.encode('utf8'))
+        response['Content-Disposition'] = 'attachment;filename=evenements_orgue_{}.csv'.format(
+            datetime.today().strftime("%Y-%m-%d"))
+        columns = [
+            "annee",
+            "annee_fin",
+            "nom_orgue",
+            "circa",
+            "type",
+            "nom_facteurs",
+            "nom_manufactures",
+        ]
+        writer = csv.DictWriter(response, delimiter=';', fieldnames=columns)
+
+        # header from verbose_names
+        row = {}
+        for column in columns:
+            try:
+                field = Evenement._meta.get_field(column)
+                row[column] = field.verbose_name
+            except:
+                # Pour les colonnes "virtuelles", on met un nom lisible par défaut
+                row[column] = column.replace('_', ' ').capitalize()
+        writer.writerow(row)
+        writer.writerows(
+            Evenement.objects.annotate(
+                nom_orgue = Concat(
+                    F('orgue__designation'),
+                    Value(' '),
+                    F('orgue__edifice'),
+                    Value(' '),
+                    F('orgue__commune')
+                ),
+                nom_facteurs = GroupConcat('facteurs__nom', separator=', '),
+                nom_manufactures = GroupConcat('manufactures__nom', separator=', '),
+            ).values(*columns).order_by("annee")
+        )
         return response
 
 

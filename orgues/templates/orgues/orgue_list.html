@@ -47,6 +47,12 @@
                 {% endif %}
                 <hr>
 
+                {% if perms.orgues.view_user %}
+                <a href="{% url 'orgues:evenement-csv' %}" class="btn btn-warning rounded-pill mt-3 btn-block">
+                    Export des événements en csv</a>
+                {% endif %}
+                <hr>
+
                 {% if perms.orgues.add_orgue %}
                 <a href="{% url 'orgues:orgue-create' %}" class="btn btn-info rounded-pill mt-3 btn-block">
                     Créer un nouvel orgue</a>
