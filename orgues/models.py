@@ -873,6 +873,8 @@ class Evenement(models.Model):
         ("degats", "Dégâts"),
         ("classement_mh", "Classement au titre des monuments historiques"),
         ("inscription_mh", "Inscription au titre des monuments historiques"),
+        ("remise_en_service", "Remise en service"),
+        ("depoussierage", "Dépoussiérage")
     )
 
     annee = models.IntegerField(verbose_name="Année de début de l'évènement")
