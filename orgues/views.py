@@ -1396,7 +1396,7 @@ class ImageList(FabListView):
     """
     model = Image
     permission_required = "orgues.view_image"
-    paginate_by = 50
+    paginate_by = 100
 
     def post(self, request, *args, **kwargs):
         orgue = get_object_or_404(Orgue, uuid=self.kwargs["orgue_uuid"])
