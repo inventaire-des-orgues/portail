@@ -32,54 +32,38 @@ class Command(BaseCommand):
             json.dump(liste_coordonnees, f)
 
     def mettre_a_jour_barycentre(self, orgue, liste_coordonnees):
-        overpass_url = "http://overpass-api.de/api/interpreter"
-        overpass_query = """[out:json];{}({});(._;>;);out;""".format(orgue.osm_type, orgue.osm_id)
+        if orgue.osm_type=="way" or orgue.osm_type=="relation":
+            url = f"https://www.openstreetmap.org/api/0.6/{orgue.osm_type}/{orgue.osm_id}/full.json"
+        else:#Node
+            url = f"https://www.openstreetmap.org/api/0.6/{orgue.osm_type}/{orgue.osm_id}.json"
 
-        done = False
-        while not done:
-            response = requests.get(overpass_url,params={'data': overpass_query})
-            if response.status_code == 429 or response.status_code == 504:
-                time.sleep(30)
-            else:
-                done = True
+        headers = {
+            'User-Agent': 'InventairedesOrgues'
+        }
+
+        response = requests.get(url, headers=headers, timeout=10)
 
         if response.status_code == 200:
             data = response.json()
-            if len(data['elements']) > 0:
-                latitude, longitude, coef=self.calculer_barycentre(orgue, data['elements'], orgue.osm_type)
-                liste_coordonnees.append({"codification" : orgue.codification, "latitude" : latitude, "longitude" : longitude})
-        return liste_coordonnees
-
-    def calculer_barycentre(self, orgue, list_osm, osm_type):
-        """
-        Calcule le barycentre d'un objet osm de type osm_type. list_osm est la liste des éléments constituant cet objet.
-        """
-        if osm_type == 'way' or osm_type == 'relation':
-            list_osm = list_osm[0:-1]
-        sum_latitude = 0
-        sum_longitude = 0
-        sum_coef = 0
-        for element in list_osm:
-            if element['type'] == "node":
-                sum_latitude += element['lat']
-                sum_longitude += element['lon']
-                sum_coef += 1
+            latitudes = []
+            longitudes = []
+            if orgue.osm_type == 'way' or orgue.osm_type == 'relation':
+                for node in data["elements"]:
+                    if node['type'] == "node":
+                        latitudes.append(node['lat'])
+                        longitudes.append(node['lon'])
+                if len(latitudes) > 0 and len(longitudes) > 0:
+                    latitude = sum(latitudes) / len(latitudes)
+                    longitude = sum(longitudes) / len(longitudes)
+                    liste_coordonnees.append({"codification" : orgue.codification, "latitude" : latitude, "longitude" : longitude})
             else:
-                overpass_url = "http://overpass-api.de/api/interpreter"
-                overpass_query = """[out:json];{}({});(._;>;);out;""".format(element['type'], element['id'])
-
-                done = False
-                while not done:
-                    response = requests.get(overpass_url, params={'data': overpass_query})
-                    if response.status_code == 429 or response.status_code == 504:
-                        time.sleep(30)
-                    else:
-                        done = True
-
-                if response.status_code == 200 :
-                    data = response.json()
-                    latitude, longitude, coef = self.calculer_barycentre(orgue, data['elements'], element['type'])
-                    sum_latitude += latitude*coef
-                    sum_longitude += longitude*coef
-                    sum_coef += coef
-        return sum_latitude/sum_coef, sum_longitude/sum_coef, sum_coef
+                latitude = data["elements"][0]['lat']
+                longitude = data["elements"][0]['lon']
+                liste_coordonnees.append({"codification" : orgue.codification, "latitude" : latitude, "longitude" : longitude})
+        else:
+            print(f"Erreur lors de la récupération des données OSM pour l'orgue {orgue} {orgue.codification} :")
+            print(f"OSM type: {orgue.osm_type}, OSM id: {orgue.osm_id}")
+            print(f"Erreur: {response.status_code}, response: {response.text}")
+            print(url)
+        time.sleep(1)  # Pause d'une seconde pour éviter de surcharger le serveur
+        return liste_coordonnees
