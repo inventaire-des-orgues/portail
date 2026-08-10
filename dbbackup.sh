@@ -6,7 +6,7 @@
 #
 # Politique de rétention :
 #   - Les 10 derniers jours
-#   - Les backups d'il y a 30, 60 et 120 jours
+#   - Le backup du 1er de chacun des 5 mois précédents
 #
 # Installation :
 #   1. Rendre le script exécutable :
@@ -30,8 +30,16 @@ mkdir -p "$DEST_DIR"
 cp "$SOURCE" "$DEST_DIR/db_$DATE.sqlite3"
 
 # Nettoyer les anciens backups
-# Conserver : les 10 derniers jours + 30, 60 et 120 jours
+# Conserver : les 10 derniers jours + le 1er de chacun des 5 mois précédents
 cd "$DEST_DIR"
+
+# Construire la liste des dates à conserver absolument (1er des 5 mois précédents)
+keep_dates=()
+for i in 1 2 3 4 5; do
+    keep_dates+=( $(date -d "$(date +%Y-%m-01) - $i month" +%Y-%m-01) )
+done
+
+today_timestamp=$(date +%s)
 
 for file in db_*.sqlite3; do
     # Extraire la date du nom de fichier
@@ -43,7 +51,6 @@ for file in db_*.sqlite3; do
         continue
     fi
 
-    today_timestamp=$(date +%s)
     age_days=$(( (today_timestamp - file_timestamp) / 86400 ))
 
     # Décider si on garde le fichier
@@ -54,9 +61,9 @@ for file in db_*.sqlite3; do
         keep=true
     fi
 
-    # Garder les backups de 30, 60 et 120 jours (avec une marge de +/- 1 jour)
-    for retention_day in 30 60 120; do
-        if [ "$age_days" -ge $((retention_day - 1)) ] && [ "$age_days" -le $((retention_day + 1)) ]; then
+    # Garder les backups du 1er de chacun des 5 mois précédents
+    for keep_date in "${keep_dates[@]}"; do
+        if [ "$file_date" = "$keep_date" ]; then
             keep=true
         fi
     done
