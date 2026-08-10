@@ -34,10 +34,11 @@ cp "$SOURCE" "$DEST_DIR/db_$DATE.sqlite3"
 cd "$DEST_DIR"
 
 # Construire la liste des dates à conserver absolument (1er des 5 mois précédents)
-keep_dates=()
-for i in 1 2 3 4 5; do
-    keep_dates+=( $(date -d "$(date +%Y-%m-01) - $i month" +%Y-%m-01) )
-done
+keep_date_1=$(date -d "1 month ago"  +%Y-%m-01)
+keep_date_2=$(date -d "2 months ago" +%Y-%m-01)
+keep_date_3=$(date -d "3 months ago" +%Y-%m-01)
+keep_date_4=$(date -d "4 months ago" +%Y-%m-01)
+keep_date_5=$(date -d "5 months ago" +%Y-%m-01)
 
 today_timestamp=$(date +%s)
 
@@ -62,11 +63,11 @@ for file in db_*.sqlite3; do
     fi
 
     # Garder les backups du 1er de chacun des 5 mois précédents
-    for keep_date in "${keep_dates[@]}"; do
-        if [ "$file_date" = "$keep_date" ]; then
-            keep=true
-        fi
-    done
+    if [ "$file_date" = "$keep_date_1" ] || [ "$file_date" = "$keep_date_2" ] || \
+       [ "$file_date" = "$keep_date_3" ] || [ "$file_date" = "$keep_date_4" ] || \
+       [ "$file_date" = "$keep_date_5" ]; then
+        keep=true
+    fi
 
     # Supprimer si on ne garde pas
     if [ "$keep" = false ]; then
