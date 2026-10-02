@@ -9,6 +9,7 @@ sqlparse==0.6.0
 djangorestframework==3.17.2
 tqdm==4.66.3
 gunicorn==23.0.0
+django-dbbackup==4.2.1
 django-debug-toolbar==5.0.1
 requests==2.33.0
 meilisearch==0.33.1
