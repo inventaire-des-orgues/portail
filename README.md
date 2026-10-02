@@ -315,6 +315,11 @@ Déployer à partir d'un fichier archive TAR les PDF extraits des livres d'inven
 python manage.py deployer_pdfs
 ```
 
+Obtenir la liste des images contenant des visages :
+```python
+python manage.py detect_frontal_face
+```
+
 # Accès au serveur
 
 - ajouter utilisateur au groupe Unix qui convient

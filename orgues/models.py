@@ -89,10 +89,22 @@ class FacteurManufacture(models.Model):
             return "{} ({} - {}) ".format(self.facteur.nom, annee_debut, annee_fin)
         
     def annee_correspond(self, annee):
-        if self.annee_debut is None or self.annee_fin is None:
+        if self.annee_debut is None and self.annee_fin is None:
             return True
-        if annee >= self.annee_debut and annee <= self.annee_fin:
-            return True
+        if self.annee_debut is not None and self.annee_fin is not None:
+            if annee >= self.annee_debut and annee <= self.annee_fin:
+                return True
+            return False
+        if self.annee_debut is not None and self.annee_fin is None:
+            if annee >= self.annee_debut:
+                return True
+            else:
+                return False
+        if self.annee_fin is not None and self.annee_debut is None:
+            if annee <= self.annee_fin:
+                return True
+            return False
+        
         return False
 
 class Manufacture(models.Model):
@@ -140,7 +152,9 @@ class Manufacture(models.Model):
                 facteursList.append(facteur)
         return facteursList
     
-
+    def get_update_url(self):
+        return reverse('orgues:manufacture-update', args=(self.pk,))
+    
     class Meta:
         ordering = ['nom']
 
@@ -859,6 +873,8 @@ class Evenement(models.Model):
         ("degats", "Dégâts"),
         ("classement_mh", "Classement au titre des monuments historiques"),
         ("inscription_mh", "Inscription au titre des monuments historiques"),
+        ("remise_en_service", "Remise en service"),
+        ("depoussierage", "Dépoussiérage")
     )
 
     annee = models.IntegerField(verbose_name="Année de début de l'évènement")
@@ -1136,6 +1152,12 @@ class Image(models.Model):
             self.image.delete()
             self.thumbnail_principale.delete()
         return super().delete()
+
+    def get_thumbnail_url(self):
+        try:
+            return self.thumbnail.url
+        except:
+            return "/static/img/image_corrompue.jpg"
 
     class Meta:
         ordering = ['order', 'created_date']

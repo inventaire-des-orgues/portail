@@ -6,6 +6,7 @@ app_name = 'orgues'
 urlpatterns = [
     path('orgues/', v.OrgueList.as_view(), name='orgue-list'),
     path('orgues/csv/', v.OrgueExport.as_view(), name='orgue-csv'),
+    path('evenements/csv/', v.EvenementExport.as_view(), name='evenement-csv'),
     path('recherche/', v.OrgueSearch.as_view(), name='orgue-search'),
     path('stats.json', v.Stats.as_view(), name='orgue-stats-js'),
     path('carte/', v.OrgueCarte.as_view(), name='orgue-carte'),
@@ -51,6 +52,7 @@ urlpatterns = [
     # Manufactures
     path('js/manufactures/', v.ManufactureListJS.as_view(), name='manufacture-list-js'),
     path('manufacture/creation/', v.ManufactureCreate.as_view(), name='manufacture-create'),
+    path('manufacture/update/<int:pk>/', v.ManufactureUpdate.as_view(), name='manufacture-update'),
     path('js/manufacturesFacteurs/', v.ManufactureFacteurJS.as_view(), name='manufactures-facteur-js'),
 
     # types jeux

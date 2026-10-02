@@ -53,6 +53,7 @@
 <script>
   $("select[id$=facteur]").select2({
     placeholder: 'Choisir un facteur',
+    allowClear: true,
       ajax: {
         url: '{% url 'orgues:facteur-list-js' %}',
         data: function (params) {

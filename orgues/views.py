@@ -13,7 +13,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core import serializers
 from django.core.paginator import Paginator
 from django.db import connection, transaction
-from django.db.models import Q, Count
+from django.db.models import Q, Count, Case, When, IntegerField, Value, F, Aggregate, CharField
+from django.db.models.functions import Concat
 from django.forms import modelformset_factory
 from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -374,7 +375,7 @@ class FacteursList(TemplateView):
         queryset = Manufacture.objects.all().order_by("nom")
         manufactures = []
         for manufacture in queryset:
-            manufactures.append({"nom":manufacture.nom_dates(), "pk":manufacture.pk})
+            manufactures.append({"nom":manufacture.nom_dates(), "pk":manufacture.pk, "url":manufacture.get_update_url()})
 
         context["facteurs"] = facteurs
         context["manufactures"] = manufactures
@@ -816,11 +817,12 @@ class EmpruntListJS(ListView):
         return queryset
 
     def render_to_response(self, context, **response_kwargs):
+        more = context["page_obj"].number < context["paginator"].num_pages
         results = []
         if context["object_list"]:
             for u in context["object_list"]:
                 results.append({"id": u.id, "text": u.str_emprunt()})
-        return JsonResponse({"results": results})
+        return JsonResponse({"results": results, "pagination": {"more": more}})
 
 
 class FacteurListJS(ListView):
@@ -1239,6 +1241,44 @@ class ManufactureCreate(FabView, ContributionOrgueMixin):
             return render(request, "orgues/manufacture_form.html", context)
 
 
+class ManufactureUpdate(FabView, ContributionOrgueMixin):
+    """
+    Ajout d'une manufacture
+    """
+    model = Manufacture
+    permission_required = "orgues.add_manufacture"
+    form_class = orgue_forms.ManufactureForm
+
+    def get(self, request, *args, **kwargs):
+        manufacture =  get_object_or_404(Manufacture, pk=kwargs["pk"])
+        FacteurManufactureFormset = modelformset_factory(FacteurManufacture, orgue_forms.FacteurManufactureForm, extra=10, can_delete=True)
+        context = {
+            "facteurManufacture_formset": FacteurManufactureFormset(queryset=manufacture.facteur.all()),
+            "manufacture_form": orgue_forms.ManufactureForm(instance=manufacture),
+        }
+        return render(request, "orgues/manufacture_form.html", context)
+
+    def post(self, request, *args, **kwargs):
+        FacteurManufactureFormset = modelformset_factory(FacteurManufacture, orgue_forms.FacteurManufactureForm, extra=10, can_delete=True)
+        facteurManufacture_formset = FacteurManufactureFormset(self.request.POST)
+        manufacture_form = orgue_forms.ManufactureForm(self.request.POST)
+        if facteurManufacture_formset.is_valid() and manufacture_form.is_valid():
+            manufacture, created = Manufacture.objects.get_or_create(**manufacture_form.cleaned_data)
+            facteursManufactures = facteurManufacture_formset.save()
+            for facteurManufacture in facteursManufactures:
+                manufacture.facteur.add(facteurManufacture)
+            manufacture.save()
+            messages.success(self.request, "Manufacture mise à jour, merci !")
+            return redirect('orgues:facteurs-list')
+        else:
+            manufacture =  get_object_or_404(Manufacture, pk=kwargs["pk"])
+            context = {
+                "facteurManufacture_formset": FacteurManufactureFormset(queryset=manufacture.facteur.all()),
+                "manufacture_form": orgue_forms.ManufactureForm(instance=manufacture),
+            }
+            return render(request, "orgues/manufacture_form.html", context)
+
+
 class FacteurCreateJS(FabCreateViewJS):
     """
     Création d'un nouveau facteur.
@@ -1356,7 +1396,7 @@ class ImageList(FabListView):
     """
     model = Image
     permission_required = "orgues.view_image"
-    paginate_by = 50
+    paginate_by = 100
 
     def post(self, request, *args, **kwargs):
         orgue = get_object_or_404(Orgue, uuid=self.kwargs["orgue_uuid"])
@@ -1615,14 +1655,90 @@ class OrgueExport(FabView):
             "resume_composition",
             "diapason",
             "proprietaire",
+            "nb_images",
+            "possede_vignette"
         ]
         writer = csv.DictWriter(response, delimiter=';', fieldnames=columns)
 
         # header from verbose_names
-        writer.writerow({column: Orgue._meta.get_field(column).verbose_name for column in columns})
+        row = {}
+        for column in columns:
+            try:
+                field = Orgue._meta.get_field(column)
+                row[column] = field.verbose_name
+            except:
+                # Pour les colonnes "virtuelles", on met un nom lisible par défaut
+                row[column] = column.replace('_', ' ').capitalize()
+        writer.writerow(row)
         # data
-        writer.writerows(Orgue.objects.values(*columns))
+        writer.writerows(
+            Orgue.objects.annotate(
+                nb_images=Count('images'),
+                possede_vignette=Case(
+                    When(nb_images__gt=0, then=Value(1)),
+                    default=Value(0),
+                    output_field=IntegerField()
+                )
+            ).values(*columns)
+        )
 
+        return response
+
+
+class GroupConcat(Aggregate):
+    function = 'GROUP_CONCAT'
+    template = "%(function)s(%(expressions)s, '%(separator)s')"
+
+    def __init__(self, expression, separator=', ', **extra):
+        super().__init__(
+            expression,
+            separator=separator,
+            output_field=CharField(),
+            **extra
+        )
+
+class EvenementExport(FabView):
+    permission_required = 'orgues.view_user'
+
+    def get(self, request, *args, **kwargs):
+        response = HttpResponse(content_type='text/csv')
+        response.write(u'\ufeff'.encode('utf8'))
+        response['Content-Disposition'] = 'attachment;filename=evenements_orgue_{}.csv'.format(
+            datetime.today().strftime("%Y-%m-%d"))
+        columns = [
+            "annee",
+            "annee_fin",
+            "nom_orgue",
+            "circa",
+            "type",
+            "nom_facteurs",
+            "nom_manufactures",
+        ]
+        writer = csv.DictWriter(response, delimiter=';', fieldnames=columns)
+
+        # header from verbose_names
+        row = {}
+        for column in columns:
+            try:
+                field = Evenement._meta.get_field(column)
+                row[column] = field.verbose_name
+            except:
+                # Pour les colonnes "virtuelles", on met un nom lisible par défaut
+                row[column] = column.replace('_', ' ').capitalize()
+        writer.writerow(row)
+        writer.writerows(
+            Evenement.objects.annotate(
+                nom_orgue = Concat(
+                    F('orgue__designation'),
+                    Value(' '),
+                    F('orgue__edifice'),
+                    Value(' '),
+                    F('orgue__commune')
+                ),
+                nom_facteurs = GroupConcat('facteurs__nom', separator=', '),
+                nom_manufactures = GroupConcat('manufactures__nom', separator=', '),
+            ).values(*columns).order_by("annee")
+        )
         return response
 
 

@@ -97,7 +97,7 @@ class AccessoireAdmin(admin.ModelAdmin):
 class OrgueAdmin(admin.ModelAdmin):
     fields = ['codification', 'code_insee', 'commune', 'edifice', 'region', 'departement', 'code_departement',
               'designation', 'emplacement', 'references_palissy', 'references_inventaire_regions', 'commentaire_admin']
-    list_display = ('codification', 'designation', 'commune', 'edifice','updated_by_user','modified_date','contributions_compte','images_compte', 'departement', 'commentaire_admin',)
+    list_display = ('codification', 'designation', 'commune', 'edifice','updated_by_user','modified_date','contributions_compte','images_compte', 'departement', 'commentaire_admin', 'created_date')
     ordering = ('-modified_date',)
     inlines = [ClavierInline]
     list_per_page = 20

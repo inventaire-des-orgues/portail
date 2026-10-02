@@ -24,21 +24,19 @@
             </div>
             <div class="form-group">
               <label for="">Manufacture</label>
-                <v-select v-model="manufacture" :options="manufactures" :reduce="manufacture => manufacture.pk" label="nom"/>
+                <v-select v-model="manufacture" :options="manufactures" :reduce="manufacture => manufacture" label="nom"/>
             </div>
+            {% if perms.orgues.add_manufacture %}
+              <div v-if="manufacture !== ''">
+                <div @click="selectManufacture(manufacture)" class="btn btn-info rounded-pill mt-3 btn-block">
+                  Modifier la manufacture
+                </div>
+              </div>
+            {% endif %}
           </div>
         </div>
       </div>
       <div class="col-xl-8" v-cloak>
-        <div class="clearfix"></div>
-        <div class="card" v-if="loading">
-          <div class="card-body">
-            <div class="d-flex align-items-center">
-              <strong>Chargement...</strong>
-              <div class="spinner-border ml-auto" role="status" aria-hidden="true"></div>
-            </div>
-          </div>
-        </div>
         <div v-if="facteursManufactures.length">
           <h4 class="card-title mb-0">
             Facteurs de la manufacture :
@@ -48,6 +46,16 @@
           <li>
             <span v-html="facteurManufacture.facteur"> </span> : ((facteurManufacture.debut)) - ((facteurManufacture.fin))
           </li>  
+        </div>
+
+        <div class="clearfix"></div>
+        <div class="card" v-if="loading">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <strong>Chargement...</strong>
+              <div class="spinner-border ml-auto" role="status" aria-hidden="true"></div>
+            </div>
+          </div>
         </div>
         <div v-for="(value, key) in evenements">
           <h4 class="card-title mb-0">
@@ -136,7 +144,10 @@ var app = new Vue({
           if (this.manufacture ) {
             this.fetchManufactureData();
             this.fetchFacteursManufactureData();
-          }       
+          }
+          else{
+            this.manufacture = '';
+          }    
         },
       },
 
@@ -166,8 +177,8 @@ var app = new Vue({
       });
     },
 
-    fetchManufactureData: function(){
-      manufacture_pk = this.manufacture;
+    fetchManufactureData: function(){      
+      manufacture_pk = this.manufacture.pk;
       this.facteur = '';
       this.loading=true;
       var self = this;
@@ -191,8 +202,7 @@ var app = new Vue({
     },
 
     fetchFacteursManufactureData: function(){
-      manufacture_pk = this.manufacture;
-      this.loading=true;
+      manufacture_pk = this.manufacture.pk;
       var self = this;
       
       $.ajax({
@@ -203,11 +213,9 @@ var app = new Vue({
             manufacture: manufacture_pk,
           },
           error: function (resp) {  
-            self.loading = false;
             toastr.error(resp.responseJSON.message);
           },
           success: function (results) {
-            self.loading = false;
             self.facteursManufactures = results; 
                        
           },
@@ -217,6 +225,9 @@ var app = new Vue({
     select: function (orgue) {
           window.location.href = orgue.url;
     },
+    selectManufacture: function (manufacture) {      
+          window.location.href = manufacture.url;
+    }
   
   },
   delimiters: ["((", "))"]

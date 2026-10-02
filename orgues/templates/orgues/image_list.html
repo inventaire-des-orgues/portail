@@ -77,7 +77,7 @@
           <div class="portfolio-item img-zoom pb-0">
             <div class="portfolio-item-wrap border-radius-top-5 ">
               <div class="portfolio-image">
-                <a href="#"><img src="{{ image.thumbnail.url }}" alt=""></a>
+                <a href="#"><img src="{{ image.get_thumbnail_url }}" alt=""></a>
               </div>
               <div class="portfolio-description p-0">
                 <a href="{% url 'orgues:image-update' image.pk %}">

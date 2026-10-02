@@ -87,11 +87,13 @@
     
     $("select[id$=-emprunt]").select2({
           placeholder: 'Choisir un emprunt',
+          allowClear: true,
           ajax: {
             url: '{% url 'orgues:emprunt-list-js' %}',
             data: function (params) {
               var query = {
                 search: params.term,
+                page: params.page || 1,
                 orgue: orgue_pk
               }
               return query;
