@@ -431,7 +431,7 @@
       var mymap = L.map('mapid', {
         scrollWheelZoom: false,
       }).setView([{{ object.latitude|safe }}, {{ object.longitude|safe }}], 15);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       }).addTo(mymap);
 
