@@ -30,6 +30,9 @@ MIDDLEWARE = [
 
 ]
 
+# Send only the site origin to external services such as OpenStreetMap tiles.
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+
 ROOT_URLCONF = 'project.urls'
 
 TEMPLATES = [
