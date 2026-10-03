@@ -33,7 +33,7 @@ from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdate
     FabDetailView
 from orgues.api.serializers import OrgueSerializer, OrgueResumeSerializer
 
-from project import settings
+from django.conf import settings
 
 from .models import Orgue, Clavier, Jeu, Evenement, Facteur, TypeJeu, Fichier, Image, Source, Contribution, Provenance, Manufacture, FacteurManufacture
 import orgues.utilsorgues.correcteurorgues as co
@@ -216,6 +216,7 @@ class OrgueCarte(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context["form"] = orgue_forms.OrgueCarteForm()
+        context["carte_position"] = orgue_forms.CartePositionForm(self.request.GET).position()
         context["MAPBOX_ACCESS_TOKEN"] = settings.MAPBOX_ACCESS_TOKEN
         context["FULL_SITE_URL"] = settings.FULL_SITE_URL
         if self.request.GET.get("iframe") == "true":
