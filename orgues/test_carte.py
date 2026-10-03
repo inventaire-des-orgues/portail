@@ -6,8 +6,7 @@ from django.urls import reverse
 from accounts.models import User
 
 
-@override_settings(MEILISEARCH_URL=False, MAPBOX_ACCESS_TOKEN="jeton-de-test",
-                   FULL_SITE_URL="https://portail.test")
+@override_settings(MEILISEARCH_URL=False, FULL_SITE_URL="https://portail.test")
 class OrgueCartePositionTestCase(TestCase):
     """
     Les paramètres d'URL zoom, lat et lng positionnent la carte (y compris en iframe sur un site tiers).
@@ -58,8 +57,7 @@ class OrgueCartePositionTestCase(TestCase):
                 self.assertIsNone(response.context["carte_position"]["bbox"])
 
 
-@override_settings(MEILISEARCH_URL=False, MAPBOX_ACCESS_TOKEN="jeton-de-test",
-                   FULL_SITE_URL="https://portail.test")
+@override_settings(MEILISEARCH_URL=False, FULL_SITE_URL="https://portail.test")
 class OrgueCarteDepartementsTestCase(TestCase):
     """
     Une carte intégrée en iframe peut se limiter à quelques départements (issue #653).
@@ -98,8 +96,7 @@ class OrgueCarteDepartementsTestCase(TestCase):
         self.assertContains(response, f'href="https://portail.test{url_liste}"')
 
 
-@override_settings(MEILISEARCH_URL=False, MAPBOX_ACCESS_TOKEN="jeton-de-test",
-                   FULL_SITE_URL="https://portail.test")
+@override_settings(MEILISEARCH_URL=False, FULL_SITE_URL="https://portail.test")
 class OrgueCarteIntegrationTestCase(TestCase):
     """
     Le code d'intégration (iframe) est proposé aux contributeurs connectés.
@@ -120,8 +117,7 @@ class OrgueCarteIntegrationTestCase(TestCase):
         self.assertContains(response, 'id="integration_departements"')
 
 
-@override_settings(MEILISEARCH_URL=False, MAPBOX_ACCESS_TOKEN="jeton-de-test",
-                   FULL_SITE_URL="https://portail.test")
+@override_settings(MEILISEARCH_URL=False, FULL_SITE_URL="https://portail.test")
 class OrgueCarteIframeTestCase(TestCase):
     """
     La carte intégrée ouvre la fiche résumée d'un orgue dans une fenêtre modale Bootstrap.
@@ -132,3 +128,23 @@ class OrgueCarteIframeTestCase(TestCase):
     def test_iframe_charge_le_javascript_des_fenetres_modales(self):
         response = self.client.get(self.url, {"iframe": "true"})
         self.assertContains(response, "polo/js/plugins.js")
+
+
+@override_settings(MEILISEARCH_URL=False, FULL_SITE_URL="https://portail.test")
+class OrgueCarteFondDeCarteTestCase(TestCase):
+    """
+    La carte, y compris intégrée sur un site tiers, ne transmet pas l'adresse IP des visiteurs à Mapbox :
+    MapLibre est servi par le portail et le fond de carte vient de la Géoplateforme de l'IGN.
+    """
+
+    url = reverse('orgues:orgue-carte')
+
+    def test_carte_s_affiche_sans_jeton_mapbox(self):
+        for parametres in ({}, {"iframe": "true"}):
+            with self.subTest(parametres=parametres):
+                response = self.client.get(self.url, parametres)
+                self.assertEqual(response.status_code, 200)
+                self.assertNotContains(response, "mapbox")
+                self.assertContains(response, "plugins/maplibre-gl/maplibre-gl.js")
+                self.assertContains(response, "https://data.geopf.fr/")
+

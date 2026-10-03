@@ -22,7 +22,7 @@
           border-top-color: #5c1c54;
       }
 
-      .mapboxgl-popup {
+      .maplibregl-popup {
           z-index: 10000;
       }
 
@@ -172,25 +172,38 @@
 
 {% block js_extra %}
 
-  <script src='https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js'></script>
-  <link href='https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css' rel='stylesheet'/>
+  <script src="{% static 'plugins/maplibre-gl/maplibre-gl.js' %}"></script>
+  <link href="{% static 'plugins/maplibre-gl/maplibre-gl.css' %}" rel="stylesheet"/>
 
   {{ carte_position|json_script:"carte-position" }}
   <script>
-    mapboxgl.accessToken = '{{ MAPBOX_ACCESS_TOKEN}}';
     const carte_position = JSON.parse(document.getElementById('carte-position').textContent);
 
-    var map = new mapboxgl.Map({
+    // Fond de carte de la Géoplateforme IGN : service public, sans jeton ni pistage commercial des visiteurs
+    var map = new maplibregl.Map({
       'container': 'carteorgues',
-      style: 'mapbox://styles/mapbox/' + "light-v10",
+      style: 'https://data.geopf.fr/annexes/ressources/vectorTiles/styles/PLAN.IGN/gris.json',
+      attributionControl: {
+        customAttribution: '<a href="https://www.ign.fr/" target="_blank" rel="noopener">© IGN</a> - Plan IGN'
+      },
       center: [carte_position.lng, carte_position.lat],
       zoom: carte_position.zoom,
       bounds: carte_position.bbox,
       fitBoundsOptions: {padding: 20}
     });
 
+    // Fond épuré, proche de l'ancien fond Mapbox « light » : seuls l'eau, les limites et les noms de lieux restent
+    const COUCHES_DU_FOND_MASQUEES = /^(routier|ferre|oro|ocs|bati_ponc|bati_lin|bati_zai|toponyme_(?!localite|hydro|limite))/;
+    map.once('styledata', function () {
+      for (const couche of map.getStyle().layers) {
+        if (COUCHES_DU_FOND_MASQUEES.test(couche['source-layer'] || '')) {
+          map.setLayoutProperty(couche.id, 'visibility', 'none');
+        }
+      }
+    });
+
     // disable map zoom when using scroll and add zoom control
-    map.addControl(new mapboxgl.NavigationControl());
+    map.addControl(new maplibregl.NavigationControl());
     let RegionsCentresGeoJson = {"type": "FeatureCollection", "features": []};
     let RegionsGeoJson = {"type": "FeatureCollection", "features": []};
     let DepartementsCentresGeoJson = {"type": "FeatureCollection", "features": []};
@@ -218,7 +231,7 @@
     }
 
     var cadrer_sur_departements = function (codes) {
-      const zone = new mapboxgl.LngLatBounds();
+      const zone = new maplibregl.LngLatBounds();
       let departement_trouve = false;
       for (const departement of DepartementsGeoJson.features) {
         if (codes.includes(departement.properties.code)) {
@@ -316,9 +329,8 @@
           'line-width': 1.5
         }
       });
-      map.loadImage('{% static 'img/marker2.png' %}', function (error, image) {
-        if (error) throw error;
-        map.addImage('marker-orgue', image, {sdf: true});
+      map.loadImage('{% static 'img/marker2.png' %}').then(function (image) {
+        map.addImage('marker-orgue', image.data, {sdf: true});
         map.addLayer({
           'id': 'orgues',
           'type': 'symbol',
@@ -368,10 +380,7 @@
         'layout': {
           // get the title name from the source's "title" property
           'text-field': ["get", "nb_orgues"],
-          'text-font': [
-            'Open Sans Semibold',
-            'Arial Unicode MS Bold'
-          ],
+          'text-font': ['Source Sans Pro Semibold'],
           'text-size': 13,
         }
       });
@@ -404,21 +413,18 @@
         'layout': {
           // get the title name from the source's "title" property
           'text-field': ["get", "nb_orgues"],
-          'text-font': [
-            'Open Sans Semibold',
-            'Arial Unicode MS Bold'
-          ],
+          'text-font': ['Source Sans Pro Semibold'],
           'text-size': 13,
         }
       });
 
 
     });
-    const popup = new mapboxgl.Popup({
+    const popup = new maplibregl.Popup({
       closeButton: false,
       closeOnClick: false
     });
-    const popup_orgue = new mapboxgl.Popup({
+    const popup_orgue = new maplibregl.Popup({
       closeButton: false,
       closeOnClick: true
     });
@@ -433,7 +439,7 @@
         );
         const polygons = e.features[0].geometry.coordinates
         const coordinates = GetBiggestPolygon(polygons)
-        const bounds = new mapboxgl.LngLatBounds(
+        const bounds = new maplibregl.LngLatBounds(
             coordinates[0],
             coordinates[0]
         );

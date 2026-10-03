@@ -202,7 +202,7 @@ class OrgueCarteOld(TemplateView):
 
 class OrgueCarte(TemplateView):
     """
-    Cartographie des orgues (Mapbox).
+    Cartographie des orgues (MapLibre, fond de carte Plan IGN).
     La page est vide initialement et les orgues sont récupérés après coup en javascript via une requête POST.
     Cette vue peut être appelée en iframe (avec le paramètre iframe=true) pour être intégrée dans un autre site.
     """
@@ -220,7 +220,6 @@ class OrgueCarte(TemplateView):
         context["departements_choisis"] = departements_choisis
         context["departements"] = Orgue.CHOIX_DEPARTEMENT
         context["carte_position"] = orgue_forms.CartePositionForm(self.request.GET).position()
-        context["MAPBOX_ACCESS_TOKEN"] = settings.MAPBOX_ACCESS_TOKEN
         context["FULL_SITE_URL"] = settings.FULL_SITE_URL
         if self.request.GET.get("iframe") == "true":
             context["iframe"] = True
