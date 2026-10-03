@@ -81,6 +81,26 @@
           border-radius: 8px;
       }
 
+      /* Charte du site plutôt que le bleu Bootstrap (contraste insuffisant) ; soulignés car insérés dans un texte */
+      #carte_indisponible a, #recherche_indisponible a, #carte_liens_liste a {
+          color: #5c1c54;
+          text-decoration: underline;
+      }
+
+      #carte_indisponible a:hover, #recherche_indisponible a:hover, #carte_liens_liste a:hover {
+          color: #3c1434;
+      }
+
+      #iframe[readonly] {
+          color: #424242;
+      }
+
+      /* Le thème Polo supprime le contour de focus des liens : on le rétablit sur la carte */
+      #carteorgues_container a:focus-visible, #sharemodal :focus-visible {
+          outline: 2px solid #5c1c54;
+          outline-offset: 2px;
+      }
+
       #carteorgues.loading::before {
           content: "Chargement des données...";
           position: absolute;
