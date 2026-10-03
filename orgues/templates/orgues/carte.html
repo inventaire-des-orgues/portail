@@ -22,7 +22,7 @@
           border-top-color: #5c1c54;
       }
 
-      .mapboxgl-popup {
+      .maplibregl-popup {
           z-index: 10000;
       }
 
@@ -41,6 +41,30 @@
           border-radius: 25px;
       }
 
+      #filtercard .select2-container {
+          width: 100% !important;
+      }
+
+      #bouton_filtres {
+          position: absolute;
+          top: 10px;
+          left: 10px;
+          z-index: 1001;
+      }
+
+      /* Sous la largeur md, le panneau se déplie par-dessus la carte avec le bouton « Filtres » */
+      @media (max-width: 767.98px) {
+          #filtercard {
+              width: auto;
+              left: 0;
+              right: 0;
+              top: 50px;
+              margin: 0 10px;
+              max-height: calc(80vh - 60px);
+              overflow-y: auto;
+          }
+      }
+
       {% if iframe %}
           #filtercard {
               display: none !important;
@@ -50,12 +74,56 @@
               height: 100vh;
               width: 100vw;
           }
+
+          #carte_liens_liste {
+              position: absolute;
+              left: 0;
+              bottom: 0;
+              z-index: 1000;
+              max-width: 70%;
+              padding: 4px 8px;
+              font-size: 0.85em;
+              background: #ffffff;
+          }
       {% else %}
           #carteorgues_container {
               height: 80vh;
               width: 100vw;
           }
       {% endif %}
+
+      #carte_indisponible, #recherche_indisponible {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          z-index: 1001;
+          max-width: 90%;
+          padding: 16px 24px;
+          text-align: center;
+          background: #ffffff;
+          border-radius: 8px;
+      }
+
+      /* Charte du site plutôt que le bleu Bootstrap (contraste insuffisant) ; soulignés car insérés dans un texte */
+      #carte_indisponible a, #recherche_indisponible a, #carte_liens_liste a {
+          color: #5c1c54;
+          text-decoration: underline;
+      }
+
+      #carte_indisponible a:hover, #recherche_indisponible a:hover, #carte_liens_liste a:hover {
+          color: #3c1434;
+      }
+
+      #iframe[readonly] {
+          color: #424242;
+      }
+
+      /* Le thème Polo supprime le contour de focus des liens : on le rétablit sur la carte */
+      #carteorgues_container a:focus-visible, #sharemodal :focus-visible {
+          outline: 2px solid #5c1c54;
+          outline-offset: 2px;
+      }
 
       #carteorgues.loading::before {
           content: "Chargement des données...";
@@ -77,7 +145,33 @@
 {% block content %}
   <div class="position-relative " id="carteorgues_container">
     <div id="carteorgues" class="w-100 h-100 loading"></div>
-    <div class="card d-none d-md-block" id="filtercard">
+    <div id="carte_indisponible" role="alert" hidden>
+      <p>La carte ne peut pas s'afficher dans ce navigateur : il ne prend pas en charge WebGL ou son accélération graphique est désactivée.</p>
+      <a href="{{ FULL_SITE_URL }}{% url 'orgues:orgue-list' %}"{% if iframe %} target="_blank" rel="noopener"{% endif %}>Consulter la liste des orgues{% if iframe %}<span class="sr-only"> (nouvelle fenêtre)</span>{% endif %}</a>
+    </div>
+    <div id="recherche_indisponible" role="alert" hidden>
+      <p>La recherche des orgues est momentanément indisponible : la carte ne peut pas afficher les orgues.</p>
+      <a href="{{ FULL_SITE_URL }}{% url 'orgues:orgue-list' %}"{% if iframe %} target="_blank" rel="noopener"{% endif %}>Consulter la liste des orgues{% if iframe %}<span class="sr-only"> (nouvelle fenêtre)</span>{% endif %}</a>
+    </div>
+    {% if iframe %}
+      <nav id="carte_liens_liste" aria-label="Liste des orgues">
+        {% if departements_choisis %}
+          Liste des orgues :
+          {% for code, nom in departements_choisis %}
+            <a href="{{ FULL_SITE_URL }}{% url 'orgues:orgue-list' %}?departement={{ nom|urlencode }}" target="_blank" rel="noopener">{{ nom }}<span class="sr-only"> (nouvelle fenêtre)</span></a>{% if not forloop.last %}, {% endif %}
+          {% endfor %}
+        {% else %}
+          <a href="{{ FULL_SITE_URL }}{% url 'orgues:orgue-list' %}" target="_blank" rel="noopener">Liste des orgues de l'Inventaire<span class="sr-only"> (nouvelle fenêtre)</span></a>
+        {% endif %}
+      </nav>
+    {% endif %}
+    {% if not iframe %}
+      <button type="button" class="btn btn-primary d-md-none" id="bouton_filtres" data-toggle="collapse"
+              data-target="#filtercard" aria-expanded="false" aria-controls="filtercard">
+        <i class="fa fa-filter" aria-hidden="true"></i> Filtres
+      </button>
+    {% endif %}
+    <div class="card collapse d-md-block" id="filtercard">
       <div class="card-body">
         <form id="searchform" action="" class="m-b-10" method="post">{% csrf_token %}
           <div class="form-group">
@@ -89,41 +183,54 @@
             {% include 'stack_field.html' %}
           {% endfor %}
         </form>
-        {% if request.user.is_authenticated %}
+        {% if not iframe %}
           <hr>
           <div class="text-center">
             <a href="" class="mr-3 text-primary text-decoration-none"><i class="fa fa-times-circle"></i> Réinitialiser</a>
             <a class="text-primary" data-toggle="modal" href="#sharemodal">
-              <i class="fa fa-share-alt"></i> Intégrer</a>
+              <i class="fa fa-share-alt" aria-hidden="true"></i> Intégrer</a>
           </div>
         {% endif %}
-        <div class="modal fade" id="sharemodal" tabindex="-1" role="modal" aria-labelledby="modal-label" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h4 class="modal-title" id="modal-label">Intégrer</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-              </div>
-              <div class="modal-body">
-                <div class="row">
-                  <div class="col-md-12">
-                    <p>
-                      Pour intégrer cette carte à votre site, copiez coller le code ci-dessous. <br>
-                      Le niveau de zoom et la position de la carte actuelle seront conservés.
-                    </p>
-                    <textarea class="form-control" id="iframe"></textarea>
-                  </div>
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-b" data-dismiss="modal">Fermer</button>
-              </div>
+      </div>
+    </div>
+  </div>
+
+  {% if not iframe %}
+    {# Hors du panneau de filtres : son z-index placerait la modale sous le fond gris de Bootstrap #}
+    <div class="modal fade" id="sharemodal" tabindex="-1" role="dialog" aria-labelledby="sharemodal-titre" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title h4" id="sharemodal-titre">Intégrer la carte à un autre site</h2>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Fermer"><span aria-hidden="true">×</span></button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="integration_departements">Limiter la carte à certains départements (facultatif)</label>
+              <select multiple size="8" class="form-control" id="integration_departements" aria-describedby="integration_departements_aide">
+                {% for code, nom in departements %}
+                  <option value="{{ code }}">{{ code }} - {{ nom }}</option>
+                {% endfor %}
+              </select>
+              <small class="form-text" id="integration_departements_aide">
+                Ctrl + clic (ou Cmd + clic) pour en choisir plusieurs. La carte se recentre sur la sélection.
+              </small>
             </div>
+            <div class="form-group">
+              <label for="iframe">Code à copier dans votre site</label>
+              <textarea class="form-control" id="iframe" rows="4" readonly aria-describedby="iframe_aide"></textarea>
+              <small class="form-text" id="iframe_aide">
+                La zone actuellement visible est conservée : la carte s'y ajuste quelle que soit la taille de l'iframe.
+              </small>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-b" data-dismiss="modal">Fermer</button>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  {% endif %}
 
   <div class="modal fade" id="popupmodal" tabindex="-1" role="modal" aria-labelledby="modal-label" aria-hidden="true" style="display: none;">
     <div class="modal-dialog">
@@ -140,23 +247,37 @@
 
 {% block js_extra %}
 
-  <script src='https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js'></script>
-  <link href='https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css' rel='stylesheet'/>
+  <script src="{% static 'plugins/maplibre-gl/maplibre-gl.js' %}"></script>
+  <link href="{% static 'plugins/maplibre-gl/maplibre-gl.css' %}" rel="stylesheet"/>
 
   {{ carte_position|json_script:"carte-position" }}
   <script>
-    mapboxgl.accessToken = '{{ MAPBOX_ACCESS_TOKEN}}';
     const carte_position = JSON.parse(document.getElementById('carte-position').textContent);
 
-    var map = new mapboxgl.Map({
-      'container': 'carteorgues',
-      style: 'mapbox://styles/mapbox/' + "light-v10",
-      center: [carte_position.lng, carte_position.lat],
-      zoom: carte_position.zoom
-    });
+    // Fond de carte de la Géoplateforme IGN : service public, sans jeton ni pistage commercial des visiteurs.
+    // Style épuré servi par le portail (commande epurer_style_carte) : tuiles, polices et sprites restent ceux de l'IGN
+    var map;
+    try {
+      map = new maplibregl.Map({
+        'container': 'carteorgues',
+        style: '{% static 'carte/plan-ign-gris-epure.json' %}',
+        attributionControl: {
+          customAttribution: '<a href="https://www.ign.fr/" target="_blank" rel="noopener">© IGN</a> - Plan IGN'
+        },
+        center: [carte_position.lng, carte_position.lat],
+        zoom: carte_position.zoom,
+        bounds: carte_position.bbox,
+        fitBoundsOptions: {padding: 20}
+      });
+    } catch (erreur) {
+      // Sans WebGL (machine virtuelle, accélération graphique désactivée…), on propose la liste des orgues
+      $("#carteorgues").removeClass("loading");
+      $("#carte_indisponible").prop("hidden", false);
+      throw erreur;
+    }
 
     // disable map zoom when using scroll and add zoom control
-    map.addControl(new mapboxgl.NavigationControl());
+    map.addControl(new maplibregl.NavigationControl());
     let RegionsCentresGeoJson = {"type": "FeatureCollection", "features": []};
     let RegionsGeoJson = {"type": "FeatureCollection", "features": []};
     let DepartementsCentresGeoJson = {"type": "FeatureCollection", "features": []};
@@ -176,6 +297,30 @@
       return coordinates
     }
 
+    // Départements auxquels la carte est limitée : champs cachés du formulaire, remplis depuis l'URL
+    var departements_choisis = function () {
+      return $('#searchform input[name="departements"]').map(function () {
+        return this.value;
+      }).get();
+    }
+
+    var cadrer_sur_departements = function (codes) {
+      const zone = new maplibregl.LngLatBounds();
+      let departement_trouve = false;
+      for (const departement of DepartementsGeoJson.features) {
+        if (codes.includes(departement.properties.code)) {
+          const profondeur = departement.geometry.type === "MultiPolygon" ? 2 : 1;
+          for (const coordonnees of departement.geometry.coordinates.flat(profondeur)) {
+            zone.extend(coordonnees);
+          }
+          departement_trouve = true;
+        }
+      }
+      if (departement_trouve) {
+        map.fitBounds(zone, {padding: 20, duration: 0});
+      }
+    }
+
     $.getJSON('{% static 'geojson/regions_centres.json' %}', function (data) {
       RegionsCentresGeoJson = data;
     })
@@ -188,6 +333,10 @@
 
     $.getJSON('{% static 'geojson/departements_light.json' %}', function (data) {
       DepartementsGeoJson = data;
+      // Un cadre explicite (bbox) prime sur le cadrage automatique sur les départements
+      if (!carte_position.bbox) {
+        cadrer_sur_departements(departements_choisis());
+      }
     })
 
 
@@ -254,9 +403,8 @@
           'line-width': 1.5
         }
       });
-      map.loadImage('{% static 'img/marker2.png' %}', function (error, image) {
-        if (error) throw error;
-        map.addImage('marker-orgue', image, {sdf: true});
+      map.loadImage('{% static 'img/marker2.png' %}').then(function (image) {
+        map.addImage('marker-orgue', image.data, {sdf: true});
         map.addLayer({
           'id': 'orgues',
           'type': 'symbol',
@@ -306,10 +454,7 @@
         'layout': {
           // get the title name from the source's "title" property
           'text-field': ["get", "nb_orgues"],
-          'text-font': [
-            'Open Sans Semibold',
-            'Arial Unicode MS Bold'
-          ],
+          'text-font': ['Source Sans Pro Semibold'],
           'text-size': 13,
         }
       });
@@ -342,21 +487,18 @@
         'layout': {
           // get the title name from the source's "title" property
           'text-field': ["get", "nb_orgues"],
-          'text-font': [
-            'Open Sans Semibold',
-            'Arial Unicode MS Bold'
-          ],
+          'text-font': ['Source Sans Pro Semibold'],
           'text-size': 13,
         }
       });
 
 
     });
-    const popup = new mapboxgl.Popup({
+    const popup = new maplibregl.Popup({
       closeButton: false,
       closeOnClick: false
     });
-    const popup_orgue = new mapboxgl.Popup({
+    const popup_orgue = new maplibregl.Popup({
       closeButton: false,
       closeOnClick: true
     });
@@ -371,7 +513,7 @@
         );
         const polygons = e.features[0].geometry.coordinates
         const coordinates = GetBiggestPolygon(polygons)
-        const bounds = new mapboxgl.LngLatBounds(
+        const bounds = new maplibregl.LngLatBounds(
             coordinates[0],
             coordinates[0]
         );
@@ -401,17 +543,38 @@
         }
       })
     }
-    {% if user.is_authenticated %}
+    {% if not iframe %}
       var update_iframe_code = function () {
         let current_zoom = Math.round(map.getZoom() * 100) / 100;
         let current_latitude = Math.round(map.getCenter().lat * 1000000) / 1000000;
         let current_longitude = Math.round(map.getCenter().lng * 1000000) / 1000000;
         window.history.pushState('', '', `?zoom=${current_zoom}&lng=${current_longitude}&lat=${current_latitude}`);
-        $("#iframe").val(`<iframe width="500" height="500" src="{{ FULL_SITE_URL }}{% url 'orgues:orgue-carte' %}?iframe=true&zoom=${current_zoom}&lng=${current_longitude}&lat=${current_latitude}"></iframe>`);
+        // Le cadre visible plutôt que centre + zoom : la carte s'ajuste à la taille de l'iframe
+        const zone = map.getBounds();
+        const bbox = [
+          Math.max(zone.getWest(), -180), Math.max(zone.getSouth(), -90),
+          Math.min(zone.getEast(), 180), Math.min(zone.getNorth(), 90)
+        ].map(valeur => Math.round(valeur * 10000) / 10000);
+        const parametres = new URLSearchParams({iframe: "true", bbox: bbox.join(",")});
+        for (const code of departements_choisis()) {
+          parametres.append("departements", code);
+        }
+        $("#iframe").val(`<iframe width="500" height="500" title="Carte des orgues - Inventaire des orgues de France" src="{{ FULL_SITE_URL }}{% url 'orgues:orgue-carte' %}?${parametres}"></iframe>`);
       }
       map.on('zoomend', update_iframe_code);
       map.on('move', update_iframe_code);
       update_iframe_code();
+
+      $("#integration_departements").val(departements_choisis()).change(function () {
+        const codes = $(this).val();
+        $('#searchform input[name="departements"]').remove();
+        for (const code of codes) {
+          $('<input>', {type: "hidden", name: "departements", value: code}).appendTo("#searchform");
+        }
+        SearchData();
+        cadrer_sur_departements(codes);
+        update_iframe_code();
+      });
     {% endif %}
 
 
@@ -473,6 +636,20 @@
           map.getSource('regions').setData(RegionsGeoJson)
           map.getSource('departements').setData(DepartementsGeoJson)
           $("#carteorgues").removeClass("loading");
+          $("#recherche_indisponible").prop("hidden", true);
+        },
+        error: function () {
+          // Sans résultat à jour, on retire les orgues et les totaux de la recherche précédente
+          map.getSource("orgues").setData({"type": "FeatureCollection", "features": []})
+          for (const centres of [RegionsCentresGeoJson, DepartementsCentresGeoJson]) {
+            for (const centre of centres.features) {
+              centre.properties.nb_orgues = undefined
+            }
+          }
+          map.getSource("regionscentres").setData(RegionsCentresGeoJson)
+          map.getSource('departementscentres').setData(DepartementsCentresGeoJson)
+          $("#carteorgues").removeClass("loading");
+          $("#recherche_indisponible").prop("hidden", false);
         }
       })
     }
@@ -499,6 +676,11 @@
         onFinish: function (data) {
           SearchData()
         }
+      });
+
+      // Initialisé dans le panneau replié (mobile), le curseur n'a pas pu mesurer sa largeur
+      $("#filtercard").on("shown.bs.collapse", function () {
+        $("#id_jeux").data("ionRangeSlider").update({});
       });
 
       $("#id_commune").select2({

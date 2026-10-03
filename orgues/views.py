@@ -32,6 +32,7 @@ from fabutils.fablog import load_fabaccess_logs
 from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdateView, FabView, FabCreateViewJS, \
     FabDetailView
 from orgues.api.serializers import OrgueSerializer, OrgueResumeSerializer
+from orgues.services.carte import RechercheCarteIndisponible, construire_filtre_carte, rechercher_orgues_carte
 
 from django.conf import settings
 
@@ -202,7 +203,7 @@ class OrgueCarteOld(TemplateView):
 
 class OrgueCarte(TemplateView):
     """
-    Cartographie des orgues (Mapbox).
+    Cartographie des orgues (MapLibre, fond de carte Plan IGN).
     La page est vide initialement et les orgues sont récupérés après coup en javascript via une requête POST.
     Cette vue peut être appelée en iframe (avec le paramètre iframe=true) pour être intégrée dans un autre site.
     """
@@ -215,9 +216,11 @@ class OrgueCarte(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context["form"] = orgue_forms.OrgueCarteForm()
+        departements_choisis = orgue_forms.OrgueCarteForm.departements_connus(self.request.GET.getlist("departements"))
+        context["form"] = orgue_forms.OrgueCarteForm(initial={"departements": [code for code, nom in departements_choisis]})
+        context["departements_choisis"] = departements_choisis
+        context["departements"] = Orgue.CHOIX_DEPARTEMENT
         context["carte_position"] = orgue_forms.CartePositionForm(self.request.GET).position()
-        context["MAPBOX_ACCESS_TOKEN"] = settings.MAPBOX_ACCESS_TOKEN
         context["FULL_SITE_URL"] = settings.FULL_SITE_URL
         if self.request.GET.get("iframe") == "true":
             context["iframe"] = True
@@ -260,39 +263,17 @@ class OrgueCarte(TemplateView):
         On génère le geojson des orgues en fonction des filtres
         """
         form = orgue_forms.OrgueCarteForm(request.POST)
-        if form.is_valid():
-            try:
-                client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
-                index = client.index(uid='orgues')
-            except:
-                return JsonResponse({'message': 'Le moteur de recherche est mal configuré'}, status=500)
-
-            options = {'facets': ['region', 'departement'], 'limit': 100000}
-            filters = []
-            if form.cleaned_data['etats']:
-                etat_filter = " OR ".join([f'etat = "{etat}"' for etat in form.cleaned_data['etats']])
-                filters.append(f'({etat_filter})')
-            if form.cleaned_data['facteurs']:
-                facteur_filter = " OR ".join([f'facet_facteurs = "{facteur.nom.strip()}"' for facteur in form.cleaned_data['facteurs']])
-                filters.append(f'({facteur_filter})')
-            if form.cleaned_data['manufactures']:
-                manufacture_filter = " OR ".join([f'facet_manufactures = "{manufacture.nom.strip()}"' for manufacture in form.cleaned_data['manufactures']])
-                filters.append(f'({manufacture_filter})')
-            if form.cleaned_data['jeux']:
-                jeux_filter = f"jeux_count {form.cleaned_data['jeux'][0]} TO {form.cleaned_data['jeux'][1]}"
-                filters.append(f'({jeux_filter})')
-            if form.cleaned_data['monument']:
-                filters.append(f'(monument_historique = "true")')
-            if filters:
-                options['filter'] = " AND ".join(filters)
-                results = index.search(None, options)
-                results = self.meilisearch_results_to_map_json(results)
-            else:
-                with open(settings.CACHE_CARTE, "r") as f:
-                    results = json.load(f)
-            return JsonResponse(results)
-        else:
+        if not form.is_valid():
             return JsonResponse({'message': 'Le formulaire est invalide'}, status=400)
+        filtre = construire_filtre_carte(form.cleaned_data)
+        if filtre is None:
+            with open(settings.CACHE_CARTE, "r") as f:
+                return JsonResponse(json.load(f))
+        try:
+            resultats = rechercher_orgues_carte(filtre)
+        except RechercheCarteIndisponible:
+            return JsonResponse({'message': 'La recherche des orgues est momentanément indisponible.'}, status=503)
+        return JsonResponse(self.meilisearch_results_to_map_json(resultats))
 
 
 class OrgueCartePopup(View):
