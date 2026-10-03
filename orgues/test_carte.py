@@ -118,3 +118,17 @@ class OrgueCarteIntegrationTestCase(TestCase):
         self.assertContains(response, 'id="sharemodal"')
         self.assertContains(response, 'title="Carte des orgues - Inventaire des orgues de France"')
         self.assertContains(response, 'id="integration_departements"')
+
+
+@override_settings(MEILISEARCH_URL=False, MAPBOX_ACCESS_TOKEN="jeton-de-test",
+                   FULL_SITE_URL="https://portail.test")
+class OrgueCarteIframeTestCase(TestCase):
+    """
+    La carte intégrée ouvre la fiche résumée d'un orgue dans une fenêtre modale Bootstrap.
+    """
+
+    url = reverse('orgues:orgue-carte')
+
+    def test_iframe_charge_le_javascript_des_fenetres_modales(self):
+        response = self.client.get(self.url, {"iframe": "true"})
+        self.assertContains(response, "polo/js/plugins.js")
