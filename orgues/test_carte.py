@@ -148,3 +148,9 @@ class OrgueCarteFondDeCarteTestCase(TestCase):
                 self.assertContains(response, "plugins/maplibre-gl/maplibre-gl.js")
                 self.assertContains(response, "https://data.geopf.fr/")
 
+    def test_page_propose_la_liste_des_orgues_si_la_carte_ne_peut_pas_s_afficher(self):
+        for parametres in ({}, {"iframe": "true"}):
+            with self.subTest(parametres=parametres):
+                response = self.client.get(self.url, parametres)
+                self.assertContains(response, 'id="carte_indisponible"')
+                self.assertContains(response, "La carte ne peut pas s'afficher dans ce navigateur")

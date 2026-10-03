@@ -68,6 +68,19 @@
           }
       {% endif %}
 
+      #carte_indisponible {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          z-index: 1001;
+          max-width: 90%;
+          padding: 16px 24px;
+          text-align: center;
+          background: #ffffff;
+          border-radius: 8px;
+      }
+
       #carteorgues.loading::before {
           content: "Chargement des données...";
           position: absolute;
@@ -88,6 +101,10 @@
 {% block content %}
   <div class="position-relative " id="carteorgues_container">
     <div id="carteorgues" class="w-100 h-100 loading"></div>
+    <div id="carte_indisponible" role="alert" hidden>
+      <p>La carte ne peut pas s'afficher dans ce navigateur : il ne prend pas en charge WebGL ou son accélération graphique est désactivée.</p>
+      <a href="{{ FULL_SITE_URL }}{% url 'orgues:orgue-list' %}"{% if iframe %} target="_blank" rel="noopener"{% endif %}>Consulter la liste des orgues{% if iframe %}<span class="sr-only"> (nouvelle fenêtre)</span>{% endif %}</a>
+    </div>
     {% if iframe %}
       <nav id="carte_liens_liste" aria-label="Liste des orgues">
         {% if departements_choisis %}
@@ -180,17 +197,25 @@
     const carte_position = JSON.parse(document.getElementById('carte-position').textContent);
 
     // Fond de carte de la Géoplateforme IGN : service public, sans jeton ni pistage commercial des visiteurs
-    var map = new maplibregl.Map({
-      'container': 'carteorgues',
-      style: 'https://data.geopf.fr/annexes/ressources/vectorTiles/styles/PLAN.IGN/gris.json',
-      attributionControl: {
-        customAttribution: '<a href="https://www.ign.fr/" target="_blank" rel="noopener">© IGN</a> - Plan IGN'
-      },
-      center: [carte_position.lng, carte_position.lat],
-      zoom: carte_position.zoom,
-      bounds: carte_position.bbox,
-      fitBoundsOptions: {padding: 20}
-    });
+    var map;
+    try {
+      map = new maplibregl.Map({
+        'container': 'carteorgues',
+        style: 'https://data.geopf.fr/annexes/ressources/vectorTiles/styles/PLAN.IGN/gris.json',
+        attributionControl: {
+          customAttribution: '<a href="https://www.ign.fr/" target="_blank" rel="noopener">© IGN</a> - Plan IGN'
+        },
+        center: [carte_position.lng, carte_position.lat],
+        zoom: carte_position.zoom,
+        bounds: carte_position.bbox,
+        fitBoundsOptions: {padding: 20}
+      });
+    } catch (erreur) {
+      // Sans WebGL (machine virtuelle, accélération graphique désactivée…), on propose la liste des orgues
+      $("#carteorgues").removeClass("loading");
+      $("#carte_indisponible").prop("hidden", false);
+      throw erreur;
+    }
 
     // Fond épuré, proche de l'ancien fond Mapbox « light » : seuls l'eau, les limites et les noms de lieux restent
     const COUCHES_DU_FOND_MASQUEES = /^(routier|ferre|oro|ocs|bati_ponc|bati_lin|bati_zai|toponyme_(?!localite|hydro|limite))/;
