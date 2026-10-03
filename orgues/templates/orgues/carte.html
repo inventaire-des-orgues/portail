@@ -41,6 +41,30 @@
           border-radius: 25px;
       }
 
+      #filtercard .select2-container {
+          width: 100% !important;
+      }
+
+      #bouton_filtres {
+          position: absolute;
+          top: 10px;
+          left: 10px;
+          z-index: 1001;
+      }
+
+      /* Sous la largeur md, le panneau se déplie par-dessus la carte avec le bouton « Filtres » */
+      @media (max-width: 767.98px) {
+          #filtercard {
+              width: auto;
+              left: 0;
+              right: 0;
+              top: 50px;
+              margin: 0 10px;
+              max-height: calc(80vh - 60px);
+              overflow-y: auto;
+          }
+      }
+
       {% if iframe %}
           #filtercard {
               display: none !important;
@@ -141,7 +165,13 @@
         {% endif %}
       </nav>
     {% endif %}
-    <div class="card d-none d-md-block" id="filtercard">
+    {% if not iframe %}
+      <button type="button" class="btn btn-primary d-md-none" id="bouton_filtres" data-toggle="collapse"
+              data-target="#filtercard" aria-expanded="false" aria-controls="filtercard">
+        <i class="fa fa-filter" aria-hidden="true"></i> Filtres
+      </button>
+    {% endif %}
+    <div class="card collapse d-md-block" id="filtercard">
       <div class="card-body">
         <form id="searchform" action="" class="m-b-10" method="post">{% csrf_token %}
           <div class="form-group">
@@ -655,6 +685,11 @@
         onFinish: function (data) {
           SearchData()
         }
+      });
+
+      // Initialisé dans le panneau replié (mobile), le curseur n'a pas pu mesurer sa largeur
+      $("#filtercard").on("shown.bs.collapse", function () {
+        $("#id_jeux").data("ionRangeSlider").update({});
       });
 
       $("#id_commune").select2({

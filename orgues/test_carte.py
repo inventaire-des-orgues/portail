@@ -361,3 +361,30 @@ class OrgueCarteRechercheIndisponibleTestCase(TestCase):
                 Consulter la liste des orgues<span class="sr-only"> (nouvelle fenêtre)</span>
               </a>
             </div>''', html=True)
+
+
+@override_settings(MEILISEARCH_URL=False, FULL_SITE_URL="https://portail.test")
+class OrgueCarteFiltresMobileTestCase(TestCase):
+    """
+    Sous la largeur md de Bootstrap, le panneau de filtres (et « Intégrer ») se déplie avec un bouton,
+    au lieu d'être masqué sans alternative.
+    """
+
+    url = reverse('orgues:orgue-carte')
+
+    def test_bouton_filtres_deplie_le_panneau_sur_mobile(self):
+        response = self.client.get(self.url)
+        self.assertContains(response, '''
+            <button type="button" class="btn btn-primary d-md-none" id="bouton_filtres" data-toggle="collapse"
+                    data-target="#filtercard" aria-expanded="false" aria-controls="filtercard">
+              <i class="fa fa-filter" aria-hidden="true"></i> Filtres
+            </button>''', html=True)
+
+    def test_panneau_de_filtres_n_est_plus_masque_sur_mobile_sans_alternative(self):
+        response = self.client.get(self.url)
+        self.assertContains(response, 'class="card collapse d-md-block" id="filtercard"')
+        self.assertNotContains(response, 'class="card d-none d-md-block" id="filtercard"')
+
+    def test_iframe_n_a_pas_de_bouton_filtres(self):
+        response = self.client.get(self.url, {"iframe": "true"})
+        self.assertNotContains(response, 'id="bouton_filtres"')
