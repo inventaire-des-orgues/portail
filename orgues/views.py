@@ -32,7 +32,7 @@ from fabutils.fablog import load_fabaccess_logs
 from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdateView, FabView, FabCreateViewJS, \
     FabDetailView
 from orgues.api.serializers import OrgueSerializer, OrgueResumeSerializer
-from orgues.services.carte import construire_filtre_carte, rechercher_orgues_carte
+from orgues.services.carte import RechercheCarteIndisponible, construire_filtre_carte, rechercher_orgues_carte
 
 from django.conf import settings
 
@@ -269,7 +269,11 @@ class OrgueCarte(TemplateView):
         if filtre is None:
             with open(settings.CACHE_CARTE, "r") as f:
                 return JsonResponse(json.load(f))
-        return JsonResponse(self.meilisearch_results_to_map_json(rechercher_orgues_carte(filtre)))
+        try:
+            resultats = rechercher_orgues_carte(filtre)
+        except RechercheCarteIndisponible:
+            return JsonResponse({'message': 'La recherche des orgues est momentanément indisponible.'}, status=503)
+        return JsonResponse(self.meilisearch_results_to_map_json(resultats))
 
 
 class OrgueCartePopup(View):

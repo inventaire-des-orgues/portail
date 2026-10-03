@@ -1,11 +1,16 @@
+import json
+import tempfile
 from types import SimpleNamespace
 from unittest import mock
 
 from django.test import SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
+from meilisearch.errors import MeilisearchCommunicationError
+from requests.exceptions import MissingSchema
 
 from accounts.models import User
-from orgues.services.carte import construire_filtre_carte, rechercher_orgues_carte
+from orgues.services.carte import DELAI_MEILISEARCH_SECONDES, RechercheCarteIndisponible, construire_filtre_carte, \
+    rechercher_orgues_carte
 
 MEILISEARCH_FICTIF = "http://meilisearch.test"
 
@@ -227,7 +232,7 @@ class ConstruireFiltreCarteTestCase(SimpleTestCase):
 
 class RechercherOrguesCarteTestCase(SimpleTestCase):
     """
-    Point d'accès de la vue carte à Meilisearch.
+    Point d'accès de la vue carte à Meilisearch : un échec devient RechercheCarteIndisponible.
     """
 
     filtre = '(departement = "Sarthe")'
@@ -240,6 +245,96 @@ class RechercherOrguesCarteTestCase(SimpleTestCase):
             index.search.return_value = self.resultats
             resultats = rechercher_orgues_carte(self.filtre)
         self.assertEqual(resultats, self.resultats)
+        self.assertEqual(client.call_args.kwargs["timeout"], DELAI_MEILISEARCH_SECONDES)
         client.return_value.index.assert_called_once_with(uid="orgues")
         index.search.assert_called_once_with(
             None, {"facets": ["region", "departement"], "limit": 100000, "filter": self.filtre})
+
+    @override_settings(MEILISEARCH_URL=MEILISEARCH_FICTIF)
+    def test_echec_de_meilisearch_leve_recherche_indisponible_et_est_journalise(self):
+        with mock.patch("orgues.services.carte.meilisearch.Client") as client:
+            client.return_value.index.return_value.search.side_effect = MeilisearchCommunicationError("injoignable")
+            with self.assertLogs("orgues.services.carte", level="ERROR"):
+                with self.assertRaises(RechercheCarteIndisponible):
+                    rechercher_orgues_carte(self.filtre)
+
+    @override_settings(MEILISEARCH_URL=MEILISEARCH_FICTIF)
+    def test_reponse_ou_url_inexploitable_leve_recherche_indisponible_et_est_journalise(self):
+        erreurs = [json.JSONDecodeError("corps non JSON", "<html>", 0), MissingSchema("URL sans schéma")]
+        for erreur in erreurs:
+            with self.subTest(erreur=type(erreur).__name__):
+                with mock.patch("orgues.services.carte.meilisearch.Client") as client:
+                    client.return_value.index.return_value.search.side_effect = erreur
+                    with self.assertLogs("orgues.services.carte", level="ERROR"):
+                        with self.assertRaises(RechercheCarteIndisponible):
+                            rechercher_orgues_carte(self.filtre)
+
+    @override_settings(MEILISEARCH_URL=False)
+    def test_meilisearch_non_configure_leve_recherche_indisponible_sans_creer_de_client(self):
+        with mock.patch("orgues.services.carte.meilisearch.Client") as client:
+            with self.assertLogs("orgues.services.carte", level="WARNING"):
+                with self.assertRaises(RechercheCarteIndisponible):
+                    rechercher_orgues_carte(self.filtre)
+        client.assert_not_called()
+
+
+@override_settings(FULL_SITE_URL="https://portail.test")
+class OrgueCarteRechercheIndisponibleTestCase(TestCase):
+    """
+    Quand la recherche des orgues échoue, la carte répond une erreur JSON gérée (503) sans détail technique,
+    et la page prévoit un message qui oriente vers la liste des orgues.
+    """
+
+    url = reverse('orgues:orgue-carte')
+    message = {"message": "La recherche des orgues est momentanément indisponible."}
+
+    @override_settings(MEILISEARCH_URL=MEILISEARCH_FICTIF)
+    def test_meilisearch_injoignable_renvoie_503(self):
+        with mock.patch("orgues.services.carte.meilisearch.Client") as client:
+            client.return_value.index.return_value.search.side_effect = MeilisearchCommunicationError("injoignable")
+            with self.assertLogs("orgues.services.carte", level="ERROR"):
+                response = self.client.post(self.url, {"departements": ["72"]})
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.json(), self.message)
+
+    @override_settings(MEILISEARCH_URL=False)
+    def test_meilisearch_non_configure_renvoie_503_sans_creer_de_client(self):
+        with mock.patch("orgues.services.carte.meilisearch.Client") as client:
+            with self.assertLogs("orgues.services.carte", level="WARNING"):
+                response = self.client.post(self.url, {"departements": ["72"]})
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.json(), self.message)
+        client.assert_not_called()
+
+    @override_settings(MEILISEARCH_URL=False)
+    def test_sans_filtre_la_carte_lit_le_cache_sans_interroger_meilisearch(self):
+        cache = {"totaux_regions": {}, "totaux_departements": {}, "orgues_geojson": {"type": "FeatureCollection",
+                                                                                     "features": []}}
+        with tempfile.NamedTemporaryFile("w", suffix=".json") as fichier:
+            json.dump(cache, fichier)
+            fichier.flush()
+            with override_settings(CACHE_CARTE=fichier.name), \
+                    mock.patch("orgues.services.carte.meilisearch.Client") as client:
+                response = self.client.post(self.url, {})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), cache)
+        client.assert_not_called()
+
+    @override_settings(MEILISEARCH_URL=False)
+    def test_page_prevoit_un_message_annonce_vers_la_liste(self):
+        url_liste = "https://portail.test" + reverse('orgues:orgue-list')
+        response = self.client.get(self.url)
+        self.assertContains(response, '<div id="recherche_indisponible" role="alert" hidden>')
+        self.assertContains(response, f'<a href="{url_liste}">Consulter la liste des orgues</a>', html=True)
+
+    @override_settings(MEILISEARCH_URL=False)
+    def test_iframe_prevoit_un_message_annonce_vers_la_liste_en_nouvelle_fenetre(self):
+        url_liste = "https://portail.test" + reverse('orgues:orgue-list')
+        response = self.client.get(self.url, {"iframe": "true"})
+        self.assertContains(response, f'''
+            <div id="recherche_indisponible" role="alert" hidden>
+              <p>La recherche des orgues est momentanément indisponible : la carte ne peut pas afficher les orgues.</p>
+              <a href="{url_liste}" target="_blank" rel="noopener">
+                Consulter la liste des orgues<span class="sr-only"> (nouvelle fenêtre)</span>
+              </a>
+            </div>''', html=True)

@@ -1,10 +1,22 @@
 """
 Recherche des orgues affichés sur la carte : construction du filtre et accès à Meilisearch.
 """
+import json
+import logging
+
 import meilisearch
 from django.conf import settings
+from meilisearch.errors import MeilisearchError
+from requests.exceptions import RequestException
 
+logger = logging.getLogger(__name__)
+
+DELAI_MEILISEARCH_SECONDES = 10
 OPTIONS_RECHERCHE_CARTE = {'facets': ['region', 'departement'], 'limit': 100000}
+
+
+class RechercheCarteIndisponible(Exception):
+    """Le moteur de recherche ne peut pas répondre (non configuré, injoignable, en erreur)."""
 
 
 def _alternative(attribut, valeurs):
@@ -36,5 +48,15 @@ def rechercher_orgues_carte(filtre):
     """
     Résultats bruts de Meilisearch (orgues et totaux par région et département) pour le filtre donné.
     """
-    client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
-    return client.index(uid='orgues').search(None, {**OPTIONS_RECHERCHE_CARTE, 'filter': filtre})
+    if not settings.MEILISEARCH_URL:
+        # Un client créé sans URL ne lève une erreur (TypeError) qu'au moment de la recherche
+        logger.warning("Recherche de la carte impossible : Meilisearch n'est pas configuré (MEILISEARCH_URL).")
+        raise RechercheCarteIndisponible
+    try:
+        client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY,
+                                    timeout=DELAI_MEILISEARCH_SECONDES)
+        return client.index(uid='orgues').search(None, {**OPTIONS_RECHERCHE_CARTE, 'filter': filtre})
+    # Une réponse d'erreur non JSON ou une URL mal formée échappent aux erreurs propres au client Meilisearch
+    except (MeilisearchError, json.JSONDecodeError, RequestException) as erreur:
+        logger.exception("Recherche de la carte en échec dans Meilisearch.")
+        raise RechercheCarteIndisponible from erreur

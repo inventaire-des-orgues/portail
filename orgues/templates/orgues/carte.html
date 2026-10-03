@@ -68,7 +68,7 @@
           }
       {% endif %}
 
-      #carte_indisponible {
+      #carte_indisponible, #recherche_indisponible {
           position: absolute;
           top: 50%;
           left: 50%;
@@ -103,6 +103,10 @@
     <div id="carteorgues" class="w-100 h-100 loading"></div>
     <div id="carte_indisponible" role="alert" hidden>
       <p>La carte ne peut pas s'afficher dans ce navigateur : il ne prend pas en charge WebGL ou son accélération graphique est désactivée.</p>
+      <a href="{{ FULL_SITE_URL }}{% url 'orgues:orgue-list' %}"{% if iframe %} target="_blank" rel="noopener"{% endif %}>Consulter la liste des orgues{% if iframe %}<span class="sr-only"> (nouvelle fenêtre)</span>{% endif %}</a>
+    </div>
+    <div id="recherche_indisponible" role="alert" hidden>
+      <p>La recherche des orgues est momentanément indisponible : la carte ne peut pas afficher les orgues.</p>
       <a href="{{ FULL_SITE_URL }}{% url 'orgues:orgue-list' %}"{% if iframe %} target="_blank" rel="noopener"{% endif %}>Consulter la liste des orgues{% if iframe %}<span class="sr-only"> (nouvelle fenêtre)</span>{% endif %}</a>
     </div>
     {% if iframe %}
@@ -591,6 +595,20 @@
           map.getSource('regions').setData(RegionsGeoJson)
           map.getSource('departements').setData(DepartementsGeoJson)
           $("#carteorgues").removeClass("loading");
+          $("#recherche_indisponible").prop("hidden", true);
+        },
+        error: function () {
+          // Sans résultat à jour, on retire les orgues et les totaux de la recherche précédente
+          map.getSource("orgues").setData({"type": "FeatureCollection", "features": []})
+          for (const centres of [RegionsCentresGeoJson, DepartementsCentresGeoJson]) {
+            for (const centre of centres.features) {
+              centre.properties.nb_orgues = undefined
+            }
+          }
+          map.getSource("regionscentres").setData(RegionsCentresGeoJson)
+          map.getSource('departementscentres').setData(DepartementsCentresGeoJson)
+          $("#carteorgues").removeClass("loading");
+          $("#recherche_indisponible").prop("hidden", false);
         }
       })
     }
