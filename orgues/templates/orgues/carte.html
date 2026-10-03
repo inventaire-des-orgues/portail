@@ -136,43 +136,47 @@
             <a class="text-primary" data-toggle="modal" href="#sharemodal">
               <i class="fa fa-share-alt" aria-hidden="true"></i> Intégrer</a>
           </div>
-          <div class="modal fade" id="sharemodal" tabindex="-1" role="dialog" aria-labelledby="sharemodal-titre" aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h2 class="modal-title h4" id="sharemodal-titre">Intégrer la carte à un autre site</h2>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Fermer"><span aria-hidden="true">×</span></button>
-                </div>
-                <div class="modal-body">
-                  <div class="form-group">
-                    <label for="integration_departements">Limiter la carte à certains départements (facultatif)</label>
-                    <select multiple size="8" class="form-control" id="integration_departements" aria-describedby="integration_departements_aide">
-                      {% for code, nom in departements %}
-                        <option value="{{ code }}">{{ code }} - {{ nom }}</option>
-                      {% endfor %}
-                    </select>
-                    <small class="form-text" id="integration_departements_aide">
-                      Ctrl + clic (ou Cmd + clic) pour en choisir plusieurs. La carte se recentre sur la sélection.
-                    </small>
-                  </div>
-                  <div class="form-group">
-                    <label for="iframe">Code à copier dans votre site</label>
-                    <textarea class="form-control" id="iframe" rows="4" readonly aria-describedby="iframe_aide"></textarea>
-                    <small class="form-text" id="iframe_aide">
-                      La zone actuellement visible est conservée : la carte s'y ajuste quelle que soit la taille de l'iframe.
-                    </small>
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-b" data-dismiss="modal">Fermer</button>
-                </div>
-              </div>
-            </div>
-          </div>
         {% endif %}
       </div>
     </div>
   </div>
+
+  {% if request.user.is_authenticated %}
+    {# Hors du panneau de filtres : son z-index placerait la modale sous le fond gris de Bootstrap #}
+    <div class="modal fade" id="sharemodal" tabindex="-1" role="dialog" aria-labelledby="sharemodal-titre" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title h4" id="sharemodal-titre">Intégrer la carte à un autre site</h2>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Fermer"><span aria-hidden="true">×</span></button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="integration_departements">Limiter la carte à certains départements (facultatif)</label>
+              <select multiple size="8" class="form-control" id="integration_departements" aria-describedby="integration_departements_aide">
+                {% for code, nom in departements %}
+                  <option value="{{ code }}">{{ code }} - {{ nom }}</option>
+                {% endfor %}
+              </select>
+              <small class="form-text" id="integration_departements_aide">
+                Ctrl + clic (ou Cmd + clic) pour en choisir plusieurs. La carte se recentre sur la sélection.
+              </small>
+            </div>
+            <div class="form-group">
+              <label for="iframe">Code à copier dans votre site</label>
+              <textarea class="form-control" id="iframe" rows="4" readonly aria-describedby="iframe_aide"></textarea>
+              <small class="form-text" id="iframe_aide">
+                La zone actuellement visible est conservée : la carte s'y ajuste quelle que soit la taille de l'iframe.
+              </small>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-b" data-dismiss="modal">Fermer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
 
   <div class="modal fade" id="popupmodal" tabindex="-1" role="modal" aria-labelledby="modal-label" aria-hidden="true" style="display: none;">
     <div class="modal-dialog">
