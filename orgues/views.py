@@ -215,7 +215,10 @@ class OrgueCarte(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context["form"] = orgue_forms.OrgueCarteForm()
+        departements_choisis = orgue_forms.OrgueCarteForm.departements_connus(self.request.GET.getlist("departements"))
+        context["form"] = orgue_forms.OrgueCarteForm(initial={"departements": [code for code, nom in departements_choisis]})
+        context["departements_choisis"] = departements_choisis
+        context["departements"] = Orgue.CHOIX_DEPARTEMENT
         context["carte_position"] = orgue_forms.CartePositionForm(self.request.GET).position()
         context["MAPBOX_ACCESS_TOKEN"] = settings.MAPBOX_ACCESS_TOKEN
         context["FULL_SITE_URL"] = settings.FULL_SITE_URL
@@ -283,6 +286,9 @@ class OrgueCarte(TemplateView):
                 filters.append(f'({jeux_filter})')
             if form.cleaned_data['monument']:
                 filters.append(f'(monument_historique = "true")')
+            if form.cleaned_data['departements']:
+                departement_filter = " OR ".join([f'departement = "{nom}"' for nom in form.cleaned_data['departements']])
+                filters.append(f'({departement_filter})')
             if filters:
                 options['filter'] = " AND ".join(filters)
                 results = index.search(None, options)

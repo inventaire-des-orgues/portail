@@ -210,6 +210,21 @@ class OrgueCarteForm(forms.Form):
     facteurs = forms.ModelMultipleChoiceField(queryset=Facteur.objects.all(), required=False, label="Par facteur d'orgue : ", widget=Select2Multiple)
     manufactures = forms.ModelMultipleChoiceField(queryset=Manufacture.objects.all(), required=False, label="Par manufacture : ", widget=Select2Multiple)
     monument = forms.BooleanField(label="Uniquement monuments historiques (orange)", required=False)
+    # Renseigné par l'URL de la carte intégrée en iframe (issue #653), pas par l'utilisateur de la carte.
+    departements = forms.MultipleChoiceField(choices=Orgue.CHOIX_DEPARTEMENT, required=False,
+                                             widget=forms.MultipleHiddenInput)
+
+    @staticmethod
+    def departements_connus(codes):
+        """
+        Couples (code, nom) des départements dont le code existe, dans l'ordre des codes reçus.
+        """
+        noms = dict(Orgue.CHOIX_DEPARTEMENT)
+        return [(code, noms[code]) for code in codes if code in noms]
+
+    def clean_departements(self):
+        noms = dict(Orgue.CHOIX_DEPARTEMENT)
+        return [noms[code] for code in self.cleaned_data['departements']]
 
     def clean_jeux(self):
         jeux = self.cleaned_data['jeux']
@@ -224,12 +239,29 @@ class CartePositionForm(forms.Form):
     """
     Position initiale de la carte, lue dans l'URL (y compris quand la carte est intégrée en iframe).
     Un paramètre absent ou invalide est remplacé par sa valeur par défaut : la carte s'affiche toujours.
+    Le cadre (bbox) prime sur le centre et le zoom : la carte s'y ajuste quelle que soit la taille de l'iframe.
     """
-    POSITION_PAR_DEFAUT = {"zoom": 4.8, "lat": 46.2, "lng": 2.2}
+    POSITION_PAR_DEFAUT = {"zoom": 4.8, "lat": 46.2, "lng": 2.2, "bbox": None}
 
     zoom = forms.FloatField(required=False, min_value=0, max_value=22)
     lat = forms.FloatField(required=False, min_value=-90, max_value=90)
     lng = forms.FloatField(required=False, min_value=-180, max_value=180)
+    bbox = forms.CharField(required=False)
+
+    def clean_bbox(self):
+        """
+        Format attendu : "longitude_min,latitude_min,longitude_max,latitude_max".
+        """
+        bbox = self.cleaned_data['bbox']
+        if not bbox:
+            return None
+        try:
+            lng_min, lat_min, lng_max, lat_max = [float(valeur) for valeur in bbox.split(",")]
+        except ValueError:
+            raise forms.ValidationError("Le cadre doit comporter quatre nombres.")
+        if not (-180 <= lng_min < lng_max <= 180 and -90 <= lat_min < lat_max <= 90):
+            raise forms.ValidationError("Le cadre est hors des bornes géographiques.")
+        return [lng_min, lat_min, lng_max, lat_max]
 
     def position(self):
         self.is_valid()

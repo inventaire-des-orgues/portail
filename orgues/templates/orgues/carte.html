@@ -50,6 +50,17 @@
               height: 100vh;
               width: 100vw;
           }
+
+          #carte_liens_liste {
+              position: absolute;
+              left: 0;
+              bottom: 0;
+              z-index: 1000;
+              max-width: 70%;
+              padding: 4px 8px;
+              font-size: 0.85em;
+              background: #ffffff;
+          }
       {% else %}
           #carteorgues_container {
               height: 80vh;
@@ -77,6 +88,18 @@
 {% block content %}
   <div class="position-relative " id="carteorgues_container">
     <div id="carteorgues" class="w-100 h-100 loading"></div>
+    {% if iframe %}
+      <nav id="carte_liens_liste" aria-label="Liste des orgues">
+        {% if departements_choisis %}
+          Liste des orgues :
+          {% for code, nom in departements_choisis %}
+            <a href="{{ FULL_SITE_URL }}{% url 'orgues:orgue-list' %}?departement={{ nom|urlencode }}" target="_blank" rel="noopener">{{ nom }}<span class="sr-only"> (nouvelle fenêtre)</span></a>{% if not forloop.last %}, {% endif %}
+          {% endfor %}
+        {% else %}
+          <a href="{{ FULL_SITE_URL }}{% url 'orgues:orgue-list' %}" target="_blank" rel="noopener">Liste des orgues de l'Inventaire<span class="sr-only"> (nouvelle fenêtre)</span></a>
+        {% endif %}
+      </nav>
+    {% endif %}
     <div class="card d-none d-md-block" id="filtercard">
       <div class="card-body">
         <form id="searchform" action="" class="m-b-10" method="post">{% csrf_token %}
@@ -94,33 +117,42 @@
           <div class="text-center">
             <a href="" class="mr-3 text-primary text-decoration-none"><i class="fa fa-times-circle"></i> Réinitialiser</a>
             <a class="text-primary" data-toggle="modal" href="#sharemodal">
-              <i class="fa fa-share-alt"></i> Intégrer</a>
+              <i class="fa fa-share-alt" aria-hidden="true"></i> Intégrer</a>
           </div>
-        {% endif %}
-        <div class="modal fade" id="sharemodal" tabindex="-1" role="modal" aria-labelledby="modal-label" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h4 class="modal-title" id="modal-label">Intégrer</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-              </div>
-              <div class="modal-body">
-                <div class="row">
-                  <div class="col-md-12">
-                    <p>
-                      Pour intégrer cette carte à votre site, copiez coller le code ci-dessous. <br>
-                      Le niveau de zoom et la position de la carte actuelle seront conservés.
-                    </p>
-                    <textarea class="form-control" id="iframe"></textarea>
+          <div class="modal fade" id="sharemodal" tabindex="-1" role="dialog" aria-labelledby="sharemodal-titre" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h2 class="modal-title h4" id="sharemodal-titre">Intégrer la carte à un autre site</h2>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Fermer"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                  <div class="form-group">
+                    <label for="integration_departements">Limiter la carte à certains départements (facultatif)</label>
+                    <select multiple size="8" class="form-control" id="integration_departements" aria-describedby="integration_departements_aide">
+                      {% for code, nom in departements %}
+                        <option value="{{ code }}">{{ code }} - {{ nom }}</option>
+                      {% endfor %}
+                    </select>
+                    <small class="form-text" id="integration_departements_aide">
+                      Ctrl + clic (ou Cmd + clic) pour en choisir plusieurs. La carte se recentre sur la sélection.
+                    </small>
+                  </div>
+                  <div class="form-group">
+                    <label for="iframe">Code à copier dans votre site</label>
+                    <textarea class="form-control" id="iframe" rows="4" readonly aria-describedby="iframe_aide"></textarea>
+                    <small class="form-text" id="iframe_aide">
+                      La zone actuellement visible est conservée : la carte s'y ajuste quelle que soit la taille de l'iframe.
+                    </small>
                   </div>
                 </div>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-b" data-dismiss="modal">Fermer</button>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-b" data-dismiss="modal">Fermer</button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        {% endif %}
       </div>
     </div>
   </div>
@@ -152,7 +184,9 @@
       'container': 'carteorgues',
       style: 'mapbox://styles/mapbox/' + "light-v10",
       center: [carte_position.lng, carte_position.lat],
-      zoom: carte_position.zoom
+      zoom: carte_position.zoom,
+      bounds: carte_position.bbox,
+      fitBoundsOptions: {padding: 20}
     });
 
     // disable map zoom when using scroll and add zoom control
@@ -176,6 +210,30 @@
       return coordinates
     }
 
+    // Départements auxquels la carte est limitée : champs cachés du formulaire, remplis depuis l'URL
+    var departements_choisis = function () {
+      return $('#searchform input[name="departements"]').map(function () {
+        return this.value;
+      }).get();
+    }
+
+    var cadrer_sur_departements = function (codes) {
+      const zone = new mapboxgl.LngLatBounds();
+      let departement_trouve = false;
+      for (const departement of DepartementsGeoJson.features) {
+        if (codes.includes(departement.properties.code)) {
+          const profondeur = departement.geometry.type === "MultiPolygon" ? 2 : 1;
+          for (const coordonnees of departement.geometry.coordinates.flat(profondeur)) {
+            zone.extend(coordonnees);
+          }
+          departement_trouve = true;
+        }
+      }
+      if (departement_trouve) {
+        map.fitBounds(zone, {padding: 20, duration: 0});
+      }
+    }
+
     $.getJSON('{% static 'geojson/regions_centres.json' %}', function (data) {
       RegionsCentresGeoJson = data;
     })
@@ -188,6 +246,10 @@
 
     $.getJSON('{% static 'geojson/departements_light.json' %}', function (data) {
       DepartementsGeoJson = data;
+      // Un cadre explicite (bbox) prime sur le cadrage automatique sur les départements
+      if (!carte_position.bbox) {
+        cadrer_sur_departements(departements_choisis());
+      }
     })
 
 
@@ -407,11 +469,32 @@
         let current_latitude = Math.round(map.getCenter().lat * 1000000) / 1000000;
         let current_longitude = Math.round(map.getCenter().lng * 1000000) / 1000000;
         window.history.pushState('', '', `?zoom=${current_zoom}&lng=${current_longitude}&lat=${current_latitude}`);
-        $("#iframe").val(`<iframe width="500" height="500" src="{{ FULL_SITE_URL }}{% url 'orgues:orgue-carte' %}?iframe=true&zoom=${current_zoom}&lng=${current_longitude}&lat=${current_latitude}"></iframe>`);
+        // Le cadre visible plutôt que centre + zoom : la carte s'ajuste à la taille de l'iframe
+        const zone = map.getBounds();
+        const bbox = [
+          Math.max(zone.getWest(), -180), Math.max(zone.getSouth(), -90),
+          Math.min(zone.getEast(), 180), Math.min(zone.getNorth(), 90)
+        ].map(valeur => Math.round(valeur * 10000) / 10000);
+        const parametres = new URLSearchParams({iframe: "true", bbox: bbox.join(",")});
+        for (const code of departements_choisis()) {
+          parametres.append("departements", code);
+        }
+        $("#iframe").val(`<iframe width="500" height="500" title="Carte des orgues - Inventaire des orgues de France" src="{{ FULL_SITE_URL }}{% url 'orgues:orgue-carte' %}?${parametres}"></iframe>`);
       }
       map.on('zoomend', update_iframe_code);
       map.on('move', update_iframe_code);
       update_iframe_code();
+
+      $("#integration_departements").val(departements_choisis()).change(function () {
+        const codes = $(this).val();
+        $('#searchform input[name="departements"]').remove();
+        for (const code of codes) {
+          $('<input>', {type: "hidden", name: "departements", value: code}).appendTo("#searchform");
+        }
+        SearchData();
+        cadrer_sur_departements(codes);
+        update_iframe_code();
+      });
     {% endif %}
 
 
