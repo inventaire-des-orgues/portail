@@ -1,9 +1,13 @@
+from types import SimpleNamespace
 from unittest import mock
 
-from django.test import TestCase, override_settings
+from django.test import SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
 
 from accounts.models import User
+from orgues.services.carte import construire_filtre_carte, rechercher_orgues_carte
+
+MEILISEARCH_FICTIF = "http://meilisearch.test"
 
 
 @override_settings(MEILISEARCH_URL=False, FULL_SITE_URL="https://portail.test")
@@ -67,7 +71,8 @@ class OrgueCarteDepartementsTestCase(TestCase):
     resultats_vides = {"hits": [], "facetDistribution": {"region": {}, "departement": {}}}
 
     def rechercher(self, departements):
-        with mock.patch("orgues.views.meilisearch.Client") as client:
+        with override_settings(MEILISEARCH_URL=MEILISEARCH_FICTIF), \
+                mock.patch("orgues.services.carte.meilisearch.Client") as client:
             index = client.return_value.index.return_value
             index.search.return_value = self.resultats_vides
             response = self.client.post(self.url, {"departements": departements})
@@ -78,6 +83,25 @@ class OrgueCarteDepartementsTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         options = recherche.call_args.args[1]
         self.assertEqual(options["filter"], '(departement = "Finistère" OR departement = "Morbihan")')
+
+    def test_recherche_filtree_renvoie_le_geojson_des_orgues_et_les_totaux(self):
+        resultats = {
+            "hits": [{"id": 7, "longitude": -4.1, "latitude": 48.2, "edifice": "Église fictive",
+                      "commune": "Commune fictive", "monument_historique": True}],
+            "facetDistribution": {"region": {"Bretagne": 1}, "departement": {"Finistère": 1}},
+        }
+        with override_settings(MEILISEARCH_URL=MEILISEARCH_FICTIF), \
+                mock.patch("orgues.services.carte.meilisearch.Client") as client:
+            client.return_value.index.return_value.search.return_value = resultats
+            response = self.client.post(self.url, {"departements": ["29"]})
+        self.assertEqual(response.status_code, 200)
+        donnees = response.json()
+        self.assertEqual(donnees["totaux_regions"], {"Bretagne": 1})
+        self.assertEqual(donnees["totaux_departements"], {"Finistère": 1})
+        orgue = donnees["orgues_geojson"]["features"][0]
+        self.assertEqual(orgue["id"], 7)
+        self.assertEqual(orgue["geometry"]["coordinates"], [-4.1, 48.2])
+        self.assertEqual(orgue["properties"]["nom"], "Église fictive - Commune fictive")
 
     def test_code_departement_inconnu_est_refuse_sans_interroger_meilisearch(self):
         response, recherche = self.rechercher(['29" OR etat = "x'])
@@ -154,3 +178,68 @@ class OrgueCarteFondDeCarteTestCase(TestCase):
                 response = self.client.get(self.url, parametres)
                 self.assertContains(response, 'id="carte_indisponible"')
                 self.assertContains(response, "La carte ne peut pas s'afficher dans ce navigateur")
+
+
+class ConstruireFiltreCarteTestCase(SimpleTestCase):
+    """
+    Le filtre Meilisearch de la carte est construit à partir des données validées par OrgueCarteForm.
+    """
+
+    def donnees(self, **filtres):
+        donnees = {"etats": [], "facteurs": [], "manufactures": [], "jeux": None, "monument": False,
+                   "departements": []}
+        donnees.update(filtres)
+        return donnees
+
+    def test_sans_filtre_renvoie_none(self):
+        self.assertIsNone(construire_filtre_carte(self.donnees()))
+
+    def test_chaque_filtre_seul(self):
+        cas = [
+            ({"etats": ["Disparu", "Bon : jouable, défauts mineurs"]},
+             '(etat = "Disparu" OR etat = "Bon : jouable, défauts mineurs")'),
+            ({"facteurs": [SimpleNamespace(nom=" Cavaillé-Coll "), SimpleNamespace(nom="Merklin")]},
+             '(facet_facteurs = "Cavaillé-Coll" OR facet_facteurs = "Merklin")'),
+            ({"manufactures": [SimpleNamespace(nom="Manufacture fictive ")]},
+             '(facet_manufactures = "Manufacture fictive")'),
+            ({"jeux": [10, 40]}, '(jeux_count 10 TO 40)'),
+            ({"monument": True}, '(monument_historique = "true")'),
+            ({"departements": ["Finistère", "Morbihan"]},
+             '(departement = "Finistère" OR departement = "Morbihan")'),
+        ]
+        for filtres, attendu in cas:
+            with self.subTest(filtres=filtres):
+                self.assertEqual(construire_filtre_carte(self.donnees(**filtres)), attendu)
+
+    def test_curseur_de_jeux_a_trois_valeurs_utilise_les_deux_premieres(self):
+        self.assertEqual(construire_filtre_carte(self.donnees(jeux=[10, 40, 60])), '(jeux_count 10 TO 40)')
+
+    def test_filtres_combines_par_and(self):
+        donnees = self.donnees(etats=["Disparu"], facteurs=[SimpleNamespace(nom="Merklin")],
+                               manufactures=[SimpleNamespace(nom="Manufacture fictive")], jeux=[0, 20],
+                               monument=True, departements=["Sarthe"])
+        self.assertEqual(
+            construire_filtre_carte(donnees),
+            '(etat = "Disparu") AND (facet_facteurs = "Merklin") AND (facet_manufactures = "Manufacture fictive")'
+            ' AND (jeux_count 0 TO 20) AND (monument_historique = "true") AND (departement = "Sarthe")'
+        )
+
+
+class RechercherOrguesCarteTestCase(SimpleTestCase):
+    """
+    Point d'accès de la vue carte à Meilisearch.
+    """
+
+    filtre = '(departement = "Sarthe")'
+    resultats = {"hits": [], "facetDistribution": {"region": {}, "departement": {}}}
+
+    @override_settings(MEILISEARCH_URL=MEILISEARCH_FICTIF)
+    def test_renvoie_les_resultats_bruts_de_l_index_des_orgues(self):
+        with mock.patch("orgues.services.carte.meilisearch.Client") as client:
+            index = client.return_value.index.return_value
+            index.search.return_value = self.resultats
+            resultats = rechercher_orgues_carte(self.filtre)
+        self.assertEqual(resultats, self.resultats)
+        client.return_value.index.assert_called_once_with(uid="orgues")
+        index.search.assert_called_once_with(
+            None, {"facets": ["region", "departement"], "limit": 100000, "filter": self.filtre})

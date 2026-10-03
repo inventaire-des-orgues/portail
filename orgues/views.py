@@ -32,6 +32,7 @@ from fabutils.fablog import load_fabaccess_logs
 from fabutils.mixins import FabCreateView, FabListView, FabDeleteView, FabUpdateView, FabView, FabCreateViewJS, \
     FabDetailView
 from orgues.api.serializers import OrgueSerializer, OrgueResumeSerializer
+from orgues.services.carte import construire_filtre_carte, rechercher_orgues_carte
 
 from django.conf import settings
 
@@ -262,42 +263,13 @@ class OrgueCarte(TemplateView):
         On génère le geojson des orgues en fonction des filtres
         """
         form = orgue_forms.OrgueCarteForm(request.POST)
-        if form.is_valid():
-            try:
-                client = meilisearch.Client(settings.MEILISEARCH_URL, settings.MEILISEARCH_KEY)
-                index = client.index(uid='orgues')
-            except:
-                return JsonResponse({'message': 'Le moteur de recherche est mal configuré'}, status=500)
-
-            options = {'facets': ['region', 'departement'], 'limit': 100000}
-            filters = []
-            if form.cleaned_data['etats']:
-                etat_filter = " OR ".join([f'etat = "{etat}"' for etat in form.cleaned_data['etats']])
-                filters.append(f'({etat_filter})')
-            if form.cleaned_data['facteurs']:
-                facteur_filter = " OR ".join([f'facet_facteurs = "{facteur.nom.strip()}"' for facteur in form.cleaned_data['facteurs']])
-                filters.append(f'({facteur_filter})')
-            if form.cleaned_data['manufactures']:
-                manufacture_filter = " OR ".join([f'facet_manufactures = "{manufacture.nom.strip()}"' for manufacture in form.cleaned_data['manufactures']])
-                filters.append(f'({manufacture_filter})')
-            if form.cleaned_data['jeux']:
-                jeux_filter = f"jeux_count {form.cleaned_data['jeux'][0]} TO {form.cleaned_data['jeux'][1]}"
-                filters.append(f'({jeux_filter})')
-            if form.cleaned_data['monument']:
-                filters.append(f'(monument_historique = "true")')
-            if form.cleaned_data['departements']:
-                departement_filter = " OR ".join([f'departement = "{nom}"' for nom in form.cleaned_data['departements']])
-                filters.append(f'({departement_filter})')
-            if filters:
-                options['filter'] = " AND ".join(filters)
-                results = index.search(None, options)
-                results = self.meilisearch_results_to_map_json(results)
-            else:
-                with open(settings.CACHE_CARTE, "r") as f:
-                    results = json.load(f)
-            return JsonResponse(results)
-        else:
+        if not form.is_valid():
             return JsonResponse({'message': 'Le formulaire est invalide'}, status=400)
+        filtre = construire_filtre_carte(form.cleaned_data)
+        if filtre is None:
+            with open(settings.CACHE_CARTE, "r") as f:
+                return JsonResponse(json.load(f))
+        return JsonResponse(self.meilisearch_results_to_map_json(rechercher_orgues_carte(filtre)))
 
 
 class OrgueCartePopup(View):
