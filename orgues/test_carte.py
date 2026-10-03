@@ -128,22 +128,45 @@ class OrgueCarteDepartementsTestCase(TestCase):
 @override_settings(MEILISEARCH_URL=False, FULL_SITE_URL="https://portail.test")
 class OrgueCarteIntegrationTestCase(TestCase):
     """
-    Le code d'intégration (iframe) est proposé aux contributeurs connectés.
+    Le code d'intégration (iframe) est proposé à tout visiteur du portail, anonyme compris.
+    Il n'est pas proposé dans la carte intégrée elle-même : il se génère depuis le portail.
     """
 
     url = reverse('orgues:orgue-carte')
 
-    def test_anonyme_ne_voit_pas_le_bouton_integrer(self):
-        response = self.client.get(self.url)
-        self.assertNotContains(response, 'id="sharemodal"')
-
-    def test_utilisateur_connecte_obtient_un_code_d_integration_titre_et_cadre(self):
+    def connecter_un_contributeur(self):
         utilisateur = User.objects.create(email="contributeur@exemple.test", username="contributeur")
         self.client.force_login(utilisateur)
-        response = self.client.get(self.url)
+
+    def assert_code_d_integration_propose(self, response):
+        self.assertContains(response, 'href="#sharemodal"')
         self.assertContains(response, 'id="sharemodal"')
         self.assertContains(response, 'title="Carte des orgues - Inventaire des orgues de France"')
         self.assertContains(response, 'id="integration_departements"')
+
+    def test_anonyme_obtient_un_code_d_integration_titre_et_cadre(self):
+        response = self.client.get(self.url)
+        self.assert_code_d_integration_propose(response)
+
+    def test_utilisateur_connecte_obtient_un_code_d_integration_titre_et_cadre(self):
+        self.connecter_un_contributeur()
+        response = self.client.get(self.url)
+        self.assert_code_d_integration_propose(response)
+
+    def test_iframe_ne_propose_pas_d_integrer_la_carte(self):
+        response = self.client.get(self.url, {"iframe": "true"})
+        self.assertNotContains(response, 'href="#sharemodal"')
+        self.assertNotContains(response, 'id="sharemodal"')
+        self.assertNotContains(response, 'id="integration_departements"')
+        self.assertNotContains(response, "update_iframe_code")
+
+    def test_iframe_ne_propose_pas_d_integrer_la_carte_meme_connecte(self):
+        self.connecter_un_contributeur()
+        response = self.client.get(self.url, {"iframe": "true"})
+        self.assertNotContains(response, 'href="#sharemodal"')
+        self.assertNotContains(response, 'id="sharemodal"')
+        self.assertNotContains(response, 'id="integration_departements"')
+        self.assertNotContains(response, "update_iframe_code")
 
 
 @override_settings(MEILISEARCH_URL=False, FULL_SITE_URL="https://portail.test")
