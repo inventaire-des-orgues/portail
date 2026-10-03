@@ -143,26 +143,16 @@
   <script src='https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js'></script>
   <link href='https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css' rel='stylesheet'/>
 
+  {{ carte_position|json_script:"carte-position" }}
   <script>
     mapboxgl.accessToken = '{{ MAPBOX_ACCESS_TOKEN}}';
-    let initial_zoom = 4.8;
-    let initial_lat = 46.2;
-    let initial_lng = 2.2;
-    {% if request.GET.zoom %}
-      initial_zoom = {{ request.GET.zoom }};
-    {% endif %}
-    {% if request.GET.lat %}
-      initial_lat = {{ request.GET.lat }};
-    {% endif %}
-    {% if request.GET.lng %}
-      initial_lng = {{ request.GET.lng }};
-    {% endif %}
+    const carte_position = JSON.parse(document.getElementById('carte-position').textContent);
 
     var map = new mapboxgl.Map({
       'container': 'carteorgues',
       style: 'mapbox://styles/mapbox/' + "light-v10",
-      center: [initial_lng, initial_lat],
-      zoom: initial_zoom
+      center: [carte_position.lng, carte_position.lat],
+      zoom: carte_position.zoom
     });
 
     // disable map zoom when using scroll and add zoom control

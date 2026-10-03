@@ -220,6 +220,26 @@ class OrgueCarteForm(forms.Form):
         return
 
 
+class CartePositionForm(forms.Form):
+    """
+    Position initiale de la carte, lue dans l'URL (y compris quand la carte est intégrée en iframe).
+    Un paramètre absent ou invalide est remplacé par sa valeur par défaut : la carte s'affiche toujours.
+    """
+    POSITION_PAR_DEFAUT = {"zoom": 4.8, "lat": 46.2, "lng": 2.2}
+
+    zoom = forms.FloatField(required=False, min_value=0, max_value=22)
+    lat = forms.FloatField(required=False, min_value=-90, max_value=90)
+    lng = forms.FloatField(required=False, min_value=-180, max_value=180)
+
+    def position(self):
+        self.is_valid()
+        position = dict(self.POSITION_PAR_DEFAUT)
+        for champ, valeur in self.cleaned_data.items():
+            if valeur is not None:
+                position[champ] = valeur
+        return position
+
+
 class ManufactureForm(forms.ModelForm):
     class Meta:
         model = Manufacture
