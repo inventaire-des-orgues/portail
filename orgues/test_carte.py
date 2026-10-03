@@ -1,16 +1,20 @@
 import json
+import os
 import tempfile
 from types import SimpleNamespace
 from unittest import mock
 
+from django.conf import settings
+from django.core.management import CommandError, call_command
 from django.test import SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
 from meilisearch.errors import MeilisearchCommunicationError
-from requests.exceptions import MissingSchema
+from requests.exceptions import ConnectionError as ErreurConnexion, MissingSchema
 
 from accounts.models import User
 from orgues.services.carte import DELAI_MEILISEARCH_SECONDES, RechercheCarteIndisponible, construire_filtre_carte, \
     rechercher_orgues_carte
+from orgues.services.style_carte import URL_STYLE_IGN, epurer_style_ign
 
 MEILISEARCH_FICTIF = "http://meilisearch.test"
 
@@ -198,7 +202,13 @@ class OrgueCarteFondDeCarteTestCase(TestCase):
                 self.assertEqual(response.status_code, 200)
                 self.assertNotContains(response, "mapbox")
                 self.assertContains(response, "plugins/maplibre-gl/maplibre-gl.js")
-                self.assertContains(response, "https://data.geopf.fr/")
+                self.assertContains(response, "/static/carte/plan-ign-gris-epure.json")
+
+    def test_fond_de_carte_epure_est_servi_par_le_portail_sans_masquage_au_chargement(self):
+        response = self.client.get(self.url)
+        self.assertContains(response, "style: '/static/carte/plan-ign-gris-epure.json'")
+        self.assertNotContains(response, "data.geopf.fr/annexes/ressources/vectorTiles/styles")
+        self.assertNotContains(response, "setLayoutProperty")
 
     def test_page_propose_la_liste_des_orgues_si_la_carte_ne_peut_pas_s_afficher(self):
         for parametres in ({}, {"iframe": "true"}):
@@ -388,3 +398,83 @@ class OrgueCarteFiltresMobileTestCase(TestCase):
     def test_iframe_n_a_pas_de_bouton_filtres(self):
         response = self.client.get(self.url, {"iframe": "true"})
         self.assertNotContains(response, 'id="bouton_filtres"')
+
+
+STYLE_IGN_FICTIF = {
+    "version": 8,
+    "name": "PLAN IGN",
+    "glyphs": "https://data.geopf.fr/annexes/ressources/vectorTiles/fonts/{fontstack}/{range}.pbf",
+    "sprite": "https://data.geopf.fr/annexes/ressources/vectorTiles/styles/PLAN.IGN/sprite/PlanIgn-Gris",
+    "sources": {"plan_ign": {"type": "vector", "tiles": ["https://data.geopf.fr/tms/1.0.0/PLAN.IGN/{z}/{x}/{y}.pbf"]}},
+    "layers": [
+        {"id": "fond", "type": "background"},
+        {"id": "route", "type": "line", "source": "plan_ign", "source-layer": "routier_route"},
+        {"id": "voie ferrée", "type": "line", "source": "plan_ign", "source-layer": "ferre_troncon"},
+        {"id": "relief", "type": "line", "source": "plan_ign", "source-layer": "oro_courbe"},
+        {"id": "végétation", "type": "fill", "source": "plan_ign", "source-layer": "ocs_vegetation"},
+        {"id": "bâti ponctuel", "type": "symbol", "source": "plan_ign", "source-layer": "bati_ponc"},
+        {"id": "bâti linéaire", "type": "line", "source": "plan_ign", "source-layer": "bati_lin"},
+        {"id": "zone bâtie", "type": "fill", "source": "plan_ign", "source-layer": "bati_zai"},
+        {"id": "nom de lieu-dit", "type": "symbol", "source": "plan_ign", "source-layer": "toponyme_lieudit"},
+        {"id": "eau", "type": "fill", "source": "plan_ign", "source-layer": "hydro_surf"},
+        {"id": "limite", "type": "line", "source": "plan_ign", "source-layer": "limite_admin"},
+        {"id": "nom de commune", "type": "symbol", "source": "plan_ign", "source-layer": "toponyme_localite_ponc"},
+        {"id": "nom de cours d'eau", "type": "symbol", "source": "plan_ign", "source-layer": "toponyme_hydro_lin"},
+        {"id": "nom de limite", "type": "symbol", "source": "plan_ign", "source-layer": "toponyme_limite_lin"},
+    ],
+}
+COUCHES_GARDEES = ["fond", "eau", "limite", "nom de commune", "nom de cours d'eau", "nom de limite"]
+
+
+class EpurerStyleIgnTestCase(SimpleTestCase):
+    """
+    Le fond Plan IGN est épuré une fois pour toutes, et non à chaque chargement de la carte : les visiteurs
+    téléchargent et analysent environ 120 couches au lieu de 425.
+    """
+
+    def test_ne_garde_que_l_eau_les_limites_et_les_noms_de_lieux(self):
+        style = epurer_style_ign(STYLE_IGN_FICTIF)
+        self.assertEqual([couche["id"] for couche in style["layers"]], COUCHES_GARDEES)
+
+    def test_garde_les_tuiles_polices_et_sprites_de_l_ign(self):
+        style = epurer_style_ign(STYLE_IGN_FICTIF)
+        for cle in ("version", "glyphs", "sprite", "sources"):
+            with self.subTest(cle=cle):
+                self.assertEqual(style[cle], STYLE_IGN_FICTIF[cle])
+
+    def test_indique_l_origine_du_style(self):
+        self.assertEqual(epurer_style_ign(STYLE_IGN_FICTIF)["metadata"]["portail:source"], URL_STYLE_IGN)
+
+    def test_style_servi_par_le_portail_est_epure(self):
+        chemin = os.path.join(settings.BASE_DIR, "static", "static_dirs", "carte", "plan-ign-gris-epure.json")
+        with open(chemin, encoding="utf-8") as fichier:
+            style = json.load(fichier)
+        self.assertEqual(style, epurer_style_ign(style))
+        self.assertGreater(len(style["layers"]), 0)
+
+
+class EpurerStyleCarteCommandeTestCase(SimpleTestCase):
+    """
+    La commande epurer_style_carte régénère le style épuré à partir du style publié par l'IGN.
+    """
+
+    def telecharger(self, **comportement):
+        reponse = mock.Mock(**comportement)
+        return mock.patch("orgues.management.commands.epurer_style_carte.requests.get", return_value=reponse)
+
+    def test_ecrit_le_style_epure_a_partir_du_style_de_l_ign(self):
+        with tempfile.TemporaryDirectory() as dossier, self.telecharger(**{"json.return_value": STYLE_IGN_FICTIF}) as get:
+            sortie = os.path.join(dossier, "style.json")
+            call_command("epurer_style_carte", sortie=sortie, stdout=mock.Mock())
+            with open(sortie, encoding="utf-8") as fichier:
+                style = json.load(fichier)
+        get.assert_called_once_with(URL_STYLE_IGN, timeout=30)
+        self.assertEqual([couche["id"] for couche in style["layers"]], COUCHES_GARDEES)
+
+    def test_echec_du_telechargement_n_ecrit_rien(self):
+        with tempfile.TemporaryDirectory() as dossier, \
+                self.telecharger(**{"raise_for_status.side_effect": ErreurConnexion("IGN injoignable")}):
+            sortie = os.path.join(dossier, "style.json")
+            with self.assertRaises(CommandError):
+                call_command("epurer_style_carte", sortie=sortie, stdout=mock.Mock())
+            self.assertFalse(os.path.exists(sortie))
